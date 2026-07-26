@@ -1,8 +1,10 @@
 src/**
 tsconfig.json
-**/*.map
-**/*.ts
-!out/**
 .gitignore
 .vscode/**
+**/*.map
+**/*.ts
+!bundled/**
+scripts/**
 node_modules/**
+*.vsix
