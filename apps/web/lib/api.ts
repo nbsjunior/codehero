@@ -24,6 +24,12 @@ export async function checkPlatformAdmin(): Promise<boolean> {
   return res.data.isAdmin;
 }
 
+export async function rotateIngestToken(input: { orgId: string; projectId: string }): Promise<string> {
+  const fn = httpsCallable<typeof input, { ingestToken: string }>(functions, "rotateIngestToken");
+  const res = await fn(input);
+  return res.data.ingestToken;
+}
+
 export interface AdminProjectRow {
   orgId: string;
   orgName: string;

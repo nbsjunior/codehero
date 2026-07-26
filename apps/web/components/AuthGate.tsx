@@ -166,6 +166,9 @@ export default function AuthGate({ children }: { children: ReactNode }) {
           <a href="#como" onClick={() => setNavOpen(false)}>
             Como funciona
           </a>
+          <a href="/docs" onClick={() => setNavOpen(false)}>
+            Docs
+          </a>
           <button type="button" className="cr-btn cr-btn-ghost" onClick={() => goAuth("login")}>
             Entrar
           </button>
@@ -261,27 +264,80 @@ export default function AuthGate({ children }: { children: ReactNode }) {
         <section id="missao" className="cr-section cr-section-alt">
           <div className="cr-section-head">
             <h2>Diferente do mercado</h2>
-            <p>Mais leve que Sonar. Mais honesto que scanner só de IA.</p>
+            <p>Mais leve que Sonar. Mais honesto que scanner só de IA. Comparação direta abaixo.</p>
           </div>
-          <div className="cr-compare">
-            <div>
-              <h3>Vs Sonar / CodeQL / Coverity</h3>
-              <p>
-                Potentes, caros e pesados. CodeHero é gratuito, focado em dress code + segurança no fluxo do
-                desenvolvedor.
-              </p>
-            </div>
-            <div>
-              <h3>Vs scanners só de IA</h3>
-              <p>
-                Achados bonitos, falso positivo demais. Aqui a IA propõe; o corpus e o motor determinístico decidem o
-                que entra em produção.
-              </p>
-            </div>
-            <div>
-              <h3>Vs linters soltos</h3>
-              <p>ESLint não é política de plataforma. CodeHero une portal, plugin, runner e evolução agêntica num QG.</p>
-            </div>
+          <div className="cr-compare-wrap">
+            <table className="cr-compare-table">
+              <thead>
+                <tr>
+                  <th scope="col">Critério</th>
+                  <th scope="col" className="cr-compare-highlight">
+                    CodeHero
+                  </th>
+                  <th scope="col">Sonar / CodeQL / Coverity</th>
+                  <th scope="col">Scanners só de IA</th>
+                  <th scope="col">Linters soltos (ESLint etc.)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Custo</th>
+                  <td className="cr-compare-highlight">Gratuito</td>
+                  <td>Licença enterprise</td>
+                  <td>Custo por token/arquivo</td>
+                  <td>Gratuito</td>
+                </tr>
+                <tr>
+                  <th scope="row">Motor de detecção</th>
+                  <td className="cr-compare-highlight">Determinístico (AST/pattern)</td>
+                  <td>Determinístico</td>
+                  <td>LLM por arquivo</td>
+                  <td>Determinístico</td>
+                </tr>
+                <tr>
+                  <th scope="row">Evolução das regras</th>
+                  <td className="cr-compare-highlight">Busca evolutiva por corpus (auditável)</td>
+                  <td>Releases do vendor</td>
+                  <td>Depende do modelo</td>
+                  <td>Comunidade/config manual</td>
+                </tr>
+                <tr>
+                  <th scope="row">Política em português</th>
+                  <td className="cr-compare-highlight">Sim — dress code em linguagem natural</td>
+                  <td>Não</td>
+                  <td>Não</td>
+                  <td>Não</td>
+                </tr>
+                <tr>
+                  <th scope="row">Correção verificável</th>
+                  <td className="cr-compare-highlight">SDD Spec + critérios de aceite</td>
+                  <td>Quick fix limitado</td>
+                  <td>Sugestão sem verificação</td>
+                  <td>Nenhuma</td>
+                </tr>
+                <tr>
+                  <th scope="row">Agente nativo (MCP)</th>
+                  <td className="cr-compare-highlight">Sim</td>
+                  <td>Add-on comercial</td>
+                  <td>Variável</td>
+                  <td>Não</td>
+                </tr>
+                <tr>
+                  <th scope="row">Linguagens legadas</th>
+                  <td className="cr-compare-highlight">COBOL, DB2, VB.Net inclusos</td>
+                  <td>Add-on separado</td>
+                  <td>Raro</td>
+                  <td>Não</td>
+                </tr>
+                <tr>
+                  <th scope="row">Setup</th>
+                  <td className="cr-compare-highlight">1 clique (plugin/prévia)</td>
+                  <td>Servidor próprio</td>
+                  <td>Chave de API</td>
+                  <td>Config por repo</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
 
@@ -427,6 +483,9 @@ export default function AuthGate({ children }: { children: ReactNode }) {
       <footer className="cr-footer">
         <span className="cr-nav-name">CodeHero</span>
         <span>Dress code gratuito · motor determinístico</span>
+        <a href="/docs" style={{ color: "inherit" }}>
+          Docs
+        </a>
       </footer>
     </div>
   );
