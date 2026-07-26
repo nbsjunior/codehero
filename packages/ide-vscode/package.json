@@ -1,39 +1,158 @@
 {
   "name": "codehero-ide",
   "displayName": "CodeHero",
-  "description": "Static analysis with verifiable SDD fixes — runs hero-scanner (pattern + AST + taint).",
-  "version": "0.1.0",
+  "description": "Scan determinístico no editor: regras padrão + AST + taint, painel de avaliação e Problems.",
+  "version": "0.2.0",
   "private": true,
   "publisher": "codehero",
   "engines": { "vscode": "^1.85.0" },
-  "categories": ["Linters"],
+  "categories": ["Linters", "Other"],
   "activationEvents": ["onStartupFinished"],
   "main": "./out/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "codehero",
+          "title": "CodeHero",
+          "icon": "media/activity.svg"
+        }
+      ]
+    },
+    "views": {
+      "codehero": [
+        {
+          "id": "codehero.findings",
+          "name": "Avaliação"
+        }
+      ]
+    },
     "commands": [
-      { "command": "codehero.scanWorkspace", "title": "CodeHero: Scan Workspace" },
-      { "command": "codehero.scanFile", "title": "CodeHero: Scan Current File" },
-      { "command": "codehero.copySddHint", "title": "CodeHero: Copy MCP Fix Hint" }
+      {
+        "command": "codehero.scanWorkspace",
+        "title": "CodeHero: Rodar scan no workspace",
+        "icon": "$(play)"
+      },
+      {
+        "command": "codehero.scanFile",
+        "title": "CodeHero: Rodar scan no arquivo atual",
+        "icon": "$(file)"
+      },
+      {
+        "command": "codehero.clearFindings",
+        "title": "CodeHero: Limpar findings",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "codehero.openSettings",
+        "title": "CodeHero: Abrir configurações",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "codehero.showHowTo",
+        "title": "CodeHero: Como usar",
+        "icon": "$(question)"
+      },
+      {
+        "command": "codehero.openFinding",
+        "title": "CodeHero: Abrir finding"
+      },
+      {
+        "command": "codehero.copyFinding",
+        "title": "CodeHero: Copiar finding"
+      }
     ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "codehero.scanWorkspace",
+          "when": "view == codehero.findings",
+          "group": "navigation@1"
+        },
+        {
+          "command": "codehero.scanFile",
+          "when": "view == codehero.findings",
+          "group": "navigation@2"
+        },
+        {
+          "command": "codehero.clearFindings",
+          "when": "view == codehero.findings",
+          "group": "navigation@3"
+        },
+        {
+          "command": "codehero.openSettings",
+          "when": "view == codehero.findings",
+          "group": "navigation@4"
+        },
+        {
+          "command": "codehero.showHowTo",
+          "when": "view == codehero.findings",
+          "group": "navigation@5"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "codehero.copyFinding",
+          "when": "view == codehero.findings && viewItem == codeheroFinding"
+        }
+      ]
+    },
     "configuration": {
       "title": "CodeHero",
       "properties": {
-        "codehero.scanOnSave": { "type": "boolean", "default": true },
+        "codehero.scanOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Ao salvar um arquivo, roda o scan determinístico só nesse arquivo."
+        },
+        "codehero.enableCache": {
+          "type": "boolean",
+          "default": true,
+          "description": "Usa cache incremental do scanner (mais rápido em workspaces grandes)."
+        },
+        "codehero.minSeverity": {
+          "type": "string",
+          "default": "INFO",
+          "enum": ["INFO", "MINOR", "MAJOR", "CRITICAL", "BLOCKER"],
+          "description": "Severidade mínima exibida no painel e no Problems."
+        },
         "codehero.scannerCommand": {
           "type": "string",
-          "default": "npx hero-scan",
-          "description": "CLI used to scan (must support --sarif)."
+          "default": "",
+          "markdownDescription": "Deixe **vazio** para usar o scanner embutido no plugin (recomendado). Só preencha se quiser um CLI externo que aceite `--sarif` (ex.: caminho monorepo)."
+        },
+        "codehero.orgId": {
+          "type": "string",
+          "default": "",
+          "description": "ID da organização no portal (opcional — para correlacionar com o projeto CodeHero)."
+        },
+        "codehero.projectId": {
+          "type": "string",
+          "default": "",
+          "description": "ID do projeto no portal (opcional)."
+        },
+        "codehero.serverUrl": {
+          "type": "string",
+          "default": "",
+          "description": "URL do backend CodeHero (opcional; futuro upload de SARIF)."
+        },
+        "codehero.token": {
+          "type": "string",
+          "default": "",
+          "description": "Token de ingestão do projeto (opcional; trate como segredo)."
         }
       }
     }
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "package": "npm run build && npx --yes @vscode/vsce package --no-dependencies --allow-missing-repository -o ../../apps/web/public/downloads/codehero-vscode.vsix"
+    "bundle:scanner": "node ./scripts/bundle-scanner.mjs",
+    "package": "npm run bundle:scanner && npm run build && npx --yes @vscode/vsce package --no-dependencies --allow-missing-repository -o ../../apps/web/public/downloads/codehero-vscode.vsix"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",
     "@types/vscode": "^1.85.0",
+    "esbuild": "^0.25.0",
     "typescript": "^5.7.2"
   }
 }

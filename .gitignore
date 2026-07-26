@@ -18,3 +18,4 @@ emulator-data/
 tmp/
 apps/functions/vendor/
 apps/functions/package.json.workspace
+packages/ide-vscode/bundled/*.cjs

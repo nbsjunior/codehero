@@ -1,9 +1,10 @@
 "use client";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { signOut } from "firebase/auth";
+import Link from "next/link";
 import { collectionGroup, getDocs, query } from "firebase/firestore";
+import AppShell from "@/components/AppShell";
 import AuthGate from "@/components/AuthGate";
-import { auth, dbClient } from "@/lib/firebase";
+import { dbClient } from "@/lib/firebase";
 import {
   adminListAllProjects,
   checkPlatformAdmin,
@@ -214,71 +215,73 @@ function DashboardHome() {
     <main className="hero-shell">
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", flexWrap: "wrap" }}>
         <div>
-          <span className="hero-burst" style={{ marginBottom: "0.75rem" }}>
-            ⚡
-          </span>
-          <h1 className="hero-display" style={{ fontSize: "2.75rem", margin: "0.4rem 0 0.25rem" }}>
-            CodeHero
+          <h1 className="hero-display" style={{ fontSize: "2.25rem", margin: "0 0 0.25rem" }}>
+            Dashboard
           </h1>
           <p className="hero-caption" style={{ margin: 0 }}>
-            {isAdmin ? "admin da plataforma · one-click" : "painel do herói · one-click"}
+            {isAdmin ? "você também é admin da plataforma — veja /admin" : "seus projetos · one-click"}
           </p>
         </div>
         <div style={{ display: "flex", gap: "0.6rem", alignItems: "center", flexWrap: "wrap" }}>
-          <span className="hero-caption" style={{ maxWidth: 220, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {user?.displayName ?? user?.email}
-          </span>
           <button type="button" className="hero-btn hero-btn-outline" onClick={() => setShowProvision((v) => !v)}>
             {showProvision ? "Fechar" : "Novo projeto"}
-          </button>
-          <button type="button" className="hero-btn" onClick={() => signOut(auth)}>
-            Sair
           </button>
         </div>
       </header>
 
-      {/* One-click tools */}
+      {/* Como usar — fluxo simples */}
       <section className="hero-panel" style={{ padding: "1.5rem", marginTop: "1.75rem" }}>
         <h2 className="hero-display" style={{ fontSize: "1.5rem", margin: "0 0 0.35rem" }}>
-          Uso em 1 clique
+          Como usar (3 passos)
         </h2>
         <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1.25rem" }}>
-          Plugin no editor · prévia no Firebase · sem configuração pesada
+          Plugin no editor para scan local · portal só para dress code e prévia na nuvem
         </p>
-        <div style={{ display: "grid", gap: "1.25rem", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
-          <div>
-            <h3 style={{ margin: "0 0 0.5rem", fontSize: "1rem" }}>1. Plugin VS Code / Cursor</h3>
-            <p className="hero-caption" style={{ marginTop: 0 }}>
-              Baixe o VSIX e instale: Extensions → … → Install from VSIX
+
+        <ol className="howto-steps">
+          <li>
+            <strong>Instale o plugin</strong>
+            <p>
+              Baixe o VSIX → no VS Code/Cursor: Extensions → ⋯ → <em>Install from VSIX</em>. Abra a pasta do projeto →
+              ícone CodeHero na barra lateral → <em>Rodar scan</em>.
             </p>
-            <a className="hero-btn hero-btn-accent" href={PLUGIN_HREF} download style={{ display: "inline-block", textDecoration: "none" }}>
-              Baixar plugin
+            <a className="hero-btn hero-btn-accent" href={PLUGIN_HREF} download style={{ display: "inline-block", textDecoration: "none", marginTop: "0.5rem" }}>
+              Baixar plugin VS Code
             </a>
-          </div>
-          <div>
-            <h3 style={{ margin: "0 0 0.5rem", fontSize: "1rem" }}>2. Prévia no runner Firebase</h3>
-            <form onSubmit={handlePreview}>
-              <label className="hero-label" htmlFor="previewUrl">
-                Repo GitHub público
-              </label>
-              <input
-                id="previewUrl"
-                className="hero-input"
-                required
-                value={previewUrl}
-                onChange={(e) => setPreviewUrl(e.target.value)}
-                placeholder="https://github.com/org/repo"
-              />
-              <button type="submit" className="hero-btn hero-btn-accent" style={{ marginTop: "0.75rem" }} disabled={previewBusy}>
-                {previewBusy ? "Analisando…" : "Ver prévia"}
-              </button>
-            </form>
-            {previewError && (
-              <div className="hero-error" style={{ marginTop: "0.75rem" }}>
-                {previewError}
-              </div>
-            )}
-          </div>
+          </li>
+          <li>
+            <strong>Escreva o dress code (opcional)</strong>
+            <p>Em português, abaixo. A IA propõe regras; o scanner determinístico aplica no CI e no plugin.</p>
+          </li>
+          <li>
+            <strong>Prévia na nuvem (opcional)</strong>
+            <p>Cole um GitHub público para ver o relatório sem instalar nada no CI.</p>
+          </li>
+        </ol>
+
+        <div style={{ marginTop: "1.5rem", paddingTop: "1.25rem", borderTop: "2px solid var(--line)" }}>
+          <h3 style={{ margin: "0 0 0.75rem", fontSize: "1rem" }}>Prévia no runner Firebase</h3>
+          <form onSubmit={handlePreview}>
+            <label className="hero-label" htmlFor="previewUrl">
+              Repo GitHub público
+            </label>
+            <input
+              id="previewUrl"
+              className="hero-input"
+              required
+              value={previewUrl}
+              onChange={(e) => setPreviewUrl(e.target.value)}
+              placeholder="https://github.com/org/repo"
+            />
+            <button type="submit" className="hero-btn hero-btn-accent" style={{ marginTop: "0.75rem" }} disabled={previewBusy}>
+              {previewBusy ? "Analisando…" : "Ver prévia"}
+            </button>
+          </form>
+          {previewError && (
+            <div className="hero-error" style={{ marginTop: "0.75rem" }}>
+              {previewError}
+            </div>
+          )}
         </div>
 
         {preview && (
@@ -493,6 +496,7 @@ function DashboardHome() {
                 <th>Manutenib.</th>
                 <th>Débito</th>
                 <th>Issues</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -523,6 +527,13 @@ function DashboardHome() {
                   </td>
                   <td>{Math.round((p.debtMinutes ?? 0) / 60)}h</td>
                   <td>{p.openIssues ?? 0}</td>
+                  <td>
+                    {p.orgId && p.projectId ? (
+                      <Link href={`/projects/${p.orgId}/${p.projectId}`} className="hero-btn hero-btn-outline" style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem", textDecoration: "none", display: "inline-block" }}>
+                        Configurar
+                      </Link>
+                    ) : null}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -536,7 +547,9 @@ function DashboardHome() {
 export default function Dashboard() {
   return (
     <AuthGate>
-      <DashboardHome />
+      <AppShell>
+        <DashboardHome />
+      </AppShell>
     </AuthGate>
   );
 }

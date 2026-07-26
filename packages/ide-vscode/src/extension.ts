@@ -1,96 +1,252 @@
-import { execFileSync } from "node:child_process";
 import * as vscode from "vscode";
+import { FindingsTreeProvider, type FindingItem } from "./findingsView";
+import { getConfig, resolveScannerInvocationSafe } from "./config";
+import { runScan, type ScanFinding, type ScanSummary } from "./scan";
 
-const collection = vscode.languages.createDiagnosticCollection("codehero");
+let collection: vscode.DiagnosticCollection;
+let statusBar: vscode.StatusBarItem;
+let findingsProvider: FindingsTreeProvider;
+let lastFindings: ScanFinding[] = [];
+let extensionPath = "";
 
 export function activate(context: vscode.ExtensionContext): void {
-  context.subscriptions.push(collection);
+  extensionPath = context.extensionPath;
+  collection = vscode.languages.createDiagnosticCollection("codehero");
+  findingsProvider = new FindingsTreeProvider();
+
+  statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+  statusBar.command = "codehero.scanWorkspace";
+  statusBar.tooltip = "CodeHero: rodar scan determinístico no workspace";
+  setStatusIdle(0);
+  statusBar.show();
+
   context.subscriptions.push(
-    vscode.commands.registerCommand("codehero.scanFile", () => {
-      const editor = vscode.window.activeTextEditor;
-      if (editor) scanPath(editor.document.uri.fsPath, editor.document.uri);
-    }),
-    vscode.commands.registerCommand("codehero.scanWorkspace", () => {
-      const folder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-      if (!folder) {
-        void vscode.window.showWarningMessage("CodeHero: open a workspace folder first.");
-        return;
-      }
-      scanPath(folder);
-    }),
-    vscode.commands.registerCommand("codehero.copySddHint", async () => {
-      const hint =
-        "MCP: get_issues → get_sdd_spec(fingerprint) → apply unified_diff → run_scan → submit_fix_result.";
-      await vscode.env.clipboard.writeText(hint);
-      void vscode.window.showInformationMessage("CodeHero: MCP fix hint copied.");
+    collection,
+    statusBar,
+    vscode.window.registerTreeDataProvider("codehero.findings", findingsProvider),
+    vscode.commands.registerCommand("codehero.scanWorkspace", () => void scanWorkspace()),
+    vscode.commands.registerCommand("codehero.scanFile", () => void scanCurrentFile()),
+    vscode.commands.registerCommand("codehero.clearFindings", () => clearFindings()),
+    vscode.commands.registerCommand("codehero.openSettings", () =>
+      vscode.commands.executeCommand("workbench.action.openSettings", "codehero"),
+    ),
+    vscode.commands.registerCommand("codehero.showHowTo", () => void showHowTo()),
+    vscode.commands.registerCommand("codehero.openFinding", (item: FindingItem) => void openFinding(item)),
+    vscode.commands.registerCommand("codehero.copyFinding", async (item: FindingItem) => {
+      const text = `${item.finding.ruleId}: ${item.finding.message}\n${item.finding.file}:${item.finding.line}`;
+      await vscode.env.clipboard.writeText(text);
+      void vscode.window.showInformationMessage("CodeHero: finding copiado.");
     }),
     vscode.workspace.onDidSaveTextDocument((doc) => {
       if (doc.uri.scheme !== "file") return;
-      if (vscode.workspace.getConfiguration("codehero").get("scanOnSave", true)) {
-        scanPath(doc.uri.fsPath, doc.uri);
-      }
+      if (getConfig().scanOnSave) void scanPath(doc.uri.fsPath, { singleFile: true, uri: doc.uri });
     }),
   );
+
+  const welcomeKey = "codehero.welcomeShown";
+  if (!context.globalState.get(welcomeKey)) {
+    void context.globalState.update(welcomeKey, true);
+    void vscode.window
+      .showInformationMessage(
+        "CodeHero instalado. Abra a barra lateral CodeHero e clique em “Rodar scan”, ou use o botão na barra de status.",
+        "Como usar",
+        "Rodar scan agora",
+      )
+      .then((choice) => {
+        if (choice === "Como usar") void showHowTo();
+        if (choice === "Rodar scan agora") void scanWorkspace();
+      });
+  }
 }
 
 export function deactivate(): void {
-  collection.dispose();
+  collection?.dispose();
+  statusBar?.dispose();
 }
 
-function scanPath(target: string, singleUri?: vscode.Uri): void {
-  const cmd = vscode.workspace.getConfiguration("codehero").get<string>("scannerCommand") ?? "npx hero-scan";
-  const parts = cmd.split(/\s+/).filter(Boolean);
-  const bin = parts[0] ?? "npx";
-  const args = [...parts.slice(1), target, "--sarif"];
+async function scanWorkspace(): Promise<void> {
+  const folder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+  if (!folder) {
+    void vscode.window.showWarningMessage("CodeHero: abra uma pasta (File → Open Folder) antes de escanear.");
+    return;
+  }
+  await scanPath(folder, { singleFile: false });
+}
+
+async function scanCurrentFile(): Promise<void> {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor || editor.document.uri.scheme !== "file") {
+    void vscode.window.showWarningMessage("CodeHero: abra um arquivo do workspace para escanear.");
+    return;
+  }
+  await scanPath(editor.document.uri.fsPath, { singleFile: true, uri: editor.document.uri });
+}
+
+async function scanPath(
+  target: string,
+  opts: { singleFile: boolean; uri?: vscode.Uri },
+): Promise<void> {
+  const cfg = getConfig();
+  const invocation = resolveScannerInvocationSafe(extensionPath, cfg.scannerCommand);
+  statusBar.text = "$(sync~spin) CodeHero: analisando…";
+  statusBar.backgroundColor = undefined;
+
   try {
-    const stdout = execFileSync(bin, args, {
-      encoding: "utf8",
-      maxBuffer: 32 * 1024 * 1024,
-      cwd: vscode.workspace.workspaceFolders?.[0]?.uri.fsPath,
-      shell: process.platform === "win32",
-    });
-    const sarif = JSON.parse(stdout) as {
-      runs?: Array<{
-        results?: Array<{
-          ruleId?: string;
-          message?: { text?: string };
-          locations?: Array<{
-            physicalLocation?: {
-              artifactLocation?: { uri?: string };
-              region?: { startLine?: number; startColumn?: number; endColumn?: number };
-            };
-          }>;
-        }>;
-      }>;
-    };
-    const byFile = new Map<string, vscode.Diagnostic[]>();
-    for (const result of sarif.runs?.[0]?.results ?? []) {
-      const loc = result.locations?.[0]?.physicalLocation;
-      const uriPath = loc?.artifactLocation?.uri ?? target;
-      const line = Math.max(0, (loc?.region?.startLine ?? 1) - 1);
-      const startCol = Math.max(0, (loc?.region?.startColumn ?? 1) - 1);
-      const endCol = Math.max(startCol + 1, (loc?.region?.endColumn ?? startCol + 2) - 1);
-      const range = new vscode.Range(line, startCol, line, endCol);
-      const diag = new vscode.Diagnostic(
-        range,
-        `${result.ruleId ?? "rule"}: ${result.message?.text ?? ""}`,
-        vscode.DiagnosticSeverity.Warning,
-      );
-      diag.source = "codehero";
-      const key = uriPath;
-      const list = byFile.get(key) ?? [];
-      list.push(diag);
-      byFile.set(key, list);
-    }
-    if (singleUri) {
-      collection.set(singleUri, byFile.values().next().value ?? []);
-    } else {
-      collection.clear();
-      for (const [path, diags] of byFile) {
-        collection.set(vscode.Uri.file(path), diags);
-      }
-    }
+    const summary = await vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: "CodeHero",
+        cancellable: false,
+      },
+      async (progress) => {
+        progress.report({ message: "Rodando regras determinísticas (padrão + AST + taint)…" });
+        return runScan({
+          target,
+          invocation,
+          enableCache: cfg.enableCache,
+          cwd: vscode.workspace.workspaceFolders?.[0]?.uri.fsPath,
+          minSeverity: cfg.minSeverity,
+        });
+      },
+    );
+
+    applyResults(summary, opts);
+    void vscode.commands.executeCommand("codehero.findings.focus");
   } catch (err) {
-    void vscode.window.showErrorMessage(`CodeHero scan failed: ${String(err)}`);
+    const msg = err instanceof Error ? err.message : String(err);
+    statusBar.text = "$(error) CodeHero: falhou";
+    statusBar.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground");
+    void vscode.window
+      .showErrorMessage(`CodeHero: ${msg}`, "Abrir configurações", "Como usar")
+      .then((choice) => {
+        if (choice === "Abrir configurações") void vscode.commands.executeCommand("codehero.openSettings");
+        if (choice === "Como usar") void showHowTo();
+      });
   }
 }
+
+function applyResults(summary: ScanSummary, opts: { singleFile: boolean; uri?: vscode.Uri }): void {
+  lastFindings = summary.findings;
+  findingsProvider.setFindings(summary.findings, summary);
+
+  const byFile = new Map<string, vscode.Diagnostic[]>();
+  for (const f of summary.findings) {
+    const uri = vscode.Uri.file(f.absolutePath);
+    const line = Math.max(0, f.line - 1);
+    const startCol = Math.max(0, f.column - 1);
+    const endCol = Math.max(startCol + 1, f.endColumn - 1);
+    const diag = new vscode.Diagnostic(
+      new vscode.Range(line, startCol, line, endCol),
+      `${f.ruleId}: ${f.message}`,
+      severityToDiagnostic(f.severity),
+    );
+    diag.source = "codehero";
+    diag.code = f.ruleId;
+    const list = byFile.get(uri.toString()) ?? [];
+    list.push(diag);
+    byFile.set(uri.toString(), list);
+  }
+
+  if (opts.singleFile && opts.uri) {
+    const key = opts.uri.toString();
+    collection.set(opts.uri, byFile.get(key) ?? []);
+  } else {
+    collection.clear();
+    for (const [key, diags] of byFile) {
+      collection.set(vscode.Uri.parse(key), diags);
+    }
+  }
+
+  setStatusIdle(summary.findings.length);
+  const blockers = summary.bySeverity.BLOCKER ?? 0;
+  const criticals = summary.bySeverity.CRITICAL ?? 0;
+  void vscode.window.showInformationMessage(
+    `CodeHero: ${summary.findings.length} finding(s) · BLOCKER ${blockers} · CRITICAL ${criticals}. Veja o painel CodeHero.`,
+  );
+}
+
+function clearFindings(): void {
+  lastFindings = [];
+  collection.clear();
+  findingsProvider.setFindings([], emptySummary());
+  setStatusIdle(0);
+}
+
+function setStatusIdle(count: number): void {
+  statusBar.text = count > 0 ? `$(shield) CodeHero: ${count}` : "$(shield) CodeHero";
+  statusBar.backgroundColor =
+    count > 0 ? new vscode.ThemeColor("statusBarItem.warningBackground") : undefined;
+}
+
+function severityToDiagnostic(sev: string): vscode.DiagnosticSeverity {
+  switch (sev) {
+    case "BLOCKER":
+    case "CRITICAL":
+      return vscode.DiagnosticSeverity.Error;
+    case "MAJOR":
+      return vscode.DiagnosticSeverity.Warning;
+    case "MINOR":
+      return vscode.DiagnosticSeverity.Information;
+    default:
+      return vscode.DiagnosticSeverity.Hint;
+  }
+}
+
+async function openFinding(item: FindingItem): Promise<void> {
+  const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(item.finding.absolutePath));
+  const editor = await vscode.window.showTextDocument(doc, { preview: true });
+  const line = Math.max(0, item.finding.line - 1);
+  const col = Math.max(0, item.finding.column - 1);
+  const pos = new vscode.Position(line, col);
+  editor.selection = new vscode.Selection(pos, pos);
+  editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+}
+
+async function showHowTo(): Promise<void> {
+  const doc = await vscode.workspace.openTextDocument({
+    language: "markdown",
+    content: `# Como usar o CodeHero
+
+## Em 3 passos
+
+1. **Abra a pasta do seu projeto** (File → Open Folder).
+2. Clique no ícone **CodeHero** na barra lateral esquerda (ou no botão \`CodeHero\` na barra de status).
+3. Clique em **Rodar scan no workspace**.
+
+O scanner embutido aplica regras **determinísticas** (padrão + AST + taint) — sem IA por arquivo.
+
+## Onde ver o resultado
+
+- **Painel CodeHero** (barra lateral): avaliação com contagem por severidade e lista de findings.
+- **Problems** (Ctrl+Shift+M): sublinhados no editor.
+
+## Configuração
+
+Abra Settings e busque \`CodeHero\`, ou rode o comando **CodeHero: Abrir configurações**.
+
+| Setting | Para quê |
+|---|---|
+| \`codehero.scanOnSave\` | Escaneia o arquivo ao salvar |
+| \`codehero.enableCache\` | Cache incremental (mais rápido) |
+| \`codehero.minSeverity\` | Filtra findings abaixo deste nível no painel |
+| \`codehero.scannerCommand\` | Vazio = scanner embutido (recomendado). Só mude se souber o que faz. |
+
+## Portal (opcional)
+
+No https://codehero.web.app você pode:
+1. Baixar este plugin
+2. Escrever o dress code do time
+3. Rodar uma prévia de repo GitHub público no Firebase
+
+Scan local no plugin **não depende** do portal — funciona offline com as regras canônicas.
+`,
+  });
+  await vscode.window.showTextDocument(doc, { preview: true });
+}
+
+function emptySummary(): ScanSummary {
+  return { findings: [], bySeverity: {}, fileCountHint: 0 };
+}
+
+// silence unused in case tree uses lastFindings later
+void lastFindings;
