@@ -116,4 +116,15 @@ export const SDD_TEMPLATES: Record<string, SddTemplate> = {
     guidance: "Implemente o item pendente do TODO/FIXME ou converta-o em uma issue rastreável e remova o marcador.",
     constraints: ["Não expandir escopo além do TODO.", "Manter estilo do arquivo."],
   },
+  "sdd.smell.restructure-goto": {
+    id: "sdd.smell.restructure-goto",
+    strategy: "restructure_control_flow",
+    guidance:
+      "Substitua o GO TO por estruturas PERFORM/PERFORM UNTIL equivalentes, preservando a ordem de execução original.",
+    constraints: [
+      "Preservar exatamente o comportamento observável do parágrafo.",
+      "Não consolidar múltiplos parágrafos em um só.",
+      "Manter estilo/indentação fixa de colunas do arquivo COBOL.",
+    ],
+  },
 };

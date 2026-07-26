@@ -53,5 +53,27 @@
   { "id": "todo-02", "ruleId": "HERO-SMELL-0546-todo-marker", "expected": "match",
     "code": "// FIXME: handle null case" },
   { "id": "todo-03", "ruleId": "HERO-SMELL-0546-todo-marker", "expected": "no_match",
-    "code": "todo_list = []", "note": "identificador contendo 'todo', não é um comentário-marcador" }
+    "code": "todo_list = []", "note": "identificador contendo 'todo', não é um comentário-marcador" },
+
+  { "id": "tsql-01", "ruleId": "HERO-SEC-0089-dynamic-sql-tsql", "expected": "match",
+    "code": "SET @sql = 'SELECT * FROM Customers WHERE Name = ''' + @CustomerName + '''';" },
+  { "id": "tsql-02", "ruleId": "HERO-SEC-0089-dynamic-sql-tsql", "expected": "no_match",
+    "code": "EXEC sp_executesql N'SELECT * FROM Customers WHERE Name = @Name', N'@Name NVARCHAR(100)', @Name = @CustomerName;",
+    "note": "sp_executesql parametrizado, sem concatenação" },
+
+  { "id": "csharp-01", "ruleId": "HERO-SEC-0089-adonet-sqli", "expected": "match",
+    "code": "var cmd = new SqlCommand(\"SELECT * FROM Customers WHERE Name = '\" + name + \"'\");" },
+  { "id": "csharp-02", "ruleId": "HERO-SEC-0089-adonet-sqli", "expected": "no_match",
+    "code": "var cmd = new SqlCommand(\"SELECT * FROM Customers WHERE Id = @id\", conn);",
+    "note": "query parametrizada via @id" },
+
+  { "id": "cobol-secret-01", "ruleId": "HERO-SEC-0798-cobol-hardcoded-secret", "expected": "match",
+    "code": "MOVE 'PROD_DB2_PASSWORD_2024' TO WS-DB-PASSWORD" },
+  { "id": "cobol-secret-02", "ruleId": "HERO-SEC-0798-cobol-hardcoded-secret", "expected": "no_match",
+    "code": "MOVE 'JOHN SMITH SILVA' TO WS-CUSTOMER-NAME", "note": "campo não relacionado a credencial" },
+
+  { "id": "cobol-goto-01", "ruleId": "HERO-SMELL-0goto-cobol", "expected": "match",
+    "code": "GO TO ERROR-PARA" },
+  { "id": "cobol-goto-02", "ruleId": "HERO-SMELL-0goto-cobol", "expected": "no_match",
+    "code": "GO TO.", "note": "GO TO isolado ao fim de parágrafo é idiomático em COBOL, não um salto real" }
 ]

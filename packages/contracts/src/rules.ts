@@ -8,7 +8,18 @@ import type { Severity, IssueType } from "./severity.ts";
 // ignored by the current TypeScript engine.
 // ---------------------------------------------------------------------------
 
-export type RuleLanguage = "python" | "javascript" | "typescript" | "java" | "go" | "any";
+export type RuleLanguage =
+  | "python"
+  | "javascript"
+  | "typescript"
+  | "java"
+  | "go"
+  | "csharp"
+  | "vbnet"
+  | "cobol"
+  | "tsql" // T-SQL (SQL Server) — dialect-specific; DB2 SQL is tagged "db2sql" separately since
+  | "db2sql" // stored-procedure/dynamic-SQL syntax differs enough to need distinct rules
+  | "any";
 
 export interface HeroRule {
   id: string;
@@ -134,6 +145,82 @@ export const RULES: HeroRule[] = [
     sddTemplateId: "sdd.smell.resolve-todo",
     pattern: {
       regex: "(?i)(//|#|/\\*)\\s*(todo|fixme|hack|xxx)\\b",
+    },
+  },
+
+  // --- Enterprise/legacy languages (SQL Server, DB2, C#, VB.Net, COBOL) ----
+  // These require dedicated patterns rather than reusing the generic rules
+  // above: T-SQL dynamic SQL, ADO.NET query building, and COBOL's assignment
+  // syntax (MOVE ... TO, no `=`) are structurally different from the
+  // Python/JS-shaped rules earlier in this catalog.
+
+  {
+    id: "HERO-SEC-0089-dynamic-sql-tsql",
+    name: "DynamicSqlInjectionTSql",
+    languages: ["tsql", "db2sql"],
+    severity: "CRITICAL",
+    type: "VULNERABILITY",
+    remediationEffortMin: 25,
+    cwe: ["CWE-89"],
+    owasp: ["A03:2021-Injection"],
+    message: "SQL dinâmico montado por concatenação de string (SET @sql = ... + ... ou EXEC('...' + ...)) em procedure T-SQL/DB2.",
+    sddTemplateId: "sdd.sqli.parametrize",
+    // Nota: o matcher MVP é por linha e não correlaciona `SET @sql = ...`
+    // com um `EXEC(@sql)` em linha separada — o padrão mira a linha onde a
+    // concatenação de fato ocorre. sp_executesql com parâmetros tipados
+    // (forma segura) não contém "+" após a string, então não dispara.
+    pattern: {
+      regex: "(?i)(set\\s+@\\w+\\s*=|exec(ute)?\\s*\\()\\s*n?['\"].*(select|insert|update|delete).*['\"]\\s*\\+",
+    },
+  },
+  {
+    id: "HERO-SEC-0089-adonet-sqli",
+    name: "AdoNetSqlInjection",
+    languages: ["csharp", "vbnet"],
+    severity: "CRITICAL",
+    type: "VULNERABILITY",
+    remediationEffortMin: 20,
+    cwe: ["CWE-89"],
+    owasp: ["A03:2021-Injection"],
+    message: "SqlCommand/OleDbCommand construído por concatenação ou interpolação de string (risco de SQL Injection).",
+    sddTemplateId: "sdd.sqli.parametrize",
+    pattern: {
+      regex: "(?i)new\\s+(SqlCommand|OleDbCommand|OdbcCommand)\\s*\\(\\s*(\\$?['\"].*(select|insert|update|delete).*['\"]\\s*\\+|\\$['\"])",
+    },
+  },
+  {
+    id: "HERO-SEC-0798-cobol-hardcoded-secret",
+    name: "CobolHardcodedSecret",
+    languages: ["cobol"],
+    severity: "BLOCKER",
+    type: "VULNERABILITY",
+    remediationEffortMin: 15,
+    cwe: ["CWE-798"],
+    owasp: ["A07:2021-Identification and Authentication Failures"],
+    message: "Credencial hardcoded em statement MOVE (padrão de atribuição COBOL).",
+    sddTemplateId: "sdd.secret.externalize",
+    pattern: {
+      // COBOL usa "MOVE 'valor' TO campo", não "campo = 'valor'" — precisa de
+      // um padrão próprio; a regra genérica HERO-SEC-0798 não cobre esta
+      // sintaxe. Identificadores COBOL usam hífen (WS-DB-PASSWORD), por isso
+      // [\w-]* em vez de \w* antes da palavra-chave.
+      regex: "(?i)MOVE\\s+['\"][^'\"]{8,}['\"]\\s+TO\\s+[\\w-]*(PASSWORD|PWD|SECRET|APIKEY|DB-PASS)",
+    },
+  },
+  {
+    id: "HERO-SMELL-0goto-cobol",
+    name: "CobolGoTo",
+    languages: ["cobol"],
+    severity: "MAJOR",
+    type: "CODE_SMELL",
+    remediationEffortMin: 15,
+    cwe: [],
+    owasp: [],
+    message: "Uso de GO TO: fluxo de controle não estruturado, dificulta manutenção e migração.",
+    sddTemplateId: "sdd.smell.restructure-goto",
+    pattern: {
+      regex: "(?i)\\bGO\\s+TO\\b",
+      unless: "(?i)GO\\s+TO\\.\\s*$", // "GO TO." isolado (fim de PROCEDURE DIVISION) é idiomático, não um salto real
     },
   },
 ];
