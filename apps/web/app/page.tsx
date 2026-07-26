@@ -204,6 +204,7 @@ function DashboardHome() {
       setPreview(res);
     } catch (err) {
       setPreviewError(err instanceof Error ? err.message : "Falha na prévia do repositório.");
+      console.error("previewRepoScan client error", err);
     } finally {
       setPreviewBusy(false);
     }

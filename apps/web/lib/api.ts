@@ -110,7 +110,40 @@ export async function previewRepoScan(input: {
   orgId?: string;
   projectId?: string;
 }): Promise<PreviewRepoScanResult> {
-  const fn = httpsCallable<typeof input, PreviewRepoScanResult>(functions, "previewRepoScan");
-  const res = await fn(input);
-  return res.data;
+  const fn = httpsCallable<typeof input, PreviewRepoScanResult>(functions, "previewRepoScan", {
+    timeout: 300_000,
+  });
+  try {
+    const res = await fn(input);
+    return res.data;
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha na prévia do repositório."));
+  }
+}
+
+function formatCallableError(err: unknown, fallback: string): string {
+  const fe = err as { code?: string; message?: string; details?: unknown };
+  const code = fe?.code ?? "";
+  const raw = (fe?.message ?? "").trim();
+  const details =
+    typeof fe?.details === "string"
+      ? fe.details
+      : fe?.details && typeof fe.details === "object" && "message" in (fe.details as object)
+        ? String((fe.details as { message?: unknown }).message ?? "")
+        : "";
+
+  // Firebase strips messages for status INTERNAL — surface a usable fallback.
+  if (/^(internal|INTERNAL)$/i.test(raw) || code === "functions/internal") {
+    if (details && !/^(internal|INTERNAL)$/i.test(details)) return details;
+    return `${fallback} Erro interno no runner (sem detalhe no cliente). Tente de novo.`;
+  }
+  if (code === "functions/unauthenticated") return "Faça login novamente para rodar a prévia.";
+  if (code === "functions/not-found") return "Repositório não encontrado ou privado.";
+  if (code === "functions/unavailable" || code === "functions/invalid-argument") {
+    return raw.replace(/^.*?:\s*/, "") || fallback;
+  }
+  if (raw && !/^(internal|INTERNAL)$/i.test(raw)) {
+    return raw.replace(/^Firebase:\s*/i, "").replace(/\s*\(.*\)\s*$/, "").trim() || fallback;
+  }
+  return fallback;
 }
