@@ -67,6 +67,27 @@ server.tool(
 );
 
 server.tool(
+  "submit_fix_result",
+  "Reporta o resultado de um fix aplicado a partir de um SDD Spec (applied/rejected/failed). Alimenta a taxa de sucesso do template de correção — não altera regras diretamente.",
+  {
+    orgId: z.string().default(ORG_ID),
+    projectId: z.string().default(PROJECT_ID),
+    fingerprint: z.string(),
+    specId: z.string().optional(),
+    status: z.enum(["applied", "rejected", "failed"]),
+  },
+  async ({ orgId, projectId, fingerprint, specId, status }) => {
+    const r = await fetch(`${CORE_URL}/submitFixResult`, {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify({ orgId, projectId, fingerprint, specId, status }),
+    });
+    const body = await r.text();
+    return { content: [{ type: "text", text: body }], isError: !r.ok };
+  },
+);
+
+server.tool(
   "run_scan",
   "Roda o hero-scanner localmente em um caminho e retorna o SARIF (usado para verificar os acceptanceCriteria após aplicar um fix).",
   { path: z.string().default(".") },

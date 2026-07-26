@@ -101,4 +101,45 @@ orgs/{orgId}
 
 1. **Contratos congelados** (SARIF+/SDD Spec) — feito, base de tudo.
 2. **Scanner re-executável programaticamente** (`run_scan`) — feito, habilita a verificação agêntica.
-3. **Corpus golden** para validar regras geradas por IA — pendente (bloqueia `hero-ruleforge`).
+3. **Corpus golden** para validar regras geradas por IA — feito (`packages/ruleforge/corpus/golden.json`), alimenta o `hero-ruleforge`.
+
+## `hero-ruleforge` — como as regras evoluem sem custo de IA generativa por execução
+
+**Restrição de design (não negociável):** a verificação de uma regra candidata é sempre um **algoritmo determinístico** — pontuação de precisão/recall contra o corpus golden, custando microssegundos de CPU. Isso existe especificamente para impedir que "a IA evolui as regras" degenere silenciosamente em "a IA analisa cada arquivo", o que faria o custo de inferência crescer linearmente com o volume de código escaneado. A IA generativa, quando usada, entra apenas como **uma fonte opcional de propostas**, chamada em lote e offline (nunca por arquivo, nunca por scan) — ver `packages/ruleforge/src/llmGenerator.ts`.
+
+```mermaid
+graph LR
+    TEL["Telemetria de produção<br/>flagIssueFeedback (humano)<br/>submitFixResult (agente)"] --> FS[("orgs/{orgId}/ruleforgeFeedback")]
+    FS -->|merge revisado por humano, periódico| CORPUS["Corpus golden<br/>packages/ruleforge/corpus/golden.json"]
+    HAND["Mutações hand-authored<br/>(time de segurança)"] --> POOL["Pool de mutações<br/>packages/ruleforge/src/mutations.ts"]
+    LLM["LLM (opcional, offline, em lote)<br/>lê CWE/CVE + falsos-positivos"] -.->|propõe, não decide| POOL
+    POOL --> GA["Busca evolutiva determinística<br/>evolve.ts — PRNG seeded, sem rede"]
+    CORPUS --> GA
+    GA -->|"promovida: ΔF1>0, precisão≥0.85, zero regressão"| MERGE["PR humano em<br/>contracts/src/rules.ts"]
+    GA -->|rejeitada| DROP["descartada, log preservado"]
+    MERGE --> BUNDLE["RuleSet ativo"]
+    BUNDLE --> SCANNER["hero-scanner<br/>(determinístico, sem chamada de IA)"]
+```
+
+**Mecânica implementada** (`packages/ruleforge`):
+- **Corpus golden** (`corpus/golden.json`): casos rotulados `match`/`no_match` por regra, incluindo *traps* de falso-positivo e lacunas de falso-negativo reais.
+- **Avaliador** (`evaluate.ts`): roda `matchPattern` — o **mesmo** matcher do scanner de produção (`packages/contracts/src/matcher.ts`) — contra o corpus, calcula precisão/recall/F1. Zero chance de uma regra "passar" na validação e se comportar diferente em produção, porque só existe uma implementação de matching.
+- **Pool de mutações** (`mutations.ts`): transformações pequenas e revisáveis do regex/`unless`, com autoria humana (MVP) ou proposta por LLM (V1+, interface em `llmGenerator.ts`).
+- **Busca evolutiva** (`evolve.ts`): algoritmo genético com PRNG determinístico (seed fixa, reprodutível/auditável) — população inicial inclui a regra-base inalterada; gerações aplicam bit-flip mutation sobre o pool; fitness = F1 com desempate por precisão e por simplicidade (menos mutações ativas).
+- **Portão de promoção**: uma candidata só é promovida se (a) melhora o F1 sobre a baseline, (b) mantém precisão ≥ 0.85, e (c) **não regride nenhum caso que a regra atual já acerta** — o guard-rail central contra "consertar uma coisa e quebrar outra".
+
+**Resultado real de uma execução** (`node packages/ruleforge/src/cli.ts evolve-all`, seed=42, 2026-07-26):
+
+| Regra | Baseline F1 | Melhor F1 | Decisão |
+|---|---|---|---|
+| `HERO-SEC-0798-hardcoded-secret` | 0.50 | **1.00** | ✅ PROMOTED (2 mutações mescladas em `rules.ts`) |
+| `HERO-SEC-0327-weak-hash` | 0.67 | **1.00** | ✅ PROMOTED (1 mutação mesclada em `rules.ts`) |
+| `HERO-SEC-0089-sql-injection` | 0.67 | 0.67 | ❌ REJECTED — mutação proposta (f-strings) não cobria o gap real (template literals JS); nenhum ganho, nada promovido |
+| `HERO-SEC-0095-code-injection-eval` | 1.00 | 1.00 | ❌ REJECTED — já ótima, sem espaço de melhoria |
+
+O caso da `sql-injection` é a demonstração mais importante do portão de segurança: uma mutação foi *proposta* mas **rejeitada automaticamente** por não gerar ganho real — nem toda proposta (humana ou de IA) vira regra. Isso vale tanto para mutações mal-direcionadas quanto para eventuais alucinações de um gerador via LLM.
+
+**Loop de telemetria em produção** (`apps/functions/src/feedback.ts`):
+- `flagIssueFeedback` (callable, autenticado) — humano marca uma issue como falso-positivo ou confirma-a no dashboard.
+- `submitFixResult` (HTTP, token de projeto) — o agente (via `hero-mcp`) reporta se um fix aplicado a partir de um SDD Spec foi aceito/rejeitado/falhou; alimenta a taxa de sucesso por `sddTemplateId` (métrica de qualidade do SDD), não o corpus de regras diretamente — evita rotular ambiguamente ("fix rejeitado" não implica "detecção era falsa").
+- Verdicts inequívocos (`false_positive`/`confirmed`) são gravados em `orgs/{orgId}/ruleforgeFeedback`, material bruto que um job em lote (Cloud Scheduler → Cloud Run, revisão humana via PR) mescla periodicamente no corpus golden — fechando o ciclo "aprende com o uso real" sem nunca introduzir uma chamada de IA generativa no caminho de verificação.

@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { RULES, type HeroRule, type RuleLanguage } from "@codehero/contracts";
+import { RULES, matchPattern, type HeroRule, type RuleLanguage } from "@codehero/contracts";
 
 export interface Finding {
   rule: HeroRule;
@@ -40,51 +40,34 @@ function fingerprint(ruleId: string, file: string, snippet: string): string {
   return createHash("sha256").update(`${ruleId}::${file}::${normalized}`).digest("hex").slice(0, 16);
 }
 
-/** Run the rule set against a single file's source. */
+/** Run the production rule set against a single file's source. */
 export function analyzeSource(file: string, source: string): Finding[] {
   const lang = languageForFile(file);
   if (!lang) return [];
   const active = RULES.filter((r) => ruleApplies(r, lang));
-  const lines = source.split(/\r?\n/);
+  return runRulesAgainstSource(active, file, source);
+}
+
+/**
+ * Run an arbitrary set of rules against source (used by the production
+ * scanner and, unmodified, by hero-ruleforge's corpus evaluator — the two
+ * MUST share this exact code path so an evolved rule scores identically to
+ * how it will behave once promoted).
+ */
+export function runRulesAgainstSource(rules: HeroRule[], file: string, source: string): Finding[] {
   const findings: Finding[] = [];
-
-  for (const rule of active) {
-    const re = compilePattern(rule.pattern.regex, rule.pattern.flags ?? "");
-    const unless = rule.pattern.unless ? compilePattern(rule.pattern.unless, "") : null;
-
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i] ?? "";
-      const m = re.exec(line);
-      if (!m) continue;
-      if (unless && unless.test(line)) continue;
-      const col = (m.index ?? 0) + 1;
-      const snippet = line.trim();
+  for (const rule of rules) {
+    for (const m of matchPattern(rule.pattern, source)) {
       findings.push({
         rule,
         file,
-        startLine: i + 1,
-        startColumn: col,
-        endColumn: col + m[0].length,
-        snippet,
-        fingerprint: fingerprint(rule.id, file, snippet),
+        startLine: m.line,
+        startColumn: m.column,
+        endColumn: m.endColumn,
+        snippet: m.snippet,
+        fingerprint: fingerprint(rule.id, file, m.snippet),
       });
     }
   }
   return findings;
-}
-
-/**
- * Compile a rule pattern into a JS RegExp. Rules may use a leading inline flag
- * group like `(?i)` (PCRE-style) for portability with the future engine; we
- * translate it into real JS flags since bare `(?i)` is not valid in JS.
- */
-function compilePattern(source: string, flags: string): RegExp {
-  let body = source;
-  const inline = /^\(\?([a-z]+)\)/.exec(body);
-  const collected = new Set(flags.split(""));
-  if (inline?.[1]) {
-    for (const f of inline[1]) if ("gimsuy".includes(f)) collected.add(f);
-    body = body.slice(inline[0].length);
-  }
-  return new RegExp(body, [...collected].join(""));
 }

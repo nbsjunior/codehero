@@ -47,9 +47,13 @@ export const RULES: HeroRule[] = [
     owasp: ["A07:2021-Identification and Authentication Failures"],
     message: "Credencial ou chave de API hardcoded no código-fonte.",
     sddTemplateId: "sdd.secret.externalize",
+    // Pattern promovido por hero-ruleforge (busca evolutiva determinística,
+    // seed=42) em 2026-07-26: F1 0.50 -> 1.00 no corpus golden, sem regressões.
+    // Mutações aplicadas: widen-unless-fixture-words, widen-charclass-specials.
+    // Ver packages/ruleforge/corpus/golden.json (casos secret-02, secret-05).
     pattern: {
-      regex: "(?i)(api[_-]?key|secret|passwd|password|token|aws_secret_access_key)\\s*[:=]\\s*['\"][A-Za-z0-9_\\-/+]{12,}['\"]",
-      unless: "(?i)(process\\.env|os\\.environ|getenv|import\\.meta\\.env|example|placeholder|xxxx|<.*>)",
+      regex: "(?i)(api[_-]?key|secret|passwd|password|token|aws_secret_access_key)\\s*[:=]\\s*['\"][A-Za-z0-9_\\-/+!@#$%^&*]{12,}['\"]",
+      unless: "(?i)(process\\.env|os\\.environ|getenv|import\\.meta\\.env|example|placeholder|xxxx|<.*>)|(dummy|sample|fake|mock)",
     },
   },
   {
@@ -78,8 +82,11 @@ export const RULES: HeroRule[] = [
     owasp: ["A02:2021-Cryptographic Failures"],
     message: "Uso de algoritmo de hash fraco (MD5/SHA1) para dados sensíveis.",
     sddTemplateId: "sdd.crypto.upgrade-hash",
+    // Pattern promovido por hero-ruleforge (busca evolutiva determinística,
+    // seed=42) em 2026-07-26: F1 0.67 -> 1.00 no corpus golden, sem regressões.
+    // Mutação aplicada: add-hashlib-new-alt. Ver corpus caso hash-02.
     pattern: {
-      regex: "(?i)(md5|sha1)\\s*\\(|hashlib\\.(md5|sha1)|createHash\\(\\s*['\"](md5|sha1)['\"]",
+      regex: "(?i)(md5|sha1)\\s*\\(|hashlib\\.(md5|sha1)|createHash\\(\\s*['\"](md5|sha1)['\"]|hashlib\\.new\\(\\s*['\"](md5|sha1)['\"]",
     },
   },
   {

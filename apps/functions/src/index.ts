@@ -6,3 +6,4 @@ export { ingestAnalysis } from "./ingest.ts";
 export { generateSddSpec } from "./sdd.ts";
 export { provisionProject } from "./provision.ts";
 export { listIssues, sddSpec } from "./query.ts";
+export { flagIssueFeedback, submitFixResult } from "./feedback.ts";

@@ -1,0 +1,18 @@
+{
+  "name": "@codehero/ruleforge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "hero-ruleforge": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "evaluate": "node src/cli.ts evaluate",
+    "evolve": "node src/cli.ts evolve",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@codehero/contracts": "*"
+  }
+}
