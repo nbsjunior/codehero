@@ -1,24 +1,19 @@
 import type { Mutation } from "./types.ts";
+import type { MutationSpec } from "./mutationSpec.ts";
 
 // ---------------------------------------------------------------------------
 // Optional, offline, batch-only candidate source. This is where generative AI
 // enters the platform's rule lifecycle — and nowhere else.
 //
 // Cost/safety model:
-//   - Called at most a handful of times per day/week (e.g. nightly job, or
-//     triggered when a new CVE/CWE advisory is ingested), NEVER per file or
-//     per scan. Runtime scanning (packages/scanner) never reaches this code.
-//   - Output is untrusted input: a `Mutation`/`HeroRule` candidate proposed
-//     here is scored by the exact same deterministic corpus evaluator
-//     (evaluate.ts) as a hand-authored mutation before it can be promoted
-//     (evolve.ts). The LLM proposes; the corpus decides. A hallucinated or
-//     overly broad pattern that regresses the corpus is rejected the same way
-//     a bad hand-written mutation would be.
-//   - No LLM call happens inside this repo's test/build/CI path — this file
-//     defines the interface and is intentionally NOT wired into `evolve.ts`'s
-//     default pool. Wiring a real provider is a deployment-time decision for
-//     the hero-ruleforge batch job (Cloud Run / Cloud Scheduler), not part of
-//     the request-serving path.
+//   - Called at most once per day (Genkit flow `ruleforgeDaily` via Cloud
+//     Scheduler), NEVER per file or per scan. Runtime scanning
+//     (packages/scanner) never reaches this code.
+//   - Output is untrusted input: a `Mutation`/`MutationSpec` proposed here is
+//     scored by the exact same deterministic corpus evaluator (evaluate.ts)
+//     as a hand-authored mutation before it can be promoted (evolve.ts).
+//     The LLM proposes; the corpus decides.
+//   - Production wiring: apps/functions Genkit flow + onSchedule daily job.
 // ---------------------------------------------------------------------------
 
 export interface CandidateGenerationInput {
@@ -36,11 +31,16 @@ export interface RuleCandidateGenerator {
 }
 
 /**
+ * Optional richer generator that returns serialisable specs (used by Genkit
+ * structured output). Adapters convert specs → Mutation before evolve.
+ */
+export interface SpecCandidateGenerator {
+  proposeSpecs(input: CandidateGenerationInput): Promise<MutationSpec[]>;
+}
+
+/**
  * Reference no-op implementation used in tests/dev so the evolutionary loop
  * has a working `RuleCandidateGenerator` without requiring API credentials.
- * A production implementation (`AnthropicCandidateGenerator`, etc.) would call
- * an LLM once per batch run, parse its suggestion into a `Mutation`, and
- * return it here — unchanged, still subject to corpus scoring downstream.
  */
 export const noopGenerator: RuleCandidateGenerator = {
   async propose() {

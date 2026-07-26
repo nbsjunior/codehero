@@ -1,5 +1,12 @@
 {
   "projects": {
     "default": "apponti"
+  },
+  "targets": {
+    "apponti": {
+      "hosting": {
+        "codehero": ["codehero"]
+      }
+    }
   }
 }

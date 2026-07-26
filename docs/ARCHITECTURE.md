@@ -2,10 +2,15 @@
 
 Adaptação do plano original (Rust/Go/Postgres/ClickHouse) para um **SaaS nativo em Firebase**, mantendo os três módulos e o princípio central: **a IA nunca está no caminho crítico da inspeção**.
 
+Quando o CodeHero compartilha um projeto GCP/Firebase com outros apps, os recursos são **segregados** (banco Firestore nomeado, bucket próprio, site de Hosting e Functions com nomes distintos) — ver [Segregação de recursos](#segregação-de-recursos).
+
 ## Princípio invariável
 
 - **Inspeção** = determinística, na borda (CLI/CI/IDE), sem chamada de LLM por arquivo.
-- **IA** = offline (compila regras — `hero-ruleforge`) e assíncrona/sob demanda (gera specs SDD — `hero-forge`).
+- **IA** = offline e em lote:
+  - **propõe** mutações de regra via Genkit (`ruleforgeDaily`, 1×/dia);
+  - **nunca decide** promoção — o corpus golden + `evolve.ts` decidem;
+  - sob demanda, monta specs SDD (`generateSddSpec` / templates; LLM opcional no futuro).
 - **Contrato** entre os dois mundos = **SARIF-estendido** (detecção) → **SDD Spec** (correção verificável).
 
 ## Mapeamento de containers: plano original → Firebase
@@ -13,15 +18,16 @@ Adaptação do plano original (Rust/Go/Postgres/ClickHouse) para um **SaaS nativ
 | Papel | Plano original | **Adaptação Firebase** |
 |---|---|---|
 | Motor de inspeção | Rust + tree-sitter | **TS/Node** na borda (MVP) → Rust (V1+). Roda em CLI/CI/IDE, nunca no servidor |
-| API/Gateway | Go | **Cloud Functions (2ª gen, TS)** — `ingestAnalysis`, `listIssues`, `sddSpec` |
-| Workers | Go | Cloud Functions acionadas por HTTP/Firestore triggers |
-| SDD/IA | Python/FastAPI | **Callable Function** `generateSddSpec` (+ `hero-forge` opcional em Cloud Run p/ LLM) |
-| Dashboard | Next.js | **Next.js no Firebase Hosting** |
-| Metadados | PostgreSQL | **Firestore** (`orgs/projects/issues/analyses/sddSpecs`) |
+| API/Gateway | Go | **Cloud Functions (2ª gen, TS)** — `ingestAnalysis`, `listIssues`, `sddSpec`, … |
+| Workers / cron | Go + scheduler | **`onSchedule`** — `ruleforgeDaily` (Genkit); demais HTTP/callable |
+| SDD / correção | Python/FastAPI | Callable `generateSddSpec` + HTTP `sddSpec` (templates; LLM fora do scan) |
+| Evolução de regras | — | **`@codehero/ruleforge`** + Genkit flow diário (propõe) → gate determinístico (decide) |
+| Dashboard | Next.js | **Next.js** no Firebase Hosting (AuthGate + Firestore do CodeHero) |
+| Metadados | PostgreSQL | **Firestore** (database nomeado do CodeHero) |
 | Séries temporais | ClickHouse | Firestore (MVP) → **BigQuery** export (Scale-up) |
-| SARIF/artefatos | S3 | **Cloud Storage** |
-| Event bus | NATS/Kafka | **Firestore triggers / Pub/Sub** (Eventarc) |
-| Auth/Multi-tenant | custom | **Firebase Auth** + modelo `orgs/{orgId}/members` |
+| SARIF / artefatos | S3 | **Cloud Storage** (bucket dedicado do CodeHero) |
+| Event bus | NATS/Kafka | Firestore triggers / Pub/Sub (Eventarc) — Scale-up |
+| Auth / multi-tenant | custom | **Firebase Auth** + `orgs/{orgId}/members` + `platformAdmins` |
 | MCP server | TS | `@codehero/mcp` (stdio), proxy dos endpoints token-guarded |
 
 ## Diagrama de containers (Firebase)
@@ -30,158 +36,215 @@ Adaptação do plano original (Rust/Go/Postgres/ClickHouse) para um **SaaS nativ
 graph TB
     subgraph EDGE["Borda do desenvolvedor"]
         CLI["hero-scanner CLI (TS)"]
-        IDE["VS Code ext (LSP)"]
+        IDE["VS Code ext (LSP) — roadmap"]
         GHA["GitHub Action"]
     end
-    subgraph FB["Firebase"]
+
+    subgraph FB["Firebase / GCP"]
         AUTH["Firebase Auth"]
-        FUNC["Cloud Functions (TS)<br/>ingestAnalysis · listIssues<br/>sddSpec · generateSddSpec · provisionProject"]
-        FS[("Firestore<br/>orgs/projects/issues/analyses/sddSpecs")]
-        ST[("Cloud Storage<br/>SARIF")]
+        FUNC["Cloud Functions CodeHero<br/>ingest · query · provision · feedback<br/>admin · ruleforgeDaily"]
+        FS[("Firestore<br/>database segregado")]
+        ST[("Cloud Storage<br/>bucket segregado")]
         HOST["Hosting<br/>Next.js Dashboard"]
+        GEN["Genkit + modelo Gemini<br/>ruleforgeDaily 1×/dia"]
     end
-    subgraph AI["Camada agêntica"]
+
+    subgraph AI["Camada agêntica (correção)"]
         MCP["hero-mcp"]
-        CLAUDE["Claude"]
+        CLAUDE["Claude / agentes MCP"]
     end
 
     CLI --> GHA
-    GHA -->|POST SARIF + token| FUNC
+    GHA -->|POST SARIF + ingestToken| FUNC
     FUNC --> FS
     FUNC --> ST
-    HOST -->|SDK + Auth| FS
-    HOST -->|callable| FUNC
+    GEN -->|MutationSpec propostas| FUNC
+    FUNC -->|evolveAllRules determinístico| FS
+    HOST -->|SDK Auth + Firestore| FS
+    HOST -->|callables| FUNC
     AUTH --- HOST
     MCP -->|token| FUNC
     CLAUDE <-->|MCP| MCP
     IDE -.->|apply fix| MCP
 ```
 
-## Modelo de dados no Firestore
+## Segregação de recursos
+
+Em projeto GCP compartilhado com outros produtos, o CodeHero **não** reutiliza o mesmo banco Firestore nem o mesmo bucket de Storage dos demais apps. Auth permanece no nível do projeto (limitação do Firebase).
+
+| Recurso | Isolamento |
+|---|---|
+| Hosting | site dedicado ao CodeHero |
+| Cloud Functions | exports com nomes próprios (sem colisão com outros codebases) |
+| Firestore | **database nomeado** exclusivo do CodeHero |
+| Storage | **bucket** exclusivo do CodeHero |
+| Auth | compartilhado no projeto; authorized domains do site CodeHero |
+
+IDs concretos (project, database, bucket, site) vivem só em configuração local / CI — ver `packages/contracts` (`CODEHERO_FIREBASE`) e `apps/web/.env.local.example`. Não são documentados aqui.
+
+| Artefato | Papel |
+|---|---|
+| `.firebaserc` / `firebase.json` | apontam site, database e bucket do CodeHero |
+| Functions Admin SDK | `getFirestore(<db CodeHero>)` + bucket dedicado |
+| Web client | `getFirestore(app, <db CodeHero>)` via env |
+| Deploy | publica apenas hosting/functions/rules/indexes/storage do CodeHero |
+
+Credenciais e secrets (API keys, service account, chave do modelo) ficam em Secret Manager / variáveis de ambiente / secrets do CI — nunca neste documento.
+
+## Modelo de dados (Firestore do CodeHero)
 
 ```
+platformAdmins/{uid}                 → grant out-of-band (scripts/seed-admin.mjs)
+ruleforgeRuns/{yyyy-mm-dd}           → relatório Genkit diário (promoted/rejected + patterns)
+
 orgs/{orgId}
   ├─ name, ownerUid, createdAt
-  ├─ members/{uid}                     → { role: owner|admin|member }
+  ├─ members/{uid}                   → { role: owner|admin|member }
+  ├─ ruleforgeFeedback/{id}          → telemetria FP/confirmed (humano)
   └─ projects/{projectId}
-       ├─ name, repoUrl, mainBranch, ingestToken (secret)
-       ├─ debtMinutes, maintainabilityRating, securityRating, qualityGateStatus
-       ├─ analyses/{analysisId}        → { branch, commit, summary{bySeverity,debt,gate}, sarifPath }
-       ├─ issues/{fingerprint}         → { ruleId, severity, file, line, snippet, status, isNewCode, ... }
-       └─ sddSpecs/{specId}            → SDD Spec + createdBy
+       ├─ name, repoUrl, mainBranch, ingestToken
+       ├─ debtMinutes, maintainabilityRating, securityRating, qualityGateStatus, openIssues
+       ├─ analyses/{analysisId}      → { branch, commit, summary, sarifPath }
+       ├─ issues/{fingerprint}       → { ruleId, severity, file, line, snippet, status, … }
+       └─ sddSpecs/{specId}          → SDD Spec + createdBy
 ```
 
-**Segurança:** toda escrita de análise/issue passa por Functions (Admin SDK). As regras do Firestore são *read-mostly*, restritas por `members/{uid}`. O `ingestToken` autentica o CI (bearer). Ver `firestore.rules`.
+**Storage:** `orgs/{orgId}/projects/{projectId}/analyses/{analysisId}.sarif.json` — só Admin SDK (rules deny client).
+
+**Segurança:** escritas de análise/issue/provisionamento só via Functions (Admin SDK). Cliente: *read-mostly* por `isOrgMember` / `isPlatformAdmin`. CI autentica com `ingestToken` (bearer). Ver `firestore.rules` e `storage.rules`.
+
+## Cloud Functions (inventário)
+
+| Export | Tipo | Papel |
+|---|---|---|
+| `ingestAnalysis` | HTTP | CI → SARIF + métricas SQALE + quality gate (`BulkWriter`) |
+| `listIssues` / `sddSpec` | HTTP | MCP/CI com bearer `ingestToken` |
+| `generateSddSpec` | callable | Auth + membership → SDD Spec |
+| `provisionProject` | callable | cria org + member + projeto + `ingestToken` (mostrado 1×) |
+| `flagIssueFeedback` / `submitFixResult` | callable / HTTP | telemetria humana / agente |
+| `checkPlatformAdmin` / `adminListAllProjects` | callable | visão global (só `platformAdmins`) |
+| `ruleforgeDaily` | **schedule** diário | Genkit propõe → evolve determinístico → `ruleforgeRuns` |
+| `runRuleforgeDaily` | callable | disparo manual (platform admin) |
+
+## Dashboard (`apps/web`)
+
+- **AuthGate:** email/senha + Google (Firebase Auth).
+- Após login: lista projetos via `collectionGroup("projects")` (rules por membership).
+- **Novo projeto:** callable `provisionProject`; exibe `ingestToken` uma vez.
+- Platform admin: `adminListAllProjects` (cross-org).
+- Configuração local: copiar `apps/web/.env.local.example` → `.env.local` (valores não versionados).
 
 ## Fluxo de correção (loop verificável)
 
-1. `hero-scanner` gera SARIF na borda → `ingestAnalysis` persiste issues + débito + quality gate.
-2. Dev/Claude pede correção → `sddSpec`/`generateSddSpec` monta o **SDD Spec** (com `acceptanceCriteria` verificáveis) a partir da issue + template.
-3. Claude (via `hero-mcp`) gera `unified_diff`, aplica, roda `run_scan` e checa **AC1** (issue resolvida) objetivamente.
-4. Telemetria do fix realimenta o dataset do `hero-ruleforge` (Scale-up).
+1. `hero-scanner` gera SARIF na borda → `ingestAnalysis` persiste issues + débito + quality gate (+ SARIF no bucket CodeHero).
+2. Dev/agente pede correção → `sddSpec` / `generateSddSpec` monta o **SDD Spec** (`acceptanceCriteria` verificáveis).
+3. Agente (via `hero-mcp`) gera `unified_diff`, aplica, roda `run_scan` e checa **AC1** (issue resolvida) objetivamente.
+4. `submitFixResult` / `flagIssueFeedback` realimentam telemetria; o job Genkit diário usa gaps do corpus (+ feedback) só como **contexto de proposta**.
 
-## Fórmulas (SQALE) — implementadas em `@codehero/contracts/metrics`
+## Fórmulas (SQALE) — `@codehero/contracts/metrics`
 
 - `TechnicalDebt = Σ remediationEffortMin` (code smells)
 - `DevelopmentCost = LOC × 30min`
 - `TDR = Debt / DevelopmentCost` → Maintainability Rating A–E
 - Security/Reliability Rating = pior severidade presente
-- Quality Gate sobre **new code** (coverage, duplicação, blockers, ratings)
+- Quality Gate sobre **new code** (blockers, ratings, …)
 
 ## Roadmap (Firebase)
 
 | Fase | Entregáveis | Status |
 |---|---|---|
-| **0 — Fundação** | Monorepo, contratos (SARIF+/SDD/SQALE), Firebase config, regras | ✅ feito |
-| **1 — MVP** | Scanner→SARIF, `ingestAnalysis`, débito/quality gate, GitHub Action, dashboard read-only | ✅ scanner+functions+action / 🟡 dashboard |
-| **2 — V1** | `generateSddSpec` + `hero-mcp` + loop agêntico, VS Code LSP, ruleforge v0, +linguagens | 🟡 SDD+MCP feitos / ⬜ IDE, ruleforge |
-| **3 — Scale-up** | BigQuery, taint inter-procedural (Rust), RBAC/SSO, feedback loop, auto-regras via CVE | ⬜ |
+| **0 — Fundação** | Monorepo, contratos (SARIF+/SDD/SQALE), Firebase config, regras | ✅ |
+| **1 — MVP** | Scanner→SARIF, ingest, débito/QG, Action, dashboard Auth+provision | ✅ |
+| **2 — V1** | SDD + MCP + ruleforge Genkit diário, segregação de recursos, +linguagens | 🟡 (falta IDE/LSP) |
+| **3 — Scale-up** | BigQuery, taint inter-procedural (Rust), RBAC/SSO, merge automático corpus←feedback | ⬜ |
 
 ## Dependências críticas
 
-1. **Contratos congelados** (SARIF+/SDD Spec) — feito, base de tudo.
-2. **Scanner re-executável programaticamente** (`run_scan`) — feito, habilita a verificação agêntica.
-3. **Corpus golden** para validar regras geradas por IA — feito (`packages/ruleforge/corpus/golden.json`), alimenta o `hero-ruleforge`.
+1. **Contratos congelados** (SARIF+/SDD/SQALE/matcher) — base de scanner e ruleforge.
+2. **Scanner re-executável** (`run_scan`) — verificação agêntica objetiva.
+3. **Corpus golden** — único juiz de promoção de regras (`packages/ruleforge/corpus/golden.json`).
+4. **Recursos segregados** — database Firestore e bucket Storage exclusivos do CodeHero.
 
-## `hero-ruleforge` — como as regras evoluem sem custo de IA generativa por execução
+## `hero-ruleforge` — evolução sem IA no caminho de verificação
 
-**Restrição de design (não negociável):** a verificação de uma regra candidata é sempre um **algoritmo determinístico** — pontuação de precisão/recall contra o corpus golden, custando microssegundos de CPU. Isso existe especificamente para impedir que "a IA evolui as regras" degenere silenciosamente em "a IA analisa cada arquivo", o que faria o custo de inferência crescer linearmente com o volume de código escaneado. A IA generativa, quando usada, entra apenas como **uma fonte opcional de propostas**, chamada em lote e offline (nunca por arquivo, nunca por scan) — ver `packages/ruleforge/src/llmGenerator.ts`.
+**Restrição de design (não negociável):** a verificação de uma regra candidata é sempre um **algoritmo determinístico** (precisão/recall/F1 contra o corpus), em microssegundos de CPU. Isso impede que "a IA evolui as regras" vire "a IA analisa cada arquivo". Generative AI entra **só** como fonte de propostas, em lote, offline — Genkit 1×/dia; ver `packages/ruleforge/src/llmGenerator.ts` e `apps/functions/src/genkit/`.
 
 ```mermaid
 graph LR
-    TEL["Telemetria de produção<br/>flagIssueFeedback (humano)<br/>submitFixResult (agente)"] --> FS[("orgs/{orgId}/ruleforgeFeedback")]
-    FS -->|merge revisado por humano, periódico| CORPUS["Corpus golden<br/>packages/ruleforge/corpus/golden.json"]
-    HAND["Mutações hand-authored<br/>(time de segurança)"] --> POOL["Pool de mutações<br/>packages/ruleforge/src/mutations.ts"]
-    LLM["LLM (opcional, offline, em lote)<br/>lê CWE/CVE + falsos-positivos"] -.->|propõe, não decide| POOL
-    POOL --> GA["Busca evolutiva determinística<br/>evolve.ts — PRNG seeded, sem rede"]
-    CORPUS --> GA
-    GA -->|"promovida: ΔF1>0, precisão≥0.85, zero regressão"| MERGE["PR humano em<br/>contracts/src/rules.ts"]
-    GA -->|rejeitada| DROP["descartada, log preservado"]
-    MERGE --> BUNDLE["RuleSet ativo"]
-    BUNDLE --> SCANNER["hero-scanner<br/>(determinístico, sem chamada de IA)"]
+    TEL["Telemetria<br/>flagIssueFeedback / submitFixResult"] --> FB[("orgs/*/ruleforgeFeedback")]
+    FB -->|contexto textual do batch| GEN["Genkit ruleforgeDaily<br/>MutationSpec"]
+    HAND["Mutações hand-authored<br/>mutations.ts"] --> POOL["Pool de mutações"]
+    GEN -.->|propõe, não decide| POOL
+    CORPUS["Corpus golden"] --> GA["evolve.ts<br/>PRNG seeded, sem rede"]
+    POOL --> GA
+    GA -->|"PROMOTED: ΔF1>0, P≥0.85, 0 regressão"| RUNS[("ruleforgeRuns/{day}")]
+    RUNS --> PR["PR humano → contracts/src/rules.ts"]
+    GA -->|REJECTED| RUNS
+    PR --> BUNDLE["RuleSet ativo"]
+    BUNDLE --> SCAN["hero-scanner<br/>(sem chamada de IA)"]
 ```
 
-**Mecânica implementada** (`packages/ruleforge`):
-- **Corpus golden** (`corpus/golden.json`): casos rotulados `match`/`no_match` por regra, incluindo *traps* de falso-positivo e lacunas de falso-negativo reais.
-- **Avaliador** (`evaluate.ts`): roda `matchPattern` — o **mesmo** matcher do scanner de produção (`packages/contracts/src/matcher.ts`) — contra o corpus, calcula precisão/recall/F1. Zero chance de uma regra "passar" na validação e se comportar diferente em produção, porque só existe uma implementação de matching.
-- **Pool de mutações** (`mutations.ts`): transformações pequenas e revisáveis do regex/`unless`, com autoria humana (MVP) ou proposta por LLM (V1+, interface em `llmGenerator.ts`).
-- **Busca evolutiva** (`evolve.ts`): algoritmo genético com PRNG determinístico (seed fixa, reprodutível/auditável) — população inicial inclui a regra-base inalterada; gerações aplicam bit-flip mutation sobre o pool; fitness = F1 com desempate por precisão e por simplicidade (menos mutações ativas).
-- **Portão de promoção**: uma candidata só é promovida se (a) melhora o F1 sobre a baseline, (b) mantém precisão ≥ 0.85, e (c) **não regride nenhum caso que a regra atual já acerta** — o guard-rail central contra "consertar uma coisa e quebrar outra".
+### Job diário Genkit
 
-**Resultado real de uma execução** (`node packages/ruleforge/src/cli.ts evolve-all`, seed=42, 2026-07-26):
+- `ruleforgeDaily` — `onSchedule` uma vez por dia; chave do modelo via Secret Manager / env (não documentada aqui).
+- Flow `ruleforgeDailyFlow`: para cada regra com corpus → modelo propõe até 4 `MutationSpec` → `mutationFromSpec` → `evolveAllRules` → persiste `ruleforgeRuns/{yyyy-mm-dd}`.
+- `runRuleforgeDaily` — callable manual (só `platformAdmins`).
+- **Não** faz merge automático em `contracts/src/rules.ts` — promoção no relatório exige PR humano.
+
+### Mecânica (`packages/ruleforge`)
+
+- **Corpus** — casos `match` / `no_match` (inclui traps de FP e gaps de FN).
+- **Avaliador** — mesmo `matchPattern` do scanner (`@codehero/contracts`).
+- **Pool** — hand-authored + propostas Genkit (máx. 12 no bitmask).
+- **Evolve** — GA com seed diária (`daySeed`) ou fixa (CLI); fitness = F1 + precisão + Occam.
+- **Portão** — promove só se melhora F1, precisão ≥ 0.85 e **zero regressão** vs baseline.
+
+### Resultado real (CLI `evolve-all`, seed=42)
 
 | Regra | Baseline F1 | Melhor F1 | Decisão |
 |---|---|---|---|
-| `HERO-SEC-0798-hardcoded-secret` | 0.50 | **1.00** | ✅ PROMOTED (2 mutações mescladas em `rules.ts`) |
-| `HERO-SEC-0327-weak-hash` | 0.67 | **1.00** | ✅ PROMOTED (1 mutação mesclada em `rules.ts`) |
-| `HERO-SEC-0089-sql-injection` | 0.67 | 0.67 | ❌ REJECTED — mutação proposta (f-strings) não cobria o gap real (template literals JS); nenhum ganho, nada promovido |
-| `HERO-SEC-0095-code-injection-eval` | 1.00 | 1.00 | ❌ REJECTED — já ótima, sem espaço de melhoria |
+| `HERO-SEC-0798-hardcoded-secret` | 0.50 | **1.00** | ✅ PROMOTED (mesclado em `rules.ts`) |
+| `HERO-SEC-0327-weak-hash` | 0.67 | **1.00** | ✅ PROMOTED |
+| `HERO-SEC-0089-sql-injection` | 0.67 | 0.67 | ❌ REJECTED — proposta sem ganho real |
+| `HERO-SEC-0095-code-injection-eval` | 1.00 | 1.00 | ❌ REJECTED — já ótima |
 
-O caso da `sql-injection` é a demonstração mais importante do portão de segurança: uma mutação foi *proposta* mas **rejeitada automaticamente** por não gerar ganho real — nem toda proposta (humana ou de IA) vira regra. Isso vale tanto para mutações mal-direcionadas quanto para eventuais alucinações de um gerador via LLM.
+O caso `sql-injection` é o guard-rail em ação: proposta (humana ou de IA) **não** vira regra sem ganho no corpus.
 
-**Loop de telemetria em produção** (`apps/functions/src/feedback.ts`):
-- `flagIssueFeedback` (callable, autenticado) — humano marca uma issue como falso-positivo ou confirma-a no dashboard.
-- `submitFixResult` (HTTP, token de projeto) — o agente (via `hero-mcp`) reporta se um fix aplicado a partir de um SDD Spec foi aceito/rejeitado/falhou; alimenta a taxa de sucesso por `sddTemplateId` (métrica de qualidade do SDD), não o corpus de regras diretamente — evita rotular ambiguamente ("fix rejeitado" não implica "detecção era falsa").
-- Verdicts inequívocos (`false_positive`/`confirmed`) são gravados em `orgs/{orgId}/ruleforgeFeedback`, material bruto que um job em lote (Cloud Scheduler → Cloud Run, revisão humana via PR) mescla periodicamente no corpus golden — fechando o ciclo "aprende com o uso real" sem nunca introduzir uma chamada de IA generativa no caminho de verificação.
+### Telemetria
 
-## Multi-linguagem (SQL Server, DB2, Python, Node, C#, VB.Net, Java, COBOL)
+- `flagIssueFeedback` — humano marca FP/confirmed → `ruleforgeFeedback`.
+- `submitFixResult` — agente reporta aceito/rejeitado/falha → qualidade do SDD (`sddTemplateId`), não rótulo ambíguo no corpus.
+- Merge feedback → `golden.json` continua **revisão humana via PR** (Scale-up pode automatizar com o mesmo portão).
 
-`RuleLanguage` (`packages/contracts/src/rules.ts`) cobre hoje: `python`, `javascript`, `typescript`, `java`, `go`, `csharp`, `vbnet`, `cobol`, `tsql`, `db2sql`. Regras genéricas com `languages: ["any"]` (segredo hardcoded, TODO marker) já se aplicam a todas automaticamente; linguagens com sintaxe estruturalmente diferente exigem regra própria — comprovado ao vivo:
+## Multi-linguagem
 
-| Linguagem | Regra dedicada | Motivo de precisar de padrão próprio |
+`RuleLanguage`: `python`, `javascript`, `typescript`, `java`, `go`, `csharp`, `vbnet`, `cobol`, `tsql`, `db2sql`, `any`.
+
+| Linguagem | Regra dedicada | Por quê |
 |---|---|---|
-| T-SQL / DB2 | `HERO-SEC-0089-dynamic-sql-tsql` | Dynamic SQL via `SET @sql = ... + ...` / `EXEC(...)`, não uma chamada `execute()` como em Python/JS |
-| C# / VB.Net | `HERO-SEC-0089-adonet-sqli` | `new SqlCommand(...)` (ADO.NET), sintaxe de instanciação de objeto, não uma chamada de função direta |
-| COBOL | `HERO-SEC-0798-cobol-hardcoded-secret` | Atribuição é `MOVE 'valor' TO campo`, não `campo = 'valor'`; identificadores usam hífen (`WS-DB-PASSWORD`) |
-| COBOL | `HERO-SMELL-0goto-cobol` | `GO TO` (fluxo não estruturado) é um code smell específico do paradigma procedural COBOL, sem equivalente nas linguagens anteriores |
+| T-SQL / DB2 | `HERO-SEC-0089-dynamic-sql-tsql` | `SET @sql = … + …` / `EXEC(…)` |
+| C# / VB.Net | `HERO-SEC-0089-adonet-sqli` | `new SqlCommand(…)` |
+| COBOL | `HERO-SEC-0798-cobol-hardcoded-secret` | `MOVE '…' TO …`, hífens em ids |
+| COBOL | `HERO-SMELL-0goto-cobol` | `GO TO` procedural |
 
-Todas as 4 regras novas têm casos no corpus golden com F1 = 1.00 (`node packages/ruleforge/src/cli.ts evaluate`), incluindo os *traps* de falso-positivo (query parametrizada em C#/T-SQL, `GO TO.` idiomático de fim-de-parágrafo em COBOL).
+Regras novas no corpus com F1 = 1.00 (`npm run ruleforge:evaluate`), com traps de FP.
 
-**Risco conhecido, não resolvido nesta iteração:** o matcher MVP (regex por linha) não faz taint/dataflow entre linhas — por isso a regra T-SQL mira a linha de concatenação (`SET @sql = ...`), não a linha de execução (`EXEC(@sql)`), que ficam fisicamente separadas no código real. Isso é suficiente para o MVP mas é exatamente a limitação que a análise de dataflow inter-procedural (Fase 3, motor Rust) resolve de vez.
+**Limitação MVP:** matcher regex-por-linha sem taint inter-linha — a regra T-SQL mira a concatenação, não o `EXEC` separado. Fase 3 (Rust/dataflow) fecha isso.
 
-## Escala: 100 mil repositórios, 2 bilhões de linhas de código
+## Escala: 100 mil repos / 2B LOC
 
-Este requisito muda o eixo de risco do MVP: já não basta "funcionar", precisa **não degradar linearmente** com volume. Três frentes distintas, cada uma com uma resposta diferente:
+1. **Scan** — na borda do cliente (CI de cada repo); backend só recebe SARIF agregado.
+2. **Ingest** — `BulkWriter` (não `WriteBatch` de 500 ops); métricas denormalizadas no doc do projeto.
+3. **Match em escala** — ainda depende do roadmap: incremental por hash de arquivo, motor Rust/tree-sitter, risco de gramáticas COBOL/VB.Net. Nada de frota GKE provisionada nesta fase.
 
-**1. Execução do scan em si — já resolvida por construção.** O princípio "a IA/motor nunca roda centralizado" (Seção 1) significa que os 2 bilhões de linhas nunca chegam a um único processo: cada um dos 100 mil repositórios roda seu próprio `hero-scanner` no runner de CI **daquele** repositório (GitHub Actions, self-hosted, etc.), em paralelo, pago e escalado pela infraestrutura de CI do próprio cliente — não pela CodeHero. Isso é o oposto de um SaaS que baixa/clona repositórios para escanear centralmente (o que exigiria uma frota própria de workers dimensionada para o pior caso). O backend só recebe o **resultado agregado** (SARIF), não o código-fonte bruto.
+## Pacotes do monorepo
 
-**2. Ingestão do resultado — corrigido nesta iteração.** `ingestAnalysis` usava um único `WriteBatch` do Firestore, que tem um teto rígido de 500 operações — um monólito COBOL/Java grande facilmente ultrapassa isso e o batch falharia silenciosamente em produção sob carga real. Trocado por `BulkWriter` (`apps/functions/src/ingest.ts`), que faz paginação e retry automáticos e é o caminho recomendado do Admin SDK para volume alto. As métricas agregadas (débito, ratings, quality gate) já eram calculadas e gravadas de forma denormalizada no documento do projeto — o dashboard nunca precisa varrer todas as issues para montar uma visão de tendência, o que seria proibitivo em escala.
-
-**3. Precisão e eficiência do algoritmo de match em si — é aqui que o roadmap V1→Scale-up (Seção "Roadmap", Fase 3) se torna obrigatório, não opcional:**
-   - **Análise incremental por hash de conteúdo**: reprocessar 2 bilhões de linhas a cada scan é inviável; a maioria dos scans em repositórios grandes é incremental (só o diff mudou). O scanner deve cachear resultados por hash de arquivo e pular arquivos inalterados — item de engenharia concreto para a Fase 1→2, ainda não implementado neste passe.
-   - **Motor nativo (Rust/tree-sitter)**: o matcher MVP é regex-por-linha em Node — adequado para provar o modelo, não para 2B LOC com precisão alta. A migração para tree-sitter (Seção 3 original) é o que sustenta paralelismo real (sem GIL/event-loop) e parsing de AST de verdade (elimina a classe inteira de falso-positivo/negativo que um regex comete, como o gap do `sql-injection` em JS documentado acima).
-   - **Risco de maturidade de gramática por linguagem**: tree-sitter tem gramáticas maduras para C#, Java, SQL genérico. **COBOL e VB.Net têm gramáticas tree-sitter comunitárias, menos maduras e com cobertura parcial de dialetos** (COBOL tem múltiplos dialetos de compilador — IBM Enterprise COBOL, Micro Focus, GnuCOBOL — com extensões de sintaxe divergentes). Isso é um risco real de roadmap, não um detalhe: pode exigir um parser dedicado (ou um parser combinator hand-rolled para o subset relevante) em vez de depender de tree-sitter pronto, especialmente para o embedded SQL (`EXEC SQL ... END-EXEC`) que mistura duas gramáticas no mesmo arquivo.
-   - **Nada disso foi provisionado nesta iteração** — não foi criada nenhuma infraestrutura de computação distribuída (GKE, Cloud Run em escala, filas) real, porque isso tem custo e implicações operacionais que exigem aprovação explícita antes de provisionar. O que existe hoje (scanner em Node, ingestão via Functions) prova o modelo correto; a escala de 2B LOC exige a Fase 3 do roadmap como pré-requisito, não uma otimização incremental do MVP.
-
-## Configuração real de Firebase (projeto compartilhado `apponti`)
-
-Este projeto foi configurado para reusar o **mesmo projeto Firebase/GCP** de outras aplicações do usuário (ex.: myabba.com.br), seguindo o padrão já em produção: um projeto GCP hospeda múltiplos apps como **Hosting sites distintos**, com Cloud Functions com nomes não-colidentes, e **um único banco Firestore compartilhado** por projeto.
-
-- `.firebaserc` → `"default": "apponti"`.
-- `firebase.json` → `hosting.site = "codehero"` (site novo, distinto de `mypeace`/`apponti`/`api-apponti` já existentes no projeto).
-- `.github/workflows/firebase-deploy.yml` → deploy restrito a `hosting:codehero` + as functions do CodeHero, nomeadas explicitamente.
-
-**⚠️ Duas ações pendentes que exigem autorização/acesso do usuário, não executadas por mim:**
-
-1. **Criar o Hosting site `codehero`** no projeto `apponti` antes do primeiro deploy: `firebase hosting:sites:create codehero --project apponti` (ou via Console). Sem isso, o workflow de deploy falha na primeira execução.
-2. **Mesclar `firestore.rules` deste repositório** nas regras canônicas do projeto compartilhado. Firestore tem **um único ruleset por banco** — um `firebase deploy --only firestore:rules --project apponti` a partir deste repositório **substituiria por inteiro** as regras de produção do app já existente (myabba.com.br), inclusive as dele. Por isso o workflow de deploy do CodeHero **propositalmente não inclui** `firestore:rules`/`storage`/`firestore:indexes` no `--only`. Os blocos `match /orgs/{orgId}/...` deste `firestore.rules` precisam ser copiados manualmente para o arquivo de regras que já governa o projeto `apponti` em produção (provavelmente mantido no repositório do myabba/Jesus ou do Apponti) — uma revisão humana é apropriada aqui dado que é uma alteração de segurança em um app já em produção com usuários reais.
+| Path | Papel |
+|---|---|
+| `packages/contracts` | SARIF+/SDD/SQALE/matcher/rules + constantes de recurso |
+| `packages/scanner` | `hero-scanner` CLI |
+| `packages/ruleforge` | corpus, evolve, MutationSpec, `evolveAllRules` |
+| `packages/mcp` | servidor MCP |
+| `packages/github-action` | Action de scan→ingest |
+| `apps/functions` | Functions + Genkit |
+| `apps/web` | Dashboard Next.js |

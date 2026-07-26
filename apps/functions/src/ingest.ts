@@ -12,7 +12,7 @@ import {
   type Severity,
   type SarifLog,
 } from "@codehero/contracts";
-import { db, storage, projectRef } from "./lib/firebase.ts";
+import { db, storage, STORAGE_BUCKET_NAME, projectRef } from "./lib/firebase.ts";
 
 const IngestSchema = z.object({
   orgId: z.string().min(1),
@@ -64,7 +64,9 @@ export const ingestAnalysis = onRequest({ cors: true, maxInstances: 10 }, async 
   const sarifPath = `orgs/${orgId}/projects/${projectId}/analyses/${analysisId}.sarif.json`;
   let sarifStored = false;
   try {
-    await storage.bucket().file(sarifPath).save(JSON.stringify(sarif), { contentType: "application/json" });
+    await storage.bucket(STORAGE_BUCKET_NAME).file(sarifPath).save(JSON.stringify(sarif), {
+      contentType: "application/json",
+    });
     sarifStored = true;
   } catch (err) {
     logger.warn("failed to persist SARIF artifact", { orgId, projectId, analysisId, err: String(err) });

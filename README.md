@@ -4,7 +4,7 @@
 
 CodeHero é uma plataforma de qualidade e segurança de código no modelo do SonarQube — débito técnico, quality gates, análise multi-linguagem — reconstruída do zero com um eixo diferente: **o catálogo de regras evolui continuamente por um motor de IA determinístico, e cada issue encontrada já nasce com um contrato de correção que um agente (Claude, via MCP) pode aplicar e provar que resolveu.**
 
-[Arquitetura completa](docs/ARCHITECTURE.md) · [Guia de uso e setup (Wiki)](https://github.com/nbsjunior/codehero/wiki) · [Roadmap](docs/ARCHITECTURE.md#roadmap-firebase)
+[Arquitetura completa](docs/ARCHITECTURE.md) · [Roadmap](docs/ARCHITECTURE.md#roadmap-firebase)
 
 ---
 
@@ -50,7 +50,7 @@ Arquitetura detalhada, diagramas C4/Mermaid e o fluxo de dados completo: **[docs
 
 ## Começando
 
-Setup, comandos do dia a dia, configuração do MCP no Claude, deploy no Firebase e guia do `hero-ruleforge` estão documentados na **[Wiki do projeto](https://github.com/nbsjunior/codehero/wiki)**.
+Setup local, MCP, emuladores Firebase e `hero-ruleforge`: ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) e a Wiki do repositório.
 
 ## Status atual
 
@@ -58,11 +58,11 @@ Setup, comandos do dia a dia, configuração do MCP no Claude, deploy no Firebas
 |---|---|
 | Contratos (SARIF+/SDD/SQALE/matcher) | ✅ compila |
 | Scanner → SARIF (7 linguagens) | ✅ roda e valida em exemplos reais |
-| hero-ruleforge (corpus + evolução) | ✅ roda de verdade — 2 regras promovidas, 1 rejeitada corretamente |
+| hero-ruleforge (corpus + evolução) | ✅ determinístico + Genkit diário (`ruleforgeDaily`) |
 | Functions (ingest/sdd/query/provision/feedback) | ✅ compila + verificado no emulador |
 | MCP server | ✅ compila |
 | GitHub Action + workflow de deploy | ✅ scaffold pronto |
-| Dashboard Next.js | 🟡 scaffold (falta ligar ao projeto Firebase real) |
+| Dashboard Next.js | ✅ Auth + Firestore + `provisionProject` / admin callables |
 | Motor nativo Rust/tree-sitter (escala 2B+ LOC) | ⬜ roadmap V1→Scale-up |
 
 ---

@@ -1,7 +1,7 @@
 import type { HeroRule } from "@codehero/contracts";
 import { evaluateRule } from "./evaluate.ts";
 import { poolFor } from "./mutations.ts";
-import type { CorpusCase, EvalResult, Individual } from "./types.ts";
+import type { CorpusCase, EvalResult, Individual, Mutation } from "./types.ts";
 
 // ---------------------------------------------------------------------------
 // hero-ruleforge — deterministic evolutionary rule search.
@@ -12,6 +12,9 @@ import type { CorpusCase, EvalResult, Individual } from "./types.ts";
 // costs CPU-milliseconds, never a generative-AI API bill. This is what keeps
 // "IA que evolui as regras" from becoming "IA que analisa cada arquivo" in
 // disguise — evolution happens offline, in batch, against a fixed corpus.
+//
+// Generative proposals (Genkit daily flow) arrive as `extraMutations` and are
+// scored by the same gate — the LLM proposes; this file decides.
 //
 // A seeded PRNG makes every run reproducible and auditable: given the same
 // corpus + mutation pool + seed, the same rule change is proposed every time,
@@ -35,7 +38,7 @@ function mulberry32(seed: number): () => number {
   };
 }
 
-function applyMask(base: HeroRule["pattern"], mutations: ReturnType<typeof poolFor>, mask: number): HeroRule["pattern"] {
+function applyMask(base: HeroRule["pattern"], mutations: Mutation[], mask: number): HeroRule["pattern"] {
   let pattern = base;
   for (let i = 0; i < mutations.length; i++) {
     if (mask & (1 << i)) pattern = mutations[i]!.apply(pattern);
@@ -43,7 +46,7 @@ function applyMask(base: HeroRule["pattern"], mutations: ReturnType<typeof poolF
   return pattern;
 }
 
-function activeMutationIds(mutations: ReturnType<typeof poolFor>, mask: number): string[] {
+function activeMutationIds(mutations: Mutation[], mask: number): string[] {
   const ids: string[] = [];
   for (let i = 0; i < mutations.length; i++) if (mask & (1 << i)) ids.push(mutations[i]!.id);
   return ids;
@@ -70,8 +73,16 @@ export interface EvolveOutcome {
   reason: string;
 }
 
-export function evolveRule(rule: HeroRule, cases: CorpusCase[], seed = 42): EvolveOutcome {
-  const pool = poolFor(rule.id);
+export interface EvolveOptions {
+  seed?: number;
+  /** Extra mutations (e.g. Genkit/LLM proposals) merged into the hand-authored pool. */
+  extraMutations?: Mutation[];
+}
+
+export function evolveRule(rule: HeroRule, cases: CorpusCase[], seedOrOpts: number | EvolveOptions = 42): EvolveOutcome {
+  const opts: EvolveOptions = typeof seedOrOpts === "number" ? { seed: seedOrOpts } : seedOrOpts;
+  const seed = opts.seed ?? 42;
+  const pool = [...poolFor(rule.id), ...(opts.extraMutations ?? [])];
   const rand = mulberry32(seed);
   const baseline = evaluateRule(rule.pattern, cases);
 
@@ -88,16 +99,18 @@ export function evolveRule(rule: HeroRule, cases: CorpusCase[], seed = 42): Evol
     };
   }
 
-  const maxMask = (1 << pool.length) - 1;
+  // Bitmask search is O(2^n); cap LLM+hand pool so a bad batch can't explode CPU.
+  const capped = pool.slice(0, 12);
+  const maxMask = (1 << capped.length) - 1;
 
   function scoreIndividual(mask: number): Individual {
-    const pattern = applyMask(rule.pattern, pool, mask);
+    const pattern = applyMask(rule.pattern, capped, mask);
     return { mask, pattern, fitness: evaluateRule(pattern, cases) };
   }
 
   function fitnessValue(ind: Individual): number {
     // F1 primary, precision as tie-break, fewer active mutations as final tie-break (Occam's razor).
-    const simplicity = 1 - popcount(ind.mask) / (pool.length + 1);
+    const simplicity = 1 - popcount(ind.mask) / (capped.length + 1);
     return ind.fitness.f1 * 1000 + ind.fitness.precision * 10 + simplicity;
   }
 
@@ -119,7 +132,7 @@ export function evolveRule(rule: HeroRule, cases: CorpusCase[], seed = 42): Evol
     const children: Individual[] = [];
     while (survivors.length && children.length < POPULATION_SIZE) {
       const parent = survivors[Math.floor(rand() * survivors.length)]!;
-      const flipBit = 1 << Math.floor(rand() * pool.length);
+      const flipBit = 1 << Math.floor(rand() * capped.length);
       const childMask = parent.mask ^ flipBit; // bit-flip mutation
       children.push(scoreIndividual(childMask));
     }
@@ -152,7 +165,7 @@ export function evolveRule(rule: HeroRule, cases: CorpusCase[], seed = 42): Evol
     baseline,
     best: best.fitness,
     bestMask: best.mask,
-    mutationIds: activeMutationIds(pool, best.mask),
+    mutationIds: activeMutationIds(capped, best.mask),
     generationLog,
     decision,
     reason,

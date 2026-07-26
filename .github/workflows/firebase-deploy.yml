@@ -29,11 +29,15 @@ jobs:
       - name: Build do dashboard (Next.js)
         working-directory: apps/web
         env:
+          NEXT_PUBLIC_USE_FIREBASE_EMULATORS: "false"
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
           NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
           NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          NEXT_PUBLIC_FIRESTORE_DATABASE_ID: ${{ secrets.NEXT_PUBLIC_FIRESTORE_DATABASE_ID }}
           NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
           NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+          NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}
         run: npm run build
 
       - name: Autenticar no Google Cloud
@@ -44,14 +48,7 @@ jobs:
       - name: Instalar Firebase CLI
         run: npm install -g firebase-tools
 
-      # Deploy restrito a hosting:codehero + funções do CodeHero. Firestore
-      # rules/indexes e Storage rules são PROPOSITALMENTE excluídos: o projeto
-      # "apponti" é compartilhado com outros apps (myabba.com.br) que já
-      # gerenciam essas regras em seu próprio pipeline — um deploy de
-      # firestore:rules a partir daqui sobrescreveria a regra de produção
-      # deles por inteiro (Firestore tem um único ruleset por banco).
-      # As regras do CodeHero (firestore.rules deste repo) precisam ser
-      # mescladas manualmente no arquivo de regras canônico do projeto
-      # compartilhado antes de irem para produção — ver docs/ARCHITECTURE.md.
-      - name: Deploy (Hosting codehero + Functions)
-        run: firebase deploy --only "hosting:codehero,functions:ingestAnalysis,functions:listIssues,functions:sddSpec,functions:generateSddSpec,functions:provisionProject,functions:flagIssueFeedback,functions:submitFixResult" --project apponti --non-interactive
+      # Deploy only CodeHero hosting, named Firestore DB, dedicated storage bucket,
+      # and CodeHero Cloud Functions (never other apps' rules/buckets/functions).
+      - name: Deploy (Hosting + Functions + Firestore + Storage)
+        run: firebase deploy --only "hosting:codehero,firestore:codehero,storage:apponti-codehero,functions:ingestAnalysis,functions:listIssues,functions:sddSpec,functions:generateSddSpec,functions:provisionProject,functions:flagIssueFeedback,functions:submitFixResult,functions:adminListAllProjects,functions:checkPlatformAdmin,functions:ruleforgeDaily,functions:runRuleforgeDaily" --project apponti --non-interactive

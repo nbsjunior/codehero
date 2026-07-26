@@ -1,10 +1,23 @@
 rules_version = '2';
 
-// CodeHero — multi-tenant SaaS security model.
+// CodeHero — multi-tenant SaaS security model (projeto compartilhado "apponti").
+//
+// CANONICAL deploy source for production rules is the Jesus/myabba repo
+// (firestore.rules), which merges these CodeHero paths with the default-deny
+// used by myabba. Do NOT `firebase deploy --only firestore:rules` from this
+// repo alone — it would wipe myabba's ruleset. See docs/ARCHITECTURE.md.
+//
 // Access is scoped per organization. A user may only read/write data of orgs
 // they are a member of. All writes to analysis/issue data go through Cloud
 // Functions with the Admin SDK (which bypasses these rules), so the client
 // rules are intentionally read-mostly.
+//
+// Platform admins (documented in platformAdmins/{uid}) are a separate,
+// narrow escape hatch: they can READ across every org/project (for the
+// global admin dashboard) but never WRITE — writes always go through Admin
+// SDK functions. Membership in platformAdmins is granted out-of-band (see
+// scripts/seed-admin.mjs), never through a client-callable function, so a
+// regular user can never grant themselves admin.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -18,36 +31,50 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/orgs/$(orgId)/members/$(request.auth.uid));
     }
 
-    function orgRole(orgId) {
-      return get(/databases/$(database)/documents/orgs/$(orgId)/members/$(request.auth.uid)).data.role;
+    function isPlatformAdmin() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/platformAdmins/$(request.auth.uid));
+    }
+
+    match /platformAdmins/{uid} {
+      // A user may only check their OWN admin status — never enumerate or
+      // read other admins' entries.
+      allow read: if isSignedIn() && request.auth.uid == uid;
+      allow write: if false; // granted only via scripts/seed-admin.mjs (Admin SDK)
+    }
+
+    // Daily Genkit ruleforge reports — platform admins may read; writes via Admin SDK only.
+    match /ruleforgeRuns/{day} {
+      allow read: if isPlatformAdmin();
+      allow write: if false;
     }
 
     match /orgs/{orgId} {
-      allow read: if isOrgMember(orgId);
+      allow read: if isOrgMember(orgId) || isPlatformAdmin();
       // Org creation/mutation handled by callable functions (Admin SDK).
       allow write: if false;
 
       match /members/{uid} {
-        allow read: if isOrgMember(orgId);
+        allow read: if isOrgMember(orgId) || isPlatformAdmin();
         allow write: if false; // managed by functions
       }
 
       match /projects/{projectId} {
-        allow read: if isOrgMember(orgId);
+        allow read: if isOrgMember(orgId) || isPlatformAdmin();
         allow write: if false;
 
         match /analyses/{analysisId} {
-          allow read: if isOrgMember(orgId);
+          allow read: if isOrgMember(orgId) || isPlatformAdmin();
           allow write: if false;
         }
 
         match /issues/{fingerprint} {
-          allow read: if isOrgMember(orgId);
+          allow read: if isOrgMember(orgId) || isPlatformAdmin();
           allow write: if false;
         }
 
         match /sddSpecs/{specId} {
-          allow read: if isOrgMember(orgId);
+          allow read: if isOrgMember(orgId) || isPlatformAdmin();
           allow write: if false;
         }
       }

@@ -5,6 +5,9 @@
     "outDir": "dist",
     "types": ["node"]
   },
-  "references": [{ "path": "../../packages/contracts" }],
+  "references": [
+    { "path": "../../packages/contracts" },
+    { "path": "../../packages/ruleforge" }
+  ],
   "include": ["src/**/*.ts"]
 }

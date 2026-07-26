@@ -15,10 +15,13 @@
   "scripts": {
     "scan": "node packages/scanner/src/index.ts",
     "build:contracts": "npm run build -w @codehero/contracts",
+    "build:ruleforge": "npm run build -w @codehero/ruleforge",
     "build:functions": "npm run build -w @codehero/functions",
-    "build": "npm run build:contracts && npm run build:functions",
+    "build": "npm run build:contracts && npm run build:ruleforge && npm run build:functions",
     "emulators": "firebase emulators:start",
-    "dev:web": "npm run dev -w @codehero/web"
+    "dev:web": "npm run dev -w @codehero/web",
+    "ruleforge:evaluate": "npm run evaluate -w @codehero/ruleforge",
+    "ruleforge:evolve-all": "node packages/ruleforge/src/cli.ts evolve-all"
   },
   "devDependencies": {
     "typescript": "^5.7.2"
