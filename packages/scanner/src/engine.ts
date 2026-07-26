@@ -21,6 +21,15 @@ const EXT_TO_LANG: Record<string, RuleLanguage> = {
   ".tsx": "typescript",
   ".java": "java",
   ".go": "go",
+  ".cs": "csharp",
+  ".vb": "vbnet",
+  ".cbl": "cobol",
+  ".cob": "cobol",
+  ".cpy": "cobol",
+  // ".sql" é ambíguo entre dialetos T-SQL/DB2 — o dialeto é uma configuração
+  // por projeto (V1: detectado por convenção de diretório/config .codehero.yml),
+  // não inferível apenas pela extensão. Default MVP: T-SQL.
+  ".sql": "tsql",
 };
 
 export function languageForFile(path: string): RuleLanguage | null {

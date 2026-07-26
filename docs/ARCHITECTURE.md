@@ -143,3 +143,45 @@ O caso da `sql-injection` é a demonstração mais importante do portão de segu
 - `flagIssueFeedback` (callable, autenticado) — humano marca uma issue como falso-positivo ou confirma-a no dashboard.
 - `submitFixResult` (HTTP, token de projeto) — o agente (via `hero-mcp`) reporta se um fix aplicado a partir de um SDD Spec foi aceito/rejeitado/falhou; alimenta a taxa de sucesso por `sddTemplateId` (métrica de qualidade do SDD), não o corpus de regras diretamente — evita rotular ambiguamente ("fix rejeitado" não implica "detecção era falsa").
 - Verdicts inequívocos (`false_positive`/`confirmed`) são gravados em `orgs/{orgId}/ruleforgeFeedback`, material bruto que um job em lote (Cloud Scheduler → Cloud Run, revisão humana via PR) mescla periodicamente no corpus golden — fechando o ciclo "aprende com o uso real" sem nunca introduzir uma chamada de IA generativa no caminho de verificação.
+
+## Multi-linguagem (SQL Server, DB2, Python, Node, C#, VB.Net, Java, COBOL)
+
+`RuleLanguage` (`packages/contracts/src/rules.ts`) cobre hoje: `python`, `javascript`, `typescript`, `java`, `go`, `csharp`, `vbnet`, `cobol`, `tsql`, `db2sql`. Regras genéricas com `languages: ["any"]` (segredo hardcoded, TODO marker) já se aplicam a todas automaticamente; linguagens com sintaxe estruturalmente diferente exigem regra própria — comprovado ao vivo:
+
+| Linguagem | Regra dedicada | Motivo de precisar de padrão próprio |
+|---|---|---|
+| T-SQL / DB2 | `HERO-SEC-0089-dynamic-sql-tsql` | Dynamic SQL via `SET @sql = ... + ...` / `EXEC(...)`, não uma chamada `execute()` como em Python/JS |
+| C# / VB.Net | `HERO-SEC-0089-adonet-sqli` | `new SqlCommand(...)` (ADO.NET), sintaxe de instanciação de objeto, não uma chamada de função direta |
+| COBOL | `HERO-SEC-0798-cobol-hardcoded-secret` | Atribuição é `MOVE 'valor' TO campo`, não `campo = 'valor'`; identificadores usam hífen (`WS-DB-PASSWORD`) |
+| COBOL | `HERO-SMELL-0goto-cobol` | `GO TO` (fluxo não estruturado) é um code smell específico do paradigma procedural COBOL, sem equivalente nas linguagens anteriores |
+
+Todas as 4 regras novas têm casos no corpus golden com F1 = 1.00 (`node packages/ruleforge/src/cli.ts evaluate`), incluindo os *traps* de falso-positivo (query parametrizada em C#/T-SQL, `GO TO.` idiomático de fim-de-parágrafo em COBOL).
+
+**Risco conhecido, não resolvido nesta iteração:** o matcher MVP (regex por linha) não faz taint/dataflow entre linhas — por isso a regra T-SQL mira a linha de concatenação (`SET @sql = ...`), não a linha de execução (`EXEC(@sql)`), que ficam fisicamente separadas no código real. Isso é suficiente para o MVP mas é exatamente a limitação que a análise de dataflow inter-procedural (Fase 3, motor Rust) resolve de vez.
+
+## Escala: 100 mil repositórios, 2 bilhões de linhas de código
+
+Este requisito muda o eixo de risco do MVP: já não basta "funcionar", precisa **não degradar linearmente** com volume. Três frentes distintas, cada uma com uma resposta diferente:
+
+**1. Execução do scan em si — já resolvida por construção.** O princípio "a IA/motor nunca roda centralizado" (Seção 1) significa que os 2 bilhões de linhas nunca chegam a um único processo: cada um dos 100 mil repositórios roda seu próprio `hero-scanner` no runner de CI **daquele** repositório (GitHub Actions, self-hosted, etc.), em paralelo, pago e escalado pela infraestrutura de CI do próprio cliente — não pela CodeHero. Isso é o oposto de um SaaS que baixa/clona repositórios para escanear centralmente (o que exigiria uma frota própria de workers dimensionada para o pior caso). O backend só recebe o **resultado agregado** (SARIF), não o código-fonte bruto.
+
+**2. Ingestão do resultado — corrigido nesta iteração.** `ingestAnalysis` usava um único `WriteBatch` do Firestore, que tem um teto rígido de 500 operações — um monólito COBOL/Java grande facilmente ultrapassa isso e o batch falharia silenciosamente em produção sob carga real. Trocado por `BulkWriter` (`apps/functions/src/ingest.ts`), que faz paginação e retry automáticos e é o caminho recomendado do Admin SDK para volume alto. As métricas agregadas (débito, ratings, quality gate) já eram calculadas e gravadas de forma denormalizada no documento do projeto — o dashboard nunca precisa varrer todas as issues para montar uma visão de tendência, o que seria proibitivo em escala.
+
+**3. Precisão e eficiência do algoritmo de match em si — é aqui que o roadmap V1→Scale-up (Seção "Roadmap", Fase 3) se torna obrigatório, não opcional:**
+   - **Análise incremental por hash de conteúdo**: reprocessar 2 bilhões de linhas a cada scan é inviável; a maioria dos scans em repositórios grandes é incremental (só o diff mudou). O scanner deve cachear resultados por hash de arquivo e pular arquivos inalterados — item de engenharia concreto para a Fase 1→2, ainda não implementado neste passe.
+   - **Motor nativo (Rust/tree-sitter)**: o matcher MVP é regex-por-linha em Node — adequado para provar o modelo, não para 2B LOC com precisão alta. A migração para tree-sitter (Seção 3 original) é o que sustenta paralelismo real (sem GIL/event-loop) e parsing de AST de verdade (elimina a classe inteira de falso-positivo/negativo que um regex comete, como o gap do `sql-injection` em JS documentado acima).
+   - **Risco de maturidade de gramática por linguagem**: tree-sitter tem gramáticas maduras para C#, Java, SQL genérico. **COBOL e VB.Net têm gramáticas tree-sitter comunitárias, menos maduras e com cobertura parcial de dialetos** (COBOL tem múltiplos dialetos de compilador — IBM Enterprise COBOL, Micro Focus, GnuCOBOL — com extensões de sintaxe divergentes). Isso é um risco real de roadmap, não um detalhe: pode exigir um parser dedicado (ou um parser combinator hand-rolled para o subset relevante) em vez de depender de tree-sitter pronto, especialmente para o embedded SQL (`EXEC SQL ... END-EXEC`) que mistura duas gramáticas no mesmo arquivo.
+   - **Nada disso foi provisionado nesta iteração** — não foi criada nenhuma infraestrutura de computação distribuída (GKE, Cloud Run em escala, filas) real, porque isso tem custo e implicações operacionais que exigem aprovação explícita antes de provisionar. O que existe hoje (scanner em Node, ingestão via Functions) prova o modelo correto; a escala de 2B LOC exige a Fase 3 do roadmap como pré-requisito, não uma otimização incremental do MVP.
+
+## Configuração real de Firebase (projeto compartilhado `YOUR_CLOUD_PROJECT_ID`)
+
+Este projeto foi configurado para reusar o **mesmo projeto Firebase/GCP** de outras aplicações do usuário (ex.: OTHER_APP.com.br), seguindo o padrão já em produção: um projeto GCP hospeda múltiplos apps como **Hosting sites distintos**, com Cloud Functions com nomes não-colidentes, e **um único banco Firestore compartilhado** por projeto.
+
+- `.firebaserc` → `"default": "YOUR_CLOUD_PROJECT_ID"`.
+- `firebase.json` → `hosting.site = "codehero"` (site novo, distinto de `mypeace`/`YOUR_CLOUD_PROJECT_ID`/`api-YOUR_CLOUD_PROJECT_ID` já existentes no projeto).
+- `.github/workflows/firebase-deploy.yml` → deploy restrito a `hosting:codehero` + as functions do CodeHero, nomeadas explicitamente.
+
+**⚠️ Duas ações pendentes que exigem autorização/acesso do usuário, não executadas por mim:**
+
+1. **Criar o Hosting site `codehero`** no projeto `YOUR_CLOUD_PROJECT_ID` antes do primeiro deploy: `firebase hosting:sites:create codehero --project YOUR_CLOUD_PROJECT_ID` (ou via Console). Sem isso, o workflow de deploy falha na primeira execução.
+2. **Mesclar `firestore.rules` deste repositório** nas regras canônicas do projeto compartilhado. Firestore tem **um único ruleset por banco** — um `firebase deploy --only firestore:rules --project YOUR_CLOUD_PROJECT_ID` a partir deste repositório **substituiria por inteiro** as regras de produção do app já existente (OTHER_APP.com.br), inclusive as dele. Por isso o workflow de deploy do CodeHero **propositalmente não inclui** `firestore:rules`/`storage`/`firestore:indexes` no `--only`. Os blocos `match /orgs/{orgId}/...` deste `firestore.rules` precisam ser copiados manualmente para o arquivo de regras que já governa o projeto `YOUR_CLOUD_PROJECT_ID` em produção (provavelmente mantido no repositório do OTHER_APP/Jesus ou do Apponti) — uma revisão humana é apropriada aqui dado que é uma alteração de segurança em um app já em produção com usuários reais.

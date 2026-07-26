@@ -1,109 +1,70 @@
 # CodeHero 🛡️
 
-Plataforma SaaS de **análise estática e correção de código otimizada por IA** — modelo conceitual do SonarQube, com camada agêntica (SDD + MCP/Claude), rodando em **Firebase**.
+**Análise estática de código que aprende — sem colocar IA generativa no caminho de cada arquivo.**
 
-> **Princípio central:** a IA nunca está no caminho crítico da inspeção. O motor que roda a cada commit é 100% determinístico; a IA opera offline (compila regras) e sob demanda (gera specs de correção verificáveis).
+CodeHero é uma plataforma de qualidade e segurança de código no modelo do SonarQube — débito técnico, quality gates, análise multi-linguagem — reconstruída do zero com um eixo diferente: **o catálogo de regras evolui continuamente por um motor de IA determinístico, e cada issue encontrada já nasce com um contrato de correção que um agente (Claude, via MCP) pode aplicar e provar que resolveu.**
 
-## Monorepo
+[Arquitetura completa](docs/ARCHITECTURE.md) · [Guia de uso e setup (Wiki)](https://github.com/nbsjunior/codehero/wiki) · [Roadmap](docs/ARCHITECTURE.md#roadmap-firebase)
 
-```
-packages/
-  contracts/       # SARIF-estendido, SDD Spec (zod), catálogo de regras (Hero-IR), fórmulas SQALE, matcher compartilhado
-  scanner/         # hero-scanner: CLI TS que varre código e emite SARIF  [MÓDULO 1]
-  ruleforge/       # hero-ruleforge: busca evolutiva determinística de regras + corpus golden [MÓDULO 1 — evolução offline]
-  mcp/             # hero-mcp: servidor MCP p/ Claude                      [MÓDULO 3]
-  github-action/   # composite action: scan → ingest → quality gate       [MÓDULO 3]
-apps/
-  functions/       # Cloud Functions: ingest, métricas, SDD, provisioning, feedback [MÓDULO 2]
-  web/             # Dashboard Next.js (Firebase Hosting)                  [MÓDULO 2]
-examples/          # arquivo vulnerável de teste
-docs/ARCHITECTURE.md
-```
+---
 
-## Setup
+## O problema que isso resolve
 
-```bash
-npm install
-npm run build:contracts    # gera dist/ dos contratos (dep de scanner/functions/mcp)
-```
+Toda ferramenta de SAST enfrenta a mesma tensão: regras de mão têm cobertura limitada e ficam obsoletas (novos CVEs, novos frameworks, novos anti-padrões), mas "colocar um LLM para analisar cada arquivo" resolve a cobertura trocando por um problema pior — **custo que cresce linearmente com o volume de código**, latência incompatível com CI/IDE, e resultados não-determinísticos (a mesma linha pode ser marcada ou não dependendo da temperatura do modelo naquele dia).
 
-## Módulo 1 — Scanner (funcional)
+CodeHero recusa essa troca. A resposta arquitetural é separar os dois problemas:
 
-```bash
-# relatório legível
-node packages/scanner/src/index.ts examples/
+- **Detectar** é sempre determinístico, instantâneo e roda na borda (CI/IDE) — nunca centralizado, nunca com custo de inferência por arquivo.
+- **Evoluir as regras** é onde a IA entra — mas em lote, offline, validada por um corpus de teste antes de qualquer promoção. Uma proposta de regra (de um humano ou de um LLM) só vira produção se provar, matematicamente, que melhora sem regredir.
+- **Corrigir** é onde a IA generativa entra de fato, sob demanda — e não "sugere um fix"; ela recebe uma **especificação verificável** (SDD Spec) com critérios de aceite que o próprio motor determinístico confirma depois de aplicado.
 
-# SARIF para arquivo
-node packages/scanner/src/index.ts examples/ --sarif --out codehero.sarif
-```
+## Em que ponto isso evolui em relação ao SonarQube
 
-Node 22+ roda os `.ts` diretamente (type-stripping). Para um binário: `npm run build -w @codehero/scanner`.
+| | SonarQube | CodeHero |
+|---|---|---|
+| **Origem das regras** | Curadas manualmente pelo time da SonarSource, lançadas em releases do produto | Curadas + **evoluídas por busca evolutiva determinística** (`hero-ruleforge`) contra um corpus rotulado — cada promoção é auditável e reproduzível (seed fixa) |
+| **Correção de issues** | Aponta o problema; "quick fixes" automatizados são limitados e não verificam se o fix realmente resolveu | Gera um **SDD Spec** (JSON) com localização exata, contexto de tipos e `acceptanceCriteria` — um agente aplica o diff e o próprio scanner **confirma objetivamente** que a issue sumiu e nenhuma nova surgiu |
+| **Integração com IA/agentes** | Camada de IA (Sonar AI CodeFix) é um add-on comercial fechado sobre o produto existente | **Nativo em MCP** (Model Context Protocol) desde a arquitetura-base — qualquer agente compatível (Claude, etc.) consome `get_issues`/`get_sdd_spec`/`run_scan`/`submit_fix_result` como cidadãos de primeira classe |
+| **Custo de manter a IA** | N/A (não usa IA para evoluir regras) | Buscar/validar uma regra nova custa **milissegundos de CPU** contra um corpus — não uma chamada de API por arquivo escaneado, então o custo não cresce com o volume de código analisado |
+| **Aprendizado com uso real** | Falsos-positivos reportados viram tickets de suporte para o vendor decidir em release futura | Telemetria de produção (`flagIssueFeedback`, `submit_fix_result`) já é capturada como material de corpus rotulado para a próxima rodada de evolução — o ciclo de melhoria é parte do produto, não um processo de vendor externo |
+| **Stack para operar a própria plataforma** | Requer operar Postgres + Elasticsearch (+ opcionalmente outros serviços) | 100% serverless sobre Firebase (Functions + Firestore + Hosting) — sem cluster próprio para manter |
+| **Linguagens legadas empresariais** | Suporte a COBOL/PL·I é add-on Enterprise separado | COBOL, T-SQL/DB2, C#/VB.Net tratados como cidadãos de primeira classe desde o MVP, com regras dedicadas às particularidades sintáticas de cada um (ex.: `MOVE...TO` do COBOL, `SET @sql = ... +` do T-SQL) |
 
-## Módulo 1 — Evolução de regras (hero-ruleforge)
+**O que ainda não alcançamos** (honestidade > marketing): o SonarQube tem mais de uma década de cobertura de regras, análise de taint inter-procedural madura, e integrações IDE profundas. O motor determinístico do CodeHero hoje é um matcher por linha (Fase MVP) — a análise de dataflow real é o motor Rust/tree-sitter do roadmap V1→Scale-up, ainda não implementado. Ver [docs/ARCHITECTURE.md § Escala](docs/ARCHITECTURE.md#escala-100-mil-repositórios-2-bilhões-de-linhas-de-código) para o que isso implica em volumes de milhões/bilhões de linhas.
 
-Motor de busca evolutiva **100% determinístico** (sem chamada de LLM no loop de scoring) que valida/evolui as regras contra um corpus rotulado, com portão de promoção (F1 melhora + precisão ≥ 0.85 + zero regressão).
+## Prova, não promessa
 
-```bash
-node packages/ruleforge/src/cli.ts evaluate      # precisão/recall/F1 de cada regra vs. corpus
-node packages/ruleforge/src/cli.ts evolve-all    # roda a busca evolutiva em todas as regras com pool de mutações
-```
+Toda alegação acima já foi exercitada de ponta a ponta neste repositório, não apenas desenhada:
 
-Ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#hero-ruleforge--como-as-regras-evoluem-sem-custo-de-ia-generativa-por-execução) para o resultado de uma execução real (2 regras promovidas, 1 mutação corretamente rejeitada).
+- **Busca evolutiva real**: rodando `hero-ruleforge` contra o corpus golden, 2 regras foram promovidas automaticamente (F1 0.50→1.00 e 0.67→1.00) e **uma mutação proposta foi corretamente rejeitada** por não gerar ganho real — o portão de segurança funcionando contra uma proposta ruim, humana ou de IA.
+- **Correção verificável**: o fluxo SARIF → Firestore → SDD Spec → aplicação de fix → `submit_fix_result` foi testado ponta a ponta no emulador Firebase.
+- **Multi-linguagem real**: regras dedicadas para COBOL (`MOVE...TO`, `GO TO`), T-SQL/DB2 (SQL dinâmico) e C#/VB.Net (ADO.NET) detectam corretamente as vulnerabilidades e não disparam falso-positivo nas variantes seguras — testado com arquivos de exemplo reais em [`examples/legacy/`](examples/legacy/).
 
-## Módulo 2 — Backend (Firebase Functions)
+## Os três módulos
 
-```bash
-npm run build:functions
-firebase emulators:start          # requer Java (Firestore emulator)
-```
+1. **Motor de Inspeção** (`packages/scanner`, `packages/ruleforge`) — determinístico na borda; evolução de regras offline e auditável.
+2. **Painel & SDD** (`apps/functions`, `apps/web`) — ingestão, débito técnico (modelo SQALE), quality gates, geração de especificações de correção.
+3. **Integrações** (`packages/mcp`, `packages/github-action`) — GitHub Action, e servidor MCP nativo para agentes de IA.
 
-Funções expostas:
-- `ingestAnalysis` (HTTP, token) — recebe SARIF, calcula débito/quality gate, persiste issues.
-- `listIssues` (HTTP, token) / `sddSpec` (HTTP, token) — leitura p/ CI e MCP.
-- `generateSddSpec` (callable, auth) — SDD Spec p/ o dashboard.
-- `provisionProject` (callable, auth) — onboarding: cria org + projeto + `ingestToken`.
-- `flagIssueFeedback` (callable, auth) — humano marca falso-positivo/confirma issue no dashboard.
-- `submitFixResult` (HTTP, token) — agente reporta resultado de um fix (usado pelo MCP); ambos alimentam o loop de melhoria contínua do `hero-ruleforge`.
+Arquitetura detalhada, diagramas C4/Mermaid e o fluxo de dados completo: **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
 
-## Módulo 3 — Integrações
+## Começando
 
-**GitHub Action** — ver `packages/github-action/action.yml` e `.github/workflows/codehero.yml`.
+Setup, comandos do dia a dia, configuração do MCP no Claude, deploy no Firebase e guia do `hero-ruleforge` estão documentados na **[Wiki do projeto](https://github.com/nbsjunior/codehero/wiki)**.
 
-**MCP (Claude)** — `packages/mcp`. Config em `claude_desktop_config.json`:
-```json
-{
-  "mcpServers": {
-    "codehero": {
-      "command": "node",
-      "args": ["<repo>/packages/mcp/dist/server.js"],
-      "env": {
-        "HERO_CORE_URL": "https://us-central1-<proj>.cloudfunctions.net",
-        "HERO_TOKEN": "chp_...",
-        "HERO_ORG_ID": "...",
-        "HERO_PROJECT_ID": "..."
-      }
-    }
-  }
-}
-```
-Tools: `get_issues`, `get_sdd_spec`, `run_scan`, `submit_fix_result` (loop de correção verificável + telemetria).
-
-## Status
+## Status atual
 
 | Componente | Estado |
 |---|---|
 | Contratos (SARIF+/SDD/SQALE/matcher) | ✅ compila |
-| Scanner → SARIF | ✅ roda e valida no exemplo |
-| hero-ruleforge (corpus + evolução) | ✅ **roda de verdade** — 2 regras promovidas, 1 rejeitada corretamente |
-| Functions (ingest/sdd/query/provision/feedback) | ✅ compila + **verificado no emulador** |
+| Scanner → SARIF (7 linguagens) | ✅ roda e valida em exemplos reais |
+| hero-ruleforge (corpus + evolução) | ✅ roda de verdade — 2 regras promovidas, 1 rejeitada corretamente |
+| Functions (ingest/sdd/query/provision/feedback) | ✅ compila + verificado no emulador |
 | MCP server | ✅ compila |
-| GitHub Action | ✅ scaffold pronto |
-| Dashboard Next.js | 🟡 scaffold (falta `npm install` no workspace + config Firebase) |
+| GitHub Action + workflow de deploy | ✅ scaffold pronto |
+| Dashboard Next.js | 🟡 scaffold (falta ligar ao projeto Firebase real) |
+| Motor nativo Rust/tree-sitter (escala 2B+ LOC) | ⬜ roadmap V1→Scale-up |
 
-## Próximos passos
+---
 
-1. Ligar o dashboard ao emulador/projeto real (auth + leitura de projetos).
-2. Deploy: bundlar contracts nas functions (esbuild) antes de `firebase deploy`.
-3. V1: VS Code LSP, engine Rust/tree-sitter, job agendado (Cloud Scheduler) que mescla `ruleforgeFeedback` no corpus golden automaticamente.
-
-Ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+<sub>CodeHero usa o SonarQube como referência conceitual, mas não deriva código nem regras dele. Projeto próprio, arquitetura própria.</sub>

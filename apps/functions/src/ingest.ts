@@ -76,7 +76,11 @@ export const ingestAnalysis = onRequest({ cors: true, maxInstances: 10 }, async 
   const presentSeverities: Severity[] = [];
   let newBlockerIssues = 0;
 
-  const batch = db.batch();
+  // A single WriteBatch caps at 500 operations — a large legacy repo (COBOL/
+  // Java monoliths routinely exceed this per analysis) would silently throw
+  // past that limit. BulkWriter auto-batches/paginates and retries, and is
+  // the Admin SDK's recommended path for high-volume writes of this kind.
+  const bulkWriter = db.bulkWriter();
   for (const r of results) {
     const fp = r.partialFingerprints?.["heroHash/v1"] ?? `${r.ruleId}:${r.locations?.[0]?.physicalLocation?.region?.startLine}`;
     const sev = (r.properties?.severity as Severity) ?? "INFO";
@@ -92,7 +96,7 @@ export const ingestAnalysis = onRequest({ cors: true, maxInstances: 10 }, async 
     if (sev === "BLOCKER" && isNewCode) newBlockerIssues += 1;
 
     const issueRef = pRef.collection("issues").doc(fp);
-    batch.set(
+    bulkWriter.set(
       issueRef,
       {
         fingerprint: fp,
@@ -116,7 +120,7 @@ export const ingestAnalysis = onRequest({ cors: true, maxInstances: 10 }, async 
       { merge: true },
     );
   }
-  await batch.commit();
+  await bulkWriter.close();
 
   // SQALE metrics.
   const debtMin = technicalDebtMinutes(codeSmellEfforts);
