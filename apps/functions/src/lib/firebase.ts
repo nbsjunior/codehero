@@ -1,10 +1,26 @@
 import { initializeApp, getApps } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
+import { getFirestore, type Firestore } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
+import { CODEHERO_FIREBASE } from "@codehero/contracts";
 
-if (getApps().length === 0) initializeApp();
+// Segregated resources: named Firestore DB + dedicated Storage bucket
+// (never another app's default database/bucket in a shared GCP project).
+export const FIRESTORE_DATABASE_ID =
+  process.env.FIRESTORE_DATABASE_ID?.trim() || CODEHERO_FIREBASE.firestoreDatabaseId;
+export const STORAGE_BUCKET_NAME =
+  process.env.FIREBASE_STORAGE_BUCKET?.trim() || CODEHERO_FIREBASE.storageBucket;
 
-export const db = getFirestore();
+if (getApps().length === 0) {
+  initializeApp({
+    storageBucket: STORAGE_BUCKET_NAME,
+  });
+}
+
+export const db: Firestore =
+  FIRESTORE_DATABASE_ID && FIRESTORE_DATABASE_ID !== "(default)"
+    ? getFirestore(FIRESTORE_DATABASE_ID)
+    : getFirestore();
+
 export const storage = getStorage();
 
 export function projectRef(orgId: string, projectId: string) {

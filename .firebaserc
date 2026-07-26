@@ -1,5 +1,12 @@
 {
   "projects": {
     "default": "YOUR_CLOUD_PROJECT_ID"
+  },
+  "targets": {
+    "YOUR_CLOUD_PROJECT_ID": {
+      "hosting": {
+        "codehero": ["codehero"]
+      }
+    }
   }
 }

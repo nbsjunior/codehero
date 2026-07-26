@@ -1,0 +1,294 @@
+@import url("https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap");
+
+:root {
+  --ink: #0a0a0a;
+  --paper: #f4f3ee;
+  --paper-raised: #ffffff;
+  --line: #0a0a0a;
+  --muted: #55534c;
+  --accent: #e8121f; /* the one color allowed to break black & white — hero red */
+  --accent-ink: #ffffff;
+  --rating-a: #16a34a;
+  --rating-b: #65a30d;
+  --rating-c: #ca8a04;
+  --rating-d: #ea580c;
+  --rating-e: #dc2626;
+  --shadow-hard: 6px 6px 0 var(--ink);
+  --shadow-hard-sm: 4px 4px 0 var(--ink);
+  --radius: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #f4f3ee;
+    --paper: #121212;
+    --paper-raised: #1b1b1b;
+    --line: #f4f3ee;
+    --muted: #a3a196;
+    --accent-ink: #0a0a0a;
+  }
+}
+
+:root[data-theme="dark"] {
+  --ink: #f4f3ee;
+  --paper: #121212;
+  --paper-raised: #1b1b1b;
+  --line: #f4f3ee;
+  --muted: #a3a196;
+  --accent-ink: #0a0a0a;
+}
+:root[data-theme="light"] {
+  --ink: #0a0a0a;
+  --paper: #f4f3ee;
+  --paper-raised: #ffffff;
+  --line: #0a0a0a;
+  --muted: #55534c;
+  --accent-ink: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  min-height: 100%;
+}
+
+body {
+  background-image: radial-gradient(var(--line) 0.6px, transparent 0.6px);
+  background-size: 14px 14px;
+  background-attachment: fixed;
+  opacity: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-image: radial-gradient(color-mix(in srgb, var(--line) 25%, transparent) 0.6px, transparent 0.6px);
+  }
+}
+:root[data-theme="dark"] body {
+  background-image: radial-gradient(color-mix(in srgb, var(--line) 25%, transparent) 0.6px, transparent 0.6px);
+}
+:root[data-theme="light"] body {
+  background-image: radial-gradient(var(--line) 0.6px, transparent 0.6px);
+}
+
+.hero-display {
+  font-family: "Bangers", "Inter", system-ui, sans-serif;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.hero-shell {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+.hero-panel {
+  background: var(--paper-raised);
+  border: 3px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-hard);
+}
+
+.hero-panel-sm {
+  border: 2px solid var(--line);
+  box-shadow: var(--shadow-hard-sm);
+  border-radius: var(--radius);
+  background: var(--paper-raised);
+}
+
+.hero-burst {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 999px;
+  width: 3rem;
+  height: 3rem;
+  font-family: "Bangers", sans-serif;
+  font-size: 1.5rem;
+  border: 2px solid var(--line);
+  flex-shrink: 0;
+}
+
+.hero-btn {
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  padding: 0.7rem 1.4rem;
+  border: 2.5px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--paper);
+  cursor: pointer;
+  box-shadow: var(--shadow-hard-sm);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.hero-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+.hero-btn:active {
+  transform: translate(0, 0);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.hero-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.hero-btn-outline {
+  background: transparent;
+  color: var(--ink);
+}
+
+.hero-btn-accent {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--line);
+}
+
+.hero-btn-block {
+  width: 100%;
+  display: block;
+  text-align: center;
+}
+
+.hero-input {
+  width: 100%;
+  font-family: "Inter", sans-serif;
+  font-size: 0.95rem;
+  padding: 0.65rem 0.8rem;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-raised);
+  color: var(--ink);
+}
+.hero-input:focus {
+  outline: none;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.hero-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.hero-caption {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.hero-divider {
+  border: none;
+  border-top: 3px solid var(--line);
+  margin: 2rem 0;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: "Inter", sans-serif;
+  font-weight: 800;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.55rem;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper-raised);
+}
+
+.hero-rating {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  font-family: "Bangers", sans-serif;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.hero-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.hero-table th {
+  text-align: left;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  border-bottom: 3px solid var(--line);
+}
+.hero-table td {
+  padding: 0.75rem 0.9rem;
+  font-size: 0.9rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 20%, transparent);
+}
+.hero-table tr:hover td {
+  background: color-mix(in srgb, var(--line) 4%, transparent);
+}
+
+.hero-halftone-band {
+  background-image: radial-gradient(var(--paper) 1.4px, var(--ink) 1.5px);
+  background-size: 8px 8px;
+  background-color: var(--ink);
+}
+
+a.hero-link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  font-weight: 600;
+}
+
+.hero-error {
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--paper-raised));
+  padding: 0.6rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: var(--radius);
+}
+
+.hero-code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.82rem;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 1rem;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  white-space: pre;
+}

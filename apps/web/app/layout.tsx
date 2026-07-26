@@ -1,23 +1,15 @@
 import type { ReactNode } from "react";
+import "./globals.css";
 
 export const metadata = {
-  title: "CodeHero — Dashboard",
-  description: "AI-optimized static analysis & remediation",
+  title: "CodeHero — Painel do Herói",
+  description: "Análise estática de código que evolui — sem IA no caminho de cada arquivo.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="pt-BR">
-      <body
-        style={{
-          margin: 0,
-          fontFamily: "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
-          background: "#0b1120",
-          color: "#e5e7eb",
-        }}
-      >
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
