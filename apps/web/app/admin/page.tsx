@@ -153,7 +153,7 @@ function AdminHome() {
                   <td className="hero-caption">{p.lastAnalyzedAt ? new Date(p.lastAnalyzedAt).toLocaleDateString("pt-BR") : "—"}</td>
                   <td>
                     <Link
-                      href={`/projects/${p.orgId}/${p.projectId}`}
+                      href={`/projects?org=${encodeURIComponent(p.orgId)}&id=${encodeURIComponent(p.projectId)}`}
                       className="hero-btn hero-btn-outline"
                       style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem", textDecoration: "none", display: "inline-block" }}
                     >

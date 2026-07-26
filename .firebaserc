@@ -6,6 +6,9 @@
     "apponti": {
       "hosting": {
         "codehero": ["codehero"]
+      },
+      "storage": {
+        "codehero": ["apponti-codehero"]
       }
     }
   }

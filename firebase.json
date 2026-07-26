@@ -21,17 +21,23 @@
   ],
   "storage": [
     {
-      "bucket": "apponti-codehero",
+      "target": "codehero",
       "rules": "storage.rules"
     }
   ],
   "hosting": {
     "site": "codehero",
-    "source": "apps/web",
+    "public": "apps/web/out",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "frameworksBackend": {
-      "region": "us-central1"
-    }
+    "rewrites": [
+      { "source": "/downloads/**", "destination": "/downloads/**" }
+    ],
+    "headers": [
+      {
+        "source": "/downloads/**",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+      }
+    ]
   },
   "emulators": {
     "auth": { "port": 9099 },
