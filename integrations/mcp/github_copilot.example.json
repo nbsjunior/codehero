@@ -1,0 +1,30 @@
+{
+  "description": "GitHub Copilot coding agent — same CodeHero MCP server as Claude (stdio).",
+  "mcpServers": {
+    "codehero": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["hero-mcp"],
+      "tools": [
+        "get_issues",
+        "get_sdd_spec",
+        "run_scan",
+        "submit_fix_result",
+        "apply_sdd_workflow"
+      ],
+      "env": {
+        "HERO_CORE_URL": "${HERO_CORE_URL}",
+        "HERO_TOKEN": "${HERO_TOKEN}",
+        "HERO_ORG_ID": "${HERO_ORG_ID}",
+        "HERO_PROJECT_ID": "${HERO_PROJECT_ID}"
+      }
+    }
+  },
+  "agentInstructions": [
+    "1. Call get_issues to list open findings.",
+    "2. For each finding to fix, call get_sdd_spec(fingerprint).",
+    "3. Apply a unified_diff that satisfies the SDD acceptanceCriteria.",
+    "4. Call run_scan on the changed path and confirm the fingerprint is gone (AC1).",
+    "5. Call submit_fix_result with status applied|rejected|failed."
+  ]
+}

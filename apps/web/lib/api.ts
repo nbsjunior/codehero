@@ -46,3 +46,71 @@ export async function adminListAllProjects(): Promise<{ orgCount: number; projec
   const res = await fn();
   return res.data;
 }
+
+export interface DressCodeRule {
+  id: string;
+  name: string;
+  message: string;
+  severity: string;
+  category: string;
+  pattern: { regex: string; unless?: string };
+}
+
+export interface SubmitDressCodeResult {
+  dressCodeId: string;
+  summary: string;
+  status: string;
+  scope: string;
+  ruleCount: number;
+  rules: DressCodeRule[];
+}
+
+export async function submitDressCode(input: {
+  naturalLanguage: string;
+  scope: "global" | "project";
+  orgId?: string;
+  projectId?: string;
+  activate?: boolean;
+}): Promise<SubmitDressCodeResult> {
+  const fn = httpsCallable<typeof input, SubmitDressCodeResult>(functions, "submitDressCode");
+  const res = await fn(input);
+  return res.data;
+}
+
+export async function listDressCodes(input: {
+  scope: "global" | "project";
+  orgId?: string;
+  projectId?: string;
+}): Promise<{ items: Array<Record<string, unknown>> }> {
+  const fn = httpsCallable<typeof input, { items: Array<Record<string, unknown>> }>(functions, "listDressCodes");
+  const res = await fn(input);
+  return res.data;
+}
+
+export interface PreviewFinding {
+  ruleId: string;
+  severity: string;
+  message: string;
+  file: string;
+  line: number;
+  snippet: string;
+}
+
+export interface PreviewRepoScanResult {
+  repo: string;
+  findingCount: number;
+  bySeverity: Record<string, number>;
+  topFindings: PreviewFinding[];
+  overlayRuleCount: number;
+  scannedAt: string;
+}
+
+export async function previewRepoScan(input: {
+  repoUrl: string;
+  orgId?: string;
+  projectId?: string;
+}): Promise<PreviewRepoScanResult> {
+  const fn = httpsCallable<typeof input, PreviewRepoScanResult>(functions, "previewRepoScan");
+  const res = await fn(input);
+  return res.data;
+}

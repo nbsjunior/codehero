@@ -65,7 +65,7 @@ jobs:
           NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
           NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
           NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}
-        run: firebase deploy --only "hosting:codehero,firestore:codehero,storage,functions:ingestAnalysis,functions:listIssues,functions:sddSpec,functions:generateSddSpec,functions:provisionProject,functions:flagIssueFeedback,functions:submitFixResult,functions:adminListAllProjects,functions:checkPlatformAdmin,functions:ruleforgeDaily,functions:runRuleforgeDaily" --project apponti --non-interactive
+        run: firebase deploy --only "hosting:codehero,firestore:codehero,storage,functions:ingestAnalysis,functions:listIssues,functions:sddSpec,functions:generateSddSpec,functions:provisionProject,functions:flagIssueFeedback,functions:submitFixResult,functions:adminListAllProjects,functions:checkPlatformAdmin,functions:ruleforgeDaily,functions:runRuleforgeDaily,functions:submitDressCode,functions:listDressCodes,functions:previewRepoScan,functions:registerAccount" --project apponti --non-interactive
 
       - name: Restaurar package.json das Functions
         if: always()

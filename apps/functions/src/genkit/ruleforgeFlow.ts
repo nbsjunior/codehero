@@ -25,17 +25,28 @@ const ProposalSchema = z.object({
   mutations: z.array(MutationSpecSchema).max(4),
 });
 
-function buildPrompt(input: CandidateGenerationInput, currentRegex: string, currentUnless?: string): string {
+function buildPrompt(
+  input: CandidateGenerationInput,
+  currentRegex: string,
+  currentUnless: string | undefined,
+  category: string | undefined,
+): string {
   const failures = input.failingExamples
     .slice(0, 8)
     .map((f) => `- expected=${f.expected} :: ${JSON.stringify(f.code)}`)
     .join("\n");
 
   return `Você é o motor agêntico do CodeHero (hero-ruleforge).
-Sua ÚNICA tarefa é PROPOR mutações pequenas e revisáveis no matcher regex de uma regra de SAST.
-Você NÃO decide promoção — um avaliador determinístico contra corpus golden rejeita regressões.
+Sua ÚNICA tarefa é PROPOR mutações pequenas e revisáveis no matcher regex (L0) de uma regra de SAST.
+Você NÃO decide promoção — um avaliador determinístico (corpus golden + evolve) rejeita regressões.
+Você NÃO analisa arquivos em produção: no CodeHero a IA é offline (como as detecções AI do GitHub complementam CodeQL, sem substituí-lo).
+
+Taxonomia (GitHub AI-powered security detections):
+string-injection | weak-crypto | broken-access-control | sensitive-data-exposure |
+security-misconfiguration | authentication-failures | data-integrity | ssrf | supply-chain
 
 Regra: ${input.ruleId}
+Categoria: ${category ?? "(não classificada)"}
 Regex atual: ${currentRegex}
 Unless atual: ${currentUnless ?? "(nenhum)"}
 Contexto do batch: ${input.context}
@@ -48,6 +59,7 @@ Regras de saída:
 - Prefira append_regex_alt / append_unless_alt / replace_in_regex cirúrgicos.
 - Nunca proponha regex catastrófico (sem .*, sem lookbehind gigante).
 - id deve ser kebab-case começando com "llm-".
+- Priorize padrões que reduzam FN da categoria sem criar FP em fixtures.
 - Se não houver proposta útil, devolva mutations: [].`;
 }
 
@@ -60,7 +72,7 @@ export function createGenkitCandidateGenerator(): RuleCandidateGenerator {
 
       const { output } = await ai.generate({
         model: googleAI.model(process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash"),
-        prompt: buildPrompt(input, rule.pattern.regex, rule.pattern.unless),
+        prompt: buildPrompt(input, rule.pattern.regex, rule.pattern.unless, rule.category),
         output: { schema: ProposalSchema },
         config: { temperature: 0.2 },
       });

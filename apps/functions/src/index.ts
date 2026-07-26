@@ -14,3 +14,6 @@ export { listIssues, sddSpec } from "./query.ts";
 export { flagIssueFeedback, submitFixResult } from "./feedback.ts";
 export { adminListAllProjects, checkPlatformAdmin } from "./admin.ts";
 export { ruleforgeDaily, runRuleforgeDaily } from "./ruleforgeDaily.ts";
+export { submitDressCode, listDressCodes } from "./dressCode.ts";
+export { previewRepoScan } from "./previewScan.ts";
+export { registerAccount } from "./registerAccount.ts";

@@ -45,6 +45,26 @@ export const MUTATION_POOL: Record<string, Mutation[]> = {
       apply: (p) => ({ ...p, unless: `${p.unless}|#\\s*validated` }),
     },
   ],
+  "HERO-SEC-0022-path-traversal": [
+    {
+      id: "add-open-sync-alt",
+      description: "Detecta fs.open/fs.openSync com path de request.",
+      apply: (p) => ({
+        ...p,
+        regex: `${p.regex}|(open|openSync)\\s*\\([^)]*req\\.(query|params|body)`,
+      }),
+    },
+  ],
+  "HERO-SEC-0601-open-redirect": [
+    {
+      id: "add-location-header-alt",
+      description: "Detecta Location header set com interpolação.",
+      apply: (p) => ({
+        ...p,
+        regex: p.regex + "|setHeader\\(\\s*['\"]location['\"]\\s*,\\s*[`$].*\\$\\{",
+      }),
+    },
+  ],
 };
 
 export function poolFor(ruleId: string): Mutation[] {

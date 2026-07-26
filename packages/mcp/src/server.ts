@@ -101,6 +101,26 @@ server.tool(
   },
 );
 
+server.tool(
+  "apply_sdd_workflow",
+  "Guia canônico do loop verificável CodeHero para Claude ou GitHub Copilot: issue → SDD → patch → run_scan → submit_fix_result.",
+  {
+    fingerprint: z.string().optional(),
+  },
+  async ({ fingerprint }) => {
+    const text = [
+      "CodeHero verified-fix workflow (Claude / Copilot):",
+      "1. get_issues — pick a fingerprint" + (fingerprint ? ` (suggested: ${fingerprint})` : ""),
+      "2. get_sdd_spec — obtain the verifiable remediation contract",
+      "3. Edit code with a unified_diff scoped to the SDD location",
+      "4. run_scan — assert RULE_RESOLVED (fingerprint gone) and NO_NEW_ISSUES",
+      "5. submit_fix_result — status=applied|rejected|failed",
+      "Never claim a fix is done without run_scan evidence.",
+    ].join("\n");
+    return { content: [{ type: "text", text }] };
+  },
+);
+
 const transport = new StdioServerTransport();
 await server.connect(transport);
 console.error("hero-mcp server ready (stdio)");

@@ -2,8 +2,9 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata = {
-  title: "CodeHero — Painel do Herói",
-  description: "Análise estática de código que evolui — sem IA no caminho de cada arquivo.",
+  title: "CodeHero — Seja o herói do PR",
+  description:
+    "Corte bugs e dívida técnica pela metade. Dress code em português, IA que propõe regras e scanner determinístico que aplica — gratuito para o time.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

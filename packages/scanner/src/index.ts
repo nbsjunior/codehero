@@ -7,7 +7,7 @@ import {
   formatDebt,
   type Severity,
 } from "@codehero/contracts";
-import { analyzeSource, type Finding } from "./engine.ts";
+import { analyzeSource, enableScanCache, type Finding } from "./engine.ts";
 import { collectFiles } from "./walk.ts";
 import { buildSarif } from "./sarif.ts";
 
@@ -16,16 +16,18 @@ interface CliOptions {
   out: string | null;
   format: "sarif" | "pretty";
   failOn: Severity | null;
+  cache: boolean;
 }
 
 function parseArgs(argv: string[]): CliOptions {
-  const opts: CliOptions = { paths: [], out: null, format: "pretty", failOn: null };
+  const opts: CliOptions = { paths: [], out: null, format: "pretty", failOn: null, cache: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--out" || a === "-o") opts.out = argv[++i] ?? null;
     else if (a === "--format" || a === "-f") opts.format = (argv[++i] as CliOptions["format"]) ?? "pretty";
     else if (a === "--fail-on") opts.failOn = (argv[++i] as Severity) ?? null;
     else if (a === "--sarif") opts.format = "sarif";
+    else if (a === "--cache") opts.cache = true;
     else if (a?.startsWith("-")) continue;
     else if (a) opts.paths.push(a);
   }
@@ -37,6 +39,7 @@ const SEV_ORDER: Severity[] = ["INFO", "MINOR", "MAJOR", "CRITICAL", "BLOCKER"];
 
 function main(): void {
   const opts = parseArgs(process.argv.slice(2));
+  if (opts.cache) enableScanCache();
   const cwd = process.cwd();
   const files = collectFiles(opts.paths);
   const findings: Finding[] = [];

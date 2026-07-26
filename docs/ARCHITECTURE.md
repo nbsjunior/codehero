@@ -35,8 +35,8 @@ Quando o CodeHero compartilha um projeto GCP/Firebase com outros apps, os recurs
 ```mermaid
 graph TB
     subgraph EDGE["Borda do desenvolvedor"]
-        CLI["hero-scanner CLI (TS)"]
-        IDE["VS Code ext (LSP) — roadmap"]
+        CLI["hero-scanner CLI<br/>L0 pattern · L1 AST · L2 taint"]
+        IDE["@codehero/ide-vscode<br/>diagnostics via SARIF"]
         GHA["GitHub Action"]
     end
 
@@ -50,11 +50,12 @@ graph TB
     end
 
     subgraph AI["Camada agêntica (correção)"]
-        MCP["hero-mcp"]
-        CLAUDE["Claude / agentes MCP"]
+        MCP["hero-mcp<br/>get_issues · sdd · run_scan · apply_sdd_workflow"]
+        AGENTS["Claude Desktop · Cursor · Copilot"]
     end
 
     CLI --> GHA
+    IDE -->|hero-scan --sarif| CLI
     GHA -->|POST SARIF + ingestToken| FUNC
     FUNC --> FS
     FUNC --> ST
@@ -64,8 +65,8 @@ graph TB
     HOST -->|callables| FUNC
     AUTH --- HOST
     MCP -->|token| FUNC
-    CLAUDE <-->|MCP| MCP
-    IDE -.->|apply fix| MCP
+    AGENTS <-->|MCP stdio| MCP
+    MCP -->|run_scan| CLI
 ```
 
 ## Segregação de recursos
@@ -155,8 +156,8 @@ orgs/{orgId}
 |---|---|---|
 | **0 — Fundação** | Monorepo, contratos (SARIF+/SDD/SQALE), Firebase config, regras | ✅ |
 | **1 — MVP** | Scanner→SARIF, ingest, débito/QG, Action, dashboard Auth+provision | ✅ |
-| **2 — V1** | SDD + MCP + ruleforge Genkit diário, segregação de recursos, +linguagens | 🟡 (falta IDE/LSP) |
-| **3 — Scale-up** | BigQuery, taint inter-procedural (Rust), RBAC/SSO, merge automático corpus←feedback | ⬜ |
+| **2 — V1** | SDD + MCP (Claude/Cursor/Copilot) + ruleforge Genkit + IDE VS Code + engine AST/taint JS/TS + cache incremental | ✅ |
+| **3 — Scale-up** | BigQuery, taint multi-arquivo (Rust), RBAC/SSO, merge automático corpus←feedback | ⬜ |
 
 ## Dependências críticas
 
@@ -205,10 +206,13 @@ graph LR
 |---|---|---|---|
 | `HERO-SEC-0798-hardcoded-secret` | 0.50 | **1.00** | ✅ PROMOTED (mesclado em `rules.ts`) |
 | `HERO-SEC-0327-weak-hash` | 0.67 | **1.00** | ✅ PROMOTED |
-| `HERO-SEC-0089-sql-injection` | 0.67 | 0.67 | ❌ REJECTED — proposta sem ganho real |
+| `HERO-SEC-0089-sql-injection` | 0.67 | **1.00** | ✅ PROMOTED — template literal `${…}` + taint L2 no scanner |
 | `HERO-SEC-0095-code-injection-eval` | 1.00 | 1.00 | ❌ REJECTED — já ótima |
+| `HERO-SEC-0079-xss-sink` | — | **1.00** | ✅ (corpus + taint) |
+| `HERO-SEC-0078-os-command` | — | **1.00** | ✅ (corpus + taint) |
+| `HERO-SEC-0918-ssrf` | — | **1.00** | ✅ (corpus + taint) |
 
-O caso `sql-injection` é o guard-rail em ação: proposta (humana ou de IA) **não** vira regra sem ganho no corpus.
+O portão continua valendo: proposta (humana ou de IA) **não** vira regra sem ganho no corpus.
 
 ### Telemetria
 
@@ -229,22 +233,56 @@ O caso `sql-injection` é o guard-rail em ação: proposta (humana ou de IA) **n
 
 Regras novas no corpus com F1 = 1.00 (`npm run ruleforge:evaluate`), com traps de FP.
 
-**Limitação MVP:** matcher regex-por-linha sem taint inter-linha — a regra T-SQL mira a concatenação, não o `EXEC` separado. Fase 3 (Rust/dataflow) fecha isso.
+**Limitação MVP (outras linguagens):** matcher regex-por-linha sem taint inter-linha — a regra T-SQL mira a concatenação, não o `EXEC` separado. Em **JS/TS**, `@codehero/engine` cobre L0 (pattern) + L1 (AST Babel) + L2 (taint via CFG/worklist no arquivo).
+
+## Motor de inspeção (`@codehero/engine`)
+
+| Camada | Fundamento | O quê | Quando |
+|---|---|---|---|
+| **L0 pattern** | filtros léxicos | `matchPattern` (regex + unless) | todas as linguagens |
+| **L1 AST** | árvore sintática | Babel visit (`eval`/`Function` não-literal, …) | JS/TS |
+| **L2 taint** | **Dataflow monotônico (CFG + worklist)** | sources → sinks; join nos ramos; inter-proc. no arquivo | JS/TS |
+| **Cache** | hash | SHA-256 conteúdo + ruleset → `.codehero-cache/` | opcional |
+
+### Híbrido (CodeHero ↔ mercado ↔ GitHub)
+
+Espelha a divisão **CodeQL (determinístico) + AI detections (complementar)** do GitHub:
+
+| Papel | CodeHero | Nunca faz |
+|---|---|---|
+| Scan na borda | L0–L2 determinísticos (`hero-scanner`) | chamar LLM por arquivo |
+| Cobertura de categorias | regras com `category` (taxonomia GitHub AI detections) | bloquear merge só com sinal de IA |
+| Proposta de regras | Genkit `ruleforgeDaily` (offline, 1×/dia) | decidir promoção |
+| Decisão de promoção | corpus golden + `evolve.ts` (F1/precisão) | merge automático sem PR |
+
+### Roadmap formal (Teorema de Rice → aproximações)
+
+| Técnica | Status no CodeHero | Próximo passo |
+|---|---|---|
+| **Dataflow / reticulados** | ✅ L2 CFG + worklist (taint) | mais domains (nullness, constancy) |
+| **Interpretação abstrata** | ⬜ | domínios de intervalo em loops (widening) — Scale-up |
+| **Execução simbólica / SMT** | ⬜ | só em sinks críticos (payload witness) — Scale-up |
+| **Model checking (IC3)** | ⬜ | fora do MVP (concorrência) |
+
+CLI: `npm run scan -- <path> [--sarif] [--cache]`. IDE: `packages/ide-vscode`. MCP: `integrations/mcp/*.example.json`.
 
 ## Escala: 100 mil repos / 2B LOC
 
 1. **Scan** — na borda do cliente (CI de cada repo); backend só recebe SARIF agregado.
 2. **Ingest** — `BulkWriter` (não `WriteBatch` de 500 ops); métricas denormalizadas no doc do projeto.
-3. **Match em escala** — ainda depende do roadmap: incremental por hash de arquivo, motor Rust/tree-sitter, risco de gramáticas COBOL/VB.Net. Nada de frota GKE provisionada nesta fase.
+3. **Match em escala** — cache incremental por hash; Rust/SMT/multi-arquivo no Scale-up.
 
 ## Pacotes do monorepo
 
 | Path | Papel |
 |---|---|
-| `packages/contracts` | SARIF+/SDD/SQALE/matcher/rules + constantes de recurso |
-| `packages/scanner` | `hero-scanner` CLI |
+| `packages/contracts` | SARIF+/SDD/SQALE/matcher/rules + categorias + recursos |
+| `packages/engine` | CFG, dataflow worklist, AST, taint, cache (JS/TS) |
+| `packages/scanner` | `hero-scanner` CLI (L0–L2) |
 | `packages/ruleforge` | corpus, evolve, MutationSpec, `evolveAllRules` |
-| `packages/mcp` | servidor MCP |
+| `packages/mcp` | servidor MCP (Claude / Copilot / Cursor) |
+| `packages/ide-vscode` | extensão VS Code / Cursor |
 | `packages/github-action` | Action de scan→ingest |
+| `integrations/mcp` | exemplos de config MCP |
 | `apps/functions` | Functions + Genkit |
 | `apps/web` | Dashboard Next.js |

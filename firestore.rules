@@ -49,6 +49,16 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Dress codes / overlay rules — writes via Admin SDK callables only.
+    match /dressCodes/{id} {
+      allow read: if isPlatformAdmin();
+      allow write: if false;
+    }
+    match /platformDressRules/{ruleId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
     match /orgs/{orgId} {
       allow read: if isOrgMember(orgId) || isPlatformAdmin();
       // Org creation/mutation handled by callable functions (Admin SDK).
@@ -74,6 +84,16 @@ service cloud.firestore {
         }
 
         match /sddSpecs/{specId} {
+          allow read: if isOrgMember(orgId) || isPlatformAdmin();
+          allow write: if false;
+        }
+
+        match /dressCodes/{id} {
+          allow read: if isOrgMember(orgId) || isPlatformAdmin();
+          allow write: if false;
+        }
+
+        match /dressRules/{ruleId} {
           allow read: if isOrgMember(orgId) || isPlatformAdmin();
           allow write: if false;
         }
