@@ -6,6 +6,9 @@
     "YOUR_CLOUD_PROJECT_ID": {
       "hosting": {
         "codehero": ["codehero"]
+      },
+      "storage": {
+        "codehero": ["YOUR_STORAGE_BUCKET"]
       }
     }
   }

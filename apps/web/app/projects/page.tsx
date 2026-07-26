@@ -1,6 +1,6 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { doc, getDoc } from "firebase/firestore";
 import AppShell from "@/components/AppShell";
@@ -68,9 +68,9 @@ jobs:
 }
 
 function ProjectSettings() {
-  const params = useParams<{ orgId: string; projectId: string }>();
-  const orgId = params.orgId;
-  const projectId = params.projectId;
+  const search = useSearchParams();
+  const orgId = (search.get("org") ?? "").trim();
+  const projectId = (search.get("id") ?? "").trim();
 
   const [project, setProject] = useState<ProjectData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -81,6 +81,11 @@ function ProjectSettings() {
   const [rotateError, setRotateError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
+    if (!orgId || !projectId) {
+      setError("Informe org e projeto na URL (?org=…&id=…).");
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -481,7 +486,9 @@ export default function ProjectSettingsPage() {
   return (
     <AuthGate>
       <AppShell>
-        <ProjectSettings />
+        <Suspense fallback={<main className="hero-shell"><p className="hero-caption">Carregando projeto…</p></main>}>
+          <ProjectSettings />
+        </Suspense>
       </AppShell>
     </AuthGate>
   );

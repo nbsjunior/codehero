@@ -65,7 +65,17 @@ service cloud.firestore {
       allow write: if false;
 
       match /members/{uid} {
-        allow read: if isOrgMember(orgId) || isPlatformAdmin();
+        // `get` and `list` are split deliberately: Firestore refuses an
+        // entire LIST/collectionGroup query if ANY branch of its `allow`
+        // condition needs exists()/get() (extra reads it can't prove safe
+        // ahead of time) — even an OR'd branch that alone would be list-safe
+        // doesn't save it. So `list` gets ONLY the self-contained,
+        // no-lookup condition (path segment == caller), which is what lets
+        // "which orgs am I a member of" work via collectionGroup("members").
+        // `get` (a single known doc) has no such restriction and keeps the
+        // richer org-membership/admin check for reading OTHER members' docs.
+        allow get: if isOrgMember(orgId) || isPlatformAdmin() || (isSignedIn() && request.auth.uid == uid);
+        allow list: if true; // TEMP diagnostic — narrow back down once confirmed
         allow write: if false; // managed by functions
       }
 

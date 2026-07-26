@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { collectionGroup, getDocs, query } from "firebase/firestore";
+import { collection, collectionGroup, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import AppShell from "@/components/AppShell";
 import AuthGate from "@/components/AuthGate";
 import { dbClient } from "@/lib/firebase";
@@ -91,29 +91,55 @@ function DashboardHome() {
         return;
       }
 
-      const snap = await getDocs(query(collectionGroup(dbClient, "projects")));
-      setProjects(
-        snap.docs.map((d) => {
-          const data = d.data() as Omit<ProjectRow, "id">;
-          const orgId = d.ref.parent.parent?.id;
-          return {
-            id: orgId ? `${orgId}/${d.id}` : d.id,
+      if (!user) {
+        setProjects([]);
+        return;
+      }
+
+      // Firestore security rules are NOT query filters: an unconstrained
+      // collectionGroup("projects") scan across every org would be denied
+      // outright (verified against the emulator's Requests log), since the
+      // rule's isOrgMember(orgId) can't be proven for an unbounded result
+      // set. Instead, find which orgs this user belongs to via a `members`
+      // collectionGroup query filtered by uid (a pattern Firestore CAN
+      // evaluate per-document), then read each org's own projects
+      // subcollection — a plain, rule-legal single-collection read.
+      const membershipSnap = await getDocs(
+        query(collectionGroup(dbClient, "members"), where("uid", "==", user.uid)),
+      );
+      const orgIds = [
+        ...new Set(
+          membershipSnap.docs.map((d) => d.ref.parent.parent?.id).filter((id): id is string => Boolean(id)),
+        ),
+      ];
+
+      const rows: ProjectRow[] = [];
+      for (const orgId of orgIds) {
+        const orgSnap = await getDoc(doc(dbClient, "orgs", orgId));
+        const orgName = orgSnap.exists() ? (orgSnap.data().name as string | undefined) : undefined;
+        const projectsSnap = await getDocs(collection(dbClient, "orgs", orgId, "projects"));
+        for (const p of projectsSnap.docs) {
+          const data = p.data() as Omit<ProjectRow, "id">;
+          rows.push({
+            id: `${orgId}/${p.id}`,
             orgId,
-            projectId: d.id,
+            projectId: p.id,
             name: data.name,
+            orgName,
             debtMinutes: data.debtMinutes ?? 0,
             maintainabilityRating: data.maintainabilityRating ?? "A",
             securityRating: data.securityRating ?? "A",
             qualityGateStatus: data.qualityGateStatus ?? "PASSED",
             openIssues: data.openIssues ?? 0,
             repoUrl: (data as { repoUrl?: string }).repoUrl ?? null,
-          };
-        }),
-      );
+          });
+        }
+      }
+      setProjects(rows);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -529,7 +555,7 @@ function DashboardHome() {
                   <td>{p.openIssues ?? 0}</td>
                   <td>
                     {p.orgId && p.projectId ? (
-                      <Link href={`/projects/${p.orgId}/${p.projectId}`} className="hero-btn hero-btn-outline" style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem", textDecoration: "none", display: "inline-block" }}>
+                      <Link href={`/projects?org=${encodeURIComponent(p.orgId)}&id=${encodeURIComponent(p.projectId)}`} className="hero-btn hero-btn-outline" style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem", textDecoration: "none", display: "inline-block" }}>
                         Configurar
                       </Link>
                     ) : null}
