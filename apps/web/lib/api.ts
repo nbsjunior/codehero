@@ -108,6 +108,7 @@ export interface PreviewRepoScanResult {
   bySeverity: Record<string, number>;
   topFindings: PreviewFinding[];
   overlayRuleCount: number;
+  rulesVersion?: string;
   scannedAt: string;
 }
 

@@ -13,8 +13,8 @@ import { tmpdir } from "node:os";
 import { pipeline } from "node:stream/promises";
 import { Readable } from "node:stream";
 import { createRequire } from "node:module";
-import { RULES, matchPattern, type HeroRule } from "@codehero/contracts";
-import { db } from "./lib/firebase.ts";
+import { matchPattern, type HeroRule } from "@codehero/contracts";
+import { loadActiveRules } from "./lib/activeRules.ts";
 
 const require = createRequire(import.meta.url);
 
@@ -53,23 +53,23 @@ export const previewRepoScan = onCall(
       const zip = new AdmZip(zipPath);
       zip.extractAllTo(extractDir, true);
 
-      const overlay = await loadOverlayRules(orgId, projectId);
-      const rules: HeroRule[] = [...RULES, ...overlay];
-      const findings = scanTree(extractDir, rules);
+    const active = await loadActiveRules(orgId, projectId);
+    const findings = scanTree(extractDir, active.rules);
 
-      const bySev: Record<string, number> = {};
-      for (const f of findings) {
-        bySev[f.severity] = (bySev[f.severity] ?? 0) + 1;
-      }
+    const bySev: Record<string, number> = {};
+    for (const f of findings) {
+      bySev[f.severity] = (bySev[f.severity] ?? 0) + 1;
+    }
 
-      return {
-        repo: `${parsed.owner}/${parsed.repo}`,
-        findingCount: findings.length,
-        bySeverity: bySev,
-        topFindings: findings.slice(0, 40),
-        overlayRuleCount: overlay.length,
-        scannedAt: new Date().toISOString(),
-      };
+    return {
+      repo: `${parsed.owner}/${parsed.repo}`,
+      findingCount: findings.length,
+      bySeverity: bySev,
+      topFindings: findings.slice(0, 40),
+      overlayRuleCount: active.overlayCount,
+      rulesVersion: active.version,
+      scannedAt: new Date().toISOString(),
+    };
     } catch (err) {
       if (err instanceof HttpsError) throw err;
       const msg = err instanceof Error ? err.message : String(err);
@@ -127,44 +127,6 @@ function parseGithubUrl(url: string): { owner: string; repo: string; branch: str
   );
   if (!m) return null;
   return { owner: m[1]!, repo: m[2]!.replace(/\.git$/, ""), branch: m[3] ?? "main" };
-}
-
-async function loadOverlayRules(orgId?: string, projectId?: string): Promise<HeroRule[]> {
-  const out: HeroRule[] = [];
-  try {
-    const globalSnap = await db.collection("platformDressRules").where("active", "==", true).limit(200).get();
-    for (const d of globalSnap.docs) {
-      const rule = normalizeOverlayRule(d.data());
-      if (rule) out.push(rule);
-    }
-
-    if (orgId && projectId) {
-      const projSnap = await db
-        .collection(`orgs/${orgId}/projects/${projectId}/dressRules`)
-        .where("active", "==", true)
-        .limit(200)
-        .get();
-      for (const d of projSnap.docs) {
-        const rule = normalizeOverlayRule(d.data());
-        if (rule) out.push(rule);
-      }
-    }
-  } catch (err) {
-    console.error("loadOverlayRules failed (continuing with canonical rules only)", err);
-  }
-  return out;
-}
-
-function normalizeOverlayRule(raw: Record<string, unknown>): HeroRule | null {
-  const pattern = raw.pattern as HeroRule["pattern"] | undefined;
-  if (!pattern?.regex || typeof pattern.regex !== "string") return null;
-  try {
-    matchPattern(pattern, "smoke");
-  } catch {
-    console.warn("skipping overlay rule with invalid regex", raw.id);
-    return null;
-  }
-  return raw as unknown as HeroRule;
 }
 
 interface PreviewFinding {

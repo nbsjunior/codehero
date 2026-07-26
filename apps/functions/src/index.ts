@@ -18,3 +18,4 @@ export { submitDressCode, listDressCodes } from "./dressCode.ts";
 export { previewRepoScan } from "./previewScan.ts";
 export { registerAccount } from "./registerAccount.ts";
 export { rotateIngestToken } from "./tokens.ts";
+export { getActiveRules, getActiveRulesCallable } from "./rulesApi.ts";

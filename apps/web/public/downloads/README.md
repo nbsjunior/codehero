@@ -13,7 +13,7 @@
 2. Clique em **Rodar scan no workspace** (ícone ▶)
 3. Veja a **Avaliação** no painel (por severidade) e os sublinhados em **Problems**
 
-O scanner **determinístico** vem embutido (padrão + AST + taint). Não chama IA por arquivo.
+O scanner **determinístico** busca as regras ativas no servidor CodeHero antes de cada scan (canônicas + dress code do projeto). Sem rede, usa o cache/bundled.
 
 ## Configuração
 
@@ -24,8 +24,9 @@ Command Palette → `CodeHero: Abrir configurações`
 | `codehero.scanOnSave` | true | Scan do arquivo ao salvar |
 | `codehero.enableCache` | true | Cache incremental |
 | `codehero.minSeverity` | INFO | Filtro de severidade no painel |
+| `codehero.serverUrl` | Cloud Functions | Onde buscar `getActiveRules` |
+| `codehero.token` / `orgId` / `projectId` | — | Dress code do projeto (overlays) |
 | `codehero.scannerCommand` | *(vazio)* | Vazio = scanner embutido |
-| `codehero.orgId` / `projectId` | — | Opcional, vínculo com o portal |
 
 ## Portal vs plugin
 

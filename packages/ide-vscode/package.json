@@ -146,13 +146,13 @@
         },
         "codehero.serverUrl": {
           "type": "string",
-          "default": "",
-          "description": "URL do backend CodeHero (opcional; futuro upload de SARIF)."
+          "default": "https://YOUR_API_BASE_URL",
+          "description": "URL base das Cloud Functions (getActiveRules). O plugin busca as regras aqui antes de cada scan."
         },
         "codehero.token": {
           "type": "string",
           "default": "",
-          "description": "Token de ingestão do projeto (opcional; trate como segredo)."
+          "description": "Token de ingestão do projeto (necessário para dress code / overlays do projeto)."
         }
       }
     }

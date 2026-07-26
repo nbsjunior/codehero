@@ -89,11 +89,18 @@ server.tool(
 
 server.tool(
   "run_scan",
-  "Roda o hero-scanner localmente em um caminho e retorna o SARIF (usado para verificar os acceptanceCriteria após aplicar um fix).",
+  "Roda o hero-scanner localmente com as regras ativas do servidor (canônicas + dress code) e retorna o SARIF.",
   { path: z.string().default(".") },
   async ({ path }) => {
     const bin = process.env.HERO_SCANNER_CMD ?? "hero-scan";
-    const result = spawnSync(bin, [path, "--sarif"], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+    const args = [path, "--sarif"];
+    if (CORE_URL) {
+      args.push("--server", CORE_URL);
+    }
+    if (TOKEN) args.push("--token", TOKEN);
+    if (ORG_ID) args.push("--org", ORG_ID);
+    if (PROJECT_ID) args.push("--project", PROJECT_ID);
+    const result = spawnSync(bin, args, { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
     if (result.error) {
       return { content: [{ type: "text", text: `scanner error: ${result.error.message}` }], isError: true };
     }

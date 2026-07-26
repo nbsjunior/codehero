@@ -1,6 +1,8 @@
 import { spawn } from "node:child_process";
 import { isAbsolute, join, normalize } from "node:path";
-import { resolveScannerInvocationSafe, type ScannerInvocation } from "./config";
+import { writeFileSync, mkdirSync } from "node:fs";
+import { tmpdir } from "node:os";
+import type { ScannerInvocation } from "./config";
 
 export interface ScanFinding {
   ruleId: string;
@@ -19,6 +21,8 @@ export interface ScanSummary {
   findings: ScanFinding[];
   bySeverity: Record<string, number>;
   fileCountHint: number;
+  rulesVersion?: string;
+  rulesSource?: string;
 }
 
 interface SarifResult {
@@ -44,6 +48,7 @@ interface SarifResult {
 }
 
 const SEV_ORDER = ["INFO", "MINOR", "MAJOR", "CRITICAL", "BLOCKER"];
+const DEFAULT_SERVER = "https://YOUR_API_BASE_URL";
 
 export async function runScan(opts: {
   target: string;
@@ -51,14 +56,23 @@ export async function runScan(opts: {
   enableCache: boolean;
   cwd?: string;
   minSeverity?: string;
+  serverUrl?: string;
+  token?: string;
+  orgId?: string;
+  projectId?: string;
 }): Promise<ScanSummary> {
-  // Prefer PATH `node` for bundled scanner
-  const inv =
-    opts.invocation.label === "bundled hero-scan"
-      ? { ...opts.invocation, bin: "node" }
-      : opts.invocation;
+  const inv = opts.invocation;
+  const rulesMeta = await fetchRulesForScan({
+    serverUrl: opts.serverUrl,
+    token: opts.token,
+    orgId: opts.orgId,
+    projectId: opts.projectId,
+    cwd: opts.cwd,
+  });
 
   const args = [...inv.argsPrefix, opts.target, "--sarif"];
+  if (rulesMeta.file) args.push("--rules-file", rulesMeta.file);
+  else args.push("--no-fetch-rules");
   if (opts.enableCache) args.push("--cache");
 
   const stdout = await execCapture(inv.bin, args, opts.cwd);
@@ -94,7 +108,50 @@ export async function runScan(opts: {
   const bySeverity: Record<string, number> = {};
   for (const f of findings) bySeverity[f.severity] = (bySeverity[f.severity] ?? 0) + 1;
 
-  return { findings, bySeverity, fileCountHint: findings.length };
+  return {
+    findings,
+    bySeverity,
+    fileCountHint: findings.length,
+    rulesVersion: rulesMeta.version,
+    rulesSource: rulesMeta.source,
+  };
+}
+
+async function fetchRulesForScan(opts: {
+  serverUrl?: string;
+  token?: string;
+  orgId?: string;
+  projectId?: string;
+  cwd?: string;
+}): Promise<{ file: string; version: string; source: string }> {
+  const server = (opts.serverUrl || DEFAULT_SERVER).replace(/\/$/, "");
+  const url = new URL(`${server}/getActiveRules`);
+  if (opts.orgId && opts.projectId) {
+    url.searchParams.set("orgId", opts.orgId);
+    url.searchParams.set("projectId", opts.projectId);
+  }
+  const headers: Record<string, string> = { Accept: "application/json" };
+  if (opts.token) headers.Authorization = `Bearer ${opts.token}`;
+
+  let body: { version?: string; rules?: unknown[] };
+  try {
+    const res = await fetch(url.toString(), { headers });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    body = (await res.json()) as { version?: string; rules?: unknown[] };
+  } catch (err) {
+    // Offline / first-run: scan with rules baked into the VSIX.
+    console.error("CodeHero rules fetch failed; using bundled scanner rules", err);
+    return { file: "", version: "bundled", source: "bundled" };
+  }
+  if (!Array.isArray(body.rules) || body.rules.length === 0) {
+    return { file: "", version: "bundled", source: "bundled" };
+  }
+
+  const dir = join(opts.cwd ?? tmpdir(), ".codehero-cache");
+  mkdirSync(dir, { recursive: true });
+  const file = join(dir, "active-rules.json");
+  writeFileSync(file, JSON.stringify(body));
+  return { file, version: body.version ?? "unknown", source: "server" };
 }
 
 function levelToSeverity(level?: string): string {
@@ -143,12 +200,11 @@ function execCapture(bin: string, args: string[], cwd?: string): Promise<string>
     child.on("error", (err) => {
       reject(
         new Error(
-          `Não foi possível iniciar o scanner (${bin}). ${err.message}. Verifique se o Node.js está no PATH ou defina codehero.scannerCommand.`,
+          `Não foi possível iniciar o scanner (${bin}). ${err.message}. Verifique se o Node.js está no PATH.`,
         ),
       );
     });
     child.on("close", (code) => {
-      // hero-scan may exit 1 with --fail-on; SARIF still on stdout
       if (stdout.trim().startsWith("{")) {
         resolve(stdout);
         return;
@@ -161,6 +217,3 @@ function execCapture(bin: string, args: string[], cwd?: string): Promise<string>
     });
   });
 }
-
-// re-export helper used by extension
-export { resolveScannerInvocationSafe };

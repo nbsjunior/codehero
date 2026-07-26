@@ -5,11 +5,13 @@ import {
   RULES,
   technicalDebtMinutes,
   formatDebt,
+  type HeroRule,
   type Severity,
 } from "@codehero/contracts";
 import { analyzeSource, enableScanCache, type Finding } from "./engine.ts";
 import { collectFiles } from "./walk.ts";
 import { buildSarif } from "./sarif.ts";
+import { loadRulesFile, resolveActiveRules } from "./fetchRules.ts";
 
 interface CliOptions {
   paths: string[];
@@ -17,10 +19,28 @@ interface CliOptions {
   format: "sarif" | "pretty";
   failOn: Severity | null;
   cache: boolean;
+  rulesFile: string | null;
+  fetchRules: boolean;
+  serverUrl: string | null;
+  token: string | null;
+  orgId: string | null;
+  projectId: string | null;
 }
 
 function parseArgs(argv: string[]): CliOptions {
-  const opts: CliOptions = { paths: [], out: null, format: "pretty", failOn: null, cache: false };
+  const opts: CliOptions = {
+    paths: [],
+    out: null,
+    format: "pretty",
+    failOn: null,
+    cache: false,
+    rulesFile: null,
+    fetchRules: true,
+    serverUrl: null,
+    token: null,
+    orgId: null,
+    projectId: null,
+  };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--out" || a === "-o") opts.out = argv[++i] ?? null;
@@ -28,6 +48,12 @@ function parseArgs(argv: string[]): CliOptions {
     else if (a === "--fail-on") opts.failOn = (argv[++i] as Severity) ?? null;
     else if (a === "--sarif") opts.format = "sarif";
     else if (a === "--cache") opts.cache = true;
+    else if (a === "--rules-file") opts.rulesFile = argv[++i] ?? null;
+    else if (a === "--no-fetch-rules") opts.fetchRules = false;
+    else if (a === "--server") opts.serverUrl = argv[++i] ?? null;
+    else if (a === "--token") opts.token = argv[++i] ?? null;
+    else if (a === "--org") opts.orgId = argv[++i] ?? null;
+    else if (a === "--project") opts.projectId = argv[++i] ?? null;
     else if (a?.startsWith("-")) continue;
     else if (a) opts.paths.push(a);
   }
@@ -37,9 +63,11 @@ function parseArgs(argv: string[]): CliOptions {
 
 const SEV_ORDER: Severity[] = ["INFO", "MINOR", "MAJOR", "CRITICAL", "BLOCKER"];
 
-function main(): void {
+async function main(): Promise<void> {
   const opts = parseArgs(process.argv.slice(2));
   if (opts.cache) enableScanCache();
+
+  const { rules, meta } = await loadRules(opts);
   const cwd = process.cwd();
   const files = collectFiles(opts.paths);
   const findings: Finding[] = [];
@@ -52,7 +80,7 @@ function main(): void {
       continue;
     }
     const rel = relative(cwd, file) || file;
-    for (const f of analyzeSource(rel, source)) findings.push(f);
+    for (const f of analyzeSource(rel, source, rules)) findings.push(f);
   }
 
   const sarif = buildSarif(findings);
@@ -62,7 +90,7 @@ function main(): void {
     if (opts.out) writeFileSync(opts.out, json);
     else process.stdout.write(json + "\n");
   } else {
-    printPretty(findings, files.length);
+    printPretty(findings, files.length, rules.length, meta);
     if (opts.out) writeFileSync(opts.out, JSON.stringify(sarif, null, 2));
   }
 
@@ -76,7 +104,26 @@ function main(): void {
   }
 }
 
-function printPretty(findings: Finding[], fileCount: number): void {
+async function loadRules(opts: CliOptions): Promise<{ rules: HeroRule[]; meta: string }> {
+  if (opts.rulesFile) {
+    return { rules: loadRulesFile(opts.rulesFile), meta: `file:${opts.rulesFile}` };
+  }
+  if (!opts.fetchRules) {
+    return { rules: RULES, meta: "bundled (fetch disabled)" };
+  }
+  const bundle = await resolveActiveRules({
+    serverUrl: opts.serverUrl ?? undefined,
+    token: opts.token ?? undefined,
+    orgId: opts.orgId ?? undefined,
+    projectId: opts.projectId ?? undefined,
+  });
+  return {
+    rules: bundle.rules,
+    meta: `${bundle.source} v=${bundle.version} overlays=${bundle.overlayCount ?? "?"}`,
+  };
+}
+
+function printPretty(findings: Finding[], fileCount: number, ruleCount: number, meta: string): void {
   const bySev = new Map<Severity, number>();
   for (const f of findings) bySev.set(f.rule.severity, (bySev.get(f.rule.severity) ?? 0) + 1);
 
@@ -94,7 +141,7 @@ function printPretty(findings: Finding[], fileCount: number): void {
 
   process.stdout.write(`\n${"─".repeat(60)}\n`);
   process.stdout.write(
-    `CodeHero — ${findings.length} finding(s) em ${fileCount} arquivo(s) | ${RULES.length} regra(s) ativas\n`,
+    `CodeHero — ${findings.length} finding(s) em ${fileCount} arquivo(s) | ${ruleCount} regra(s) | ${meta}\n`,
   );
   const summary = [...bySev.entries()]
     .sort((a, b) => SEV_ORDER.indexOf(b[0]) - SEV_ORDER.indexOf(a[0]))
@@ -115,4 +162,7 @@ function sevBadge(sev: Severity): string {
   return map[sev];
 }
 
-main();
+main().catch((err) => {
+  console.error(err);
+  process.exitCode = 1;
+});
