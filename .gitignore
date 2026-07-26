@@ -14,3 +14,7 @@ ui-debug.log
 .DS_Store
 coverage/
 emulator-data/
+.codehero-cache/
+tmp/
+apps/functions/vendor/
+apps/functions/package.json.workspace
