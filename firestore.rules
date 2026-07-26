@@ -1,0 +1,56 @@
+rules_version = '2';
+
+// CodeHero — multi-tenant SaaS security model.
+// Access is scoped per organization. A user may only read/write data of orgs
+// they are a member of. All writes to analysis/issue data go through Cloud
+// Functions with the Admin SDK (which bypasses these rules), so the client
+// rules are intentionally read-mostly.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Membership doc: orgs/{orgId}/members/{uid}
+    function isOrgMember(orgId) {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/orgs/$(orgId)/members/$(request.auth.uid));
+    }
+
+    function orgRole(orgId) {
+      return get(/databases/$(database)/documents/orgs/$(orgId)/members/$(request.auth.uid)).data.role;
+    }
+
+    match /orgs/{orgId} {
+      allow read: if isOrgMember(orgId);
+      // Org creation/mutation handled by callable functions (Admin SDK).
+      allow write: if false;
+
+      match /members/{uid} {
+        allow read: if isOrgMember(orgId);
+        allow write: if false; // managed by functions
+      }
+
+      match /projects/{projectId} {
+        allow read: if isOrgMember(orgId);
+        allow write: if false;
+
+        match /analyses/{analysisId} {
+          allow read: if isOrgMember(orgId);
+          allow write: if false;
+        }
+
+        match /issues/{fingerprint} {
+          allow read: if isOrgMember(orgId);
+          allow write: if false;
+        }
+
+        match /sddSpecs/{specId} {
+          allow read: if isOrgMember(orgId);
+          allow write: if false;
+        }
+      }
+    }
+  }
+}

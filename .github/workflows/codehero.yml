@@ -1,0 +1,28 @@
+name: CodeHero Analysis
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  codehero:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write # publica SARIF na aba Security
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # necessário para o diff de "new code"
+
+      - name: CodeHero Scan
+        uses: ./packages/github-action
+        with:
+          server-url: ${{ vars.HERO_CORE_URL }}
+          token: ${{ secrets.HERO_TOKEN }}
+          org-id: ${{ vars.HERO_ORG_ID }}
+          project-id: ${{ vars.HERO_PROJECT_ID }}
+          path: "."
+          fail-on: CRITICAL

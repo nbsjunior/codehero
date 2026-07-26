@@ -1,0 +1,19 @@
+{
+  "name": "@codehero/mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "hero-mcp": "./dist/server.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node src/server.ts",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@codehero/contracts": "*",
+    "@modelcontextprotocol/sdk": "^1.13.0",
+    "zod": "^3.24.1"
+  }
+}

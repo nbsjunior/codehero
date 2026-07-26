@@ -1,0 +1,26 @@
+{
+  "name": "codehero",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CodeHero — AI-optimized static analysis & remediation SaaS on Firebase",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/functions",
+    "apps/web"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "scan": "node packages/scanner/src/index.ts",
+    "build:contracts": "npm run build -w @codehero/contracts",
+    "build:functions": "npm run build -w @codehero/functions",
+    "build": "npm run build:contracts && npm run build:functions",
+    "emulators": "firebase emulators:start",
+    "dev:web": "npm run dev -w @codehero/web"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}

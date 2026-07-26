@@ -1,0 +1,13 @@
+rules_version = '2';
+
+// SARIF reports and AST snapshots are written by Cloud Functions (Admin SDK)
+// and are not directly client-writable. Reads are gated by org membership,
+// which the client cannot verify from Storage rules alone, so raw report
+// downloads are served through a Function-issued signed URL instead.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /orgs/{orgId}/{allPaths=**} {
+      allow read, write: if false; // access exclusively via Cloud Functions
+    }
+  }
+}

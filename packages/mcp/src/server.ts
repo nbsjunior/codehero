@@ -1,0 +1,85 @@
+#!/usr/bin/env node
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+import { spawnSync } from "node:child_process";
+
+// ---------------------------------------------------------------------------
+// hero-mcp — exposes CodeHero to any MCP client (e.g. Claude). Stateless: it
+// proxies the token-guarded hero-core HTTP endpoints and can run a local scan.
+//
+// Config via env:
+//   HERO_CORE_URL  base URL of the deployed functions (e.g.
+//                  https://us-central1-<proj>.cloudfunctions.net)
+//   HERO_TOKEN     per-project ingest token
+//   HERO_ORG_ID / HERO_PROJECT_ID  default target project
+// ---------------------------------------------------------------------------
+
+const CORE_URL = process.env.HERO_CORE_URL ?? "http://127.0.0.1:5001/codehero-dev/us-central1";
+const TOKEN = process.env.HERO_TOKEN ?? "";
+const ORG_ID = process.env.HERO_ORG_ID ?? "";
+const PROJECT_ID = process.env.HERO_PROJECT_ID ?? "";
+
+function authHeaders(): Record<string, string> {
+  return { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" };
+}
+
+const server = new McpServer({ name: "hero-mcp", version: "0.1.0" });
+
+server.tool(
+  "get_issues",
+  "Lista as issues abertas de um projeto CodeHero (opcionalmente filtrando por severidade e código novo).",
+  {
+    orgId: z.string().default(ORG_ID),
+    projectId: z.string().default(PROJECT_ID),
+    severity: z.enum(["BLOCKER", "CRITICAL", "MAJOR", "MINOR", "INFO"]).optional(),
+    newCodeOnly: z.boolean().default(false),
+  },
+  async ({ orgId, projectId, severity, newCodeOnly }) => {
+    const url = new URL(`${CORE_URL}/listIssues`);
+    url.searchParams.set("orgId", orgId);
+    url.searchParams.set("projectId", projectId);
+    if (severity) url.searchParams.set("severity", severity);
+    url.searchParams.set("newCodeOnly", String(newCodeOnly));
+    const r = await fetch(url, { headers: authHeaders() });
+    const body = await r.text();
+    return { content: [{ type: "text", text: body }], isError: !r.ok };
+  },
+);
+
+server.tool(
+  "get_sdd_spec",
+  "Gera a especificação SDD (contrato verificável de correção) para uma issue, identificada pelo fingerprint.",
+  {
+    orgId: z.string().default(ORG_ID),
+    projectId: z.string().default(PROJECT_ID),
+    fingerprint: z.string(),
+  },
+  async ({ orgId, projectId, fingerprint }) => {
+    const r = await fetch(`${CORE_URL}/sddSpec`, {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify({ orgId, projectId, fingerprint }),
+    });
+    const body = await r.text();
+    return { content: [{ type: "text", text: body }], isError: !r.ok };
+  },
+);
+
+server.tool(
+  "run_scan",
+  "Roda o hero-scanner localmente em um caminho e retorna o SARIF (usado para verificar os acceptanceCriteria após aplicar um fix).",
+  { path: z.string().default(".") },
+  async ({ path }) => {
+    const bin = process.env.HERO_SCANNER_CMD ?? "hero-scan";
+    const result = spawnSync(bin, [path, "--sarif"], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+    if (result.error) {
+      return { content: [{ type: "text", text: `scanner error: ${result.error.message}` }], isError: true };
+    }
+    return { content: [{ type: "text", text: result.stdout || result.stderr }] };
+  },
+);
+
+const transport = new StdioServerTransport();
+await server.connect(transport);
+console.error("hero-mcp server ready (stdio)");

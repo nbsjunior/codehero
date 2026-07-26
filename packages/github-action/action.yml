@@ -1,0 +1,64 @@
+name: "CodeHero Scan"
+description: "Roda o hero-scanner, envia o SARIF para a plataforma CodeHero e avalia o Quality Gate."
+author: "CodeHero"
+branding:
+  icon: "shield"
+  color: "blue"
+
+inputs:
+  server-url:
+    description: "Base URL das Functions do CodeHero (ex: https://us-central1-<proj>.cloudfunctions.net)"
+    required: true
+  token:
+    description: "Token de ingestão do projeto (secret)"
+    required: true
+  org-id:
+    description: "ID da organização"
+    required: true
+  project-id:
+    description: "ID do projeto"
+    required: true
+  path:
+    description: "Caminho a analisar"
+    required: false
+    default: "."
+  fail-on:
+    description: "Severidade mínima que reprova o job (BLOCKER|CRITICAL|MAJOR|MINOR|INFO)"
+    required: false
+    default: "CRITICAL"
+
+outputs:
+  sarif-file:
+    description: "Caminho do relatório SARIF gerado"
+    value: ${{ steps.scan.outputs.sarif }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: "22"
+
+    - name: Run hero-scanner
+      id: scan
+      shell: bash
+      run: |
+        # Em produção: npx @codehero/scanner. No monorepo, usa o binário local.
+        npx --yes @codehero/scanner "${{ inputs.path }}" --sarif --out codehero.sarif || true
+        echo "sarif=codehero.sarif" >> "$GITHUB_OUTPUT"
+
+    - name: Upload to CodeHero platform
+      shell: bash
+      env:
+        HERO_URL: ${{ inputs.server-url }}
+        HERO_TOKEN: ${{ inputs.token }}
+        ORG_ID: ${{ inputs.org-id }}
+        PROJECT_ID: ${{ inputs.project-id }}
+      run: |
+        node "${{ github.action_path }}/upload.mjs"
+
+    - name: Upload SARIF to GitHub Security
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: codehero.sarif

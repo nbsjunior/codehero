@@ -1,0 +1,17 @@
+{
+  "name": "@codehero/scanner",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "hero-scan": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "scan": "node src/index.ts",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@codehero/contracts": "*"
+  }
+}
