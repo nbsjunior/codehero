@@ -16,9 +16,13 @@
     "@codehero/contracts": "*",
     "@codehero/ruleforge": "*",
     "@genkit-ai/google-genai": "^1.40.1",
+    "adm-zip": "^0.6.0",
     "firebase-admin": "^13.0.2",
     "firebase-functions": "^6.3.0",
     "genkit": "^1.40.1",
     "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.8"
   }
 }

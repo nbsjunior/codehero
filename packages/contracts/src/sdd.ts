@@ -104,6 +104,75 @@ export const SDD_TEMPLATES: Record<string, SddTemplate> = {
     guidance: "Substitua eval/exec por parsing seguro (JSON.parse, ast.literal_eval) ou lógica explícita.",
     constraints: ["Não executar código arbitrário.", "Preservar comportamento observável.", "Manter estilo do arquivo."],
   },
+  "sdd.xss.sanitize": {
+    id: "sdd.xss.sanitize",
+    strategy: "sanitize_dom_sink",
+    guidance:
+      "Não atribua HTML cru a innerHTML. Use textContent ou sanitize com biblioteca confiável (ex.: DOMPurify) antes do sink.",
+    constraints: ["Preservar UX observável.", "Não introduzir XSS residual.", "Manter estilo do arquivo."],
+    referenceExample: {
+      before: 'el.innerHTML = "<h1>" + name + "</h1>";',
+      after: "el.textContent = name;",
+    },
+  },
+  "sdd.cmd.avoid-shell": {
+    id: "sdd.cmd.avoid-shell",
+    strategy: "avoid_shell_interpolation",
+    guidance:
+      "Evite shell:true e concatenação de comandos. Prefira execFile/spawn com argument list e allowlist de binários.",
+    constraints: ["Não executar shell com input de usuário.", "Manter estilo do arquivo."],
+  },
+  "sdd.ssrf.allowlist": {
+    id: "sdd.ssrf.allowlist",
+    strategy: "url_allowlist",
+    guidance:
+      "Não passe URLs de request do usuário direto a fetch. Valide contra allowlist de hosts/esquemas antes da chamada.",
+    constraints: ["Bloquear link-local/metadata IPs.", "Manter estilo do arquivo."],
+  },
+  "sdd.path.normalize-allowlist": {
+    id: "sdd.path.normalize-allowlist",
+    strategy: "path_allowlist",
+    guidance:
+      "Normalize o path (path.resolve), rejeite `..` fora da raiz permitida e use basename quando só o nome do arquivo for necessário.",
+    constraints: ["Não confiar em path.normalize sozinho.", "Manter estilo do arquivo."],
+  },
+  "sdd.redirect.allowlist": {
+    id: "sdd.redirect.allowlist",
+    strategy: "redirect_allowlist",
+    guidance: "Só redirecione para paths relativos internos ou hosts em allowlist explícita.",
+    constraints: ["Rejeitar URLs absolutas externas não listadas.", "Manter estilo do arquivo."],
+  },
+  "sdd.merge.safe-assign": {
+    id: "sdd.merge.safe-assign",
+    strategy: "safe_object_merge",
+    guidance:
+      "Não faça Object.assign/merge com objetos de usuário. Copie campos allowlisted ou use Object.create(null) + validação de schema.",
+    constraints: ["Bloquear chaves __proto__/constructor/prototype.", "Manter estilo do arquivo."],
+  },
+  "sdd.crypto.secure-random": {
+    id: "sdd.crypto.secure-random",
+    strategy: "use_csprng",
+    guidance: "Substitua Math.random por crypto.randomBytes / crypto.getRandomValues para tokens e segredos.",
+    constraints: ["Manter estilo do arquivo."],
+  },
+  "sdd.tls.enable-verify": {
+    id: "sdd.tls.enable-verify",
+    strategy: "enable_tls_verify",
+    guidance: "Remova NODE_TLS_REJECT_UNAUTHORIZED=0. Corrija a cadeia de certificados em vez de desabilitar verificação.",
+    constraints: ["Não reintroduzir bypass de TLS.", "Manter estilo do arquivo."],
+  },
+  "sdd.log.redact-secrets": {
+    id: "sdd.log.redact-secrets",
+    strategy: "redact_secrets",
+    guidance: "Não logue password/token/secret. Use redaction ou omita o campo.",
+    constraints: ["Manter estilo do arquivo."],
+  },
+  "sdd.supply.verify-checksum": {
+    id: "sdd.supply.verify-checksum",
+    strategy: "verify_artifact",
+    guidance: "Não pipe curl/wget para shell. Baixe o artefato, verifique checksum/assinatura e então instale.",
+    constraints: ["Manter estilo do arquivo."],
+  },
   "sdd.smell.remove-debug": {
     id: "sdd.smell.remove-debug",
     strategy: "remove_debug_statement",
