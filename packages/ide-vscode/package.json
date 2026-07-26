@@ -5,9 +5,16 @@
   "version": "0.2.0",
   "private": true,
   "publisher": "codehero",
-  "engines": { "vscode": "^1.85.0" },
-  "categories": ["Linters", "Other"],
-  "activationEvents": ["onStartupFinished"],
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Linters",
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "viewsContainers": {
@@ -113,7 +120,13 @@
         "codehero.minSeverity": {
           "type": "string",
           "default": "INFO",
-          "enum": ["INFO", "MINOR", "MAJOR", "CRITICAL", "BLOCKER"],
+          "enum": [
+            "INFO",
+            "MINOR",
+            "MAJOR",
+            "CRITICAL",
+            "BLOCKER"
+          ],
           "description": "Severidade mínima exibida no painel e no Problems."
         },
         "codehero.scannerCommand": {
@@ -152,7 +165,6 @@
   "devDependencies": {
     "@types/node": "^22.10.7",
     "@types/vscode": "^1.85.0",
-    "esbuild": "^0.25.0",
     "typescript": "^5.7.2"
   }
 }
