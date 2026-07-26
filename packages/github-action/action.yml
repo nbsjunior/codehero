@@ -43,9 +43,21 @@ runs:
     - name: Run hero-scanner
       id: scan
       shell: bash
+      env:
+        HERO_CORE_URL: ${{ inputs.server-url }}
+        HERO_TOKEN: ${{ inputs.token }}
+        HERO_ORG_ID: ${{ inputs.org-id }}
+        HERO_PROJECT_ID: ${{ inputs.project-id }}
       run: |
-        # Em produção: npx @codehero/scanner. No monorepo, usa o binário local.
-        npx --yes @codehero/scanner "${{ inputs.path }}" --sarif --out codehero.sarif || true
+        # Busca regras ativas no servidor (canônicas + dress code) e analisa.
+        # Em produção: npx @codehero/scanner. No monorepo, usa o binário local se disponível.
+        if [ -f packages/scanner/dist/index.js ]; then
+          node packages/scanner/dist/index.js "${{ inputs.path }}" --sarif --out codehero.sarif \
+            --server "$HERO_CORE_URL" --token "$HERO_TOKEN" --org "$HERO_ORG_ID" --project "$HERO_PROJECT_ID" || true
+        else
+          npx --yes @codehero/scanner "${{ inputs.path }}" --sarif --out codehero.sarif \
+            --server "$HERO_CORE_URL" --token "$HERO_TOKEN" --org "$HERO_ORG_ID" --project "$HERO_PROJECT_ID" || true
+        fi
         echo "sarif=codehero.sarif" >> "$GITHUB_OUTPUT"
 
     - name: Upload to CodeHero platform

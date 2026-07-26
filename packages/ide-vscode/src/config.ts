@@ -10,6 +10,7 @@ export interface CodeHeroConfig {
   orgId: string;
   projectId: string;
   serverUrl: string;
+  token: string;
 }
 
 export function getConfig(): CodeHeroConfig {
@@ -22,6 +23,7 @@ export function getConfig(): CodeHeroConfig {
     orgId: (c.get<string>("orgId", "") ?? "").trim(),
     projectId: (c.get<string>("projectId", "") ?? "").trim(),
     serverUrl: (c.get<string>("serverUrl", "") ?? "").trim(),
+    token: (c.get<string>("token", "") ?? "").trim(),
   };
 }
 

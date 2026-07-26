@@ -106,6 +106,10 @@ async function scanPath(
           enableCache: cfg.enableCache,
           cwd: vscode.workspace.workspaceFolders?.[0]?.uri.fsPath,
           minSeverity: cfg.minSeverity,
+          serverUrl: cfg.serverUrl || undefined,
+          token: cfg.token || undefined,
+          orgId: cfg.orgId || undefined,
+          projectId: cfg.projectId || undefined,
         });
       },
     );
@@ -160,8 +164,11 @@ function applyResults(summary: ScanSummary, opts: { singleFile: boolean; uri?: v
   setStatusIdle(summary.findings.length);
   const blockers = summary.bySeverity.BLOCKER ?? 0;
   const criticals = summary.bySeverity.CRITICAL ?? 0;
+  const rulesInfo = summary.rulesVersion
+    ? ` · regras ${summary.rulesSource ?? "server"} ${summary.rulesVersion.slice(0, 8)}`
+    : "";
   void vscode.window.showInformationMessage(
-    `CodeHero: ${summary.findings.length} finding(s) · BLOCKER ${blockers} · CRITICAL ${criticals}. Veja o painel CodeHero.`,
+    `CodeHero: ${summary.findings.length} finding(s) · BLOCKER ${blockers} · CRITICAL ${criticals}${rulesInfo}`,
   );
 }
 
