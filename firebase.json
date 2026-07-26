@@ -4,8 +4,12 @@
       "source": "apps/functions",
       "codebase": "default",
       "runtime": "nodejs22",
-      "ignore": ["node_modules", ".git", "*.local"],
-      "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"]
+      "ignore": ["node_modules", ".git", "*.local", "package.json.workspace", "src"],
+      "predeploy": [
+        "node scripts/prepare-functions-vendor.mjs",
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ],
+      "postdeploy": ["node scripts/restore-functions-package.mjs"]
     }
   ],
   "firestore": [
