@@ -8,7 +8,7 @@
         "HERO_TOKEN": "<ingest-token>",
         "HERO_ORG_ID": "<orgId>",
         "HERO_PROJECT_ID": "<projectId>",
-        "HERO_SCANNER_CMD": "npx hero-scan"
+        "HERO_SCANNER_CMD": "node ./packages/scanner/dist/index.js"
       }
     }
   }
