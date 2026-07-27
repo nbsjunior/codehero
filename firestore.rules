@@ -15,9 +15,9 @@ rules_version = '2';
 // Platform admins (documented in platformAdmins/{uid}) are a separate,
 // narrow escape hatch: they can READ across every org/project (for the
 // global admin dashboard) but never WRITE — writes always go through Admin
-// SDK functions. Membership in platformAdmins is granted out-of-band (see
-// scripts/seed-admin.mjs), never through a client-callable function, so a
-// regular user can never grant themselves admin.
+// SDK functions. Membership in platformAdmins is granted via Admin SDK
+// (adminSetPlatformAdmin callable or scripts/seed-admin.mjs), never through
+// client Firestore writes.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -40,7 +40,7 @@ service cloud.firestore {
       // A user may only check their OWN admin status — never enumerate or
       // read other admins' entries.
       allow read: if isSignedIn() && request.auth.uid == uid;
-      allow write: if false; // granted only via scripts/seed-admin.mjs (Admin SDK)
+      allow write: if false; // via Admin SDK (adminSetPlatformAdmin / seed-admin.mjs)
     }
 
     // Collection-group LIST rule for `members`, declared at the TOP LEVEL
@@ -107,6 +107,11 @@ service cloud.firestore {
 
     // Async ingest queue — Admin SDK / Functions only.
     match /ingestJobs/{jobId} {
+      allow read, write: if false;
+    }
+
+    // Platform ops (purge / queue) — Admin SDK only; UI uses callables.
+    match /platformOpsSettings/{docId} {
       allow read, write: if false;
     }
 

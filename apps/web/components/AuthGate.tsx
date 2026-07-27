@@ -6,6 +6,7 @@ import {
   signInWithPopup,
   signInWithCustomToken,
   sendPasswordResetEmail,
+  sendEmailVerification,
   GoogleAuthProvider,
   type AuthError,
 } from "firebase/auth";
@@ -70,6 +71,18 @@ async function registerViaPortal(email: string, password: string): Promise<void>
   );
   const res = await fn({ email, password });
   await signInWithCustomToken(auth, res.data.customToken);
+  await sendVerificationBestEffort();
+}
+
+/** Fire-and-forget — a failure here shouldn't block sign-in; the AppShell banner offers a resend. */
+async function sendVerificationBestEffort(): Promise<void> {
+  try {
+    if (auth.currentUser && !auth.currentUser.emailVerified) {
+      await sendEmailVerification(auth.currentUser);
+    }
+  } catch {
+    /* ignore — user can resend from the post-login banner */
+  }
 }
 
 export default function AuthGate({ children }: { children: ReactNode }) {
@@ -98,6 +111,7 @@ export default function AuthGate({ children }: { children: ReactNode }) {
           const code = (portalErr as FunctionsError)?.code ?? "";
           if (code === "functions/not-found" || code === "functions/unavailable") {
             await createUserWithEmailAndPassword(auth, email.trim(), password);
+            await sendVerificationBestEffort();
           } else {
             throw portalErr;
           }

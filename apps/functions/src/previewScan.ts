@@ -4,6 +4,13 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { loadActiveRules } from "./lib/activeRules.ts";
 import { downloadAndScanRepo, severityRank, type RepoScanFinding } from "./lib/repoScan.ts";
+import {
+  assertBuildQuota,
+  assertPreviewQuota,
+  incrementBuildQuota,
+  incrementPreviewQuota,
+  requireVerifiedEmail,
+} from "./lib/quotas.ts";
 
 /**
  * One-click preview: GitHub público → zip → regras canônicas + dress rules → resumo.
@@ -14,6 +21,7 @@ export const previewRepoScan = onCall(
   async (request) => {
     const uid = request.auth?.uid;
     if (!uid) throw new HttpsError("unauthenticated", "Faça login para rodar a prévia.");
+    await requireVerifiedEmail(uid);
 
     const { repoUrl, orgId, projectId } = (request.data ?? {}) as {
       repoUrl?: string;
@@ -21,11 +29,20 @@ export const previewRepoScan = onCall(
       projectId?: string;
     };
 
+    await assertPreviewQuota(uid);
+    if (orgId) await assertBuildQuota(orgId);
+
     const work = join(tmpdir(), `codehero-preview-${uid.slice(0, 8)}-${Date.now()}`);
     mkdirSync(work, { recursive: true });
     try {
       const active = await loadActiveRules(orgId, projectId);
-      const { owner, repo, findings } = await downloadAndScanRepo(repoUrl ?? "", active.rules, work);
+      const { owner, repo, findings, filesScanned, truncated } = await downloadAndScanRepo(
+        repoUrl ?? "",
+        active.rules,
+        work,
+      );
+      await incrementPreviewQuota(uid);
+      if (orgId) await incrementBuildQuota(orgId).catch(() => {});
 
       const bySev: Record<string, number> = {};
       for (const f of findings) {
@@ -46,6 +63,10 @@ export const previewRepoScan = onCall(
         overlayRuleCount: active.overlayCount,
         rulesVersion: active.version,
         scannedAt: new Date().toISOString(),
+        filesScanned,
+        // True when the file budget was hit — there may be more matching
+        // files in the repo than this preview actually scanned.
+        truncated,
       };
     } catch (err) {
       if (err instanceof HttpsError) throw err;

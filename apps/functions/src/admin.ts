@@ -1,77 +1,132 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
+import { AggregateField, FieldPath, type DocumentReference } from "firebase-admin/firestore";
 import { db } from "./lib/firebase.ts";
+import { getPlatformSummaryBuckets } from "./lib/platformSummary.ts";
 
 async function requirePlatformAdmin(uid: string): Promise<void> {
   const snap = await db.doc(`platformAdmins/${uid}`).get();
   if (!snap.exists) throw new HttpsError("permission-denied", "not a platform admin");
 }
 
+const ORGS_PAGE_SIZE = 25;
+
 /**
- * Global admin view: every project across every org, each with its repos —
- * for the platform admin's consolidation dashboard. Uses the Admin SDK
- * (bypasses per-org Firestore rules) — access is gated by membership in
- * platformAdmins/{uid}, which is only ever granted out-of-band
- * (scripts/seed-admin.mjs), never through a client-callable function, so a
- * regular user can never escalate themselves into this view.
+ * Paginated admin view: one page of orgs (each with its projects and their
+ * repos) at a time. Fanning out to EVERY org/project/repo in one call breaks
+ * down well before 20k repos (thousands of queries, single invocation, no
+ * memory/timeout override) — this bounds each call to a fixed page of orgs
+ * regardless of platform size. Access gated by platformAdmins/{uid}, granted
+ * only out-of-band (never client-writable).
  */
-export const adminListAllProjects = onCall(async (request) => {
+export const adminListAllProjects = onCall(
+  { memory: "1GiB", timeoutSeconds: 540 },
+  async (request) => {
+    const uid = request.auth?.uid;
+    if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
+    await requirePlatformAdmin(uid);
+
+    const { cursor, limit } = (request.data ?? {}) as { cursor?: string; limit?: number };
+    const pageSize = Math.min(100, Math.max(1, limit ?? ORGS_PAGE_SIZE));
+
+    let orgsQuery = db.collection("orgs").orderBy(FieldPath.documentId()).limit(pageSize);
+    if (cursor) orgsQuery = orgsQuery.startAfter(cursor);
+    const orgsSnap = await orgsQuery.get();
+
+    const projects: Array<Record<string, unknown>> = [];
+    await Promise.all(
+      orgsSnap.docs.map(async (orgDoc) => {
+        const org = orgDoc.data();
+        const projectsSnap = await orgDoc.ref.collection("projects").get();
+        await Promise.all(
+          projectsSnap.docs.map(async (p) => {
+            const data = p.data();
+            const reposSnap = await p.ref.collection("repos").get();
+            const repos = reposSnap.docs.map((r) => {
+              const rd = r.data();
+              return {
+                repoId: r.id,
+                name: rd.name ?? r.id,
+                repoUrl: rd.repoUrl ?? null,
+                debtMinutes: rd.debtMinutes ?? 0,
+                maintainabilityRating: rd.maintainabilityRating ?? "A",
+                securityRating: rd.securityRating ?? "A",
+                qualityGateStatus: rd.qualityGateStatus ?? "PASSED",
+                openIssues: rd.openIssues ?? 0,
+                lastAnalyzedAt: rd.lastAnalyzedAt?.toDate?.().toISOString() ?? null,
+                autoScan: rd.autoScan
+                  ? {
+                      enabled: !!rd.autoScan.enabled,
+                      periodicityDays: rd.autoScan.periodicityDays ?? 7,
+                      nextRunAt: rd.autoScan.nextRunAt?.toDate?.().toISOString() ?? null,
+                      lastRunAt: rd.autoScan.lastRunAt?.toDate?.().toISOString() ?? null,
+                    }
+                  : undefined,
+              };
+            });
+            projects.push({
+              orgId: orgDoc.id,
+              orgName: org.name ?? orgDoc.id,
+              projectId: p.id,
+              name: data.name ?? p.id,
+              repoCount: repos.length,
+              debtMinutes: data.debtMinutes ?? 0,
+              maintainabilityRating: data.maintainabilityRating ?? "A",
+              securityRating: data.securityRating ?? "A",
+              qualityGateStatus: data.qualityGateStatus ?? "PASSED",
+              openIssues: data.openIssues ?? 0,
+              lastAnalyzedAt: data.lastAnalyzedAt?.toDate?.().toISOString() ?? null,
+              repos,
+            });
+          }),
+        );
+      }),
+    );
+
+    const nextCursor = orgsSnap.docs.length === pageSize ? orgsSnap.docs[orgsSnap.docs.length - 1]!.id : null;
+    return { orgCount: orgsSnap.size, projects, nextCursor };
+  },
+);
+
+/**
+ * O(1)-ish platform KPIs: unfiltered count()/sum() aggregation queries
+ * (safe — no composite index needed, unlike a filtered collectionGroup
+ * query) for the additive numbers, plus the incrementally-maintained
+ * rating/gate buckets (see platformSummary.ts) for the two values that
+ * would otherwise need a filtered query to answer.
+ */
+export const adminGetPlatformSummary = onCall({ memory: "512MiB", timeoutSeconds: 60 }, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
   await requirePlatformAdmin(uid);
 
-  const orgsSnap = await db.collection("orgs").get();
-  const projects: Array<Record<string, unknown>> = [];
+  const [orgCountSnap, projectCountSnap, repoAggSnap, buckets] = await Promise.all([
+    db.collection("orgs").count().get(),
+    db.collectionGroup("projects").count().get(),
+    db
+      .collectionGroup("repos")
+      .aggregate({
+        count: AggregateField.count(),
+        debtMinutes: AggregateField.sum("debtMinutes"),
+        openIssues: AggregateField.sum("openIssues"),
+      })
+      .get(),
+    getPlatformSummaryBuckets(),
+  ]);
 
-  await Promise.all(
-    orgsSnap.docs.map(async (orgDoc) => {
-      const org = orgDoc.data();
-      const projectsSnap = await orgDoc.ref.collection("projects").get();
-      await Promise.all(
-        projectsSnap.docs.map(async (p) => {
-          const data = p.data();
-          const reposSnap = await p.ref.collection("repos").get();
-          const repos = reposSnap.docs.map((r) => {
-            const rd = r.data();
-            return {
-              repoId: r.id,
-              name: rd.name ?? r.id,
-              repoUrl: rd.repoUrl ?? null,
-              debtMinutes: rd.debtMinutes ?? 0,
-              maintainabilityRating: rd.maintainabilityRating ?? "A",
-              securityRating: rd.securityRating ?? "A",
-              qualityGateStatus: rd.qualityGateStatus ?? "PASSED",
-              openIssues: rd.openIssues ?? 0,
-              lastAnalyzedAt: rd.lastAnalyzedAt?.toDate?.().toISOString() ?? null,
-              autoScan: rd.autoScan
-                ? {
-                    enabled: !!rd.autoScan.enabled,
-                    periodicityDays: rd.autoScan.periodicityDays ?? 7,
-                    nextRunAt: rd.autoScan.nextRunAt?.toDate?.().toISOString() ?? null,
-                    lastRunAt: rd.autoScan.lastRunAt?.toDate?.().toISOString() ?? null,
-                  }
-                : undefined,
-            };
-          });
-          projects.push({
-            orgId: orgDoc.id,
-            orgName: org.name ?? orgDoc.id,
-            projectId: p.id,
-            name: data.name ?? p.id,
-            repoCount: repos.length,
-            debtMinutes: data.debtMinutes ?? 0,
-            maintainabilityRating: data.maintainabilityRating ?? "A",
-            securityRating: data.securityRating ?? "A",
-            qualityGateStatus: data.qualityGateStatus ?? "PASSED",
-            openIssues: data.openIssues ?? 0,
-            lastAnalyzedAt: data.lastAnalyzedAt?.toDate?.().toISOString() ?? null,
-            repos,
-          });
-        }),
-      );
-    }),
-  );
+  const ratingOrder = ["E", "D", "C", "B", "A"];
+  const worstSecurityRating =
+    ratingOrder.find((r) => (buckets.bySecurityRating[r] ?? 0) > 0) ?? "A";
+  const failingGates = buckets.byQualityGate.FAILED ?? 0;
 
-  return { orgCount: orgsSnap.size, projects };
+  return {
+    orgCount: orgCountSnap.data().count,
+    projectCount: projectCountSnap.data().count,
+    repoCount: repoAggSnap.data().count,
+    debtMinutes: repoAggSnap.data().debtMinutes ?? 0,
+    openIssues: repoAggSnap.data().openIssues ?? 0,
+    failingGates,
+    worstSecurityRating,
+  };
 });
 
 /** Lets the web app show/hide the "Admin" nav entry without a Firestore read. */
@@ -85,22 +140,26 @@ export const checkPlatformAdmin = onCall(async (request) => {
 const MAX_ISSUES = 2000;
 
 /**
- * Every open finding across every repo/org — "todos os apontamentos da
- * esteira" for the admin's consolidated graphs. Uses a single-field
- * collectionGroup query (`status == "open"`, no composite index needed) via
- * the Admin SDK, then joins in repo/project/org names from one pass over the
- * hierarchy. Findings carry `source` ("github-action" | "auto-scan" | "cli")
- * so the admin view can show which pipeline produced each one.
+ * Every open finding across every repo/org — consolidated admin view.
+ * Queries each repo's issues subcollection (COLLECTION scope — auto-indexed)
+ * rather than collectionGroup+status, which needs a single-field exemption
+ * that firebase-tools often fails to deploy against the codehero database.
  */
-export const adminListAllIssues = onCall(async (request) => {
+export const adminListAllIssues = onCall({ memory: "1GiB", timeoutSeconds: 540 }, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
   await requirePlatformAdmin(uid);
 
-  const repoMeta = new Map<
-    string,
-    { orgId: string; orgName: string; projectId: string; projectName: string; repoName: string }
-  >();
+  type RepoMeta = {
+    orgId: string;
+    orgName: string;
+    projectId: string;
+    projectName: string;
+    repoName: string;
+    ref: DocumentReference;
+  };
+
+  const repos: RepoMeta[] = [];
   const orgsSnap = await db.collection("orgs").get();
   await Promise.all(
     orgsSnap.docs.map(async (orgDoc) => {
@@ -111,12 +170,13 @@ export const adminListAllIssues = onCall(async (request) => {
           const projectName = (p.data().name as string | undefined) ?? p.id;
           const reposSnap = await p.ref.collection("repos").get();
           for (const r of reposSnap.docs) {
-            repoMeta.set(r.id, {
+            repos.push({
               orgId: orgDoc.id,
               orgName,
               projectId: p.id,
               projectName,
               repoName: (r.data().name as string | undefined) ?? r.id,
+              ref: r.ref,
             });
           }
         }),
@@ -124,37 +184,47 @@ export const adminListAllIssues = onCall(async (request) => {
     }),
   );
 
-  const issuesSnap = await db.collectionGroup("issues").where("status", "==", "open").limit(MAX_ISSUES).get();
-
   const bySeverity: Record<string, number> = {};
   const bySource: Record<string, number> = {};
   const items: Array<Record<string, unknown>> = [];
 
-  for (const d of issuesSnap.docs) {
-    const data = d.data();
-    const repoId = d.ref.path.split("/")[5] ?? "";
-    const meta = repoMeta.get(repoId);
-    const severity = (data.severity as string | undefined) ?? "INFO";
-    const source = (data.source as string | undefined) ?? "github-action";
-    bySeverity[severity] = (bySeverity[severity] ?? 0) + 1;
-    bySource[source] = (bySource[source] ?? 0) + 1;
-    items.push({
-      issueId: d.id,
-      repoId,
-      repoName: meta?.repoName ?? repoId,
-      projectId: meta?.projectId ?? null,
-      projectName: meta?.projectName ?? "—",
-      orgId: meta?.orgId ?? null,
-      orgName: meta?.orgName ?? "—",
-      ruleId: data.ruleId ?? "",
-      severity,
-      issueType: data.issueType ?? "CODE_SMELL",
-      message: data.message ?? "",
-      file: data.file ?? "",
-      line: data.line ?? 0,
-      source,
-      lastSeen: data.lastSeen?.toDate?.().toISOString() ?? null,
-    });
+  const CONCURRENCY = 20;
+  for (let i = 0; i < repos.length && items.length < MAX_ISSUES; i += CONCURRENCY) {
+    const chunk = repos.slice(i, i + CONCURRENCY);
+    const snaps = await Promise.all(
+      chunk.map((r) =>
+        r.ref.collection("issues").where("status", "==", "open").limit(Math.min(200, MAX_ISSUES - items.length)).get(),
+      ),
+    );
+    for (let j = 0; j < chunk.length; j++) {
+      const meta = chunk[j]!;
+      const issuesSnap = snaps[j]!;
+      for (const d of issuesSnap.docs) {
+        if (items.length >= MAX_ISSUES) break;
+        const data = d.data();
+        const severity = (data.severity as string | undefined) ?? "INFO";
+        const source = (data.source as string | undefined) ?? "github-action";
+        bySeverity[severity] = (bySeverity[severity] ?? 0) + 1;
+        bySource[source] = (bySource[source] ?? 0) + 1;
+        items.push({
+          issueId: d.id,
+          repoId: meta.ref.id,
+          repoName: meta.repoName,
+          projectId: meta.projectId,
+          projectName: meta.projectName,
+          orgId: meta.orgId,
+          orgName: meta.orgName,
+          ruleId: data.ruleId ?? "",
+          severity,
+          issueType: data.issueType ?? "CODE_SMELL",
+          message: data.message ?? "",
+          file: data.file ?? "",
+          line: data.line ?? 0,
+          source,
+          lastSeen: data.lastSeen?.toDate?.().toISOString() ?? null,
+        });
+      }
+    }
   }
 
   items.sort((a, b) => new Date((b.lastSeen as string) ?? 0).getTime() - new Date((a.lastSeen as string) ?? 0).getTime());

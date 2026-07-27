@@ -1,6 +1,7 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { defineSecret } from "firebase-functions/params";
 import { FieldValue } from "firebase-admin/firestore";
+import { isUnsafeRegex } from "@codehero/contracts";
 import { interpretDressCode, type DressCodeDraftRule } from "./genkit/dressCodeFlow.ts";
 import { db } from "./lib/firebase.ts";
 
@@ -86,7 +87,15 @@ export const submitDressCode = onCall(
     const proposal = await interpretDressCode(text);
     const dressCodeId = db.collection("_").doc().id;
     const activate = data.activate !== false;
-    const overlays = proposal.rules.map((r) => toOverlayRule(r, dressCodeId));
+
+    // Reject any rule whose LLM-generated regex has a known catastrophic-
+    // backtracking shape — it will run unsandboxed, with no execution
+    // timeout, against every file of every future scan for this scope.
+    const safeRules = proposal.rules.filter(
+      (r) => !isUnsafeRegex(r.patternRegex) && !(r.patternUnless && isUnsafeRegex(r.patternUnless)),
+    );
+    const unsafeCount = proposal.rules.length - safeRules.length;
+    const overlays = safeRules.map((r) => toOverlayRule(r, dressCodeId));
 
     const doc = {
       id: dressCodeId,
@@ -138,6 +147,7 @@ export const submitDressCode = onCall(
       scope,
       ruleCount: overlays.length,
       rules: overlays,
+      unsafeRulesRejected: unsafeCount,
     };
   },
 );

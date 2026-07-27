@@ -3,9 +3,10 @@ import { logger } from "firebase-functions";
 import { z } from "zod";
 import { type SarifLog } from "@codehero/contracts";
 import { storage, STORAGE_BUCKET_NAME, repoRef } from "./lib/firebase.ts";
-import { persistAnalysisResults, enqueueIssueUpsertJob } from "./lib/ingestCore.ts";
+import { persistAnalysisResults, enqueueIssueUpsertJob, upsertIssuesFromResults } from "./lib/ingestCore.ts";
 import { ingestIdempotencyKey, findRecentIngest } from "./lib/ingestIdempotency.ts";
 import { assertBuildQuota, incrementBuildQuota } from "./lib/quotas.ts";
+import { getPlatformOpsConfig } from "./lib/platformOps.ts";
 
 const IngestSchema = z.object({
   orgId: z.string().min(1),
@@ -105,7 +106,9 @@ export const ingestAnalysis = onRequest(
       return;
     }
 
-    // Defer BulkWriter issue upserts so the quality gate returns quickly to CI.
+    const ops = await getPlatformOpsConfig();
+    const deferIssues = ops.deferIssueWrites;
+
     const { summary } = await persistAnalysisResults({
       orgId,
       projectId,
@@ -119,36 +122,37 @@ export const ingestAnalysis = onRequest(
       source: "github-action",
       idempotencyKey,
       analysisId,
-      deferIssueWrites: true,
+      deferIssueWrites: deferIssues,
     });
 
-    try {
-      await enqueueIssueUpsertJob({
-        orgId,
-        projectId,
-        repoId,
-        analysisId,
-        sarifPath,
-        branch,
-        source: "github-action",
-        newCodeFingerprints,
-      });
-    } catch (err) {
-      logger.error("failed to enqueue ingest job — falling back to sync upsert", {
-        analysisId,
-        err: String(err),
-      });
-      const { upsertIssuesFromResults } = await import("./lib/ingestCore.ts");
-      await upsertIssuesFromResults({
-        orgId,
-        projectId,
-        repoId,
-        results,
-        branch,
-        source: "github-action",
-        analysisId,
-        newCodeFingerprints,
-      });
+    if (deferIssues) {
+      try {
+        await enqueueIssueUpsertJob({
+          orgId,
+          projectId,
+          repoId,
+          analysisId,
+          sarifPath,
+          branch,
+          source: "github-action",
+          newCodeFingerprints,
+        });
+      } catch (err) {
+        logger.error("failed to enqueue ingest job — falling back to sync upsert", {
+          analysisId,
+          err: String(err),
+        });
+        await upsertIssuesFromResults({
+          orgId,
+          projectId,
+          repoId,
+          results,
+          branch,
+          source: "github-action",
+          analysisId,
+          newCodeFingerprints,
+        });
+      }
     }
 
     try {
@@ -164,8 +168,8 @@ export const ingestAnalysis = onRequest(
       analysisId,
       findings: results.length,
       gate: summary.qualityGate.status,
-      deferredIssues: true,
+      deferredIssues: deferIssues,
     });
-    res.status(200).json({ analysisId, summary, deferredIssues: true });
+    res.status(200).json({ analysisId, summary, deferredIssues: deferIssues });
   },
 );
