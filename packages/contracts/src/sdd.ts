@@ -196,4 +196,32 @@ export const SDD_TEMPLATES: Record<string, SddTemplate> = {
       "Manter estilo/indentação fixa de colunas do arquivo COBOL.",
     ],
   },
+  "sdd.deserialize.avoid-unsafe": {
+    id: "sdd.deserialize.avoid-unsafe",
+    strategy: "avoid_unsafe_deserialization",
+    guidance:
+      "Não desserialize dados não confiáveis com BinaryFormatter/ObjectInputStream. Use um formato de dados (JSON/XML) com um serializador seguro e um allowlist de tipos.",
+    constraints: [
+      "Não aceitar tipos arbitrários na desserialização.",
+      "Preservar o schema de dados já persistido quando possível.",
+      "Manter estilo do arquivo.",
+    ],
+  },
+  "sdd.xxe.disable-external-entities": {
+    id: "sdd.xxe.disable-external-entities",
+    strategy: "disable_xml_external_entities",
+    guidance:
+      "Desabilite DTD/entidades externas no parser XML (ex.: disallow-doctype-decl, XmlResolver = null, DtdProcessing.Prohibit) antes de processar XML de fontes não confiáveis.",
+    constraints: ["Preservar o parsing de XML válido sem DTD externo.", "Manter estilo do arquivo."],
+  },
+  "sdd.smell.remove-alter-cobol": {
+    id: "sdd.smell.remove-alter-cobol",
+    strategy: "remove_alter_statement",
+    guidance:
+      "Remova o ALTER e substitua o destino variável do GO TO por um PERFORM condicional explícito (ex.: uma variável de estado + EVALUATE), tornando o fluxo estático e rastreável.",
+    constraints: [
+      "Preservar exatamente o comportamento observável do parágrafo.",
+      "Manter estilo/indentação fixa de colunas do arquivo COBOL.",
+    ],
+  },
 };

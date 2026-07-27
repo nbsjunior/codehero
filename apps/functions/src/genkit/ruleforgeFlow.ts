@@ -125,6 +125,18 @@ export const ruleforgeDailyFlow = ai.defineFlow(
     inputSchema: z.object({
       context: z.string().optional(),
       seed: z.number().optional(),
+      /** Optional extended corpus (packaged golden + Firestore approved cases). */
+      corpus: z
+        .array(
+          z.object({
+            id: z.string(),
+            ruleId: z.string(),
+            code: z.string(),
+            expected: z.enum(["match", "no_match"]),
+            note: z.string().optional(),
+          }),
+        )
+        .optional(),
     }),
     outputSchema: DailyReportSchema,
   },
@@ -132,6 +144,7 @@ export const ruleforgeDailyFlow = ai.defineFlow(
     const report = await evolveAllRules({
       seed: input.seed,
       context: input.context,
+      corpus: input.corpus,
       generator: createGenkitCandidateGenerator(),
     });
 

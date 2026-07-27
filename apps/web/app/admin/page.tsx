@@ -12,6 +12,7 @@ import WorkspaceWizard from "@/components/admin/WorkspaceWizard";
 import InstalacaoHome from "@/components/admin/InstalacaoHome";
 import UsersPanel from "@/components/admin/UsersPanel";
 import RulesCatalog from "@/components/admin/RulesCatalog";
+import EsteiraPanel from "@/components/admin/EsteiraPanel";
 import FindingsBrowser, { type FindingsBrowserItem } from "@/components/FindingsBrowser";
 import { dbClient } from "@/lib/firebase";
 import { useAuth } from "@/lib/useAuth";
@@ -24,10 +25,8 @@ import {
   getPlatformOpsSettings,
   listDressCodes,
   listFeatureFlags,
-  listRuleforgeRuns,
   repairIngestQueues,
   runDetailPurgeNow,
-  runRuleforgeDailyNow,
   setFeatureFlag,
   setOrgQuotas,
   setPlatformOpsSettings,
@@ -42,7 +41,6 @@ import {
   type PlatformOpsConfig,
   type PlatformSummary,
   type RepoRow,
-  type RuleforgeRun,
 } from "@/lib/api";
 
 const SHARED_GROUPS: CockpitNavGroup[] = [
@@ -172,17 +170,12 @@ function AdminPanelInner() {
   const [intervalDraft, setIntervalDraft] = useState("7");
   const [stuckDraft, setStuckDraft] = useState("30");
 
-  const [runs, setRuns] = useState<RuleforgeRun[]>([]);
-  const [runsLoading, setRunsLoading] = useState(true);
-  const [runsError, setRunsError] = useState<string | null>(null);
-  const [runBusy, setRunBusy] = useState(false);
-  const [expandedRun, setExpandedRun] = useState<string | null>(null);
-
   const [dressItems, setDressItems] = useState<Array<Record<string, unknown>>>([]);
   const [dressText, setDressText] = useState("");
   const [dressBusy, setDressBusy] = useState(false);
   const [dressError, setDressError] = useState<string | null>(null);
   const [dressMsg, setDressMsg] = useState<string | null>(null);
+  const [dressRequireApproval, setDressRequireApproval] = useState(true);
 
   const [quotaOrgId, setQuotaOrgId] = useState("");
   const [quotas, setQuotas] = useState<OrgQuotasView | null>(null);
@@ -395,16 +388,6 @@ function AdminPanelInner() {
       })
       .catch((err) => {
         if (!cancelled) setOpsError(err instanceof Error ? err.message : "Falha nas ops.");
-      });
-    listRuleforgeRuns(14)
-      .then(({ runs: r }) => {
-        if (!cancelled) setRuns(r);
-      })
-      .catch((err) => {
-        if (!cancelled) setRunsError(err instanceof Error ? err.message : "Falha na esteira.");
-      })
-      .finally(() => {
-        if (!cancelled) setRunsLoading(false);
       });
     listDressCodes({ scope: "global" })
       .then(({ items }) => {
@@ -862,9 +845,14 @@ function AdminPanelInner() {
                     const res = await submitDressCode({
                       naturalLanguage: dressText,
                       scope: "global",
-                      activate: true,
+                      activate: !dressRequireApproval,
+                      requireApproval: dressRequireApproval,
                     });
-                    setDressMsg(`${res.ruleCount} regra(s) ativada(s): ${res.summary}`);
+                    setDressMsg(
+                      dressRequireApproval
+                        ? `${res.ruleCount} proposta(s) na Esteira: ${res.summary}`
+                        : `${res.ruleCount} regra(s) ativada(s): ${res.summary}`,
+                    );
                     setDressText("");
                     const { items } = await listDressCodes({ scope: "global" });
                     setDressItems(items);
@@ -885,8 +873,16 @@ function AdminPanelInner() {
                   required
                   minLength={8}
                 />
+                <label className="hero-radio-row">
+                  <input
+                    type="checkbox"
+                    checked={dressRequireApproval}
+                    onChange={(e) => setDressRequireApproval(e.target.checked)}
+                  />
+                  <span>Enviar para aprovação na Esteira (recomendado)</span>
+                </label>
                 <button type="submit" className="hero-btn hero-btn-accent" disabled={dressBusy}>
-                  {dressBusy ? "Interpretando…" : "Criar e ativar"}
+                  {dressBusy ? "Interpretando…" : dressRequireApproval ? "Criar propostas" : "Criar e ativar"}
                 </button>
               </form>
             </DataSection>
@@ -909,84 +905,7 @@ function AdminPanelInner() {
           </>
         )}
 
-        {tab === "esteira" && isPlatformAdmin && (
-          <>
-            <PageHeader
-              eyebrow="Plataforma"
-              title="Esteira de regras"
-              description="1×/dia propõe melhorias; o motor determinístico decide promoção"
-              actions={
-                <button
-                  type="button"
-                  className="hero-btn hero-btn-accent"
-                  disabled={runBusy}
-                  onClick={async () => {
-                    setRunBusy(true);
-                    setRunsError(null);
-                    try {
-                      await runRuleforgeDailyNow();
-                      const { runs: r } = await listRuleforgeRuns(14);
-                      setRuns(r);
-                    } catch (err) {
-                      setRunsError(err instanceof Error ? err.message : "Falha ao rodar.");
-                    } finally {
-                      setRunBusy(false);
-                    }
-                  }}
-                >
-                  {runBusy ? "Rodando…" : "Rodar agora"}
-                </button>
-              }
-            />
-            {runsError && <div className="hero-error">{runsError}</div>}
-            {runsLoading ? (
-              <p className="hero-caption">Carregando…</p>
-            ) : runs.length === 0 ? (
-              <p className="hero-caption">Nenhuma execução ainda.</p>
-            ) : (
-              <div style={{ display: "grid", gap: "0.5rem" }}>
-                {runs.map((r) => (
-                  <div key={r.day} className="hero-panel-sm" style={{ padding: "0.85rem 1rem" }}>
-                    <button
-                      type="button"
-                      onClick={() => setExpandedRun(expandedRun === r.day ? null : r.day)}
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        width: "100%",
-                        background: "none",
-                        border: 0,
-                        cursor: "pointer",
-                        font: "inherit",
-                        color: "inherit",
-                        padding: 0,
-                      }}
-                    >
-                      <span>
-                        {expandedRun === r.day ? "▾" : "▸"} <strong>{r.day}</strong>
-                      </span>
-                      <span>
-                        <span className="hero-badge" style={{ background: "var(--rating-a)", color: "#fff", marginRight: 6 }}>
-                          {r.promotedCount} ok
-                        </span>
-                        <span className="hero-badge">{r.rejectedCount} rejeitadas</span>
-                      </span>
-                    </button>
-                    {expandedRun === r.day && (
-                      <ul className="hero-caption" style={{ marginTop: "0.75rem" }}>
-                        {r.rules.map((ro) => (
-                          <li key={ro.ruleId}>
-                            <code>{ro.ruleId}</code> — {ro.decision} ({ro.baselineF1.toFixed(2)} → {ro.bestF1.toFixed(2)})
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </>
-        )}
+        {tab === "esteira" && isPlatformAdmin && <EsteiraPanel />}
 
         {tab === "feature-toggles" && isPlatformAdmin && (
           <>

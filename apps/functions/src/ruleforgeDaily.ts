@@ -3,15 +3,21 @@ import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { defineSecret } from "firebase-functions/params";
 import { logger } from "firebase-functions";
 import { FieldValue } from "firebase-admin/firestore";
+import { loadCorpus } from "@codehero/ruleforge";
 import { db } from "./lib/firebase.ts";
 import { ruleforgeDailyFlow, type RuleforgeDailyReport } from "./genkit/ruleforgeFlow.ts";
+import { draftToEnqueue, proposeNewRulesBatch } from "./genkit/newRulesFlow.ts";
+import {
+  enqueueEvolveProposalsFromReport,
+  enqueueNewRuleProposals,
+  loadFirestoreCorpusCases,
+} from "./ruleProposals.ts";
 
 const GEMINI_API_KEY = defineSecret("GEMINI_API_KEY");
 
 function ensureGenkitApiKey(): void {
   const key = process.env.GEMINI_API_KEY?.trim();
   if (!key) throw new Error("GEMINI_API_KEY secret is empty");
-  // @genkit-ai/google-genai reads GOOGLE_GENAI_API_KEY / GOOGLE_API_KEY
   process.env.GOOGLE_GENAI_API_KEY = key;
   process.env.GOOGLE_API_KEY = key;
   process.env.GEMINI_MODEL = process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash";
@@ -46,24 +52,47 @@ async function persistReport(report: RuleforgeDailyReport): Promise<string> {
   return ref.path;
 }
 
-async function runDaily(trigger: "schedule" | "manual"): Promise<RuleforgeDailyReport> {
+async function runDaily(trigger: "schedule" | "manual"): Promise<
+  RuleforgeDailyReport & { proposalsEnqueued: number; newRuleProposals: number }
+> {
   ensureGenkitApiKey();
-  const context = `Daily CodeHero ruleforge (${trigger}). ${await loadFeedbackContext()}`;
-  const report = await ruleforgeDailyFlow({ context });
+  const feedback = await loadFeedbackContext();
+  const firestoreCorpus = await loadFirestoreCorpusCases();
+  const packaged = loadCorpus();
+  const corpus = [...packaged, ...firestoreCorpus];
+
+  const context = `Daily CodeHero ruleforge (${trigger}). ${feedback}`;
+  const report = await ruleforgeDailyFlow({ context, corpus });
   const path = await persistReport(report);
+
+  const evolveQueued = await enqueueEvolveProposalsFromReport(report);
+
+  let newRuleProposals = 0;
+  try {
+    const day = report.ranAt.slice(0, 10);
+    const batch = await proposeNewRulesBatch(context);
+    newRuleProposals = await enqueueNewRuleProposals(batch.drafts.map((d) => draftToEnqueue(d, day)));
+  } catch (err) {
+    logger.warn("new rules proposal batch failed", err);
+  }
+
   logger.info("ruleforgeDaily complete", {
     path,
     promoted: report.promotedCount,
     rejected: report.rejectedCount,
     seed: report.seed,
+    evolveQueued,
+    newRuleProposals,
+    corpusExtra: firestoreCorpus.length,
   });
-  return report;
+
+  return { ...report, proposalsEnqueued: evolveQueued, newRuleProposals };
 }
 
 /**
- * Once per day (06:05 America/Sao_Paulo): Genkit proposes mutations →
- * deterministic evolve scores them → results land in ruleforgeRuns/{yyyy-mm-dd}.
- * Promoted patterns are NOT auto-merged into contracts — humans open a PR.
+ * Once per day: Genkit proposes mutations + new rules → deterministic evolve
+ * scores evolves → BOTH land as pending ruleProposals for human approval.
+ * Approval writes platformDressRules + ruleforgeCorpus (all scan channels).
  */
 export const ruleforgeDaily = onSchedule(
   {
@@ -79,15 +108,6 @@ export const ruleforgeDaily = onSchedule(
   },
 );
 
-/**
- * Lists recent daily reports for the admin UI's "Esteira de Inteligência
- * Agêntica (Genkit)" view. A callable (Admin SDK) rather than a client
- * Firestore query — deliberately, since Firestore refuses LIST queries whose
- * rule needs an exists()/get() lookup unless the collection is declared with
- * the top-level `{path=**}` collection-group pattern (verified empirically
- * elsewhere in this codebase); simplest and most robust is to just not rely
- * on client-side Firestore list rules for admin-only aggregate views.
- */
 export const listRuleforgeRuns = onCall<{ limit?: number }>(async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
@@ -99,7 +119,6 @@ export const listRuleforgeRuns = onCall<{ limit?: number }>(async (request) => {
   return { runs: snap.docs.map((d) => ({ day: d.id, ...d.data() })) };
 });
 
-/** Manual trigger for admins / CI smoke (Firebase Auth required). */
 export const runRuleforgeDaily = onCall(
   {
     region: "us-central1",
