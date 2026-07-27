@@ -6,6 +6,7 @@ export * from "./sdd.ts";
 export * from "./matcher.ts";
 export * from "./firebaseResources.ts";
 export * from "./engineKinds.ts";
+export * from "./githubAction.ts";
 
 export const TOOL_NAME = "CodeHero";
 export const TOOL_VERSION = "0.1.0";

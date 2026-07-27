@@ -11,7 +11,7 @@ export interface ActiveRulesBundle {
   source: "server" | "cache" | "bundled";
 }
 
-const DEFAULT_SERVER = "https://YOUR_API_BASE_URL";
+const DEFAULT_SERVER = "https://codehero.web.app/api";
 
 /**
  * Resolve the active rule set: server (preferred) → disk cache → bundled RULES.

@@ -42,7 +42,8 @@ function translateAuthError(err: unknown): string {
     "auth/operation-not-allowed":
       "Cadastro por email está desativado neste projeto Firebase. Use Criar conta ou Google.",
     "auth/unauthorized-domain": "Este domínio não está autorizado no Firebase Auth.",
-    "auth/network-request-failed": "Falha de rede. Verifique sua conexão e tente de novo.",
+    "auth/network-request-failed":
+      "Falha ao falar com o Firebase Auth (rede ou config inválida). Se estiver em codehero.web.app, peça um redeploy após corrigir os secrets NEXT_PUBLIC_*.",
     "auth/api-key-not-valid.-please-pass-a-valid-api-key.":
       "Este domínio não está autorizado na API key do Firebase. Peça para liberar codehero.web.app.",
     "already-exists": "Já existe uma conta com esse email — use Entrar.",

@@ -283,6 +283,7 @@ CLI: `npm run scan -- <path> [--sarif] [--cache]`. IDE: `packages/ide-vscode`. M
 | `packages/mcp` | servidor MCP (Claude / Copilot / Cursor) |
 | `packages/ide-vscode` | extensão VS Code / Cursor |
 | `packages/github-action` | Action de scan→ingest |
+| One-click GHA | Portal OAuth em `/projeto/githubOauthCallback` + API `/api/*` — ver [GITHUB_ACTION_ONE_CLICK.md](./GITHUB_ACTION_ONE_CLICK.md) |
 | `integrations/mcp` | exemplos de config MCP |
 | `apps/functions` | Functions + Genkit |
 | `apps/web` | Dashboard Next.js |

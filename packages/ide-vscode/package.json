@@ -146,7 +146,7 @@
         },
         "codehero.serverUrl": {
           "type": "string",
-          "default": "https://YOUR_API_BASE_URL",
+          "default": "https://codehero.web.app/api",
           "description": "URL base das Cloud Functions (getActiveRules). O plugin busca as regras aqui antes de cada scan."
         },
         "codehero.token": {
