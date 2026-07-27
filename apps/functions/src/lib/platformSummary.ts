@@ -20,6 +20,8 @@ export async function applyPlatformSummaryDelta(input: {
   newGate: string;
   oldSecurity: string | null;
   newSecurity: string;
+  oldMaintainability: string | null;
+  newMaintainability: string;
 }): Promise<void> {
   const inc: Record<string, FieldValue> = {};
   if (input.isNewProject) {
@@ -33,6 +35,10 @@ export async function applyPlatformSummaryDelta(input: {
     if (input.oldSecurity) inc[`bySecurityRating.${input.oldSecurity}`] = FieldValue.increment(-1);
     inc[`bySecurityRating.${input.newSecurity}`] = FieldValue.increment(1);
   }
+  if (input.oldMaintainability !== input.newMaintainability) {
+    if (input.oldMaintainability) inc[`byMaintainabilityRating.${input.oldMaintainability}`] = FieldValue.increment(-1);
+    inc[`byMaintainabilityRating.${input.newMaintainability}`] = FieldValue.increment(1);
+  }
   if (Object.keys(inc).length === 0) return;
   await SUMMARY_REF.set(inc, { merge: true });
 }
@@ -40,11 +46,13 @@ export async function applyPlatformSummaryDelta(input: {
 export async function getPlatformSummaryBuckets(): Promise<{
   byQualityGate: Record<string, number>;
   bySecurityRating: Record<string, number>;
+  byMaintainabilityRating: Record<string, number>;
 }> {
   const snap = await SUMMARY_REF.get();
   const data = snap.data() ?? {};
   return {
     byQualityGate: (data.byQualityGate as Record<string, number>) ?? {},
     bySecurityRating: (data.bySecurityRating as Record<string, number>) ?? {},
+    byMaintainabilityRating: (data.byMaintainabilityRating as Record<string, number>) ?? {},
   };
 }

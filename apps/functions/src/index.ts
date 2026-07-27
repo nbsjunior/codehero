@@ -30,6 +30,7 @@ export {
 export { adminCreateProject, getOrgQuotasCallable, setOrgQuotas } from "./adminWorkspaces.ts";
 export { ruleforgeDaily, runRuleforgeDaily, listRuleforgeRuns } from "./ruleforgeDaily.ts";
 export { submitDressCode, listDressCodes } from "./dressCode.ts";
+export { listMotorRules, deleteOverlayRule } from "./rulesCatalog.ts";
 export { previewRepoScan } from "./previewScan.ts";
 export { registerAccount } from "./registerAccount.ts";
 export { rotateIngestToken } from "./tokens.ts";

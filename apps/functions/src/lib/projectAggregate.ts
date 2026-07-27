@@ -48,5 +48,7 @@ export async function recomputeProjectAggregate(orgId: string, projectId: string
     newGate: aggregate.qualityGateStatus,
     oldSecurity: (old.securityRating as string) ?? null,
     newSecurity: aggregate.securityRating,
+    oldMaintainability: (old.maintainabilityRating as string) ?? null,
+    newMaintainability: aggregate.maintainabilityRating,
   });
 }
