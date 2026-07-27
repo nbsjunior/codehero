@@ -1,11 +1,29 @@
 import * as vscode from "vscode";
 import type { ScanFinding, ScanSummary } from "./scan";
 
+class DetailItem extends vscode.TreeItem {
+  constructor(label: string, detail: string, icon: string) {
+    super(label, vscode.TreeItemCollapsibleState.None);
+    this.description = detail.length > 80 ? `${detail.slice(0, 77)}…` : detail;
+    this.tooltip = detail;
+    this.iconPath = new vscode.ThemeIcon(icon);
+  }
+}
+
 export class FindingItem extends vscode.TreeItem {
+  children: DetailItem[];
+
   constructor(readonly finding: ScanFinding) {
-    super(`${finding.severity} · ${finding.ruleId}`, vscode.TreeItemCollapsibleState.None);
+    super(`${finding.severity} · ${finding.ruleId}`, vscode.TreeItemCollapsibleState.Collapsed);
     this.description = `${finding.file}:${finding.line}`;
-    this.tooltip = `${finding.message}\n${finding.snippet}`;
+    this.tooltip = [
+      finding.risk ? `Risco: ${finding.risk}` : "",
+      `Motivo: ${finding.message}`,
+      finding.howToFix ? `Como corrigir: ${finding.howToFix}` : "",
+      finding.snippet,
+    ]
+      .filter(Boolean)
+      .join("\n\n");
     this.iconPath = new vscode.ThemeIcon(iconForSeverity(finding.severity));
     this.contextValue = "codeheroFinding";
     this.command = {
@@ -13,6 +31,11 @@ export class FindingItem extends vscode.TreeItem {
       title: "Abrir",
       arguments: [this],
     };
+    this.children = [
+      new DetailItem("Risco", finding.risk || finding.severity, "warning"),
+      new DetailItem("Motivo", finding.message, "info"),
+      new DetailItem("Como corrigir", finding.howToFix || "Ver ficha completa", "lightbulb"),
+    ];
   }
 }
 
@@ -44,10 +67,7 @@ export class FindingsTreeProvider implements vscode.TreeDataProvider<vscode.Tree
     this.summary = summary;
     if (findings.length === 0) {
       this.roots = [
-        new SummaryItem(
-          "Nenhum finding",
-          "QG limpo — regras determinísticas não encontraram problemas",
-        ),
+        new SummaryItem("Nenhum apontamento", "QG limpo — nenhuma violação nas regras ativas"),
       ];
     } else {
       const order = ["BLOCKER", "CRITICAL", "MAJOR", "MINOR", "INFO"];
@@ -57,7 +77,7 @@ export class FindingsTreeProvider implements vscode.TreeDataProvider<vscode.Tree
         if (list.length) groups.push(new SeverityGroup(sev, list));
       }
       const header = new SummaryItem(
-        `Avaliação: ${findings.length} finding(s)`,
+        `Avaliação: ${findings.length} apontamento(s)`,
         Object.entries(summary.bySeverity)
           .map(([k, v]) => `${k} ${v}`)
           .join(" · "),
@@ -74,6 +94,7 @@ export class FindingsTreeProvider implements vscode.TreeDataProvider<vscode.Tree
   getChildren(element?: vscode.TreeItem): vscode.ProviderResult<vscode.TreeItem[]> {
     if (!element) return this.roots;
     if (element instanceof SeverityGroup) return element.children;
+    if (element instanceof FindingItem) return element.children;
     return [];
   }
 }

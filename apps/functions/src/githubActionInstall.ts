@@ -7,7 +7,7 @@ import {
   codeHeroGithubOAuthCallbackUrl,
   slugifyProjectName,
 } from "@codehero/contracts";
-import { db, projectRef } from "./lib/firebase.ts";
+import { db, projectRef, repoRef } from "./lib/firebase.ts";
 import { installCodeHeroOnRepo, parseGithubOwnerRepo } from "./lib/githubApi.ts";
 
 /** Optional — set via Cloud Run env / Secret Manager after OAuth App exists. */
@@ -28,6 +28,7 @@ const ALLOWED_RETURN_ORIGINS = new Set([
 interface StartInput {
   orgId: string;
   projectId: string;
+  repoId: string;
   returnOrigin?: string;
 }
 
@@ -87,9 +88,9 @@ export const startGithubActionInstall = onCall<StartInput>({ cors: true }, async
     const uid = request.auth?.uid;
     if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
 
-    const { orgId, projectId } = request.data ?? ({} as StartInput);
-    if (!orgId || !projectId) {
-      throw new HttpsError("invalid-argument", "orgId and projectId are required");
+    const { orgId, projectId, repoId } = request.data ?? ({} as StartInput);
+    if (!orgId || !projectId || !repoId) {
+      throw new HttpsError("invalid-argument", "orgId, projectId and repoId are required");
     }
 
     const clientId = githubOAuthClientId();
@@ -106,13 +107,17 @@ export const startGithubActionInstall = onCall<StartInput>({ cors: true }, async
     const pSnap = await projectRef(orgId, projectId).get();
     if (!pSnap.exists) throw new HttpsError("not-found", "project not found");
 
+    const rSnap = await repoRef(orgId, projectId, repoId).get();
+    if (!rSnap.exists) throw new HttpsError("not-found", "repo not found");
+
     const pdata = pSnap.data() ?? {};
-    const repoUrl = (pdata.repoUrl as string | null | undefined) ?? null;
+    const rdata = rSnap.data() ?? {};
+    const repoUrl = (rdata.repoUrl as string | null | undefined) ?? null;
     const parsed = repoUrl ? parseGithubOwnerRepo(repoUrl) : null;
     if (!parsed) {
       throw new HttpsError(
         "failed-precondition",
-        "Cadastre a URL do repositório GitHub no projeto antes de instalar a Action.",
+        "Este repositório do projeto está sem uma URL de GitHub válida.",
       );
     }
 
@@ -126,6 +131,7 @@ export const startGithubActionInstall = onCall<StartInput>({ cors: true }, async
       uid,
       orgId,
       projectId,
+      repoId,
       projectSlug,
       projectName: String(pdata.name ?? projectSlug),
       owner: parsed.owner,
@@ -196,6 +202,7 @@ export const githubOAuthCallback = onRequest({ cors: false }, async (req, res) =
         uid: string;
         orgId: string;
         projectId: string;
+        repoId: string;
         projectSlug: string;
         projectName?: string;
         owner: string;
@@ -273,17 +280,18 @@ export const githubOAuthCallback = onRequest({ cors: false }, async (req, res) =
       }
 
       const pRef = projectRef(st.orgId, st.projectId);
-      const pSnap = await pRef.get();
-      if (!pSnap.exists) {
+      const rRef = repoRef(st.orgId, st.projectId, st.repoId);
+      const [pSnap, rSnap] = await Promise.all([pRef.get(), rRef.get()]);
+      if (!pSnap.exists || !rSnap.exists) {
         await stateRef.delete().catch(() => undefined);
-        failSt("Projeto não encontrado.");
+        failSt("Projeto ou repositório não encontrado.");
         return;
       }
 
-      const ingestToken = String(pSnap.data()?.ingestToken ?? "");
+      const ingestToken = String(rSnap.data()?.ingestToken ?? "");
       if (!ingestToken) {
         await stateRef.delete().catch(() => undefined);
-        failSt("Projeto sem token de ingestão — rotacione o token no portal.");
+        failSt("Repositório sem token de ingestão — rotacione o token no portal.");
         return;
       }
 
@@ -295,6 +303,7 @@ export const githubOAuthCallback = onRequest({ cors: false }, async (req, res) =
           repo: st.repo,
           orgId: st.orgId,
           projectId: st.projectId,
+          repoId: st.repoId,
           ingestToken,
           // CI talks to the portal API gateway — never the raw Functions host.
           heroCoreUrl: CODEHERO_PUBLIC_API_BASE,
@@ -305,19 +314,20 @@ export const githubOAuthCallback = onRequest({ cors: false }, async (req, res) =
         return;
       }
 
-      await pRef.update({
+      await rRef.update({
         githubActionInstalledAt: FieldValue.serverTimestamp(),
         githubActionInstalledBy: st.uid,
         githubActionRepo: `${installed.owner}/${installed.repo}`,
         githubActionDefaultBranch: installed.defaultBranch,
-        slug: st.projectSlug,
       });
+      await pRef.update({ slug: st.projectSlug });
 
       await stateRef.delete().catch(() => undefined);
 
       const ok = new URL("/projects", returnOrigin);
       ok.searchParams.set("org", st.orgId);
       ok.searchParams.set("id", st.projectId);
+      ok.searchParams.set("repo", st.repoId);
       ok.searchParams.set("slug", st.projectSlug);
       ok.searchParams.set("tab", "action");
       ok.searchParams.set("gha", "ok");

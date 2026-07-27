@@ -2,15 +2,15 @@
 
 **Análise estática de código que aprende — sem colocar IA generativa no caminho de cada arquivo.**
 
-CodeHero é uma plataforma de qualidade e segurança de código no modelo do SonarQube — débito técnico, quality gates, análise multi-linguagem — reconstruída do zero com um eixo diferente: **o catálogo de regras evolui continuamente por um motor de IA determinístico, e cada issue encontrada já nasce com um contrato de correção que um agente (Claude, via MCP) pode aplicar e provar que resolveu.**
+CodeHero é uma plataforma de qualidade e segurança de código — débito técnico, quality gates, análise multi-linguagem — com um eixo diferente: **o catálogo de regras evolui continuamente por um motor determinístico, e cada issue encontrada já nasce com um contrato de correção que um agente (via MCP) pode aplicar e provar que resolveu.**
 
-[Arquitetura completa](docs/ARCHITECTURE.md) · [Roadmap](docs/ARCHITECTURE.md#roadmap-firebase)
+[Documentação na plataforma](https://codehero.web.app/docs) · [Wiki](https://github.com/nbsjunior/codehero/wiki)
 
 ---
 
 ## O problema que isso resolve
 
-Toda ferramenta de SAST enfrenta a mesma tensão: regras de mão têm cobertura limitada e ficam obsoletas (novos CVEs, novos frameworks, novos anti-padrões), mas "colocar um LLM para analisar cada arquivo" resolve a cobertura trocando por um problema pior — **custo que cresce linearmente com o volume de código**, latência incompatível com CI/IDE, e resultados não-determinísticos (a mesma linha pode ser marcada ou não dependendo da temperatura do modelo naquele dia).
+Toda ferramenta de análise estática enfrenta a mesma tensão: regras de mão têm cobertura limitada e ficam obsoletas (novos CVEs, novos frameworks, novos anti-padrões), mas "colocar um LLM para analisar cada arquivo" resolve a cobertura trocando por um problema pior — **custo que cresce linearmente com o volume de código**, latência incompatível com CI/IDE, e resultados não-determinísticos (a mesma linha pode ser marcada ou não dependendo da temperatura do modelo naquele dia).
 
 CodeHero recusa essa troca. A resposta arquitetural é separar os dois problemas:
 
@@ -18,53 +18,53 @@ CodeHero recusa essa troca. A resposta arquitetural é separar os dois problemas
 - **Evoluir as regras** é onde a IA entra — mas em lote, offline, validada por um corpus de teste antes de qualquer promoção. Uma proposta de regra (de um humano ou de um LLM) só vira produção se provar, matematicamente, que melhora sem regredir.
 - **Corrigir** é onde a IA generativa entra de fato, sob demanda — e não "sugere um fix"; ela recebe uma **especificação verificável** (SDD Spec) com critérios de aceite que o próprio motor determinístico confirma depois de aplicado.
 
-## Em que ponto isso evolui em relação ao SonarQube
+## Em que ponto isso evolui em relação a suites enterprise clássicas
 
-| | SonarQube | CodeHero |
+| | Suites enterprise clássicas | CodeHero |
 |---|---|---|
-| **Origem das regras** | Curadas manualmente pelo time da SonarSource, lançadas em releases do produto | Curadas + **evoluídas por busca evolutiva determinística** (`hero-ruleforge`) contra um corpus rotulado — cada promoção é auditável e reproduzível (seed fixa) |
-| **Correção de issues** | Aponta o problema; "quick fixes" automatizados são limitados e não verificam se o fix realmente resolveu | Gera um **SDD Spec** (JSON) com localização exata, contexto de tipos e `acceptanceCriteria` — um agente aplica o diff e o próprio scanner **confirma objetivamente** que a issue sumiu e nenhuma nova surgiu |
-| **Integração com IA/agentes** | Camada de IA (Sonar AI CodeFix) é um add-on comercial fechado sobre o produto existente | **Nativo em MCP** (Model Context Protocol) desde a arquitetura-base — qualquer agente compatível (Claude, etc.) consome `get_issues`/`get_sdd_spec`/`run_scan`/`submit_fix_result` como cidadãos de primeira classe |
-| **Custo de manter a IA** | N/A (não usa IA para evoluir regras) | Buscar/validar uma regra nova custa **milissegundos de CPU** contra um corpus — não uma chamada de API por arquivo escaneado, então o custo não cresce com o volume de código analisado |
-| **Aprendizado com uso real** | Falsos-positivos reportados viram tickets de suporte para o vendor decidir em release futura | Telemetria de produção (`flagIssueFeedback`, `submit_fix_result`) já é capturada como material de corpus rotulado para a próxima rodada de evolução — o ciclo de melhoria é parte do produto, não um processo de vendor externo |
-| **Stack para operar a própria plataforma** | Requer operar Postgres + Elasticsearch (+ opcionalmente outros serviços) | 100% serverless sobre Firebase (Functions + Firestore + Hosting) — sem cluster próprio para manter |
-| **Linguagens legadas empresariais** | Suporte a COBOL/PL·I é add-on Enterprise separado | COBOL, T-SQL/DB2, C#/VB.Net tratados como cidadãos de primeira classe desde o MVP, com regras dedicadas às particularidades sintáticas de cada um (ex.: `MOVE...TO` do COBOL, `SET @sql = ... +` do T-SQL) |
+| **Origem das regras** | Curadas pelo vendor, lançadas em releases | Curadas + **evoluídas por busca evolutiva determinística** contra um corpus rotulado — cada promoção é auditável e reproduzível |
+| **Correção de issues** | Aponta o problema; quick fixes limitados e sem prova | Gera um **SDD Spec** com localização, contexto e critérios de aceite — o agente aplica e o scanner **confirma** que a issue sumiu |
+| **Integração com IA/agentes** | Add-on comercial fechado | **Nativo em MCP** — qualquer agente compatível consome issues, SDD, scan e resultado do fix |
+| **Custo de manter a IA** | N/A ou por token/arquivo | Validar uma regra nova custa **milissegundos de CPU** contra o corpus — o custo não cresce com o volume analisado |
+| **Aprendizado com uso real** | Feedback vira ticket para o vendor | Telemetria de produção alimenta o próximo ciclo de evolução — o ciclo é parte do produto |
+| **Operação da plataforma** | Cluster próprio (DB, search, etc.) | Cloud serverless — sem cluster próprio para o cliente manter |
+| **Linguagens legadas** | Frequentemente add-on Enterprise | COBOL, T-SQL/DB2, C#/VB.Net desde o MVP |
 
-**O que ainda não alcançamos** (honestidade > marketing): o SonarQube tem mais de uma década de cobertura de regras, análise de taint inter-procedural madura, e integrações IDE profundas. O motor determinístico do CodeHero hoje é um matcher por linha (Fase MVP) — a análise de dataflow real é o motor Rust/tree-sitter do roadmap V1→Scale-up, ainda não implementado. Ver [docs/ARCHITECTURE.md § Escala](docs/ARCHITECTURE.md#escala-100-mil-repositórios-2-bilhões-de-linhas-de-código) para o que isso implica em volumes de milhões/bilhões de linhas.
+**O que ainda não alcançamos** (honestidade > marketing): suites maduras têm mais de uma década de cobertura e análise de taint inter-procedural avançada. O motor determinístico do CodeHero hoje cobre o MVP com matcher + AST/dataflow em evolução — ver a documentação na plataforma e a Wiki.
 
 ## Prova, não promessa
 
 Toda alegação acima já foi exercitada de ponta a ponta neste repositório, não apenas desenhada:
 
-- **Busca evolutiva real**: rodando `hero-ruleforge` contra o corpus golden, 2 regras foram promovidas automaticamente (F1 0.50→1.00 e 0.67→1.00) e **uma mutação proposta foi corretamente rejeitada** por não gerar ganho real — o portão de segurança funcionando contra uma proposta ruim, humana ou de IA.
-- **Correção verificável**: o fluxo SARIF → Firestore → SDD Spec → aplicação de fix → `submit_fix_result` foi testado ponta a ponta no emulador Firebase.
-- **Multi-linguagem real**: regras dedicadas para COBOL (`MOVE...TO`, `GO TO`), T-SQL/DB2 (SQL dinâmico) e C#/VB.Net (ADO.NET) detectam corretamente as vulnerabilidades e não disparam falso-positivo nas variantes seguras — testado com arquivos de exemplo reais em [`examples/legacy/`](examples/legacy/).
+- **Busca evolutiva real**: contra o corpus golden, regras foram promovidas automaticamente e mutações ruins corretamente rejeitadas — o portão de segurança funcionando.
+- **Correção verificável**: relatório → portal → SDD Spec → fix → confirmação pelo scanner, ponta a ponta.
+- **Multi-linguagem real**: regras dedicadas para COBOL, T-SQL/DB2 e C#/VB.Net — testado com exemplos em [`examples/legacy/`](examples/legacy/).
 
 ## Os três módulos
 
-1. **Motor de Inspeção** (`packages/scanner`, `packages/ruleforge`) — determinístico na borda; evolução de regras offline e auditável.
-2. **Painel & SDD** (`apps/functions`, `apps/web`) — ingestão, débito técnico (modelo SQALE), quality gates, geração de especificações de correção.
-3. **Integrações** (`packages/mcp`, `packages/github-action`) — GitHub Action, e servidor MCP nativo para agentes de IA.
+1. **Motor de Inspeção** — determinístico na borda; evolução de regras offline e auditável (Dress Code Tools + corpus).
+2. **Painel & SDD** — ingestão via API, débito técnico, quality gates, especificações de correção.
+3. **Integrações** — GitHub Action, VS Code/Cursor e servidor MCP para agentes de IA.
 
-Arquitetura detalhada, diagramas C4/Mermaid e o fluxo de dados completo: **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
+Guia completo para quem usa a plataforma: **[codehero.web.app/docs](https://codehero.web.app/docs)**.
 
 ## Começando
 
-Setup local, MCP, emuladores Firebase e `hero-ruleforge`: ver [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) e a Wiki do repositório.
+Crie a conta no [portal](https://codehero.web.app), provisionne um projeto e escolha o canal (Action, plugin, prévia ou MCP). Detalhes: [docs na plataforma](https://codehero.web.app/docs).
 
 ## Status atual
 
 | Componente | Estado |
 |---|---|
-| Contratos (SARIF+/SDD/SQALE/matcher) | ✅ compila |
-| Scanner → SARIF (7 linguagens) | ✅ roda e valida em exemplos reais |
-| hero-ruleforge (corpus + evolução) | ✅ determinístico + Genkit diário (`ruleforgeDaily`) |
-| Functions (ingest/sdd/query/provision/feedback) | ✅ compila + verificado no emulador |
-| MCP server | ✅ compila |
-| GitHub Action + workflow de deploy | ✅ scaffold + one-click OAuth / `gh` CLI |
-| Dashboard Next.js | ✅ Auth + Firestore + `provisionProject` / admin callables |
-| Motor nativo Rust/tree-sitter (escala 2B+ LOC) | ⬜ roadmap V1→Scale-up |
+| Contratos (relatório + SDD + métricas + matcher) | ✅ |
+| Scanner multi-linguagem | ✅ exemplos reais |
+| Evolução de regras (corpus + Dress Code Tools) | ✅ |
+| API (ingestão / SDD / provisionamento / feedback) | ✅ |
+| MCP server | ✅ |
+| GitHub Action + one-click | ✅ |
+| Portal web | ✅ |
+| Motor nativo de escala (roadmap) | ⬜ |
 
 ---
 
-<sub>CodeHero usa o SonarQube como referência conceitual, mas não deriva código nem regras dele. Projeto próprio, arquitetura própria.</sub>
+<sub>CodeHero é projeto e arquitetura próprios. Comparações com o mercado são conceituais.</sub>

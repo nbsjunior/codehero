@@ -1,37 +1,22 @@
-# CodeHero — plugin VS Code / Cursor
+# Extensão VS Code / Cursor — CodeHero
+
+Arquivo: `codehero-vscode.vsix`
 
 ## Instalação
 
-1. Baixe `codehero-vscode.vsix` em https://codehero.web.app
-2. VS Code ou Cursor → **Extensions** → `⋯` → **Install from VSIX…**
-3. Abra a **pasta do seu projeto** (Open Folder)
+1. Baixe o `.vsix` pelo portal (Configurações → Plugin VS Code).
+2. No VS Code / Cursor: **Extensions → … → Install from VSIX…**
+3. Abra as configurações da extensão e preencha:
+   - `codehero.serverUrl` — URL da API do portal (fornecida na tela do projeto)
+   - `codehero.token` — token de ingestão do repositório
+   - `codehero.orgId` / `codehero.projectId` / `codehero.repoId` — IDs do portal
 
-## Usar (scan local)
+## Comandos
 
-1. Clique no ícone **CodeHero** na barra lateral esquerda  
-   *(ou no botão `CodeHero` na barra de status)*
-2. Clique em **Rodar scan no workspace** (ícone ▶)
-3. Veja a **Avaliação** no painel (por severidade) e os sublinhados em **Problems**
+- **CodeHero: Analyze Workspace** — análise local + envio do relatório para a API
+- **CodeHero: Show Last Report** — último resultado
+- **CodeHero: Open Portal** — abre o CodeHero no navegador
 
-O scanner **determinístico** busca as regras ativas no servidor CodeHero antes de cada scan (canônicas + dress code do projeto). Sem rede, usa o cache/bundled.
+## Observação
 
-## Configuração
-
-Command Palette → `CodeHero: Abrir configurações`
-
-| Setting | Padrão | Função |
-|---|---|---|
-| `codehero.scanOnSave` | true | Scan do arquivo ao salvar |
-| `codehero.enableCache` | true | Cache incremental |
-| `codehero.minSeverity` | INFO | Filtro de severidade no painel |
-| `codehero.serverUrl` | Cloud Functions | Onde buscar `getActiveRules` |
-| `codehero.token` / `orgId` / `projectId` | — | Dress code do projeto (overlays) |
-| `codehero.scannerCommand` | *(vazio)* | Vazio = scanner embutido |
-
-## Portal vs plugin
-
-| | Plugin | Portal |
-|---|---|---|
-| Scan no seu código local | ✅ | — |
-| Dress code em português | — | ✅ |
-| Prévia de GitHub público | — | ✅ |
+O scanner embutido (`bundled/hero-scan.cjs`) roda com o Node do próprio editor. Não use `npx` nem comandos externos.

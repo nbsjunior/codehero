@@ -84,9 +84,46 @@ export interface QualityGateResult {
   failedConditions: string[];
 }
 
+export const RATING_ORDER = ["A", "B", "C", "D", "E"] as const;
+
 function ratingIsWorseThan(actual: Rating, max: Rating): boolean {
-  const order = ["A", "B", "C", "D", "E"] as const;
-  return order.indexOf(actual) > order.indexOf(max);
+  return RATING_ORDER.indexOf(actual) > RATING_ORDER.indexOf(max);
+}
+
+/** The worst (lowest) rating in a list. Empty list -> "A" (nothing to be bad about). */
+export function worstRating(ratings: Rating[]): Rating {
+  if (ratings.length === 0) return "A";
+  return ratings.reduce((worst, r) => (ratingIsWorseThan(r, worst) ? r : worst));
+}
+
+export interface RepoMetrics {
+  debtMinutes: number;
+  openIssues: number;
+  maintainabilityRating: Rating;
+  securityRating: Rating;
+  qualityGateStatus: "PASSED" | "FAILED";
+}
+
+export interface ProjectAggregateMetrics extends RepoMetrics {
+  repoCount: number;
+}
+
+/**
+ * Consolidates a project's repos into one summary: debt/issues sum, worst
+ * rating across repos, and a gate that only passes when every repo's gate
+ * passes. Shared by the backend rollup (written to the project doc on
+ * ingest) and any client that wants to recompute the same number from raw
+ * repo docs (e.g. an admin view that reads repos directly).
+ */
+export function aggregateProjectMetrics(repos: RepoMetrics[]): ProjectAggregateMetrics {
+  return {
+    repoCount: repos.length,
+    debtMinutes: repos.reduce((sum, r) => sum + r.debtMinutes, 0),
+    openIssues: repos.reduce((sum, r) => sum + r.openIssues, 0),
+    maintainabilityRating: worstRating(repos.map((r) => r.maintainabilityRating)),
+    securityRating: worstRating(repos.map((r) => r.securityRating)),
+    qualityGateStatus: repos.every((r) => r.qualityGateStatus === "PASSED") ? "PASSED" : "FAILED",
+  };
 }
 
 export function evaluateQualityGate(

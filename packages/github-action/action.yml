@@ -1,5 +1,5 @@
 name: "CodeHero Scan"
-description: "Roda o hero-scanner, envia o SARIF para a plataforma CodeHero e avalia o Quality Gate."
+description: "Roda o scanner CodeHero, envia o relatório à API e avalia o Quality Gate."
 author: "CodeHero"
 branding:
   icon: "shield"
@@ -18,6 +18,9 @@ inputs:
   project-id:
     description: "ID do projeto"
     required: true
+  repo-id:
+    description: "ID do repositório dentro do projeto (um projeto pode consolidar vários repos)"
+    required: true
   path:
     description: "Caminho a analisar"
     required: false
@@ -29,7 +32,7 @@ inputs:
 
 outputs:
   sarif-file:
-    description: "Caminho do relatório SARIF gerado"
+    description: "Caminho do relatório de análise gerado"
     value: ${{ steps.scan.outputs.sarif }}
 
 runs:
@@ -40,7 +43,7 @@ runs:
       with:
         node-version: "22"
 
-    - name: Run hero-scanner
+    - name: Run CodeHero scanner
       id: scan
       shell: bash
       env:
@@ -67,10 +70,11 @@ runs:
         HERO_TOKEN: ${{ inputs.token }}
         ORG_ID: ${{ inputs.org-id }}
         PROJECT_ID: ${{ inputs.project-id }}
+        REPO_ID: ${{ inputs.repo-id }}
       run: |
         node "${{ github.action_path }}/upload.mjs"
 
-    - name: Upload SARIF to GitHub Security
+    - name: Upload analysis report to GitHub Security
       uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: codehero.sarif

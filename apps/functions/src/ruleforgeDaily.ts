@@ -79,6 +79,26 @@ export const ruleforgeDaily = onSchedule(
   },
 );
 
+/**
+ * Lists recent daily reports for the admin UI's "Esteira de Inteligência
+ * Agêntica (Genkit)" view. A callable (Admin SDK) rather than a client
+ * Firestore query — deliberately, since Firestore refuses LIST queries whose
+ * rule needs an exists()/get() lookup unless the collection is declared with
+ * the top-level `{path=**}` collection-group pattern (verified empirically
+ * elsewhere in this codebase); simplest and most robust is to just not rely
+ * on client-side Firestore list rules for admin-only aggregate views.
+ */
+export const listRuleforgeRuns = onCall<{ limit?: number }>(async (request) => {
+  const uid = request.auth?.uid;
+  if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
+  const admin = await db.doc(`platformAdmins/${uid}`).get();
+  if (!admin.exists) throw new HttpsError("permission-denied", "platform admin required");
+
+  const limit = Math.min(90, Math.max(1, request.data?.limit ?? 30));
+  const snap = await db.collection("ruleforgeRuns").orderBy("ranAt", "desc").limit(limit).get();
+  return { runs: snap.docs.map((d) => ({ day: d.id, ...d.data() })) };
+});
+
 /** Manual trigger for admins / CI smoke (Firebase Auth required). */
 export const runRuleforgeDaily = onCall(
   {

@@ -38,6 +38,7 @@ export function codeHeroGithubOAuthCallbackUrl(projectSlug: string): string {
 export function buildCodeHeroWorkflowYaml(
   orgId: string,
   projectId: string,
+  repoId: string,
   opts?: { defaultBranch?: string },
 ): string {
   const branch = (opts?.defaultBranch ?? "main").trim() || "main";
@@ -64,6 +65,7 @@ jobs:
           token: \${{ secrets.HERO_TOKEN }}
           org-id: "${orgId}"
           project-id: "${projectId}"
+          repo-id: "${repoId}"
           path: "."
           fail-on: CRITICAL
 `;

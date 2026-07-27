@@ -35,10 +35,32 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand("codehero.showHowTo", () => void showHowTo()),
     vscode.commands.registerCommand("codehero.showDashboard", () => DashboardPanel.reveal(lastSummary)),
     vscode.commands.registerCommand("codehero.openFinding", (item: FindingItem) => void openFinding(item)),
+    vscode.commands.registerCommand("codehero.showFindingFicha", (item: FindingItem) => void showFindingFicha(item)),
     vscode.commands.registerCommand("codehero.copyFinding", async (item: FindingItem) => {
-      const text = `${item.finding.ruleId}: ${item.finding.message}\n${item.finding.file}:${item.finding.line}`;
+      const text = formatFichaPlain(item.finding);
       await vscode.env.clipboard.writeText(text);
-      void vscode.window.showInformationMessage("CodeHero: finding copiado.");
+      void vscode.window.showInformationMessage("CodeHero: ficha do apontamento copiada.");
+    }),
+    vscode.languages.registerHoverProvider({ scheme: "file" }, {
+      provideHover(document, position) {
+        const diags = collection.get(document.uri) ?? [];
+        const hit = diags.find((d) => d.range.contains(position) && d.source === "codehero");
+        if (!hit) return undefined;
+        const ruleId =
+          typeof hit.code === "string"
+            ? hit.code
+            : hit.code && typeof hit.code === "object" && "value" in hit.code
+              ? String(hit.code.value)
+              : undefined;
+        const finding = lastFindings.find(
+          (f) =>
+            f.absolutePath === document.uri.fsPath &&
+            f.line === hit.range.start.line + 1 &&
+            (!ruleId || f.ruleId === ruleId),
+        );
+        if (!finding) return undefined;
+        return new vscode.Hover(new vscode.MarkdownString(formatFichaMarkdown(finding)));
+      },
     }),
     vscode.workspace.onDidSaveTextDocument((doc) => {
       if (doc.uri.scheme !== "file") return;
@@ -146,7 +168,9 @@ function applyResults(summary: ScanSummary, opts: { singleFile: boolean; uri?: v
     const endCol = Math.max(startCol + 1, f.endColumn - 1);
     const diag = new vscode.Diagnostic(
       new vscode.Range(line, startCol, line, endCol),
-      `${f.ruleId}: ${f.message}`,
+      f.howToFix
+        ? `${f.ruleId}: ${f.message}\nComo corrigir: ${f.howToFix}`
+        : `${f.ruleId}: ${f.message}`,
       severityToDiagnostic(f.severity),
     );
     diag.source = "codehero";
@@ -214,6 +238,53 @@ async function openFinding(item: FindingItem): Promise<void> {
   const pos = new vscode.Position(line, col);
   editor.selection = new vscode.Selection(pos, pos);
   editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+  await showFindingFicha(item);
+}
+
+async function showFindingFicha(item: FindingItem): Promise<void> {
+  const doc = await vscode.workspace.openTextDocument({
+    language: "markdown",
+    content: formatFichaMarkdown(item.finding),
+  });
+  await vscode.window.showTextDocument(doc, {
+    preview: true,
+    viewColumn: vscode.ViewColumn.Beside,
+    preserveFocus: true,
+  });
+}
+
+function formatFichaMarkdown(f: ScanFinding): string {
+  const lines = [
+    `# Ficha do apontamento`,
+    ``,
+    `**\`${f.ruleId}\`** · ${f.severity}${f.issueType ? ` · ${f.issueType}` : ""}`,
+    `Local: \`${f.file}:${f.line}\``,
+    ``,
+    `## Risco`,
+    f.risk || `${f.severity}${f.issueType ? ` · ${f.issueType}` : ""}`,
+    ``,
+    `## Motivo do apontamento`,
+    f.message || "_sem mensagem_",
+  ];
+  if (f.snippet) {
+    lines.push(``, "```", f.snippet, "```");
+  }
+  lines.push(``, `## Como corrigir`, f.howToFix || "_Orientação não disponível neste scan — atualize o scanner/VSIX._");
+  if (f.constraints?.length) {
+    lines.push(``, `### Restrições`);
+    for (const c of f.constraints) lines.push(`- ${c}`);
+  }
+  return lines.join("\n");
+}
+
+function formatFichaPlain(f: ScanFinding): string {
+  return [
+    `Regra: ${f.ruleId}`,
+    `Local: ${f.file}:${f.line}`,
+    `Risco: ${f.risk || f.severity}`,
+    `Motivo: ${f.message}`,
+    `Como corrigir: ${f.howToFix || "(n/d)"}`,
+  ].join("\n");
 }
 
 async function showHowTo(): Promise<void> {
@@ -250,7 +321,7 @@ Abra Settings e busque \`CodeHero\`, ou rode o comando **CodeHero: Abrir configu
 No https://codehero.web.app você pode:
 1. Baixar este plugin
 2. Escrever o dress code do time
-3. Rodar uma prévia de repo GitHub público no Firebase
+3. Rodar uma prévia de repo GitHub público na Cloud
 
 Scan local no plugin **não depende** do portal — funciona offline com as regras canônicas.
 `,
@@ -261,6 +332,3 @@ Scan local no plugin **não depende** do portal — funciona offline com as regr
 function emptySummary(): ScanSummary {
   return { findings: [], bySeverity: {}, fileCountHint: 0, ruleCatalog: [] };
 }
-
-// silence unused in case tree uses lastFindings later
-void lastFindings;
