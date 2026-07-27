@@ -116,6 +116,8 @@ export const adminGetPlatformSummary = onCall({ memory: "512MiB", timeoutSeconds
   const ratingOrder = ["E", "D", "C", "B", "A"];
   const worstSecurityRating =
     ratingOrder.find((r) => (buckets.bySecurityRating[r] ?? 0) > 0) ?? "A";
+  const worstMaintainabilityRating =
+    ratingOrder.find((r) => (buckets.byMaintainabilityRating[r] ?? 0) > 0) ?? "A";
   const failingGates = buckets.byQualityGate.FAILED ?? 0;
 
   return {
@@ -126,6 +128,10 @@ export const adminGetPlatformSummary = onCall({ memory: "512MiB", timeoutSeconds
     openIssues: repoAggSnap.data().openIssues ?? 0,
     failingGates,
     worstSecurityRating,
+    worstMaintainabilityRating,
+    bySecurityRating: buckets.bySecurityRating,
+    byMaintainabilityRating: buckets.byMaintainabilityRating,
+    byQualityGate: buckets.byQualityGate,
   };
 });
 
@@ -188,6 +194,18 @@ export const adminListAllIssues = onCall({ memory: "1GiB", timeoutSeconds: 540 }
   const bySource: Record<string, number> = {};
   const items: Array<Record<string, unknown>> = [];
 
+  type RuleAgg = { ruleId: string; message: string; severity: string; count: number };
+  const byRuleId = new Map<string, RuleAgg>();
+  type RepoAgg = { repoId: string; repoName: string; projectName: string; orgName: string; count: number };
+  // Seed every known repo at 0 so repos with no open issues correctly show
+  // up as "least findings" (rather than being absent from the ranking).
+  const byRepoId = new Map<string, RepoAgg>(
+    repos.map((r) => [
+      r.ref.id,
+      { repoId: r.ref.id, repoName: r.repoName, projectName: r.projectName, orgName: r.orgName, count: 0 },
+    ]),
+  );
+
   const CONCURRENCY = 20;
   for (let i = 0; i < repos.length && items.length < MAX_ISSUES; i += CONCURRENCY) {
     const chunk = repos.slice(i, i + CONCURRENCY);
@@ -199,13 +217,31 @@ export const adminListAllIssues = onCall({ memory: "1GiB", timeoutSeconds: 540 }
     for (let j = 0; j < chunk.length; j++) {
       const meta = chunk[j]!;
       const issuesSnap = snaps[j]!;
+
+      // Repo-level counts reflect every open issue for the repo (not capped
+      // by the MAX_ISSUES-limited `items` list below), so "most/least
+      // findings" ranking stays accurate even once the global item cap hits.
+      const repoAgg = byRepoId.get(meta.ref.id);
+      if (repoAgg) repoAgg.count += issuesSnap.size;
+
       for (const d of issuesSnap.docs) {
         if (items.length >= MAX_ISSUES) break;
         const data = d.data();
         const severity = (data.severity as string | undefined) ?? "INFO";
         const source = (data.source as string | undefined) ?? "github-action";
+        const ruleId = (data.ruleId as string | undefined) ?? "";
         bySeverity[severity] = (bySeverity[severity] ?? 0) + 1;
         bySource[source] = (bySource[source] ?? 0) + 1;
+
+        const ruleAgg = byRuleId.get(ruleId) ?? {
+          ruleId,
+          message: (data.message as string | undefined) ?? "",
+          severity,
+          count: 0,
+        };
+        ruleAgg.count += 1;
+        byRuleId.set(ruleId, ruleAgg);
+
         items.push({
           issueId: d.id,
           repoId: meta.ref.id,
@@ -214,7 +250,7 @@ export const adminListAllIssues = onCall({ memory: "1GiB", timeoutSeconds: 540 }
           projectName: meta.projectName,
           orgId: meta.orgId,
           orgName: meta.orgName,
-          ruleId: data.ruleId ?? "",
+          ruleId,
           severity,
           issueType: data.issueType ?? "CODE_SMELL",
           message: data.message ?? "",
@@ -229,10 +265,18 @@ export const adminListAllIssues = onCall({ memory: "1GiB", timeoutSeconds: 540 }
 
   items.sort((a, b) => new Date((b.lastSeen as string) ?? 0).getTime() - new Date((a.lastSeen as string) ?? 0).getTime());
 
+  const topCauses = [...byRuleId.values()].sort((a, b) => b.count - a.count).slice(0, 15);
+  const repoRanking = [...byRepoId.values()].sort((a, b) => b.count - a.count);
+  const mostFindings = repoRanking.slice(0, 10);
+  const leastFindings = repoRanking.slice(-10).reverse();
+
   return {
     total: items.length,
     bySeverity,
     bySource,
     items: items.slice(0, 500),
+    topCauses,
+    mostFindings,
+    leastFindings,
   };
 });

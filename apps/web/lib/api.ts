@@ -99,6 +99,10 @@ export interface PlatformSummary {
   openIssues: number;
   failingGates: number;
   worstSecurityRating: string;
+  worstMaintainabilityRating: string;
+  bySecurityRating: Record<string, number>;
+  byMaintainabilityRating: Record<string, number>;
+  byQualityGate: Record<string, number>;
 }
 
 /** Cheap platform-wide KPIs (aggregation queries, not a fan-out read) — see admin.ts. */
@@ -558,11 +562,29 @@ export interface AdminIssueRow {
   lastSeen: string | null;
 }
 
+export interface AdminRuleCause {
+  ruleId: string;
+  message: string;
+  severity: string;
+  count: number;
+}
+
+export interface AdminRepoFindingCount {
+  repoId: string;
+  repoName: string;
+  projectName: string;
+  orgName: string;
+  count: number;
+}
+
 export interface AdminIssuesResult {
   total: number;
   bySeverity: Record<string, number>;
   bySource: Record<string, number>;
   items: AdminIssueRow[];
+  topCauses: AdminRuleCause[];
+  mostFindings: AdminRepoFindingCount[];
+  leastFindings: AdminRepoFindingCount[];
 }
 
 export async function adminListAllIssues(): Promise<AdminIssuesResult> {
@@ -590,6 +612,74 @@ export async function flagIssueFeedback(input: {
     await fn(input);
   } catch (err) {
     throw new Error(formatCallableError(err, "Falha ao registrar o feedback."));
+  }
+}
+
+export type MotorRuleSource = "core" | "platform" | "project";
+
+export interface MotorRuleRow {
+  id: string;
+  name: string;
+  message: string;
+  severity: string;
+  type: string;
+  category: string | null;
+  languages: string[];
+  remediationEffortMin: number;
+  patternRegex: string | null;
+  source: MotorRuleSource;
+  sourceLabel: string;
+  canDelete: boolean;
+  orgId: string | null;
+  projectId: string | null;
+  orgName: string | null;
+  projectName: string | null;
+  dressCodeId: string | null;
+  active: boolean;
+}
+
+export interface MotorRuleGroup {
+  id: string;
+  label: string;
+  count: number;
+  rules: MotorRuleRow[];
+}
+
+export interface MotorRulesTotals {
+  core: number;
+  platform: number;
+  project: number;
+  all: number;
+}
+
+export async function listMotorRules(): Promise<{
+  groups: MotorRuleGroup[];
+  totals: MotorRulesTotals;
+}> {
+  const fn = httpsCallable<undefined, { groups: MotorRuleGroup[]; totals: MotorRulesTotals }>(
+    functions,
+    "listMotorRules",
+  );
+  try {
+    const res = await fn();
+    return res.data;
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha ao listar as regras do motor."));
+  }
+}
+
+export async function deleteOverlayRule(input: {
+  ruleId: string;
+  source: "platform" | "project";
+  orgId?: string;
+  projectId?: string;
+}): Promise<{ deleted: boolean; ruleId: string }> {
+  const fn = httpsCallable<typeof input, { deleted: boolean; ruleId: string }>(functions, "deleteOverlayRule");
+  try {
+    const res = await fn(input);
+    return res.data;
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha ao excluir a regra."));
   }
 }
 

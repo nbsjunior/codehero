@@ -11,6 +11,7 @@ import ProjectWorkspace from "@/components/admin/ProjectWorkspace";
 import WorkspaceWizard from "@/components/admin/WorkspaceWizard";
 import InstalacaoHome from "@/components/admin/InstalacaoHome";
 import UsersPanel from "@/components/admin/UsersPanel";
+import RulesCatalog from "@/components/admin/RulesCatalog";
 import FindingsBrowser, { type FindingsBrowserItem } from "@/components/FindingsBrowser";
 import { dbClient } from "@/lib/firebase";
 import { useAuth } from "@/lib/useAuth";
@@ -34,6 +35,7 @@ import {
   type AdminIssueRow,
   type AdminIssuesResult,
   type AdminProjectRow,
+  type AdminRepoFindingCount,
   type FeatureFlag,
   type IngestQueueCounts,
   type OrgQuotasView,
@@ -55,6 +57,7 @@ const SHARED_GROUPS: CockpitNavGroup[] = [
     items: [
       { id: "visao-geral", label: "Visão geral" },
       { id: "apontamentos", label: "Apontamentos" },
+      { id: "relatorio", label: "Relatório" },
     ],
   },
   {
@@ -62,6 +65,7 @@ const SHARED_GROUPS: CockpitNavGroup[] = [
     label: "Projetos",
     items: [
       { id: "todos-projetos", label: "Todos os projetos" },
+      { id: "regras", label: "Regras do motor" },
       { id: "workspace", label: "Workspace" },
       { id: "novo-workspace", label: "Novo workspace" },
     ],
@@ -200,7 +204,7 @@ function AdminPanelInner() {
   const groups = useMemo(() => {
     const shared = SHARED_GROUPS.map((g) => {
       if (isPlatformAdmin) return g;
-      if (g.id === "visao") return { ...g, items: g.items.filter((i) => i.id !== "apontamentos") };
+      if (g.id === "visao") return { ...g, items: g.items.filter((i) => i.id !== "apontamentos" && i.id !== "relatorio") };
       if (g.id === "projetos") return { ...g, items: g.items.filter((i) => i.id !== "novo-workspace") };
       return g;
     });
@@ -580,6 +584,96 @@ function AdminPanelInner() {
           </>
         )}
 
+        {tab === "relatorio" && isPlatformAdmin && (
+          <>
+            <PageHeader
+              eyebrow="Visão"
+              title="Relatório"
+              description="Manutenibilidade da plataforma, principais causas e repositórios com mais/menos apontamentos"
+            />
+
+            <div style={{ display: "grid", gap: "1.5rem", gridTemplateColumns: "minmax(240px, 1fr) minmax(240px, 1fr)", marginBottom: "1.5rem" }}>
+              <DataSection title="Manutenibilidade" description="Distribuição do rating de manutenibilidade entre projetos">
+                {!platformSummary ? (
+                  <p className="hero-caption">Carregando…</p>
+                ) : (
+                  <RatingDistribution buckets={platformSummary.byMaintainabilityRating} />
+                )}
+              </DataSection>
+              <DataSection title="Segurança" description="Distribuição do rating de segurança entre projetos">
+                {!platformSummary ? (
+                  <p className="hero-caption">Carregando…</p>
+                ) : (
+                  <RatingDistribution buckets={platformSummary.bySecurityRating} />
+                )}
+              </DataSection>
+            </div>
+
+            <DataSection
+              title="Principais causas"
+              description="Regras que mais geram apontamentos abertos em toda a plataforma"
+            >
+              {issuesLoading ? (
+                <p className="hero-caption">Carregando…</p>
+              ) : !issues || issues.topCauses.length === 0 ? (
+                <p className="hero-caption">Nenhum apontamento aberto ainda.</p>
+              ) : (
+                <div style={{ overflowX: "auto" }}>
+                  <table className="hero-table">
+                    <thead>
+                      <tr>
+                        <th>Regra</th>
+                        <th>Severidade</th>
+                        <th>Ocorrências</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {issues.topCauses.map((c) => (
+                        <tr key={c.ruleId}>
+                          <td>
+                            <code style={{ fontSize: "0.8rem" }}>{c.ruleId}</code>
+                            <div className="hero-caption" style={{ marginTop: "0.15rem" }}>{c.message}</div>
+                          </td>
+                          <td>
+                            <span
+                              className="hero-badge"
+                              style={{ background: severityColor[c.severity] ?? "var(--muted)", color: "#fff" }}
+                            >
+                              {c.severity}
+                            </span>
+                          </td>
+                          <td>{c.count}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </DataSection>
+
+            <div style={{ display: "grid", gap: "1.5rem", gridTemplateColumns: "minmax(240px, 1fr) minmax(240px, 1fr)" }}>
+              <DataSection title="Mais apontamentos" description="Repositórios que mais precisam de atenção agora">
+                {issuesLoading ? (
+                  <p className="hero-caption">Carregando…</p>
+                ) : !issues || issues.mostFindings.length === 0 ? (
+                  <p className="hero-caption">Nenhum dado ainda.</p>
+                ) : (
+                  <RepoFindingList items={issues.mostFindings} tone="danger" />
+                )}
+              </DataSection>
+              <DataSection title="Menos apontamentos" description="Repositórios mais limpos da plataforma">
+                {issuesLoading ? (
+                  <p className="hero-caption">Carregando…</p>
+                ) : !issues || issues.leastFindings.length === 0 ? (
+                  <p className="hero-caption">Nenhum dado ainda.</p>
+                ) : (
+                  <RepoFindingList items={issues.leastFindings} tone="ok" />
+                )}
+              </DataSection>
+            </div>
+          </>
+        )}
+
         {tab === "todos-projetos" && (
           <>
             <PageHeader
@@ -745,6 +839,8 @@ function AdminPanelInner() {
             )}
           </>
         )}
+
+        {tab === "regras" && <RulesCatalog />}
 
         {tab === "novo-workspace" && isPlatformAdmin && (
           <WorkspaceWizard projects={projects} onOpenWorkspace={navigateWorkspace} />
@@ -1115,6 +1211,63 @@ function AdminPanelInner() {
         {tab === "usuarios" && isPlatformAdmin && <UsersPanel />}
       </AdminCockpitShell>
     </main>
+  );
+}
+
+function RatingDistribution({ buckets }: { buckets: Record<string, number> }) {
+  const order = ["A", "B", "C", "D", "E"];
+  const total = order.reduce((s, r) => s + (buckets[r] ?? 0), 0);
+  if (total === 0) return <p className="hero-caption">Sem dados ainda.</p>;
+  return (
+    <div style={{ display: "grid", gap: "0.5rem" }}>
+      {order.map((r) => {
+        const count = buckets[r] ?? 0;
+        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+        return (
+          <div key={r} style={{ display: "grid", gridTemplateColumns: "1.5rem 1fr 3rem", alignItems: "center", gap: "0.5rem" }}>
+            <span className="hero-rating" style={{ background: ratingColor[r], width: "1.5rem", height: "1.5rem", fontSize: "0.75rem" }}>
+              {r}
+            </span>
+            <div style={{ background: "color-mix(in srgb, var(--line) 12%, transparent)", borderRadius: 4, overflow: "hidden", height: 10 }}>
+              <div style={{ width: `${pct}%`, background: ratingColor[r], height: "100%" }} />
+            </div>
+            <span className="hero-caption" style={{ textAlign: "right" }}>
+              {count}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function RepoFindingList({ items, tone }: { items: AdminRepoFindingCount[]; tone: "danger" | "ok" }) {
+  return (
+    <div style={{ display: "grid", gap: "0.4rem" }}>
+      {items.map((it) => (
+        <div
+          key={it.repoId}
+          className="hero-panel-sm"
+          style={{ padding: "0.6rem 0.85rem", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}
+        >
+          <div>
+            <strong>{it.repoName}</strong>
+            <div className="hero-caption">
+              {it.projectName} · {it.orgName}
+            </div>
+          </div>
+          <span
+            className="hero-badge"
+            style={{
+              background: tone === "danger" ? "var(--rating-e)" : "var(--rating-a)",
+              color: "#fff",
+            }}
+          >
+            {it.count}
+          </span>
+        </div>
+      ))}
+    </div>
   );
 }
 
