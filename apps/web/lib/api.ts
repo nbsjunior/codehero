@@ -601,6 +601,38 @@ export async function reviewRuleProposal(input: {
   }
 }
 
+export interface CveWatchlistEntryRow {
+  ghsaId: string;
+  cveId: string | null;
+  ecosystem: string;
+  language: string;
+  severity: string;
+  summary: string;
+  cweIds: string[];
+  publishedAt: string;
+}
+
+/** CVEs/advisories currently grounding the daily new-rule proposal prompt — see cveSync.ts. */
+export async function listCveWatchlist(limit = 100): Promise<{ entries: CveWatchlistEntryRow[] }> {
+  const fn = httpsCallable<{ limit: number }, { entries: CveWatchlistEntryRow[] }>(functions, "listCveWatchlist");
+  try {
+    const res = await fn({ limit });
+    return res.data;
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha ao carregar os CVEs monitorados."));
+  }
+}
+
+export async function runCveWatchlistSyncNow(): Promise<{ fetched: number; ecosystems: string[] }> {
+  const fn = httpsCallable<undefined, { fetched: number; ecosystems: string[] }>(functions, "runCveWatchlistSyncNow");
+  try {
+    const res = await fn();
+    return res.data;
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha ao sincronizar os CVEs."));
+  }
+}
+
 export async function setRepoAutoScan(input: {
   orgId: string;
   projectId: string;

@@ -7,6 +7,7 @@ import { loadCorpus } from "@codehero/ruleforge";
 import { db } from "./lib/firebase.ts";
 import { ruleforgeDailyFlow, type RuleforgeDailyReport } from "./genkit/ruleforgeFlow.ts";
 import { draftToEnqueue, proposeNewRulesBatch } from "./genkit/newRulesFlow.ts";
+import { getCveDigestForPrompt } from "./lib/cveWatchlist.ts";
 import {
   enqueueEvolveProposalsFromReport,
   enqueueNewRuleProposals,
@@ -70,7 +71,8 @@ async function runDaily(trigger: "schedule" | "manual"): Promise<
   let newRuleProposals = 0;
   try {
     const day = report.ranAt.slice(0, 10);
-    const batch = await proposeNewRulesBatch(context);
+    const cveDigest = await getCveDigestForPrompt();
+    const batch = await proposeNewRulesBatch(`${context}\n\n${cveDigest}`);
     newRuleProposals = await enqueueNewRuleProposals(
       batch.drafts.map((d) => draftToEnqueue(d, day)),
       corpus,

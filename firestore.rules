@@ -64,6 +64,15 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Recent CVE/advisory digest (GitHub Security Advisories) grounding the
+    // new-rule proposal prompt — see lib/cveWatchlist.ts. Read via the
+    // listCveWatchlist callable in the admin UI; this rule is defense in
+    // depth in case a direct client read is ever added.
+    match /cveWatchlist/{id} {
+      allow read: if isPlatformAdmin();
+      allow write: if false;
+    }
+
     // Human approval queue for evolve + new rules (security/dress).
     match /ruleProposals/{id} {
       allow read: if isPlatformAdmin();
