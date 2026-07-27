@@ -197,10 +197,19 @@ export async function runRuleforgeDailyNow(): Promise<{
   promotedCount: number;
   rejectedCount: number;
   seed: number;
+  proposalsEnqueued?: number;
+  newRuleProposals?: number;
 }> {
   const fn = httpsCallable<
     undefined,
-    { ranAt: string; promotedCount: number; rejectedCount: number; seed: number }
+    {
+      ranAt: string;
+      promotedCount: number;
+      rejectedCount: number;
+      seed: number;
+      proposalsEnqueued?: number;
+      newRuleProposals?: number;
+    }
   >(functions, "runRuleforgeDaily", { timeout: 540_000 });
   try {
     const res = await fn();
@@ -240,8 +249,13 @@ export async function submitDressCode(input: {
   orgId?: string;
   projectId?: string;
   activate?: boolean;
-}): Promise<SubmitDressCodeResult> {
-  const fn = httpsCallable<typeof input, SubmitDressCodeResult>(functions, "submitDressCode", { timeout: 120_000 });
+  requireApproval?: boolean;
+}): Promise<SubmitDressCodeResult & { proposalsQueued?: number }> {
+  const fn = httpsCallable<typeof input, SubmitDressCodeResult & { proposalsQueued?: number }>(
+    functions,
+    "submitDressCode",
+    { timeout: 120_000 },
+  );
   try {
     const res = await fn(input);
     return res.data;
@@ -509,6 +523,68 @@ export async function listRuleforgeRuns(limit = 30): Promise<{ runs: RuleforgeRu
     return res.data;
   } catch (err) {
     throw new Error(formatCallableError(err, "Falha ao carregar a esteira de inteligência agêntica."));
+  }
+}
+
+export type RuleProposalKind = "evolve" | "new_rule";
+export type RuleProposalFamily = "security" | "dress" | "smell";
+export type RuleProposalStatus = "pending" | "approved" | "rejected";
+
+export interface RuleProposalRow {
+  id: string;
+  kind: RuleProposalKind;
+  family: RuleProposalFamily;
+  status: RuleProposalStatus;
+  title: string;
+  rationale: string;
+  ruleId: string;
+  baselinePattern?: { regex: string; flags?: string; unless?: string } | null;
+  proposedPattern?: { regex: string; flags?: string; unless?: string } | null;
+  proposedRule?: {
+    id: string;
+    name: string;
+    message: string;
+    severity: string;
+    type: string;
+    pattern?: { regex: string; unless?: string };
+  } | null;
+  corpusCases?: Array<{ id: string; code: string; expected: "match" | "no_match"; note?: string }>;
+  metrics?: { baselineF1?: number; bestF1?: number; mutationIds?: string[] };
+  source?: string;
+  runDay?: string | null;
+  createdAt?: string | null;
+}
+
+export async function listRuleProposals(input?: {
+  status?: RuleProposalStatus | "all";
+  limit?: number;
+}): Promise<{ items: RuleProposalRow[]; counts: { pending: number; shown: number } }> {
+  const fn = httpsCallable<
+    { status?: string; limit?: number },
+    { items: RuleProposalRow[]; counts: { pending: number; shown: number } }
+  >(functions, "listRuleProposals");
+  try {
+    const res = await fn(input ?? { status: "pending" });
+    return res.data;
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha ao listar propostas da esteira."));
+  }
+}
+
+export async function reviewRuleProposal(input: {
+  proposalId: string;
+  decision: "approved" | "rejected";
+  note?: string;
+}): Promise<{ proposalId: string; status: string; ruleId?: string }> {
+  const fn = httpsCallable<typeof input, { proposalId: string; status: string; ruleId?: string }>(
+    functions,
+    "reviewRuleProposal",
+  );
+  try {
+    const res = await fn(input);
+    return res.data;
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha ao revisar a proposta."));
   }
 }
 

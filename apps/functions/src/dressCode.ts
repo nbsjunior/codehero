@@ -57,6 +57,8 @@ export interface SubmitDressCodeInput {
   projectId?: string;
   /** se true, ativa imediatamente as regras overlay */
   activate?: boolean;
+  /** se true, cria propostas pendentes na esteira (não ativa direto) */
+  requireApproval?: boolean;
 }
 
 /**
@@ -86,16 +88,64 @@ export const submitDressCode = onCall(
     wireGeminiKey();
     const proposal = await interpretDressCode(text);
     const dressCodeId = db.collection("_").doc().id;
-    const activate = data.activate !== false;
+    const requireApproval = !!data.requireApproval;
+    const activate = !requireApproval && data.activate !== false;
 
-    // Reject any rule whose LLM-generated regex has a known catastrophic-
-    // backtracking shape — it will run unsandboxed, with no execution
-    // timeout, against every file of every future scan for this scope.
     const safeRules = proposal.rules.filter(
       (r) => !isUnsafeRegex(r.patternRegex) && !(r.patternUnless && isUnsafeRegex(r.patternUnless)),
     );
     const unsafeCount = proposal.rules.length - safeRules.length;
     const overlays = safeRules.map((r) => toOverlayRule(r, dressCodeId));
+
+    if (requireApproval) {
+      const { enqueueNewRuleProposals } = await import("./ruleProposals.ts");
+      const day = new Date().toISOString().slice(0, 10);
+      const queued = await enqueueNewRuleProposals(
+        overlays.map((r) => ({
+          family: (r.category === "code-smell" ? "dress" : "security") as "dress" | "security" | "smell",
+          title: `Dress code: ${r.name}`,
+          rationale: proposal.summary,
+          rule: {
+            id: r.id,
+            name: r.name,
+            message: r.message,
+            severity: r.severity as "BLOCKER" | "CRITICAL" | "MAJOR" | "MINOR" | "INFO",
+            type: r.type as "VULNERABILITY" | "BUG" | "CODE_SMELL" | "SECURITY_HOTSPOT",
+            category: r.category,
+            languages: r.languages,
+            pattern: r.pattern,
+            remediationEffortMin: r.remediationEffortMin,
+          },
+          corpusCases: [],
+          source: `dressCode:${dressCodeId}`,
+          runDay: day,
+        })),
+      );
+      await db.doc(`dressCodes/${dressCodeId}`).set({
+        id: dressCodeId,
+        naturalLanguage: text,
+        scope,
+        orgId: scope === "project" ? data.orgId! : null,
+        projectId: scope === "project" ? data.projectId! : null,
+        summary: proposal.summary,
+        status: "pending_approval",
+        proposedRules: overlays,
+        proposalsQueued: queued,
+        createdBy: uid,
+        createdAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+      return {
+        dressCodeId,
+        summary: proposal.summary,
+        status: "pending_approval",
+        scope,
+        ruleCount: overlays.length,
+        rules: overlays,
+        unsafeRulesRejected: unsafeCount,
+        proposalsQueued: queued,
+      };
+    }
 
     const doc = {
       id: dressCodeId,
