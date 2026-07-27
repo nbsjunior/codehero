@@ -71,7 +71,10 @@ async function runDaily(trigger: "schedule" | "manual"): Promise<
   try {
     const day = report.ranAt.slice(0, 10);
     const batch = await proposeNewRulesBatch(context);
-    newRuleProposals = await enqueueNewRuleProposals(batch.drafts.map((d) => draftToEnqueue(d, day)));
+    newRuleProposals = await enqueueNewRuleProposals(
+      batch.drafts.map((d) => draftToEnqueue(d, day)),
+      corpus,
+    );
   } catch (err) {
     logger.warn("new rules proposal batch failed", err);
   }
