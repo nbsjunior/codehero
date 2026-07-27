@@ -538,6 +538,9 @@ export interface RuleProposalRow {
   title: string;
   rationale: string;
   ruleId: string;
+  scope?: "global" | "project";
+  orgId?: string | null;
+  projectId?: string | null;
   baselinePattern?: { regex: string; flags?: string; unless?: string } | null;
   proposedPattern?: { regex: string; flags?: string; unless?: string } | null;
   proposedRule?: {
@@ -549,7 +552,17 @@ export interface RuleProposalRow {
     pattern?: { regex: string; unless?: string };
   } | null;
   corpusCases?: Array<{ id: string; code: string; expected: "match" | "no_match"; note?: string }>;
-  metrics?: { baselineF1?: number; bestF1?: number; mutationIds?: string[] };
+  metrics?: {
+    baselineF1?: number;
+    bestF1?: number;
+    mutationIds?: string[];
+    ownPrecision?: number;
+    ownRecall?: number;
+    ownF1?: number;
+    ownCases?: number;
+    crossCorpusMatches?: number;
+    crossCorpusSampleSize?: number;
+  };
   source?: string;
   runDay?: string | null;
   createdAt?: string | null;

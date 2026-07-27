@@ -138,8 +138,161 @@ server.tool(
       "4. run_scan — assert RULE_RESOLVED (fingerprint gone) and NO_NEW_ISSUES",
       "5. submit_fix_result — status=applied|rejected|failed",
       "Never claim a fix is done without run_scan evidence.",
+      "",
+      "Before generating new code, call get_generation_context with entry describing the guardrails needed",
+      '(e.g. "regras de avaliação de código CodeHero").',
     ].join("\n");
     return { content: [{ type: "text", text }] };
+  },
+);
+
+server.tool(
+  "get_active_rules",
+  "Busca o catálogo ativo de regras determinísticas CodeHero (core + dress code do projeto) para o agente aplicar no contexto.",
+  {
+    orgId: z.string().default(ORG_ID),
+    projectId: z.string().default(PROJECT_ID),
+    maxRules: z.number().int().min(1).max(200).default(80),
+  },
+  async ({ orgId, projectId, maxRules }) => {
+    const url = new URL(`${CORE_URL.replace(/\/$/, "")}/getActiveRules`);
+    if (orgId) url.searchParams.set("orgId", orgId);
+    if (projectId) url.searchParams.set("projectId", projectId);
+    const r = await fetch(url, { headers: authHeaders() });
+    const body = await r.text();
+    if (!r.ok) {
+      return { content: [{ type: "text", text: body || `getActiveRules HTTP ${r.status}` }], isError: true };
+    }
+    try {
+      const data = JSON.parse(body) as {
+        version?: string;
+        canonicalCount?: number;
+        overlayCount?: number;
+        rules?: Array<{
+          id: string;
+          name: string;
+          severity: string;
+          type: string;
+          message: string;
+          category?: string;
+          languages?: string[];
+        }>;
+      };
+      const rules = (data.rules ?? []).slice(0, maxRules);
+      const summary = {
+        version: data.version,
+        canonicalCount: data.canonicalCount,
+        overlayCount: data.overlayCount,
+        returned: rules.length,
+        rules: rules.map((rule) => ({
+          id: rule.id,
+          name: rule.name,
+          severity: rule.severity,
+          type: rule.type,
+          category: rule.category ?? null,
+          languages: rule.languages ?? [],
+          message: rule.message,
+        })),
+      };
+      return { content: [{ type: "text", text: JSON.stringify(summary, null, 2) }] };
+    } catch {
+      return { content: [{ type: "text", text: body }] };
+    }
+  },
+);
+
+server.tool(
+  "get_generation_context",
+  "Monta um bloco de contexto para geração de código a partir de uma entrada em linguagem natural (ex.: buscar regras CodeHero e aplicar no contexto). O agente deve injetar o retorno no system/user prompt antes de gerar ou editar código.",
+  {
+    entry: z
+      .string()
+      .describe(
+        'O que carregar no contexto. Ex.: "Buscar regras de avaliação de código (CodeHero) e aplicar no contexto que está sendo gerado"',
+      ),
+    orgId: z.string().default(ORG_ID),
+    projectId: z.string().default(PROJECT_ID),
+  },
+  async ({ entry, orgId, projectId }) => {
+    const intent = entry.trim().toLowerCase();
+    const wantRules =
+      /regra|rule|avalia|avaliaç|avaliac|qualidade|secur|segurança|dress|sast|codehero|guardrail|lint/.test(
+        intent,
+      ) || intent.length < 8;
+    const wantIssues = /issue|apontamento|finding|d[eé]bito|blocker|critical/.test(intent);
+
+    const sections: string[] = [
+      "# CodeHero — contexto de geração",
+      `Entrada solicitada: ${entry.trim() || "(padrão: regras de avaliação)"}`,
+      "",
+      "Instruções obrigatórias para o agente:",
+      "- Respeite as regras abaixo ao gerar ou editar código.",
+      "- Não introduza padrões listados como VULNERABILITY / CODE_SMELL.",
+      "- Se alterar código para corrigir findings, rode run_scan e use submit_fix_result.",
+      "",
+    ];
+
+    if (wantRules) {
+      const url = new URL(`${CORE_URL.replace(/\/$/, "")}/getActiveRules`);
+      if (orgId) url.searchParams.set("orgId", orgId);
+      if (projectId) url.searchParams.set("projectId", projectId);
+      const r = await fetch(url, { headers: authHeaders() });
+      const body = await r.text();
+      if (!r.ok) {
+        sections.push(`## Regras ativas\nFalha ao carregar: HTTP ${r.status}\n${body.slice(0, 500)}`);
+      } else {
+        try {
+          const data = JSON.parse(body) as {
+            version?: string;
+            canonicalCount?: number;
+            overlayCount?: number;
+            rules?: Array<{
+              id: string;
+              name: string;
+              severity: string;
+              type: string;
+              message: string;
+              category?: string;
+            }>;
+          };
+          const order = ["BLOCKER", "CRITICAL", "MAJOR", "MINOR", "INFO"];
+          const rules = [...(data.rules ?? [])].sort(
+            (a, b) => order.indexOf(a.severity) - order.indexOf(b.severity),
+          );
+          sections.push(
+            `## Regras ativas CodeHero (v=${data.version ?? "?"}, core=${data.canonicalCount ?? 0}, overlay=${data.overlayCount ?? 0})`,
+          );
+          for (const rule of rules.slice(0, 60)) {
+            sections.push(
+              `- [${rule.severity}/${rule.type}] ${rule.id} — ${rule.name}: ${rule.message}${rule.category ? ` (${rule.category})` : ""}`,
+            );
+          }
+          if (rules.length > 60) sections.push(`… +${rules.length - 60} regras omitidas (use get_active_rules).`);
+        } catch {
+          sections.push(`## Regras ativas\n${body.slice(0, 4000)}`);
+        }
+      }
+      sections.push("");
+    }
+
+    if (wantIssues && orgId && projectId) {
+      const url = new URL(`${CORE_URL.replace(/\/$/, "")}/listIssues`);
+      url.searchParams.set("orgId", orgId);
+      url.searchParams.set("projectId", projectId);
+      url.searchParams.set("limit", "20");
+      const r = await fetch(url, { headers: authHeaders() });
+      const body = await r.text();
+      sections.push("## Apontamentos abertos (amostra)");
+      sections.push(r.ok ? body.slice(0, 6000) : `Falha listIssues: ${body.slice(0, 500)}`);
+      sections.push("");
+    }
+
+    sections.push(
+      "## Próximo passo",
+      "Gere ou edite o código respeitando o bloco acima. Em dúvida, chame get_active_rules ou get_issues.",
+    );
+
+    return { content: [{ type: "text", text: sections.join("\n") }] };
   },
 );
 

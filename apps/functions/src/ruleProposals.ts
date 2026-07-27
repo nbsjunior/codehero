@@ -1,6 +1,7 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { FieldValue } from "firebase-admin/firestore";
-import { isUnsafeRegex, RULES_BY_ID, type HeroRule, type IssueType, type Severity } from "@codehero/contracts";
+import { isUnsafeRegex, matchPattern, RULES_BY_ID, type HeroRule, type IssueType, type Severity } from "@codehero/contracts";
+import { evaluateRule, type CorpusCase } from "@codehero/ruleforge";
 import { db } from "./lib/firebase.ts";
 import type { RuleforgeDailyReport } from "./genkit/ruleforgeFlow.ts";
 
@@ -23,6 +24,9 @@ export interface RuleProposalDoc {
   title: string;
   rationale: string;
   ruleId: string;
+  scope?: "global" | "project";
+  orgId?: string | null;
+  projectId?: string | null;
   /** For evolve: current vs proposed pattern. For new_rule: proposed rule. */
   baselinePattern?: HeroRule["pattern"] | null;
   proposedPattern?: HeroRule["pattern"] | null;
@@ -36,9 +40,21 @@ export interface RuleProposalDoc {
   };
   corpusCases?: CorpusCaseDraft[];
   metrics?: {
+    // evolve (mutation of an existing rule)
     baselineF1?: number;
     bestF1?: number;
     mutationIds?: string[];
+    // new_rule — scored the same way, but against a much smaller sample
+    // (the LLM's own 1-2 examples) since there's no golden-corpus history
+    // yet for a rule that doesn't exist. ownCases/crossCorpus* exist so the
+    // reviewer sees exactly how thin that evidence is, not just a bare F1.
+    ownPrecision?: number;
+    ownRecall?: number;
+    ownF1?: number;
+    ownCases?: number;
+    /** How many UNRELATED corpus cases (any rule) this pattern also matches — signal of an overly broad regex. */
+    crossCorpusMatches?: number;
+    crossCorpusSampleSize?: number;
   };
   source: string;
   runDay?: string | null;
@@ -106,6 +122,9 @@ export async function enqueueEvolveProposalsFromReport(report: RuleforgeDailyRep
         },
         source: "genkit-ruleforgeDaily",
         runDay: day,
+        scope: "global",
+        orgId: null,
+        projectId: null,
         createdAt: FieldValue.serverTimestamp(),
         reviewedAt: null,
         reviewedBy: null,
@@ -117,6 +136,51 @@ export async function enqueueEvolveProposalsFromReport(report: RuleforgeDailyRep
     n++;
   }
   return n;
+}
+
+/**
+ * Scores a brand-new rule candidate the same way an `evolve` mutation is
+ * scored — deterministically, via the exact production matcher — instead of
+ * trusting the LLM's own self-provided examples on faith. Two numbers:
+ * (1) precision/recall/F1 on the LLM's own examples (necessarily a tiny
+ * sample — there's no history for a rule that doesn't exist yet, so this is
+ * disclosed as `ownCases`, not dressed up as a real corpus score), and
+ * (2) a cross-corpus false-positive scan — how many cases belonging to
+ * OTHER rules this new pattern also matches. Any hit there is a strong
+ * overly-broad-regex signal, since the pattern has no business firing on
+ * code written to test a different rule entirely.
+ */
+function scoreNewRuleProposal(
+  pattern: HeroRule["pattern"],
+  ownCases: CorpusCaseDraft[],
+  existingCorpus: CorpusCase[],
+): NonNullable<RuleProposalDoc["metrics"]> {
+  const asCorpusCases: CorpusCase[] = ownCases.map((c) => ({
+    id: c.id,
+    ruleId: "__proposed__",
+    code: c.code,
+    expected: c.expected,
+    note: c.note,
+  }));
+  const ownEval = asCorpusCases.length > 0 ? evaluateRule(pattern, asCorpusCases) : null;
+
+  let crossCorpusMatches = 0;
+  for (const c of existingCorpus) {
+    try {
+      if (matchPattern(pattern, c.code).length > 0) crossCorpusMatches++;
+    } catch {
+      /* unmatchable code sample — ignore */
+    }
+  }
+
+  return {
+    ownPrecision: ownEval?.precision,
+    ownRecall: ownEval?.recall,
+    ownF1: ownEval?.f1,
+    ownCases: asCorpusCases.length,
+    crossCorpusMatches,
+    crossCorpusSampleSize: existingCorpus.length,
+  };
 }
 
 export async function enqueueNewRuleProposals(
@@ -138,7 +202,11 @@ export async function enqueueNewRuleProposals(
     corpusCases?: CorpusCaseDraft[];
     source: string;
     runDay?: string;
+    scope?: "global" | "project";
+    orgId?: string | null;
+    projectId?: string | null;
   }>,
+  existingCorpus: CorpusCase[] = [],
 ): Promise<number> {
   let n = 0;
   for (const d of drafts) {
@@ -150,6 +218,7 @@ export async function enqueueNewRuleProposals(
     if (existing.exists && (existing.data()?.status === "approved" || existing.data()?.status === "pending")) {
       continue;
     }
+    const metrics = scoreNewRuleProposal(pattern, d.corpusCases ?? [], existingCorpus);
     await ref.set(
       {
         id,
@@ -171,9 +240,12 @@ export async function enqueueNewRuleProposals(
           languages: d.rule.languages ?? ["any"],
         },
         corpusCases: d.corpusCases ?? [],
-        metrics: {},
+        metrics,
         source: d.source,
         runDay: d.runDay ?? null,
+        scope: d.scope ?? "global",
+        orgId: d.orgId ?? null,
+        projectId: d.projectId ?? null,
         createdAt: FieldValue.serverTimestamp(),
         reviewedAt: null,
         reviewedBy: null,
@@ -210,8 +282,16 @@ export async function loadFirestoreCorpusCases(): Promise<
   }
 }
 
-async function activateOverlayRule(rule: HeroRule, meta: Record<string, unknown>): Promise<void> {
-  await db.doc(`platformDressRules/${rule.id}`).set(
+async function activateOverlayRule(
+  rule: HeroRule,
+  meta: Record<string, unknown>,
+  scope: { orgId?: string | null; projectId?: string | null } = {},
+): Promise<void> {
+  const path =
+    scope.orgId && scope.projectId
+      ? `orgs/${scope.orgId}/projects/${scope.projectId}/dressRules/${rule.id}`
+      : `platformDressRules/${rule.id}`;
+  await db.doc(path).set(
     {
       ...rule,
       active: true,
@@ -259,8 +339,8 @@ export const listRuleProposals = onCall<{
   const limit = Math.min(100, Math.max(1, Number(request.data?.limit ?? 50) || 50));
 
   // Avoid composite index: fetch recent and filter in memory.
-  const snap = await db.collection("ruleProposals").orderBy("createdAt", "desc").limit(Math.max(limit, 80)).get();
-  let items = snap.docs.map((d) => {
+  const snap = await db.collection("ruleProposals").orderBy("createdAt", "desc").limit(120).get();
+  const all = snap.docs.map((d) => {
     const data = d.data();
     return {
       id: d.id,
@@ -270,6 +350,9 @@ export const listRuleProposals = onCall<{
       title: data.title,
       rationale: data.rationale,
       ruleId: data.ruleId,
+      scope: data.scope ?? "global",
+      orgId: data.orgId ?? null,
+      projectId: data.projectId ?? null,
       baselinePattern: data.baselinePattern ?? null,
       proposedPattern: data.proposedPattern ?? null,
       proposedRule: data.proposedRule ?? null,
@@ -283,13 +366,14 @@ export const listRuleProposals = onCall<{
       reviewedBy: data.reviewedBy ?? null,
     };
   });
-  if (status !== "all") items = items.filter((i) => i.status === status);
+  const pendingCount = all.filter((i) => i.status === "pending").length;
+  let items = status === "all" ? all : all.filter((i) => i.status === status);
   items = items.slice(0, limit);
 
   return {
     items,
     counts: {
-      pending: items.filter((i) => i.status === "pending").length,
+      pending: pendingCount,
       shown: items.length,
     },
   };
@@ -334,21 +418,24 @@ export const reviewRuleProposal = onCall<{
   }
 
   // Approve → active overlay (all channels via getActiveRules) + corpus cases
+  const scopeOrg = data.orgId ?? null;
+  const scopeProject = data.projectId ?? null;
+
   if (data.kind === "evolve") {
     const base = RULES_BY_ID[data.ruleId];
     const pattern = safePattern(data.proposedPattern);
     if (!base || !pattern) throw new HttpsError("failed-precondition", "Padrão inválido para evolução.");
     const rule: HeroRule = { ...base, pattern };
-    await activateOverlayRule(rule, {
-      dressCodeId: null,
-      approvedProposalId: proposalId,
-      proposalKind: "evolve",
-    });
-    // Seed corpus with a note case when metrics improved (optional synthetic)
-    const cases = data.corpusCases?.length
-      ? data.corpusCases
-      : [];
-    await writeCorpusCases(data.ruleId, cases, proposalId);
+    await activateOverlayRule(
+      rule,
+      {
+        dressCodeId: null,
+        approvedProposalId: proposalId,
+        proposalKind: "evolve",
+      },
+      { orgId: null, projectId: null },
+    );
+    await writeCorpusCases(data.ruleId, data.corpusCases ?? [], proposalId);
   } else {
     const draft = data.proposedRule;
     const pattern = safePattern(draft?.pattern ?? data.proposedPattern);
@@ -370,12 +457,16 @@ export const reviewRuleProposal = onCall<{
       category: draft.category,
       pattern,
     };
-    await activateOverlayRule(rule, {
-      dressCodeId: null,
-      approvedProposalId: proposalId,
-      proposalKind: "new_rule",
-      family: data.family,
-    });
+    await activateOverlayRule(
+      rule,
+      {
+        dressCodeId: null,
+        approvedProposalId: proposalId,
+        proposalKind: "new_rule",
+        family: data.family,
+      },
+      { orgId: scopeOrg, projectId: scopeProject },
+    );
     await writeCorpusCases(rule.id, data.corpusCases ?? [], proposalId);
   }
 

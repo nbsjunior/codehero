@@ -64,6 +64,18 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Human approval queue for evolve + new rules (security/dress).
+    match /ruleProposals/{id} {
+      allow read: if isPlatformAdmin();
+      allow write: if false;
+    }
+
+    // Approved corpus cases extending golden.json for future evolve runs.
+    match /ruleforgeCorpus/{id} {
+      allow read: if isPlatformAdmin();
+      allow write: if false;
+    }
+
     // Dress codes / overlay rules — writes via Admin SDK callables only.
     match /dressCodes/{id} {
       allow read: if isPlatformAdmin();

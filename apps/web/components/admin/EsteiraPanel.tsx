@@ -161,8 +161,8 @@ export default function EsteiraPanel() {
                         {open ? "▾" : "▸"} {p.title}
                       </span>
                       <span className="rules-row__id">
-                        <code>{p.ruleId}</code> · {kindLabel[p.kind] ?? p.kind} · {familyLabel[p.family] ?? p.family} ·{" "}
-                        {p.status}
+                        <code>{p.ruleId}</code> · {kindLabel[p.kind] ?? p.kind} · {familyLabel[p.family] ?? p.family}
+                        {p.scope === "project" ? " · projeto" : " · global"} · {p.status}
                       </span>
                     </span>
                     <span className={`rules-source rules-source--${p.status === "pending" ? "custom" : "core"}`}>
@@ -199,6 +199,18 @@ export default function EsteiraPanel() {
                       <p className="hero-caption">
                         F1 {p.metrics.baselineF1?.toFixed(2) ?? "—"} → {p.metrics.bestF1.toFixed(2)}
                         {p.metrics.mutationIds?.length ? ` · mutações: ${p.metrics.mutationIds.join(", ")}` : ""}
+                      </p>
+                    )}
+                    {p.kind === "new_rule" && p.metrics && (
+                      <p className="hero-caption">
+                        F1 (exemplos próprios, n={p.metrics.ownCases ?? 0}):{" "}
+                        {p.metrics.ownF1 != null ? p.metrics.ownF1.toFixed(2) : "—"}
+                        {" · "}
+                        checagem cruzada: {p.metrics.crossCorpusMatches ?? 0} de {p.metrics.crossCorpusSampleSize ?? 0}{" "}
+                        casos de OUTRAS regras também disparam
+                        {(p.metrics.crossCorpusMatches ?? 0) > 0 && (
+                          <strong style={{ color: "var(--rating-e)" }}> — possível regex amplo demais, revise</strong>
+                        )}
                       </p>
                     )}
                     {p.kind === "evolve" && p.baselinePattern && p.proposedPattern && (

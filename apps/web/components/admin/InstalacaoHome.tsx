@@ -231,9 +231,16 @@ function InstalacaoHome() {
         scope: dressScope,
         orgId,
         projectId,
-        activate: true,
+        activate: false,
+        requireApproval: true,
       });
-      setDressResult({ summary: res.summary, rules: res.rules });
+      setDressResult({
+        summary:
+          res.status === "pending_approval"
+            ? `${res.summary} — ${res.ruleCount} proposta(s) na Esteira (aguardando aprovação).`
+            : res.summary,
+        rules: res.rules,
+      });
       setDressText("");
     } catch (err) {
       setDressError(err instanceof Error ? err.message : "Falha ao interpretar o dress code.");

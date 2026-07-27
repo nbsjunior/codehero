@@ -119,9 +119,14 @@ export const submitDressCode = onCall(
           corpusCases: [],
           source: `dressCode:${dressCodeId}`,
           runDay: day,
+          scope,
+          orgId: scope === "project" ? data.orgId! : null,
+          projectId: scope === "project" ? data.projectId! : null,
         })),
       );
-      await db.doc(`dressCodes/${dressCodeId}`).set({
+      const dressPath =
+        scope === "global" ? `dressCodes/${dressCodeId}` : `orgs/${data.orgId}/projects/${data.projectId}/dressCodes/${dressCodeId}`;
+      await db.doc(dressPath).set({
         id: dressCodeId,
         naturalLanguage: text,
         scope,
