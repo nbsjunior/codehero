@@ -1,5 +1,12 @@
-import sodium from "libsodium-wrappers";
+import { createRequire } from "node:module";
 import { buildCodeHeroWorkflowYaml, CODEHERO_PUBLIC_API_BASE } from "@codehero/contracts";
+
+// tweetsodium is CJS; createRequire avoids the broken ESM build of libsodium-wrappers
+// that Firebase's function analyzer hits at deploy time.
+const require = createRequire(import.meta.url);
+const sodium = require("tweetsodium") as {
+  seal: (message: Uint8Array, key: Uint8Array) => Uint8Array;
+};
 
 const WORKFLOW_PATH = ".github/workflows/codehero.yml";
 const GH_API = "https://api.github.com";
@@ -42,11 +49,10 @@ async function ghJson<T>(
   return { ok: res.ok, status: res.status, data, message: message || undefined };
 }
 
-async function encryptSecret(publicKeyBase64: string, secretValue: string): Promise<string> {
-  await sodium.ready;
+function encryptSecret(publicKeyBase64: string, secretValue: string): string {
   const keyBytes = Buffer.from(publicKeyBase64, "base64");
   const messageBytes = Buffer.from(secretValue, "utf8");
-  const sealed = sodium.crypto_box_seal(messageBytes, keyBytes);
+  const sealed = sodium.seal(messageBytes, keyBytes);
   return Buffer.from(sealed).toString("base64");
 }
 
@@ -127,7 +133,7 @@ export async function installCodeHeroOnRepo(input: {
     );
   }
 
-  const encrypted = await encryptSecret(keyRes.data.key, ingestToken);
+  const encrypted = encryptSecret(keyRes.data.key, ingestToken);
   const secretRes = await ghJson<{ message?: string }>(
     githubToken,
     "PUT",
