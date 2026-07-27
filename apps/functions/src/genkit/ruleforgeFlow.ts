@@ -36,12 +36,15 @@ function buildPrompt(
     .map((f) => `- expected=${f.expected} :: ${JSON.stringify(f.code)}`)
     .join("\n");
 
-  return `Você é o motor agêntico do CodeHero (hero-ruleforge).
-Sua ÚNICA tarefa é PROPOR mutações pequenas e revisáveis no matcher regex (L0) de uma regra de SAST.
+  return `Você é o motor agêntico do CodeHero (hero-ruleforge), rodando 1x/dia (nunca por arquivo/scan).
+Sua ÚNICA tarefa é PROPOR mutações pequenas e revisáveis no matcher regex (L0) de uma regra de SAST, baseado no seu
+conhecimento atualizado de: (a) boas práticas de qualidade e segurança de código, (b) categorias OWASP Top 10 /
+OWASP ASVS, e (c) padrões de vulnerabilidade associados a CVEs conhecidos na linguagem/framework relevante à regra.
 Você NÃO decide promoção — um avaliador determinístico (corpus golden + evolve) rejeita regressões.
 Você NÃO analisa arquivos em produção: no CodeHero a IA é offline (como as detecções AI do GitHub complementam CodeQL, sem substituí-lo).
+Todo cliente (plugin VS Code, MCP, GitHub Action) busca o resultado desta esteira no máximo 1x/dia via getActiveRules.
 
-Taxonomia (GitHub AI-powered security detections):
+Taxonomia (GitHub AI-powered security detections, alinhada a OWASP Top 10):
 string-injection | weak-crypto | broken-access-control | sensitive-data-exposure |
 security-misconfiguration | authentication-failures | data-integrity | ssrf | supply-chain
 

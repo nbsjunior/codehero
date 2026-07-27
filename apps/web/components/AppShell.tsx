@@ -12,12 +12,14 @@ interface NavItem {
   label: string;
   icon: string;
   adminOnly?: boolean;
+  external?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/", label: "Dashboard", icon: "◆" },
   { href: "/admin", label: "Admin", icon: "▲", adminOnly: true },
-  { href: "/docs", label: "Docs", icon: "▤" },
+  { href: "/docs/", label: "Docs", icon: "▤" },
+  { href: "https://produtech.web.app", label: "Estimativa Build", icon: "▣", external: true },
 ];
 
 export default function AppShell({ children }: { children: ReactNode }) {
@@ -51,9 +53,12 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <p className="hero-sidebar-kicker">Plataforma</p>
         <nav className="hero-sidebar-nav">
           {NAV_ITEMS.filter((item) => !item.adminOnly || isAdmin).map((item) => {
-            const active = pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
-            return (
-              <Link key={item.href} href={item.href} className={`hero-sidebar-link${active ? " is-active" : ""}`}>
+            const active =
+              !item.external &&
+              (pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href)));
+            const className = `hero-sidebar-link${active ? " is-active" : ""}`;
+            const content = (
+              <>
                 <span aria-hidden>{item.icon}</span>
                 {item.label}
                 {item.adminOnly && (
@@ -61,6 +66,24 @@ export default function AppShell({ children }: { children: ReactNode }) {
                     Admin
                   </span>
                 )}
+              </>
+            );
+            if (item.external) {
+              return (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className={className}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {content}
+                </a>
+              );
+            }
+            return (
+              <Link key={item.href} href={item.href} className={className}>
+                {content}
               </Link>
             );
           })}

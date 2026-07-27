@@ -1,4 +1,6 @@
-# CodeHero — Arquitetura (SaaS no Firebase)
+# CodeHero — Arquitetura (interno / ops)
+
+> **Documento interno.** Destinado a quem opera e desenvolve a plataforma. Clientes e páginas públicas usam linguagem genérica (Cloud, API, Dress Code Tools) — não cite este arquivo em materiais de produto.
 
 Adaptação do plano original (Rust/Go/Postgres/ClickHouse) para um **SaaS nativo em Firebase**, mantendo os três módulos e o princípio central: **a IA nunca está no caminho crítico da inspeção**.
 

@@ -1,12 +1,13 @@
 import { onCall, onRequest, HttpsError } from "firebase-functions/v2/https";
 import { FieldValue } from "firebase-admin/firestore";
-import { db, projectRef } from "./lib/firebase.ts";
+import { db, repoRef } from "./lib/firebase.ts";
 
 type Verdict = "false_positive" | "confirmed" | "fix_accepted" | "fix_rejected";
 
 interface FlagFeedbackInput {
   orgId: string;
   projectId: string;
+  repoId: string;
   fingerprint: string;
   verdict: Verdict;
   note?: string;
@@ -29,15 +30,15 @@ export const flagIssueFeedback = onCall<FlagFeedbackInput>(async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
 
-  const { orgId, projectId, fingerprint, verdict, note } = request.data ?? ({} as FlagFeedbackInput);
-  if (!orgId || !projectId || !fingerprint || !verdict) {
-    throw new HttpsError("invalid-argument", "orgId, projectId, fingerprint and verdict are required");
+  const { orgId, projectId, repoId, fingerprint, verdict, note } = request.data ?? ({} as FlagFeedbackInput);
+  if (!orgId || !projectId || !repoId || !fingerprint || !verdict) {
+    throw new HttpsError("invalid-argument", "orgId, projectId, repoId, fingerprint and verdict are required");
   }
 
   const member = await db.doc(`orgs/${orgId}/members/${uid}`).get();
   if (!member.exists) throw new HttpsError("permission-denied", "not a member of this org");
 
-  const issueRef = projectRef(orgId, projectId).collection("issues").doc(fingerprint);
+  const issueRef = repoRef(orgId, projectId, repoId).collection("issues").doc(fingerprint);
   const issueSnap = await issueRef.get();
   if (!issueSnap.exists) throw new HttpsError("not-found", "issue not found");
   const issue = issueSnap.data()!;
@@ -59,6 +60,7 @@ export const flagIssueFeedback = onCall<FlagFeedbackInput>(async (request) => {
       expectedLabel: verdict === "false_positive" ? "no_match" : "match",
       fingerprint,
       projectId,
+      repoId,
       reportedBy: uid,
       note: note ?? null,
       createdAt: FieldValue.serverTimestamp(),
@@ -87,24 +89,25 @@ export const submitFixResult = onRequest({ cors: true }, async (req, res) => {
     res.status(405).json({ error: "method_not_allowed" });
     return;
   }
-  const { orgId, projectId, fingerprint, specId, status } = req.body ?? {};
-  if (!orgId || !projectId || !fingerprint || !status) {
-    res.status(400).json({ error: "orgId, projectId, fingerprint and status are required" });
+  const { orgId, projectId, repoId, fingerprint, specId, status } = req.body ?? {};
+  if (!orgId || !projectId || !repoId || !fingerprint || !status) {
+    res.status(400).json({ error: "orgId, projectId, repoId, fingerprint and status are required" });
     return;
   }
 
-  const pSnap = await projectRef(orgId, projectId).get();
-  if (!pSnap.exists) {
-    res.status(404).json({ error: "project_not_found" });
+  const rRef = repoRef(orgId, projectId, repoId);
+  const rSnap = await rRef.get();
+  if (!rSnap.exists) {
+    res.status(404).json({ error: "repo_not_found" });
     return;
   }
   const token = (req.headers.authorization ?? "").replace(/^Bearer\s+/i, "");
-  if (!token || token !== pSnap.get("ingestToken")) {
+  if (!token || token !== rSnap.get("ingestToken")) {
     res.status(401).json({ error: "unauthorized" });
     return;
   }
 
-  const issueRef = projectRef(orgId, projectId).collection("issues").doc(String(fingerprint));
+  const issueRef = rRef.collection("issues").doc(String(fingerprint));
   const issueSnap = await issueRef.get();
   if (!issueSnap.exists) {
     res.status(404).json({ error: "issue_not_found" });
@@ -130,6 +133,7 @@ export const submitFixResult = onRequest({ cors: true }, async (req, res) => {
       ruleId: issue.ruleId,
       status,
       projectId,
+      repoId,
       createdAt: FieldValue.serverTimestamp(),
     });
 

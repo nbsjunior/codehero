@@ -29,6 +29,8 @@
     "site": "codehero",
     "public": "apps/web/out",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "cleanUrls": true,
+    "trailingSlash": true,
     "rewrites": [
       { "source": "/downloads/**", "destination": "/downloads/**" },
       { "source": "/*/githubOauthCallback", "function": { "functionId": "githubOAuthCallback", "region": "us-central1" } },

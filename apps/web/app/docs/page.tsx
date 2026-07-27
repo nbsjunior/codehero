@@ -4,13 +4,16 @@ import MermaidDiagram from "@/components/MermaidDiagram";
 export const metadata = {
   title: "Docs — CodeHero",
   description:
-    "Guia completo: modelos GenAI + determinísticos, SQALE, papéis, GitHub Action, VS Code, prévia GitHub e MCP.",
+    "Modelos matemáticos, aprendizado contínuo de regras, quality gate, GitHub Action, VS Code e MCP.",
 };
 
 const TOC = [
   { href: "#missao", label: "Missão e valor" },
-  { href: "#modelos", label: "Modelos GenAI + determinísticos" },
-  { href: "#matematica", label: "Matemática (SQALE, F1, gate)" },
+  { href: "#modelos-matematicos", label: "Modelos matemáticos" },
+  { href: "#aprendizado-continuo", label: "Aprendizado contínuo" },
+  { href: "#fluxo-regras", label: "Criação automática de regras" },
+  { href: "#modelos", label: "GenAI + motor de prova" },
+  { href: "#matematica", label: "Fórmulas (débito, F1, gate)" },
   { href: "#indices", label: "Manutenibilidade e segurança" },
   { href: "#papeis", label: "Dois tipos de perfil" },
   { href: "#canais", label: "Onde o CodeHero age" },
@@ -27,26 +30,26 @@ const TOC = [
 
 const DIAGRAM_HYBRID = `flowchart TB
   subgraph gen["Camada GenAI — propõe, não decide"]
-    DC["Dress code em português"]
-    RF["ruleforgeDaily / Genkit"]
+    DC["Política do time\\nem linguagem natural"]
+    RF["Dress Code Tools\\nciclo diário"]
     SDD["SDD Spec + agente MCP"]
   end
-  subgraph det["Camada determinística — decide e prova"]
-    SCAN["hero-scanner\\nregex / AST / dataflow"]
+  subgraph det["Camada de prova — decide e mede"]
+    SCAN["Scanner CodeHero\\nregex / AST / dataflow"]
     CORPUS["Corpus golden\\nP / R / F1"]
-    SQALE["Métricas SQALE\\ndébito · ratings · gate"]
+    DEBT["Métricas de débito\\nratings · gate"]
   end
   DC -->|regras candidatas| SCAN
-  RF -->|MutationSpec| CORPUS
+  RF -->|mutações candidatas| CORPUS
   CORPUS -->|só se ΔF1>0 e P≥0.85| SCAN
-  SCAN -->|SARIF| SQALE
+  SCAN -->|relatório| DEBT
   SDD -->|fix proposto| SCAN
   SCAN -->|rescaneio prova o fix| SDD`;
 
 const DIAGRAM_PATHS = `flowchart LR
-  PR["Push / PR / IDE"] --> SCAN["Scanner determinístico"]
-  SCAN --> SARIF["SARIF + fingerprints"]
-  SARIF --> ING["ingestAnalysis"]
+  PR["Push / PR / IDE"] --> SCAN["Scanner"]
+  SCAN --> REP["Relatório + fingerprints"]
+  REP --> ING["API de ingestão"]
   ING --> MET["Débito + ratings\\nmanutenibilidade / segurança"]
   MET --> QG{"Quality Gate"}
   QG -->|PASSED| OK["Merge liberado"]
@@ -56,23 +59,114 @@ const DIAGRAM_PATHS = `flowchart LR
   FIX --> SCAN`;
 
 const DIAGRAM_RULEFORGE = `flowchart LR
-  FB["Telemetria FP/FN"] --> GEN["Genkit\\npropõe mutações"]
+  FB["Telemetria FP/FN"] --> GEN["Dress Code Tools\\npropõe mutações"]
   HAND["Mutações humanas"] --> POOL["Pool de candidatos"]
   GEN -.->|não decide| POOL
-  POOL --> GA["GA determinístico\\nseed diária"]
+  POOL --> GA["Busca evolutiva\\nreproduzível"]
   GOLD["Corpus golden"] --> GA
   GA -->|"PROMOTED\\nΔF1>0 · P≥0.85 · 0 regressão"| RULES["RuleSet ativo"]
-  GA -->|REJECTED| LOG["ruleforgeRuns"]
-  RULES --> SCAN["hero-scanner\\nsem LLM por arquivo"]`;
+  GA -->|REJECTED| LOG["Histórico de evolução"]
+  RULES --> SCAN["Scanner\\nsem LLM por arquivo"]`;
 
 const DIAGRAM_RATINGS = `flowchart TB
-  ISSUES["Issues do SARIF"] --> SMELL["CODE_SMELL\\nΣ effortMin"]
+  ISSUES["Issues do relatório"] --> SMELL["Code smells\\nΣ esforço (min)"]
   ISSUES --> SEV["Vulnerabilities / Bugs\\nseveridades"]
   SMELL --> TDR["TDR = Debt / LOC×30min"]
   TDR --> MR["Maintainability\\nA–E"]
   SEV --> SR["Security rating\\n= pior severidade"]
   MR --> GATE["Quality Gate\\nmax rating A"]
   SR --> GATE`;
+
+const DIAGRAM_MATH_STACK = `flowchart TB
+  subgraph debt["Manutenibilidade"]
+    SM["Σ effortMin smells"] --> TD["TechnicalDebt"]
+    LOC["LOC × 30 min"] --> DC["DevelopmentCost"]
+    TD --> TDR["TDR = Debt / Cost"]
+    DC --> TDR
+    TDR --> MR["Rating A–E"]
+  end
+  subgraph sec["Segurança"]
+    V["Issues VULN / BUG / HOTSPOT"] --> WORST["argmax severidade"]
+    WORST --> SR["Rating A–E"]
+  end
+  subgraph f1["Portão de promoção de regras"]
+    TP["TP / FP / FN no corpus"] --> P["Precision"]
+    TP --> R["Recall"]
+    P --> F1["F1 = 2PR/(P+R)"]
+    R --> F1
+    F1 --> GATE{"ΔF1>0 ∧ P≥0.85?"}
+    GATE -->|sim| PROMOTE["PROMOTED"]
+    GATE -->|não| REJECT["REJECTED"]
+  end
+  MR --> QG["Quality Gate"]
+  SR --> QG`;
+
+const DIAGRAM_LEARNING_LOOP = `flowchart LR
+  subgraph observe["Observar"]
+    SCAN["Scans CI / IDE / prévia"]
+    FB["Feedback FP/FN"]
+    FIX["submit_fix_result"]
+  end
+  subgraph propose["Propor"]
+    DC["Política nova\\ndo time"]
+    LLM["Dress Code Tools\\nlote offline"]
+  end
+  subgraph prove["Provar"]
+    CORPUS["Corpus golden"]
+    GA["Busca evolutiva"]
+    MET["P · R · F1"]
+  end
+  subgraph ship["Publicar"]
+    RULES["RuleSet ativo"]
+    EDGE["Scanner na borda"]
+  end
+  SCAN --> FB
+  FIX --> FB
+  FB --> LLM
+  DC --> LLM
+  LLM --> GA
+  CORPUS --> GA
+  GA --> MET
+  MET -->|passa portão| RULES
+  MET -->|falha| FB
+  RULES --> EDGE
+  EDGE --> SCAN`;
+
+const DIAGRAM_RULE_AUTOMATION = `flowchart TB
+  START["Sinais de entrada"] --> SPLIT{Tipo de sinal}
+  SPLIT -->|Política em texto| DRESS["Dress Code Tools\\ninterpreta → regra candidata"]
+  SPLIT -->|FP / FN / gaps| MUT["Propõe mutações\\nde regras existentes"]
+  SPLIT -->|Curadoria humana| HAND["MutationSpec manual"]
+  DRESS --> POOL["Pool de candidatos"]
+  MUT --> POOL
+  HAND --> POOL
+  POOL --> EVAL["Avalia no corpus\\ncasos match / no_match"]
+  EVAL --> SCORE["Calcula P, R, F1\\nvs baseline"]
+  SCORE --> DEC{"Portão\\nΔF1>0 · P≥0.85\\n0 regressão"}
+  DEC -->|PROMOTED| TYPE{Categoria da regra}
+  DEC -->|REJECTED| LOG["Registra motivo\\ne tenta na próxima rodada"]
+  TYPE -->|CODE_SMELL| MAINT["Manutenibilidade\\n↓ TDR no próximo scan"]
+  TYPE -->|VULN / HOTSPOT / BUG| SEC["Segurança\\n↓ pior severidade"]
+  MAINT --> ACTIVE["RuleSet ativo\\nCI + IDE + prévia"]
+  SEC --> ACTIVE
+  ACTIVE --> NEXT["Próximo ciclo diário"]
+  LOG --> NEXT
+  NEXT --> START`;
+
+const DIAGRAM_F1_DETAIL = `flowchart LR
+  C["Corpus golden"] --> M["Regra candidata\\naplica match"]
+  M --> TP["TP: acertou positivo"]
+  M --> FP["FP: falso positivo"]
+  M --> FN["FN: deixou passar"]
+  TP --> P["P = TP/(TP+FP)"]
+  FP --> P
+  TP --> R["R = TP/(TP+FN)"]
+  FN --> R
+  P --> F1["F1"]
+  R --> F1
+  F1 --> CMP{"melhor que baseline?"}
+  CMP -->|sim + P≥0.85| OK["Entra no RuleSet"]
+  CMP -->|não| NO["Descartada\\nsem afetar o CI"]`;
 
 export default function DocsPage() {
   return (
@@ -84,7 +178,10 @@ export default function DocsPage() {
           </span>
           <strong>CodeHero</strong>
         </Link>
-        <div style={{ display: "flex", gap: "1.25rem", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "1.25rem", alignItems: "center", flexWrap: "wrap" }}>
+          <a href="https://produtech.web.app" target="_blank" rel="noreferrer">
+            Estimativa Build
+          </a>
           <a href="https://github.com/nbsjunior/codehero" target="_blank" rel="noreferrer">
             GitHub
           </a>
@@ -109,8 +206,8 @@ export default function DocsPage() {
         <article className="cr-docs-article">
           <h1>Documentação do CodeHero</h1>
           <p className="cr-docs-lede">
-            Como aumentar qualidade e segurança do código — na pipeline, no editor (shift left) e nas IDEs de IA —
-            sem o time precisar configurar infraestrutura.
+            Modelos matemáticos, aprendizado contínuo de regras e o fluxo que promove qualidade e segurança — na
+            pipeline, no editor e nas IDEs de IA — sem o time configurar infraestrutura.
           </p>
 
           <section id="missao">
@@ -141,11 +238,152 @@ export default function DocsPage() {
             </ul>
           </section>
 
+          <section id="modelos-matematicos">
+            <h2>Modelos matemáticos</h2>
+            <p>
+              Três famílias de fórmulas sustentam o produto: <strong>débito técnico</strong> (manutenibilidade),{" "}
+              <strong>pior severidade</strong> (segurança) e <strong>precisão/recall/F1</strong> (portão de promoção
+              de regras). Elas são as mesmas no CI, no portal e no plugin.
+            </p>
+
+            <MermaidDiagram
+              chart={DIAGRAM_MATH_STACK}
+              caption="Figura A — Três modelos: TDR → rating de manutenibilidade; pior severidade → rating de segurança; F1 → promoção de regras."
+            />
+
+            <div className="cr-docs-module-grid">
+              <div className="cr-docs-module-card">
+                <strong>Manutenibilidade (TDR)</strong>
+                <span>
+                  TechnicalDebt = Σ effortMin dos code smells. DevelopmentCost = LOC × 30 min. TDR = Debt / Cost →
+                  rating A–E (A se TDR ≤ 5%).
+                </span>
+              </div>
+              <div className="cr-docs-module-card">
+                <strong>Segurança</strong>
+                <span>
+                  Rating = mapeamento da pior severidade presente (BLOCKER→E … sem issues→A). Não usa média: um único
+                  BLOCKER derruba o índice.
+                </span>
+              </div>
+              <div className="cr-docs-module-card">
+                <strong>Portão F1</strong>
+                <span>
+                  P = TP/(TP+FP), R = TP/(TP+FN), F1 = 2PR/(P+R). Só promove regra se ΔF1 &gt; 0, P ≥ 0,85 e zero
+                  regressão no corpus.
+                </span>
+              </div>
+            </div>
+
+            <MermaidDiagram
+              chart={DIAGRAM_F1_DETAIL}
+              caption="Figura B — Como o corpus classifica uma regra candidata (TP/FP/FN) antes de ela tocar o CI."
+            />
+
+            <MermaidDiagram
+              chart={DIAGRAM_RATINGS}
+              caption="Figura C — Do relatório de análise aos índices A–E e ao Quality Gate."
+            />
+          </section>
+
+          <section id="aprendizado-continuo">
+            <h2>Como o sistema aprende de forma contínua</h2>
+            <p>
+              O aprendizado <em>não</em> é “um LLM lê cada arquivo no PR”. O loop é: observar uso real → propor
+              mutações offline → provar no corpus → publicar só o que passa no portão → voltar a observar.
+            </p>
+
+            <MermaidDiagram
+              chart={DIAGRAM_LEARNING_LOOP}
+              caption="Figura D — Loop contínuo: observar → propor → provar → publicar. A IA nunca fecha o quality gate."
+            />
+
+            <ol className="cr-docs-steps">
+              <li>
+                <strong>Observar</strong>
+                <p>
+                  Scans da Action, do IDE e da prévia geram findings. Feedback de falso positivo/negativo e resultado
+                  de correções (MCP / SDD) viram telemetria rotulada.
+                </p>
+              </li>
+              <li>
+                <strong>Propor</strong>
+                <p>
+                  Em lote offline, as Dress Code Tools (e curadoria humana) sugerem novas regras ou mutações — a partir
+                  de política do time ou de gaps do corpus.
+                </p>
+              </li>
+              <li>
+                <strong>Provar</strong>
+                <p>
+                  Busca evolutiva reproduzível mede P, R e F1 contra o corpus golden. Candidata ruim é rejeitada com
+                  motivo auditável.
+                </p>
+              </li>
+              <li>
+                <strong>Publicar</strong>
+                <p>
+                  Só o que passa no portão entra no RuleSet ativo. No próximo scan (CI/IDE/prévia) o time já usa a
+                  regra — sem republicar plugin.
+                </p>
+              </li>
+            </ol>
+
+            <div className="cr-docs-callout">
+              <strong>Por que isso evita incoerência e falso positivo</strong>
+              <p style={{ margin: 0 }}>
+                O caminho crítico do PR é sempre o mesmo scanner com o mesmo RuleSet. A IA só alimenta o pool de
+                candidatos; o corpus e o F1 decidem. Resultado estável entre execuções e promoção com prova de
+                precisão.
+              </p>
+            </div>
+          </section>
+
+          <section id="fluxo-regras">
+            <h2>Fluxo automatizado de criação de regras</h2>
+            <p>
+              Manutenibilidade e segurança compartilham o mesmo pipeline de promoção. O que muda é a{" "}
+              <em>categoria</em> da regra promovida: code smells alimentam o TDR; vulnerabilidades/hotspots alimentam o
+              rating de segurança.
+            </p>
+
+            <MermaidDiagram
+              chart={DIAGRAM_RULE_AUTOMATION}
+              caption="Figura E — Da política/telemetria ao RuleSet: candidatos → corpus → portão → impacto em manutenibilidade ou segurança."
+            />
+
+            <div className="cr-docs-compare">
+              <div>
+                <strong>Regras de manutenibilidade</strong>
+                <ul>
+                  <li>Tipo CODE_SMELL com effortMin</li>
+                  <li>Sobe Σ débito quando disparam</li>
+                  <li>Baixar TDR = melhorar rating A–E</li>
+                  <li>Ex.: debug em produção, TODO abandonado, GO TO</li>
+                </ul>
+              </div>
+              <div>
+                <strong>Regras de segurança</strong>
+                <ul>
+                  <li>Tipo VULNERABILITY / HOTSPOT / BUG</li>
+                  <li>Sobe a pior severidade do projeto</li>
+                  <li>Portão exige P ≥ 0,85 (menos FP)</li>
+                  <li>Ex.: secret hardcoded, XSS, SQL injection</li>
+                </ul>
+              </div>
+            </div>
+
+            <MermaidDiagram
+              chart={DIAGRAM_RULEFORGE}
+              caption="Figura F — Detalhe do ciclo diário: propostas → busca evolutiva → PROMOTED / REJECTED."
+            />
+          </section>
+
           <section id="modelos">
-            <h2>Modelos: GenAI + determinísticos (o mix)</h2>
+            <h2>Modelos: GenAI + motor de prova (o mix)</h2>
             <p>
               O CodeHero não escolhe “só IA” nem “só regras fixas”. Ele separa <strong>dois tipos de modelo</strong> com
-              responsabilidades distintas — o mesmo espírito do CodeQL + detecções complementares, mas com um contrato
+              responsabilidades distintas — scanners clássicos + detecções complementares, mas com um contrato
               explícito: <em>a IA nunca é o juiz do quality gate</em>.
             </p>
 
@@ -153,7 +391,7 @@ export default function DocsPage() {
               <div className="cr-docs-module-card">
                 <strong>Modelo generativo (GenAI)</strong>
                 <span>
-                  Interpreta linguagem natural (dress code), propõe mutações de regra (Genkit / ruleforge) e redige
+                  Interpreta linguagem natural (dress code), propõe mutações de regra (Dress Code Tools) e redige
                   contratos de correção (SDD) para agentes. Bom em exploração e síntese; ruim como única fonte de
                   verdade em CI.
                 </span>
@@ -161,7 +399,7 @@ export default function DocsPage() {
               <div className="cr-docs-module-card">
                 <strong>Modelo determinístico</strong>
                 <span>
-                  Matcher (regex/AST/dataflow), avaliação F1 no corpus, débito SQALE e quality gate. Mesma entrada →
+                  Matcher (regex/AST/dataflow), avaliação F1 no corpus, débito técnico e quality gate. Mesma entrada →
                   mesma saída. Roda na borda (CI/IDE) sem rede e sem custo de inferência por arquivo.
                 </span>
               </div>
@@ -199,18 +437,18 @@ export default function DocsPage() {
 
             <MermaidDiagram
               chart={DIAGRAM_RULEFORGE}
-              caption="Figura 3 — Evolução de regras: Genkit propõe mutações; o GA determinístico promove ou rejeita."
+              caption="Figura 3 — Evolução de regras: Dress Code Tools propõe mutações; o motor determinístico promove ou rejeita."
             />
           </section>
 
           <section id="matematica">
-            <h2>Matemática por trás (SQALE, F1, quality gate)</h2>
+            <h2>Matemática por trás (débito técnico, F1, quality gate)</h2>
             <p>
-              As fórmulas vivem em <code>@codehero/contracts</code> — puras, iguais no Functions, no scanner e no
-              browser. Assim o índice que o eng vê no portal é o mesmo que falhou (ou passou) no CI.
+              As fórmulas são as mesmas no scanner, na API e no portal. Assim o índice que o eng vê no dashboard é o
+              mesmo que falhou (ou passou) no CI.
             </p>
 
-            <h3>1. Débito técnico e manutenibilidade (SQALE)</h3>
+            <h3>1. Débito técnico e manutenibilidade</h3>
             <p>
               Cada code smell carrega um esforço de remediação em minutos. O débito é a soma; o rating de
               manutenibilidade vem da razão entre débito e o custo de desenvolver o código (LOC × 30 min).
@@ -328,7 +566,7 @@ export default function DocsPage() {
 
             <MermaidDiagram
               chart={DIAGRAM_RATINGS}
-              caption="Figura 4 — Do SARIF aos índices A–E e ao Quality Gate."
+              caption="Figura 4 — Do relatório de análise aos índices A–E e ao Quality Gate."
             />
 
             <h3>3. Quality Gate (new code)</h3>
@@ -349,7 +587,7 @@ export default function DocsPage() {
 
             <h3>4. Evolução de regras — precisão, recall e F1</h3>
             <p>
-              Quando o Genkit propõe uma mutação de regra, o juiz é o corpus golden (casos{" "}
+              Quando as Dress Code Tools propõem uma mutação de regra, o juiz é o corpus golden (casos{" "}
               <code>match</code> / <code>no_match</code>). Nada de “a IA achou bom”:
             </p>
             <div className="cr-docs-formula">
@@ -395,7 +633,7 @@ export default function DocsPage() {
                 <strong>Segurança (pior severidade ↓ → rating ↑)</strong>
                 <ul>
                   <li>Vulnerabilities/hotspots ranqueados por severidade</li>
-                  <li>Ruleforge só promove com P ≥ 0.85 (menos FP em segurança)</li>
+                  <li>Evolução de regras só promove com P ≥ 0.85 (menos FP em segurança)</li>
                   <li>Action falha em CRITICAL/BLOCKER conforme fail-on</li>
                   <li>SDD guia o fix; scanner prova que a finding sumiu</li>
                   <li>Mesma régua no CI, IDE e portal — sem score paralelo</li>
@@ -408,7 +646,7 @@ export default function DocsPage() {
               <p style={{ margin: 0 }}>
                 Sistemas só-de-IA variam o resultado e não fecham gate de forma auditável. Sistemas só-de-regras
                 engessam e atrasam políticas novas. O CodeHero usa GenAI para <em>ampliar e acelerar</em> o catálogo e
-                as correções, e modelos determinísticos + SQALE/F1 para <em>medir, promover e bloquear</em> com
+                as correções, e modelos determinísticos + débito/F1 para <em>medir, promover e bloquear</em> com
                 reprodutibilidade — exatamente o que faz o índice de manutenibilidade e segurança subir de forma
                 sustentável.
               </p>
@@ -419,7 +657,7 @@ export default function DocsPage() {
             <h2>Dois tipos de perfil</h2>
             <p>
               A plataforma separa quem opera a <em>plataforma inteira</em> de quem opera <em>projetos e
-              repositórios</em>. Isso evita que engenheiros precisem conhecer Firebase, secrets de cloud ou painéis de
+              repositórios</em>. Isso evita que engenheiros precisem conhecer a Cloud, secrets de ops ou painéis de
               infra.
             </p>
 
@@ -445,7 +683,7 @@ export default function DocsPage() {
                   Provisionam o projeto no portal, ligam o GitHub Action, instalam o plugin e/ou o MCP.
                 </p>
                 <p style={{ marginBottom: 0 }}>
-                  <strong>Não</strong> configuram Firebase, Cloud Functions nem secrets da plataforma — só o portal e
+                  <strong>Não</strong> configuram a Cloud, a API interna nem secrets da plataforma — só o portal e
                   o repositório deles.
                 </p>
               </div>
@@ -543,7 +781,7 @@ export default function DocsPage() {
             <h2>GitHub Action — quality gate na pipeline</h2>
             <p>
               É o jeito mais simples de garantir que <strong>todo PR</strong> passa pelas regras do CodeHero. O admin
-              de projeto configura no próprio GitHub, sem tocar em Firebase.
+              de projeto configura no próprio GitHub, sem tocar na Cloud da plataforma.
             </p>
 
             <h3>Passo a passo (1 clique)</h3>
@@ -563,7 +801,7 @@ export default function DocsPage() {
               <li>
                 <strong>Abra um PR ou faça push</strong>
                 <p>
-                  A Action roda o scanner com as regras ativas (canônicas + dress code), envia o SARIF e avalia o
+                  A Action roda o scanner com as regras ativas (canônicas + dress code), envia o relatório à API e avalia o
                   quality gate. Severidades críticas podem falhar o job e bloquear o merge.
                 </p>
               </li>
@@ -698,7 +936,7 @@ export default function DocsPage() {
               </li>
               <li>
                 <strong>Resultado no portal</strong> — issues, ratings, débito técnico e quality gate. No GitHub,
-                SARIF também pode aparecer em Security / Code scanning.
+                o relatório de análise também pode aparecer em Security / Code scanning.
               </li>
               <li>
                 <strong>Recomendações de correção</strong> — no portal ou via MCP, peça o SDD Spec da issue: localização,
@@ -785,8 +1023,8 @@ export default function DocsPage() {
           <section id="dress-code">
             <h2>Dress code do time</h2>
             <p>
-              Descreva a política em português (“sem console.log em produção”, “sem Math.random em token”). O Genkit
-              interpreta; o motor determinístico aplica como regra auditável.
+              Descreva a política em português (“sem console.log em produção”, “sem Math.random em token”). As Dress
+              Code Tools interpretam; o motor determinístico aplica como regra auditável.
             </p>
             <ul>
               <li>
@@ -836,12 +1074,12 @@ export default function DocsPage() {
               <div className="cr-docs-module-card">
                 <strong>Motor de inspeção</strong>
                 <span>
-                  <code>hero-scanner</code> na borda (CI/IDE). <code>hero-ruleforge</code> evolui regras offline.
+                  Scanner na borda (CI/IDE). Evolução de regras offline com Dress Code Tools + corpus golden.
                 </span>
               </div>
               <div className="cr-docs-module-card">
                 <strong>Painel &amp; SDD</strong>
-                <span>Ingestão SARIF, SQALE, quality gates, contratos de correção verificáveis.</span>
+                <span>Ingestão via API, débito técnico, quality gates, contratos de correção verificáveis.</span>
               </div>
               <div className="cr-docs-module-card">
                 <strong>Integrações</strong>
@@ -849,12 +1087,7 @@ export default function DocsPage() {
               </div>
             </div>
             <p>
-              Multi-tenant: <code>orgs/{"{orgId}"}/projects/{"{projectId}"}</code>. Admin de plataforma é papel
-              separado, gerenciado fora do signup. Detalhes técnicos:{" "}
-              <a href="https://github.com/nbsjunior/codehero/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noreferrer">
-                docs/ARCHITECTURE.md
-              </a>
-              .
+              Multi-tenant por organização e projeto. Admin de plataforma é papel separado, gerenciado fora do signup.
             </p>
           </section>
 

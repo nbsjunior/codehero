@@ -23,12 +23,17 @@ export interface SarifReportingDescriptor {
   id: string;
   name: string;
   shortDescription?: { text: string };
+  fullDescription?: { text: string };
+  help?: { text: string; markdown?: string };
   defaultConfiguration?: { level: SarifLevel };
   properties?: {
     cwe?: string[];
     owasp?: string[];
     "security-severity"?: string;
     tags?: string[];
+    risk?: string;
+    howToFix?: string;
+    strategy?: string;
   };
 }
 
@@ -40,13 +45,18 @@ export interface SarifResult {
   message: { text: string };
   locations: SarifLocation[];
   partialFingerprints?: Record<string, string>;
-  /** CodeHero extensions consumed by ingestion + SDD. */
+  /** CodeHero extensions consumed by ingestion + SDD + ficha. */
   properties?: {
     severity?: string;
     issueType?: string;
     remediationEffortMin?: number;
     sddTemplateId?: string;
     snippet?: string;
+    risk?: string;
+    reason?: string;
+    howToFix?: string;
+    strategy?: string;
+    constraints?: string[];
   };
 }
 

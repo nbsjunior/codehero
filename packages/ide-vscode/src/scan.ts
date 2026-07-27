@@ -15,6 +15,12 @@ export interface ScanFinding {
   endColumn: number;
   snippet: string;
   fingerprint?: string;
+  issueType?: string;
+  sddTemplateId?: string;
+  risk?: string;
+  howToFix?: string;
+  strategy?: string;
+  constraints?: string[];
 }
 
 export interface RuleCatalogEntry {
@@ -56,6 +62,13 @@ interface SarifResult {
   properties?: {
     severity?: string;
     snippet?: string;
+    issueType?: string;
+    sddTemplateId?: string;
+    risk?: string;
+    reason?: string;
+    howToFix?: string;
+    strategy?: string;
+    constraints?: string[];
   };
 }
 
@@ -103,7 +116,7 @@ export async function runScan(opts: {
     const file = toRelative(absolutePath, cwd);
     findings.push({
       ruleId: result.ruleId ?? "rule",
-      message: result.message?.text ?? "",
+      message: result.properties?.reason ?? result.message?.text ?? "",
       severity: sev,
       file,
       absolutePath,
@@ -112,6 +125,12 @@ export async function runScan(opts: {
       endColumn: loc?.region?.endColumn ?? (loc?.region?.startColumn ?? 1) + 1,
       snippet: result.properties?.snippet ?? loc?.region?.snippet?.text ?? "",
       fingerprint: result.partialFingerprints?.["heroHash/v1"],
+      issueType: result.properties?.issueType,
+      sddTemplateId: result.properties?.sddTemplateId,
+      risk: result.properties?.risk,
+      howToFix: result.properties?.howToFix,
+      strategy: result.properties?.strategy,
+      constraints: result.properties?.constraints,
     });
   }
 
@@ -225,7 +244,7 @@ function execCapture(bin: string, args: string[], cwd?: string, shell = false): 
         resolve(stdout);
         return;
       }
-      const detail = (stderr.trim() || stdout.trim() || "Sem saída SARIF.").slice(0, 800);
+      const detail = (stderr.trim() || stdout.trim() || "Sem saída do relatório de análise.").slice(0, 800);
       reject(new Error(`Scanner encerrou com código ${code ?? "?"}. ${detail}`));
     });
   });

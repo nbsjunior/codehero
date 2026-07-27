@@ -76,10 +76,11 @@ export async function installCodeHeroOnRepo(input: {
   repo: string;
   orgId: string;
   projectId: string;
+  repoId: string;
   ingestToken: string;
   heroCoreUrl?: string;
 }): Promise<InstallGithubActionResult> {
-  const { githubToken, owner, repo, orgId, projectId, ingestToken } = input;
+  const { githubToken, owner, repo, orgId, projectId, repoId, ingestToken } = input;
   const heroCoreUrl = input.heroCoreUrl ?? CODEHERO_PUBLIC_API_BASE;
   const repoPath = `/repos/${owner}/${repo}`;
 
@@ -93,7 +94,7 @@ export async function installCodeHeroOnRepo(input: {
   }
   const defaultBranch = repoRes.data.default_branch?.trim() || "main";
 
-  const yaml = buildCodeHeroWorkflowYaml(orgId, projectId, { defaultBranch });
+  const yaml = buildCodeHeroWorkflowYaml(orgId, projectId, repoId, { defaultBranch });
   const contentB64 = Buffer.from(yaml, "utf8").toString("base64");
 
   const existing = await ghJson<{ sha?: string; message?: string }>(

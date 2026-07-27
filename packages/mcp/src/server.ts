@@ -89,7 +89,7 @@ server.tool(
 
 server.tool(
   "run_scan",
-  "Roda o hero-scanner localmente com as regras ativas do servidor (canônicas + dress code) e retorna o SARIF.",
+  "Roda o scanner CodeHero localmente com as regras ativas do servidor (canônicas + dress code) e retorna o relatório de análise.",
   { path: z.string().default(".") },
   async ({ path }) => {
     const cmd = (process.env.HERO_SCANNER_CMD ?? "").trim();

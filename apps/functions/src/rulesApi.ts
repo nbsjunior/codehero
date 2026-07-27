@@ -90,7 +90,12 @@ async function authorizeRulesAccess(
 
   const pSnap = await projectRef(orgId, projectId).get();
   if (!pSnap.exists) return { ok: false, status: 404, error: "project_not_found" };
-  if (token === pSnap.get("ingestToken")) return { ok: true };
+
+  // Each repo in the project has its own ingestToken (independent CI
+  // pipelines); proving access to ANY one of them is enough to read the
+  // project's shared dress-code overlays — this endpoint isn't repo-scoped.
+  const repoMatch = await pSnap.ref.collection("repos").where("ingestToken", "==", token).limit(1).get();
+  if (!repoMatch.empty) return { ok: true };
 
   try {
     const decoded = await getAuth().verifyIdToken(token);

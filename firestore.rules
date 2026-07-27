@@ -74,6 +74,16 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Site-wide feature toggles — any signed-in user may READ (so any part
+    // of the app can gate a feature), but writes go exclusively through the
+    // setFeatureFlag callable (Admin SDK), which itself checks
+    // isPlatformAdmin() — never trust a client write here even if this rule
+    // were accidentally loosened.
+    match /platformFeatureFlags/{flagKey} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
     match /orgs/{orgId} {
       allow read: if isOrgMember(orgId) || isPlatformAdmin();
       // Org creation/mutation handled by callable functions (Admin SDK).
@@ -92,19 +102,27 @@ service cloud.firestore {
         allow read: if isOrgMember(orgId) || isPlatformAdmin();
         allow write: if false;
 
-        match /analyses/{analysisId} {
+        // A project consolidates one or more repos — each repo has its own
+        // ingestToken/CI pipeline and metrics; the project doc holds the
+        // rolled-up totals (see lib/projectAggregate.ts).
+        match /repos/{repoId} {
           allow read: if isOrgMember(orgId) || isPlatformAdmin();
-          allow write: if false;
-        }
+          allow write: if false; // managed by functions
 
-        match /issues/{fingerprint} {
-          allow read: if isOrgMember(orgId) || isPlatformAdmin();
-          allow write: if false;
-        }
+          match /analyses/{analysisId} {
+            allow read: if isOrgMember(orgId) || isPlatformAdmin();
+            allow write: if false;
+          }
 
-        match /sddSpecs/{specId} {
-          allow read: if isOrgMember(orgId) || isPlatformAdmin();
-          allow write: if false;
+          match /issues/{fingerprint} {
+            allow read: if isOrgMember(orgId) || isPlatformAdmin();
+            allow write: if false;
+          }
+
+          match /sddSpecs/{specId} {
+            allow read: if isOrgMember(orgId) || isPlatformAdmin();
+            allow write: if false;
+          }
         }
 
         match /dressCodes/{id} {

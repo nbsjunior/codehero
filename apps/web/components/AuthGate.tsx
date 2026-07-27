@@ -40,12 +40,12 @@ function translateAuthError(err: unknown): string {
     "auth/weak-password": "A senha precisa ter pelo menos 6 caracteres.",
     "auth/too-many-requests": "Muitas tentativas. Aguarde um momento e tente de novo.",
     "auth/operation-not-allowed":
-      "Cadastro por email está desativado neste projeto Firebase. Use Criar conta ou Google.",
-    "auth/unauthorized-domain": "Este domínio não está autorizado no Firebase Auth.",
+      "Cadastro por email está desativado nesta plataforma. Use Criar conta ou Google.",
+    "auth/unauthorized-domain": "Este domínio não está autorizado na autenticação da plataforma.",
     "auth/network-request-failed":
-      "Falha ao falar com o Firebase Auth (rede ou config inválida). Se estiver em codehero.web.app, peça um redeploy após corrigir os secrets NEXT_PUBLIC_*.",
+      "Falha de rede ao autenticar. Verifique a conexão e tente novamente em instantes.",
     "auth/api-key-not-valid.-please-pass-a-valid-api-key.":
-      "Este domínio não está autorizado na API key do Firebase. Peça para liberar codehero.web.app.",
+      "Configuração de autenticação inválida para este domínio. Contate o administrador da plataforma.",
     "already-exists": "Já existe uma conta com esse email — use Entrar.",
     "invalid-argument": message || "Dados inválidos.",
     unauthenticated: "Email ou senha incorretos.",
@@ -56,7 +56,7 @@ function translateAuthError(err: unknown): string {
   };
   if (map[code]) return map[code];
   if (/referer|referrer|API_KEY_HTTP_REFERRER/i.test(message)) {
-    return "Este domínio não está autorizado na API key do Firebase (codehero.web.app).";
+    return "Este domínio não está autorizado na autenticação da plataforma.";
   }
   if (message && !message.startsWith("Firebase:")) return message;
   if (code) return `Falha de autenticação (${code}).`;
@@ -167,8 +167,11 @@ export default function AuthGate({ children }: { children: ReactNode }) {
           <a href="#como" onClick={() => setNavOpen(false)}>
             Como funciona
           </a>
-          <a href="/docs" onClick={() => setNavOpen(false)}>
+          <a href="/docs/" onClick={() => setNavOpen(false)}>
             Docs
+          </a>
+          <a href="https://produtech.web.app" target="_blank" rel="noreferrer" onClick={() => setNavOpen(false)}>
+            Estimativa Build
           </a>
           <button type="button" className="cr-btn cr-btn-ghost" onClick={() => goAuth("login")}>
             Entrar
@@ -182,15 +185,16 @@ export default function AuthGate({ children }: { children: ReactNode }) {
       <main id="top">
         <section className="cr-hero">
           <div className="cr-hero-copy cr-rise">
-            <p className="cr-eyebrow">gratuito · agêntico + determinístico</p>
+            <p className="cr-eyebrow">regras que evoluem · gate que não mente</p>
             <h1 className="cr-brand">CodeHero</h1>
             <p className="cr-headline">
               Corte bugs e dívida técnica pela metade.
               <span className="cr-headline-accent"> Seja o herói do PR.</span>
             </p>
             <p className="cr-subhead">
-              Escreva o dress code do time em português. A IA propõe as regras — o scanner determinístico aplica em
-              cada arquivo, sem alucinar no caminho crítico.
+              As regras se atualizam sozinhas a partir do uso real do time — e só entram no CI depois de provar
+              precisão no corpus. Mesmo código, mesmo resultado: sem incoerência entre PRs e sem falso positivo que
+              vira ruído.
             </p>
             <div className="cr-cta-row">
               <button type="button" className="cr-btn cr-btn-primary cr-btn-lg" onClick={() => goAuth("signup")}>
@@ -217,7 +221,7 @@ export default function AuthGate({ children }: { children: ReactNode }) {
                     <strong>CWE-79</strong> XSS refletido em <code>renderComment</code>
                   </li>
                   <li>
-                    <strong>Dress code</strong> `console.log` em produção
+                    <strong>Política</strong> `console.log` em produção
                   </li>
                   <li>
                     <strong>CWE-338</strong> `Math.random` usado como token
@@ -225,7 +229,7 @@ export default function AuthGate({ children }: { children: ReactNode }) {
                 </ul>
                 <div className="cr-panel-footer">
                   <span className="cr-chip">QG: falhou</span>
-                  <span className="cr-chip cr-chip-ok">motor: determinístico</span>
+                  <span className="cr-chip cr-chip-ok">0 FP no corpus</span>
                 </div>
               </div>
             </div>
@@ -233,31 +237,35 @@ export default function AuthGate({ children }: { children: ReactNode }) {
         </section>
 
         <section className="cr-trust">
-          <p>Feito para times que querem velocidade de herói — com prova, não vibe.</p>
+          <p>Regras que sobem sozinhas. Resultado estável. Falso positivo fica do lado de fora do gate.</p>
         </section>
 
         <section id="poderes" className="cr-section">
           <div className="cr-section-head">
             <h2>Por que times escolhem o CodeHero</h2>
-            <p>IA no planejamento. Precisão de scanner na execução. Você no comando.</p>
+            <p>O catálogo aprende com o time. O gate só promove o que passa no teste.</p>
           </div>
           <div className="cr-feature-grid">
             <article className="cr-feature">
-              <h3>Dress code em português</h3>
+              <h3>Regras que se atualizam sozinhas</h3>
               <p>
-                “Sem console.log em prod”, “sem Math.random em token”. Genkit interpreta a política; o motor aplica
-                como regra auditável.
+                Feedback, gaps e novas políticas alimentam o próximo ciclo. Candidatas boas sobem; as que pioram
+                precisão ou geram regressão ficam de fora — sem release manual do vendor.
               </p>
             </article>
             <article className="cr-feature">
-              <h3>Zero IA no caminho crítico</h3>
+              <h3>Sem incoerência entre scans</h3>
               <p>
-                Cada arquivo passa por padrão, AST e dataflow. Rápido no CI, repetível e sem surpresa de modelo.
+                O mesmo trecho de código produz o mesmo finding no CI, no editor e na prévia. Nada de “passou ontem,
+                falhou hoje” por variação de modelo.
               </p>
             </article>
             <article className="cr-feature">
-              <h3>One-click de herói</h3>
-              <p>Plugin VS Code/Cursor, prévia no Firebase, regras por repo ou para toda a plataforma — sem labirinto.</p>
+              <h3>Falso positivo sob controle</h3>
+              <p>
+                Toda regra nova é medida contra um corpus rotulado (precisão, recall, F1). Só o que melhora o score
+                sem regressão chega ao quality gate do time.
+              </p>
             </article>
           </div>
         </section>
@@ -265,7 +273,7 @@ export default function AuthGate({ children }: { children: ReactNode }) {
         <section id="missao" className="cr-section cr-section-alt">
           <div className="cr-section-head">
             <h2>Diferente do mercado</h2>
-            <p>Mais leve que Sonar. Mais honesto que scanner só de IA. Comparação direta abaixo.</p>
+            <p>Mais leve que suites enterprise. Mais estável que scanner só de IA. Comparação direta abaixo.</p>
           </div>
           <div className="cr-compare-wrap">
             <table className="cr-compare-table">
@@ -275,9 +283,9 @@ export default function AuthGate({ children }: { children: ReactNode }) {
                   <th scope="col" className="cr-compare-highlight">
                     CodeHero
                   </th>
-                  <th scope="col">Sonar / CodeQL / Coverity</th>
+                  <th scope="col">Suites enterprise clássicas</th>
                   <th scope="col">Scanners só de IA</th>
-                  <th scope="col">Linters soltos (ESLint etc.)</th>
+                  <th scope="col">Linters soltos</th>
                 </tr>
               </thead>
               <tbody>
@@ -290,21 +298,35 @@ export default function AuthGate({ children }: { children: ReactNode }) {
                 </tr>
                 <tr>
                   <th scope="row">Motor de detecção</th>
-                  <td className="cr-compare-highlight">Determinístico (AST/pattern)</td>
-                  <td>Determinístico</td>
+                  <td className="cr-compare-highlight">Reproduzível (padrão / AST)</td>
+                  <td>Reproduzível</td>
                   <td>LLM por arquivo</td>
-                  <td>Determinístico</td>
+                  <td>Reproduzível</td>
                 </tr>
                 <tr>
                   <th scope="row">Evolução das regras</th>
-                  <td className="cr-compare-highlight">Busca evolutiva por corpus (auditável)</td>
+                  <td className="cr-compare-highlight">Busca evolutiva com prova no corpus</td>
                   <td>Releases do vendor</td>
                   <td>Depende do modelo</td>
                   <td>Comunidade/config manual</td>
                 </tr>
                 <tr>
-                  <th scope="row">Política em português</th>
-                  <td className="cr-compare-highlight">Sim — dress code em linguagem natural</td>
+                  <th scope="row">Consistência</th>
+                  <td className="cr-compare-highlight">Mesmo input → mesmo resultado</td>
+                  <td>Alta</td>
+                  <td>Varia por execução</td>
+                  <td>Alta</td>
+                </tr>
+                <tr>
+                  <th scope="row">Controle de falso positivo</th>
+                  <td className="cr-compare-highlight">Promoção só com ganho de precisão</td>
+                  <td>Curadoria do vendor</td>
+                  <td>Fraco / opaco</td>
+                  <td>Manual</td>
+                </tr>
+                <tr>
+                  <th scope="row">Política do time</th>
+                  <td className="cr-compare-highlight">Sim — em linguagem natural</td>
                   <td>Não</td>
                   <td>Não</td>
                   <td>Não</td>
@@ -345,14 +367,14 @@ export default function AuthGate({ children }: { children: ReactNode }) {
         <section id="como" className="cr-section">
           <div className="cr-section-head">
             <h2>Três passos para engajar o time</h2>
-            <p>Do zero ao primeiro relatório — sem setup de herói cansado.</p>
+            <p>Do zero ao primeiro relatório — sem setup cansado.</p>
           </div>
           <ol className="cr-steps">
             <li>
               <span>01</span>
               <div>
                 <strong>Crie a conta</strong>
-                <p>Escreva o dress code uma vez, em linguagem natural.</p>
+                <p>Defina a política do time uma vez; o catálogo começa a evoluir a partir daí.</p>
               </div>
             </li>
             <li>
@@ -378,7 +400,8 @@ export default function AuthGate({ children }: { children: ReactNode }) {
               <p className="cr-eyebrow">missão aceita</p>
               <h2>Entre no portal. Vista a capa.</h2>
               <p>
-                Conta gratuita em segundos. Depois: dress code, plugin e prévia Firebase — o time vê o herói em ação.
+                Conta em segundos. Depois: política do time, plugin e prévia na Cloud — o gate só bloqueia o que já
+                passou pelo filtro de precisão.
               </p>
             </div>
 
@@ -483,9 +506,12 @@ export default function AuthGate({ children }: { children: ReactNode }) {
 
       <footer className="cr-footer">
         <span className="cr-nav-name">CodeHero</span>
-        <span>Dress code gratuito · motor determinístico</span>
-        <a href="/docs" style={{ color: "inherit" }}>
+        <span>By Nelson Borges</span>
+        <a href="/docs/" style={{ color: "inherit" }}>
           Docs
+        </a>
+        <a href="https://produtech.web.app" target="_blank" rel="noreferrer" style={{ color: "inherit" }}>
+          Estimativa Build
         </a>
       </footer>
     </div>

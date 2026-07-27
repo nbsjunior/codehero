@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata = {
   title: "CodeHero — Seja o herói do PR",
   description:
-    "Corte bugs e dívida técnica pela metade. Dress code em português, IA que propõe regras e scanner determinístico que aplica — gratuito para o time.",
+    "Regras que se atualizam sozinhas, com prova de precisão antes do CI. Mesmo resultado em todo scan — sem incoerência e sem falso positivo no quality gate.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

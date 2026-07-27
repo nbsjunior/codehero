@@ -1,9 +1,10 @@
 "use client";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent, Fragment } from "react";
 import Link from "next/link";
 import { collection, collectionGroup, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import AppShell from "@/components/AppShell";
 import AuthGate from "@/components/AuthGate";
+import FindingFichaCard from "@/components/FindingFichaCard";
 import { dbClient } from "@/lib/firebase";
 import {
   adminListAllProjects,
@@ -16,6 +17,8 @@ import {
   type PreviewRepoScanResult,
 } from "@/lib/api";
 import { useAuth } from "@/lib/useAuth";
+import { useFeatureFlag } from "@/lib/useFeatureFlag";
+import { buildFindingFicha } from "@codehero/contracts";
 
 interface ProjectRow {
   id: string;
@@ -23,7 +26,7 @@ interface ProjectRow {
   orgId?: string;
   projectId?: string;
   orgName?: string;
-  repoUrl?: string | null;
+  repoCount: number;
   debtMinutes: number;
   maintainabilityRating: string;
   securityRating: string;
@@ -43,6 +46,7 @@ const PLUGIN_HREF = "/downloads/codehero-vscode.vsix";
 
 function DashboardHome() {
   const { user } = useAuth();
+  const cloudPreviewFlag = useFeatureFlag("cloud-preview-scan");
   const [projects, setProjects] = useState<ProjectRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -67,6 +71,7 @@ function DashboardHome() {
   const [previewBusy, setPreviewBusy] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [preview, setPreview] = useState<PreviewRepoScanResult | null>(null);
+  const [openFindingKey, setOpenFindingKey] = useState<string | null>(null);
 
   const loadProjects = useCallback(async (admin: boolean) => {
     setLoading(true);
@@ -80,7 +85,7 @@ function DashboardHome() {
             projectId: p.projectId,
             name: p.name,
             orgName: p.orgName,
-            repoUrl: p.repoUrl,
+            repoCount: p.repoCount,
             debtMinutes: p.debtMinutes,
             maintainabilityRating: p.maintainabilityRating,
             securityRating: p.securityRating,
@@ -126,12 +131,12 @@ function DashboardHome() {
             projectId: p.id,
             name: data.name,
             orgName,
+            repoCount: data.repoCount ?? 0,
             debtMinutes: data.debtMinutes ?? 0,
             maintainabilityRating: data.maintainabilityRating ?? "A",
             securityRating: data.securityRating ?? "A",
             qualityGateStatus: data.qualityGateStatus ?? "PASSED",
             openIssues: data.openIssues ?? 0,
-            repoUrl: (data as { repoUrl?: string }).repoUrl ?? null,
           });
         }
       }
@@ -219,6 +224,7 @@ function DashboardHome() {
     e.preventDefault();
     setPreviewError(null);
     setPreview(null);
+    setOpenFindingKey(null);
     setPreviewBusy(true);
     try {
       const target = dressTarget.includes("/") ? dressTarget : projects[0]?.id ?? "";
@@ -286,34 +292,42 @@ function DashboardHome() {
         </ol>
 
         <div style={{ marginTop: "1.5rem", paddingTop: "1.25rem", borderTop: "2px solid var(--line)" }}>
-          <h3 style={{ margin: "0 0 0.75rem", fontSize: "1rem" }}>Prévia no runner Firebase</h3>
-          <form onSubmit={handlePreview}>
-            <label className="hero-label" htmlFor="previewUrl">
-              Repo GitHub público
-            </label>
-            <input
-              id="previewUrl"
-              className="hero-input"
-              required
-              value={previewUrl}
-              onChange={(e) => setPreviewUrl(e.target.value)}
-              placeholder="https://github.com/org/repo"
-            />
-            <button type="submit" className="hero-btn hero-btn-accent" style={{ marginTop: "0.75rem" }} disabled={previewBusy}>
-              {previewBusy ? "Analisando…" : "Ver prévia"}
-            </button>
-          </form>
-          {previewError && (
-            <div className="hero-error" style={{ marginTop: "0.75rem" }}>
-              {previewError}
-            </div>
+          <h3 style={{ margin: "0 0 0.75rem", fontSize: "1rem" }}>Prévia na Cloud</h3>
+          {!cloudPreviewFlag.loading && !cloudPreviewFlag.enabled ? (
+            <p className="hero-caption" style={{ margin: 0 }}>
+              Recurso desativado temporariamente pelo admin geral da plataforma.
+            </p>
+          ) : (
+            <>
+              <form onSubmit={handlePreview}>
+                <label className="hero-label" htmlFor="previewUrl">
+                  Repo GitHub público
+                </label>
+                <input
+                  id="previewUrl"
+                  className="hero-input"
+                  required
+                  value={previewUrl}
+                  onChange={(e) => setPreviewUrl(e.target.value)}
+                  placeholder="https://github.com/org/repo"
+                />
+                <button type="submit" className="hero-btn hero-btn-accent" style={{ marginTop: "0.75rem" }} disabled={previewBusy}>
+                  {previewBusy ? "Analisando…" : "Ver prévia"}
+                </button>
+              </form>
+              {previewError && (
+                <div className="hero-error" style={{ marginTop: "0.75rem" }}>
+                  {previewError}
+                </div>
+              )}
+            </>
           )}
         </div>
 
         {preview && (
           <div style={{ marginTop: "1.25rem" }}>
             <p className="hero-caption" style={{ marginBottom: "0.5rem" }}>
-              {preview.repo} · {preview.findingCount} finding(s) · overlays: {preview.overlayRuleCount}
+              {preview.repo} · {preview.findingCount} apontamento(s) · overlays: {preview.overlayRuleCount}
             </p>
             <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "0.75rem" }}>
               {Object.entries(preview.bySeverity).map(([sev, n]) => (
@@ -322,7 +336,10 @@ function DashboardHome() {
                 </span>
               ))}
             </div>
-            <div style={{ maxHeight: 280, overflow: "auto" }}>
+            <p className="hero-caption" style={{ marginBottom: "0.5rem" }}>
+              Clique em um apontamento para ver risco, motivo e como corrigir
+            </p>
+            <div style={{ maxHeight: 420, overflow: "auto" }}>
               <table className="hero-table">
                 <thead>
                   <tr>
@@ -333,21 +350,88 @@ function DashboardHome() {
                   </tr>
                 </thead>
                 <tbody>
-                  {preview.topFindings.map((f, i) => (
-                    <tr key={`${f.ruleId}-${f.file}-${f.line}-${i}`}>
-                      <td>{f.severity}</td>
-                      <td>{f.ruleId}</td>
-                      <td>
-                        {f.file}:{f.line}
-                      </td>
-                      <td>
-                        <code style={{ fontSize: "0.75rem" }}>{f.snippet}</code>
-                      </td>
-                    </tr>
-                  ))}
+                  {preview.topFindings.map((f, i) => {
+                    const key = `${f.ruleId}-${f.file}-${f.line}-${i}`;
+                    const open = openFindingKey === key;
+                    const ficha =
+                      f.ficha != null
+                        ? {
+                            ruleId: f.ruleId,
+                            ruleName: f.ruleName ?? f.ruleId,
+                            severity: f.severity,
+                            risk: f.ficha.risk,
+                            reason: f.ficha.reason,
+                            howToFix: f.ficha.howToFix,
+                            strategy: f.ficha.strategy,
+                            constraints: f.ficha.constraints,
+                            referenceExample: f.ficha.referenceExample,
+                            cwe: f.ficha.cwe,
+                            effortMin: f.ficha.effortMin,
+                            file: f.file,
+                            line: f.line,
+                            snippet: f.snippet,
+                          }
+                        : buildFindingFicha({
+                            ruleId: f.ruleId,
+                            ruleName: f.ruleName,
+                            message: f.message,
+                            severity: f.severity,
+                            sddTemplateId: f.sddTemplateId,
+                            file: f.file,
+                            line: f.line,
+                            snippet: f.snippet,
+                          });
+                    return (
+                      <Fragment key={key}>
+                        <tr
+                          className={`hero-finding-row${open ? " is-open" : ""}`}
+                          onClick={() => setOpenFindingKey(open ? null : key)}
+                        >
+                          <td>{f.severity}</td>
+                          <td>{f.ruleId}</td>
+                          <td>
+                            {f.file}:{f.line}
+                          </td>
+                          <td>
+                            <code style={{ fontSize: "0.75rem" }}>{f.snippet}</code>
+                          </td>
+                        </tr>
+                        {open ? (
+                          <tr>
+                            <td colSpan={4} style={{ padding: "0 0.75rem 0.75rem" }}>
+                              <FindingFichaCard ficha={ficha} />
+                            </td>
+                          </tr>
+                        ) : null}
+                      </Fragment>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
+            {preview.recommendations && preview.recommendations.length > 0 ? (
+              <div style={{ marginTop: "1.25rem" }}>
+                <h3 style={{ margin: "0 0 0.5rem", fontSize: "1rem" }}>Fichas por regra</h3>
+                <div className="hero-ficha-list">
+                  {preview.recommendations.map((r) => (
+                    <FindingFichaCard
+                      key={r.ruleId}
+                      ficha={{
+                        ruleId: r.ruleId,
+                        ruleName: `${r.ruleName} (${r.count}×)`,
+                        severity: r.severity,
+                        risk: r.risk,
+                        reason: r.reason,
+                        howToFix: r.guidance,
+                        strategy: r.strategy,
+                        constraints: r.constraints,
+                        referenceExample: r.referenceExample,
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
         )}
       </section>
@@ -358,7 +442,7 @@ function DashboardHome() {
           Dress code em linguagem natural
         </h2>
         <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1rem" }}>
-          Escreva a política · Genkit interpreta · vira regras determinísticas (L0) · por repo ou para todos
+          Escreva a política · Dress Code Tools interpreta · vira regras determinísticas · por repo ou para todos
         </p>
         <form onSubmit={handleDressCode}>
           <label className="hero-label" htmlFor="dressText">
@@ -415,7 +499,7 @@ function DashboardHome() {
               </div>
             )}
             <button type="submit" className="hero-btn hero-btn-accent" disabled={dressBusy}>
-              {dressBusy ? "Interpretando com Genkit…" : "Salvar e ativar"}
+              {dressBusy ? "Interpretando com Dress Code Tools…" : "Salvar e ativar"}
             </button>
           </div>
         </form>
@@ -506,7 +590,7 @@ function DashboardHome() {
 
       {!loading && projects.length === 0 && (
         <p style={{ color: "var(--muted)", maxWidth: 480 }}>
-          Nenhum projeto ainda. Clique em <strong>Novo projeto</strong> para começar — um clique cria org + projeto no Firebase.
+          Nenhum projeto ainda. Clique em <strong>Novo projeto</strong> para começar — um clique cria org + projeto na plataforma.
         </p>
       )}
 
@@ -517,6 +601,7 @@ function DashboardHome() {
               <tr>
                 <th>Projeto</th>
                 {isAdmin && <th>Org</th>}
+                <th>Repos</th>
                 <th>Gate</th>
                 <th>Segurança</th>
                 <th>Manutenib.</th>
@@ -530,6 +615,11 @@ function DashboardHome() {
                 <tr key={p.id}>
                   <td style={{ fontWeight: 700 }}>{p.name}</td>
                   {isAdmin && <td>{p.orgName}</td>}
+                  <td>
+                    <span className="hero-badge" title="qualidade consolidada destes repositórios">
+                      {p.repoCount} repo{p.repoCount === 1 ? "" : "s"}
+                    </span>
+                  </td>
                   <td>
                     <span
                       className="hero-badge"

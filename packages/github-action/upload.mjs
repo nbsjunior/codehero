@@ -3,9 +3,9 @@
 import { readFileSync } from "node:fs";
 import { execSync } from "node:child_process";
 
-const { HERO_URL, HERO_TOKEN, ORG_ID, PROJECT_ID } = process.env;
-if (!HERO_URL || !HERO_TOKEN || !ORG_ID || !PROJECT_ID) {
-  console.error("CodeHero: missing HERO_URL/HERO_TOKEN/ORG_ID/PROJECT_ID");
+const { HERO_URL, HERO_TOKEN, ORG_ID, PROJECT_ID, REPO_ID } = process.env;
+if (!HERO_URL || !HERO_TOKEN || !ORG_ID || !PROJECT_ID || !REPO_ID) {
+  console.error("CodeHero: missing HERO_URL/HERO_TOKEN/ORG_ID/PROJECT_ID/REPO_ID");
   process.exit(1);
 }
 
@@ -41,6 +41,7 @@ const res = await fetch(`${HERO_URL}/ingestAnalysis`, {
   body: JSON.stringify({
     orgId: ORG_ID,
     projectId: PROJECT_ID,
+    repoId: REPO_ID,
     branch: process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || "main",
     commit: process.env.GITHUB_SHA,
     linesOfCode,

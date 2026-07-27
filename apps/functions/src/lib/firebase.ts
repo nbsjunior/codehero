@@ -26,3 +26,9 @@ export const storage = getStorage();
 export function projectRef(orgId: string, projectId: string) {
   return db.doc(`orgs/${orgId}/projects/${projectId}`);
 }
+
+/** A project consolidates one or more repos — each repo has its own
+ *  ingestToken, CI pipeline, and metrics; the project rolls them up. */
+export function repoRef(orgId: string, projectId: string, repoId: string) {
+  return projectRef(orgId, projectId).collection("repos").doc(repoId);
+}
