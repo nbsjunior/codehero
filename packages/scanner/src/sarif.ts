@@ -81,6 +81,8 @@ export function buildSarif(findings: Finding[]): SarifLog {
         howToFix: ficha.howToFix,
         strategy: ficha.strategy,
         constraints: ficha.constraints,
+        referenceExample: ficha.referenceExample,
+        cwe: ficha.cwe,
       },
     });
   }

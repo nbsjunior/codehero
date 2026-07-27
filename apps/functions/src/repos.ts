@@ -4,6 +4,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { db, projectRef } from "./lib/firebase.ts";
 import { deriveRepoName } from "./lib/repoName.ts";
 import { recomputeProjectAggregate } from "./lib/projectAggregate.ts";
+import { assertRepoQuota } from "./lib/quotas.ts";
 
 interface AddRepoInput {
   orgId: string;
@@ -39,6 +40,14 @@ export const addRepoToProject = onCall<AddRepoInput>(async (request) => {
   if (!existing.empty) {
     throw new HttpsError("already-exists", "this repo is already part of the project");
   }
+
+  const orgProjects = await db.collection(`orgs/${orgId}/projects`).get();
+  let orgRepoCount = 0;
+  for (const p of orgProjects.docs) {
+    const countSnap = await p.ref.collection("repos").count().get();
+    orgRepoCount += countSnap.data().count;
+  }
+  await assertRepoQuota(orgId, orgRepoCount);
 
   const repoDocRef = pRef.collection("repos").doc();
   const ingestToken = `chp_${randomBytes(24).toString("hex")}`;

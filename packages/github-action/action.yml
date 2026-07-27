@@ -34,6 +34,9 @@ outputs:
   sarif-file:
     description: "Caminho do relatório de análise gerado"
     value: ${{ steps.scan.outputs.sarif }}
+  findings-md:
+    description: "Caminho do relatório Markdown de apontamentos (ficha completa, para autofix por agente de IA)"
+    value: ${{ steps.upload.outputs.findings-md }}
 
 runs:
   using: "composite"
@@ -64,6 +67,7 @@ runs:
         echo "sarif=codehero.sarif" >> "$GITHUB_OUTPUT"
 
     - name: Upload to CodeHero platform
+      id: upload
       shell: bash
       env:
         HERO_URL: ${{ inputs.server-url }}
@@ -78,3 +82,14 @@ runs:
       uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: codehero.sarif
+
+    # Ficha completa (risco/motivo/como corrigir/exemplo) por apontamento em
+    # Markdown — worklist pronta para um agente de IA (Copilot/Claude/Cursor)
+    # aplicar o autofix, sem precisar reconsultar a plataforma.
+    - name: Publicar relatório de apontamentos (autofix por IA)
+      if: always() && steps.upload.outputs.findings-md != ''
+      uses: actions/upload-artifact@v4
+      with:
+        name: codehero-findings
+        path: ${{ steps.upload.outputs.findings-md }}
+        retention-days: 30

@@ -4,18 +4,20 @@ import { logger } from "firebase-functions";
 import { mkdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { createHash } from "node:crypto";
 import { db, repoRef } from "./lib/firebase.ts";
 import { loadActiveRules } from "./lib/activeRules.ts";
 import { downloadAndScanRepo, toSarifResults } from "./lib/repoScan.ts";
 import { persistAnalysisResults } from "./lib/ingestCore.ts";
+import { assertBuildQuota, incrementBuildQuota } from "./lib/quotas.ts";
+import { observe } from "./lib/observability.ts";
 
 const DEFAULT_PERIODICITY_DAYS = 7;
 const MIN_PERIODICITY_DAYS = 1;
 const MAX_PERIODICITY_DAYS = 90;
-// Cap on how many due repos one scheduled invocation scans, so a single run
-// stays within the function's time budget — any repos left over are simply
-// still "due" and get picked up on the next daily check.
-const MAX_REPOS_PER_RUN = 20;
+/** Per-shard cap — 24 hourly shards × this ≈ daily throughput. */
+const MAX_REPOS_PER_SHARD = 40;
+const SHARD_COUNT = 24;
 
 async function requireOrgAccess(uid: string, orgId: string): Promise<void> {
   const member = await db.doc(`orgs/${orgId}/members/${uid}`).get();
@@ -23,6 +25,12 @@ async function requireOrgAccess(uid: string, orgId: string): Promise<void> {
   const admin = await db.doc(`platformAdmins/${uid}`).get();
   if (admin.exists) return;
   throw new HttpsError("permission-denied", "not a member of this org");
+}
+
+/** Stable 0..SHARD_COUNT-1 bucket from repo id (spreads load across the day). */
+export function autoScanShard(repoId: string): number {
+  const h = createHash("sha256").update(repoId).digest();
+  return h.readUInt32BE(0) % SHARD_COUNT;
 }
 
 interface SetAutoScanInput {
@@ -34,10 +42,8 @@ interface SetAutoScanInput {
 }
 
 /**
- * Lets a project/repo admin enable/disable the weekly automatic scan for a
- * repo, and configure how often it runs (in days). Platform-wide graphs read
- * findings regardless of source (github-action vs auto-scan) — this only
- * controls whether auto-scan produces *new* findings for this repo.
+ * Lets a project/repo admin enable/disable automatic scan for a repo, and
+ * configure how often it runs (in days).
  */
 export const setRepoAutoScan = onCall<SetAutoScanInput>(async (request) => {
   const uid = request.auth?.uid;
@@ -55,7 +61,12 @@ export const setRepoAutoScan = onCall<SetAutoScanInput>(async (request) => {
 
   const periodicityDays = Math.min(
     MAX_PERIODICITY_DAYS,
-    Math.max(MIN_PERIODICITY_DAYS, Math.round(request.data.periodicityDays ?? snap.get("autoScan")?.periodicityDays ?? DEFAULT_PERIODICITY_DAYS)),
+    Math.max(
+      MIN_PERIODICITY_DAYS,
+      Math.round(
+        request.data.periodicityDays ?? snap.get("autoScan")?.periodicityDays ?? DEFAULT_PERIODICITY_DAYS,
+      ),
+    ),
   );
   const nextRunAt = enabled ? new Date(Date.now() + periodicityDays * 86_400_000) : null;
 
@@ -81,6 +92,8 @@ async function scanAndPersistRepo(
   repoId: string,
   repoUrl: string,
 ): Promise<void> {
+  await assertBuildQuota(orgId);
+
   const work = join(tmpdir(), `codehero-autoscan-${repoId.slice(0, 8)}-${Date.now()}`);
   mkdirSync(work, { recursive: true });
   try {
@@ -97,6 +110,7 @@ async function scanAndPersistRepo(
       sarifPath: null,
       source: "auto-scan",
     });
+    await incrementBuildQuota(orgId);
   } finally {
     try {
       rmSync(work, { recursive: true, force: true });
@@ -112,7 +126,7 @@ interface RunNowInput {
   repoId: string;
 }
 
-/** Manual "run the auto-scan now" trigger for a project/repo admin — reuses the same pipeline the weekly job uses. */
+/** Manual "run the auto-scan now" trigger for a project/repo admin. */
 export const runRepoAutoScanNow = onCall<RunNowInput>(
   { timeoutSeconds: 300, memory: "1GiB" },
   async (request) => {
@@ -149,15 +163,13 @@ export const runRepoAutoScanNow = onCall<RunNowInput>(
 );
 
 /**
- * Runs daily and scans any repo whose autoScan is enabled and due (its own
- * `periodicityDays` — default weekly — governs actual cadence, so this daily
- * check just looks for repos whose timer has elapsed). Uses the Admin SDK
- * collectionGroup query on a single boolean field (no composite index
- * needed) and filters "due" in memory.
+ * Hourly shard runner: at hour H, only repos with autoScanShard(repoId) === H
+ * are considered. Combined with nextRunAt, this spreads ~100k repos across
+ * the day without a single 540s timeout blowing up.
  */
 export const autoScanRepos = onSchedule(
   {
-    schedule: "0 4 * * *",
+    schedule: "20 * * * *",
     timeZone: "America/Sao_Paulo",
     region: "us-central1",
     memory: "1GiB",
@@ -165,16 +177,19 @@ export const autoScanRepos = onSchedule(
   },
   async () => {
     const now = Date.now();
+    const shard = new Date().getHours() % SHARD_COUNT;
     const enabledSnap = await db.collectionGroup("repos").where("autoScan.enabled", "==", true).get();
 
     const due = enabledSnap.docs.filter((d) => {
+      const repoId = d.id;
+      if (autoScanShard(repoId) !== shard) return false;
       const nextRunAt = d.get("autoScan")?.nextRunAt?.toDate?.() ?? null;
       return !nextRunAt || nextRunAt.getTime() <= now;
     });
 
     let scanned = 0;
     let failed = 0;
-    for (const d of due.slice(0, MAX_REPOS_PER_RUN)) {
+    for (const d of due.slice(0, MAX_REPOS_PER_SHARD)) {
       const parts = d.ref.path.split("/"); // orgs/{orgId}/projects/{projectId}/repos/{repoId}
       const orgId = parts[1]!;
       const projectId = parts[3]!;
@@ -201,6 +216,12 @@ export const autoScanRepos = onSchedule(
       }
     }
 
-    logger.info("autoScanRepos complete", { dueCount: due.length, scanned, failed });
+    observe("autoscan.shard_complete", {
+      shard,
+      dueCount: due.length,
+      scanned,
+      failed,
+    });
+    logger.info("autoScanRepos complete", { shard, dueCount: due.length, scanned, failed });
   },
 );
