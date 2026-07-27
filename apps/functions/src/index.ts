@@ -32,6 +32,7 @@ export { ruleforgeDaily, runRuleforgeDaily, listRuleforgeRuns } from "./ruleforg
 export { submitDressCode, listDressCodes } from "./dressCode.ts";
 export { listMotorRules, deleteOverlayRule } from "./rulesCatalog.ts";
 export { listRuleProposals, reviewRuleProposal } from "./ruleProposals.ts";
+export { cveWatchlistSync, runCveWatchlistSyncNow, listCveWatchlist } from "./cveSync.ts";
 export { previewRepoScan } from "./previewScan.ts";
 export { registerAccount } from "./registerAccount.ts";
 export { rotateIngestToken } from "./tokens.ts";

@@ -3,13 +3,24 @@
 import { useCallback, useEffect, useState } from "react";
 import { Callout, PageHeader } from "@/components/AdminUi";
 import {
+  listCveWatchlist,
   listRuleforgeRuns,
   listRuleProposals,
   reviewRuleProposal,
+  runCveWatchlistSyncNow,
   runRuleforgeDailyNow,
+  type CveWatchlistEntryRow,
   type RuleforgeRun,
   type RuleProposalRow,
 } from "@/lib/api";
+
+const severityColor: Record<string, string> = {
+  CRITICAL: "var(--rating-e)",
+  HIGH: "var(--rating-d)",
+  MODERATE: "var(--rating-c)",
+  LOW: "var(--rating-b)",
+  UNKNOWN: "var(--muted)",
+};
 
 const familyLabel: Record<string, string> = {
   security: "Segurança",
@@ -25,11 +36,14 @@ const kindLabel: Record<string, string> = {
 export default function EsteiraPanel() {
   const [runs, setRuns] = useState<RuleforgeRun[]>([]);
   const [proposals, setProposals] = useState<RuleProposalRow[]>([]);
+  const [cves, setCves] = useState<CveWatchlistEntryRow[]>([]);
   const [runsLoading, setRunsLoading] = useState(true);
   const [propLoading, setPropLoading] = useState(true);
+  const [cvesLoading, setCvesLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [runBusy, setRunBusy] = useState(false);
+  const [cveSyncBusy, setCveSyncBusy] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [expandedRun, setExpandedRun] = useState<string | null>(null);
   const [expandedProp, setExpandedProp] = useState<string | null>(null);
@@ -39,18 +53,22 @@ export default function EsteiraPanel() {
     setError(null);
     setRunsLoading(true);
     setPropLoading(true);
+    setCvesLoading(true);
     try {
-      const [runsRes, propRes] = await Promise.all([
+      const [runsRes, propRes, cveRes] = await Promise.all([
         listRuleforgeRuns(14),
         listRuleProposals({ status: filter, limit: 50 }),
+        listCveWatchlist(100).catch(() => ({ entries: [] })),
       ]);
       setRuns(runsRes.runs);
       setProposals(propRes.items as RuleProposalRow[]);
+      setCves(cveRes.entries);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha ao carregar a esteira.");
     } finally {
       setRunsLoading(false);
       setPropLoading(false);
+      setCvesLoading(false);
     }
   }, [filter]);
 
@@ -118,6 +136,69 @@ export default function EsteiraPanel() {
         abaixo. 3) Ao aprovar, a regra vai para o overlay ativo (IDE, Action, MCP, prévia) e os exemplos entram no
         corpus Firestore para as próximas avaliações.
       </Callout>
+
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem", margin: "1.25rem 0 0.75rem" }}>
+        <h3 className="findings-browser__title" style={{ margin: 0 }}>
+          CVEs monitorados (grounding do prompt)
+        </h3>
+        <button
+          type="button"
+          className="hero-btn hero-btn-outline"
+          style={{ padding: "0.35rem 0.75rem", fontSize: "0.78rem" }}
+          disabled={cveSyncBusy}
+          onClick={async () => {
+            setCveSyncBusy(true);
+            setError(null);
+            setMsg(null);
+            try {
+              const res = await runCveWatchlistSyncNow();
+              setMsg(`CVEs sincronizados: ${res.fetched} (${res.ecosystems.join(", ")})`);
+              await load();
+            } catch (err) {
+              setError(err instanceof Error ? err.message : "Falha ao sincronizar CVEs.");
+            } finally {
+              setCveSyncBusy(false);
+            }
+          }}
+        >
+          {cveSyncBusy ? "Sincronizando…" : "Sincronizar agora"}
+        </button>
+      </div>
+      <p className="hero-caption" style={{ marginTop: 0, marginBottom: "0.75rem" }}>
+        GitHub Security Advisories, últimos 90 dias — npm/pip/maven/nuget/go. É o que aterra o prompt de "nova regra"
+        em dado real, em vez da memória de treino do modelo.
+      </p>
+      {cvesLoading ? (
+        <p className="hero-caption">Carregando…</p>
+      ) : cves.length === 0 ? (
+        <p className="hero-caption">Nenhum CVE monitorado ainda — clique em "Sincronizar agora".</p>
+      ) : (
+        <div style={{ display: "grid", gap: "0.4rem", marginBottom: "1.5rem", maxHeight: 280, overflowY: "auto" }}>
+          {cves.slice(0, 30).map((c) => (
+            <div
+              key={c.ghsaId}
+              className="hero-panel-sm"
+              style={{ padding: "0.55rem 0.8rem", display: "flex", gap: "0.6rem", alignItems: "flex-start" }}
+            >
+              <span
+                className="hero-badge"
+                style={{ background: severityColor[c.severity] ?? "var(--muted)", color: "#fff", flexShrink: 0 }}
+              >
+                {c.severity}
+              </span>
+              <div style={{ minWidth: 0 }}>
+                <strong style={{ fontSize: "0.85rem" }}>{c.cveId ?? c.ghsaId}</strong>
+                <span className="hero-caption" style={{ marginLeft: "0.4rem" }}>
+                  {c.language} · CWE {c.cweIds.join(", ") || "?"}
+                </span>
+                <p className="hero-caption" style={{ margin: "0.2rem 0 0" }}>
+                  {c.summary}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="findings-browser__filters" style={{ margin: "1rem 0" }} role="toolbar">
         <button

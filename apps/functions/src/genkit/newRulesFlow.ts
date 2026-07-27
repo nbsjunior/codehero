@@ -49,10 +49,12 @@ export async function proposeNewRulesBatch(context: string): Promise<{
 Proponha até 6 regras SAST DETERMINÍSTICAS (regex por linha) que ainda NÃO estão no catálogo core típico.
 
 Foque em:
-1) security — padrões ligados a OWASP Top 10 / CVEs classicamente explorados (JWT alg=none, SSRF URL interna, pickle.loads, etc.)
+1) security — priorize os CVEs/advisories REAIS listados abaixo no contexto do batch (não invente CVE de memória;
+   se a lista de CVEs estiver vazia ou não sugerir nada acionável, aí sim use OWASP Top 10 / padrões clássicos).
 2) dress / smell — práticas de engenharia (console.log em prod, TODO crítico, Math.random em token, etc.)
 
-Contexto do batch:
+Contexto do batch (inclui, quando disponível, um digest de CVEs/advisories recentes de
+GitHub Security Advisories — use isso como fonte primária, é dado real e atual, não sua memória de treino):
 ${context}
 
 Regras de saída:
