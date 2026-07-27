@@ -2,7 +2,7 @@
   "name": "codehero-ide",
   "displayName": "CodeHero",
   "description": "Scan determinístico no editor: regras padrão + AST + taint, painel de avaliação e Problems.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "publisher": "codehero",
   "engines": {
@@ -51,6 +51,11 @@
         "icon": "$(clear-all)"
       },
       {
+        "command": "codehero.showDashboard",
+        "title": "CodeHero: Ver dashboard (gráficos e compliance)",
+        "icon": "$(graph)"
+      },
+      {
         "command": "codehero.openSettings",
         "title": "CodeHero: Abrir configurações",
         "icon": "$(gear)"
@@ -87,14 +92,19 @@
           "group": "navigation@3"
         },
         {
-          "command": "codehero.openSettings",
+          "command": "codehero.showDashboard",
           "when": "view == codehero.findings",
           "group": "navigation@4"
         },
         {
-          "command": "codehero.showHowTo",
+          "command": "codehero.openSettings",
           "when": "view == codehero.findings",
           "group": "navigation@5"
+        },
+        {
+          "command": "codehero.showHowTo",
+          "when": "view == codehero.findings",
+          "group": "navigation@6"
         }
       ],
       "view/item/context": [
@@ -132,7 +142,7 @@
         "codehero.scannerCommand": {
           "type": "string",
           "default": "",
-          "markdownDescription": "Deixe **vazio** para usar o scanner embutido no plugin (recomendado). Só preencha se quiser um CLI externo que aceite `--sarif` (ex.: caminho monorepo)."
+          "markdownDescription": "Deixe **vazio** (recomendado) para o scanner embutido no VSIX. Não use `npx hero-scan` — esse pacote não existe no npm. Só preencha com um caminho absoluto a um CLI próprio que aceite `--sarif`."
         },
         "codehero.orgId": {
           "type": "string",

@@ -92,15 +92,30 @@ server.tool(
   "Roda o hero-scanner localmente com as regras ativas do servidor (canônicas + dress code) e retorna o SARIF.",
   { path: z.string().default(".") },
   async ({ path }) => {
-    const bin = process.env.HERO_SCANNER_CMD ?? "hero-scan";
-    const args = [path, "--sarif"];
+    const cmd = (process.env.HERO_SCANNER_CMD ?? "").trim();
+    if (!cmd) {
+      return {
+        content: [
+          {
+            type: "text",
+            text:
+              "Defina HERO_SCANNER_CMD (ex.: node /caminho/packages/scanner/dist/index.js). Não use npx hero-scan — pacote inexistente no npm.",
+          },
+        ],
+        isError: true,
+      };
+    }
+    const parts = cmd.split(/\s+/).filter(Boolean);
+    const bin = parts[0]!;
+    const prefix = parts.slice(1);
+    const args = [...prefix, path, "--sarif"];
     if (CORE_URL) {
       args.push("--server", CORE_URL);
     }
     if (TOKEN) args.push("--token", TOKEN);
     if (ORG_ID) args.push("--org", ORG_ID);
     if (PROJECT_ID) args.push("--project", PROJECT_ID);
-    const result = spawnSync(bin, args, { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+    const result = spawnSync(bin, args, { encoding: "utf8", maxBuffer: 64 * 1024 * 1024, shell: process.platform === "win32" });
     if (result.error) {
       return { content: [{ type: "text", text: `scanner error: ${result.error.message}` }], isError: true };
     }

@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { FindingsTreeProvider, type FindingItem } from "./findingsView";
+import { DashboardPanel } from "./dashboardView";
 import { getConfig, resolveScannerInvocationSafe } from "./config";
 import { runScan, type ScanFinding, type ScanSummary } from "./scan";
 
@@ -7,6 +8,7 @@ let collection: vscode.DiagnosticCollection;
 let statusBar: vscode.StatusBarItem;
 let findingsProvider: FindingsTreeProvider;
 let lastFindings: ScanFinding[] = [];
+let lastSummary: ScanSummary = emptySummary();
 let extensionPath = "";
 
 export function activate(context: vscode.ExtensionContext): void {
@@ -31,6 +33,7 @@ export function activate(context: vscode.ExtensionContext): void {
       vscode.commands.executeCommand("workbench.action.openSettings", "codehero"),
     ),
     vscode.commands.registerCommand("codehero.showHowTo", () => void showHowTo()),
+    vscode.commands.registerCommand("codehero.showDashboard", () => DashboardPanel.reveal(lastSummary)),
     vscode.commands.registerCommand("codehero.openFinding", (item: FindingItem) => void openFinding(item)),
     vscode.commands.registerCommand("codehero.copyFinding", async (item: FindingItem) => {
       const text = `${item.finding.ruleId}: ${item.finding.message}\n${item.finding.file}:${item.finding.line}`;
@@ -131,7 +134,9 @@ async function scanPath(
 
 function applyResults(summary: ScanSummary, opts: { singleFile: boolean; uri?: vscode.Uri }): void {
   lastFindings = summary.findings;
+  lastSummary = summary;
   findingsProvider.setFindings(summary.findings, summary);
+  DashboardPanel.refreshIfOpen(summary);
 
   const byFile = new Map<string, vscode.Diagnostic[]>();
   for (const f of summary.findings) {
@@ -174,8 +179,10 @@ function applyResults(summary: ScanSummary, opts: { singleFile: boolean; uri?: v
 
 function clearFindings(): void {
   lastFindings = [];
+  lastSummary = emptySummary();
   collection.clear();
-  findingsProvider.setFindings([], emptySummary());
+  findingsProvider.setFindings([], lastSummary);
+  DashboardPanel.refreshIfOpen(lastSummary);
   setStatusIdle(0);
 }
 
@@ -252,7 +259,7 @@ Scan local no plugin **não depende** do portal — funciona offline com as regr
 }
 
 function emptySummary(): ScanSummary {
-  return { findings: [], bySeverity: {}, fileCountHint: 0 };
+  return { findings: [], bySeverity: {}, fileCountHint: 0, ruleCatalog: [] };
 }
 
 // silence unused in case tree uses lastFindings later

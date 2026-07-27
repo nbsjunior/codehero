@@ -37,7 +37,7 @@ export class FindingsTreeProvider implements vscode.TreeDataProvider<vscode.Tree
   private readonly _onDidChange = new vscode.EventEmitter<vscode.TreeItem | undefined>();
   readonly onDidChangeTreeData = this._onDidChange.event;
 
-  private summary: ScanSummary = { findings: [], bySeverity: {}, fileCountHint: 0 };
+  private summary: ScanSummary = { findings: [], bySeverity: {}, fileCountHint: 0, ruleCatalog: [] };
   private roots: vscode.TreeItem[] = [new SummaryItem("Nenhum scan ainda", "Clique em ↻ Rodar scan")];
 
   setFindings(findings: ScanFinding[], summary: ScanSummary): void {
