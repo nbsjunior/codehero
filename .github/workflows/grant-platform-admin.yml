@@ -1,0 +1,38 @@
+name: Conceder Admin da Plataforma
+
+# Disparo manual só: dado um e-mail que já criou conta pelo site, grava
+# platformAdmins/{uid} no Firestore (mesmo script scripts/seed-admin.mjs
+# usado localmente). Nunca cria conta, nunca toca em senha — só concede o
+# papel de admin geral a um usuário que já existe no Firebase Auth.
+on:
+  workflow_dispatch:
+    inputs:
+      email:
+        description: "E-mail do usuário (precisa já ter criado a conta pelo site)"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  grant:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Instalar dependências do monorepo
+        run: npm ci
+
+      - name: Autenticar no Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Conceder platformAdmins
+        run: node scripts/seed-admin.mjs "${{ github.event.inputs.email }}"
