@@ -1,5 +1,4 @@
 import { onCall, onRequest, HttpsError } from "firebase-functions/v2/https";
-import { defineString } from "firebase-functions/params";
 import { randomBytes } from "node:crypto";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import {
@@ -11,11 +10,13 @@ import {
 import { db, projectRef } from "./lib/firebase.ts";
 import { installCodeHeroOnRepo, parseGithubOwnerRepo } from "./lib/githubApi.ts";
 
-// Optional until platform ops creates the GitHub OAuth App. Empty defaults let
-// hosting/functions deploy without Secret Manager entries; one-click then returns
-// a clear "not configured" error instead of blocking CI.
-const GITHUB_OAUTH_CLIENT_ID = defineString("GITHUB_OAUTH_CLIENT_ID", { default: "" });
-const GITHUB_OAUTH_CLIENT_SECRET = defineString("GITHUB_OAUTH_CLIENT_SECRET", { default: "" });
+/** Optional — set via Cloud Run env / Secret Manager after OAuth App exists. */
+function githubOAuthClientId(): string {
+  return (process.env.GITHUB_OAUTH_CLIENT_ID ?? "").trim();
+}
+function githubOAuthClientSecret(): string {
+  return (process.env.GITHUB_OAUTH_CLIENT_SECRET ?? "").trim();
+}
 
 const STATE_TTL_MS = 15 * 60 * 1000;
 const ALLOWED_RETURN_ORIGINS = new Set([
@@ -91,7 +92,7 @@ export const startGithubActionInstall = onCall<StartInput>({ cors: true }, async
       throw new HttpsError("invalid-argument", "orgId and projectId are required");
     }
 
-    const clientId = GITHUB_OAUTH_CLIENT_ID.value()?.trim();
+    const clientId = githubOAuthClientId();
     if (!clientId) {
       throw new HttpsError(
         "failed-precondition",
@@ -230,8 +231,8 @@ export const githubOAuthCallback = onRequest({ cors: false }, async (req, res) =
         return;
       }
 
-      const clientId = GITHUB_OAUTH_CLIENT_ID.value()?.trim();
-      const clientSecret = GITHUB_OAUTH_CLIENT_SECRET.value()?.trim();
+      const clientId = githubOAuthClientId();
+      const clientSecret = githubOAuthClientSecret();
       if (!clientId || !clientSecret) {
         failSt("Integração GitHub não configurada no servidor.");
         return;
