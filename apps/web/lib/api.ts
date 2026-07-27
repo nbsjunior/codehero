@@ -5,6 +5,7 @@ import { functions } from "./firebase";
 export interface ProvisionResult {
   orgId: string;
   projectId: string;
+  slug?: string;
   ingestToken: string;
 }
 
@@ -128,6 +129,31 @@ export async function previewRepoScan(input: {
   }
 }
 
+export interface StartGithubActionInstallResult {
+  authorizeUrl: string;
+  owner: string;
+  repo: string;
+  projectSlug?: string;
+  callbackUrl?: string;
+}
+
+export async function startGithubActionInstall(input: {
+  orgId: string;
+  projectId: string;
+  returnOrigin?: string;
+}): Promise<StartGithubActionInstallResult> {
+  const fn = httpsCallable<typeof input, StartGithubActionInstallResult>(
+    functions,
+    "startGithubActionInstall",
+  );
+  try {
+    const res = await fn(input);
+    return res.data;
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha ao iniciar instalação da GitHub Action."));
+  }
+}
+
 function formatCallableError(err: unknown, fallback: string): string {
   const fe = err as { code?: string; message?: string; details?: unknown };
   const code = fe?.code ?? "";
@@ -144,9 +170,14 @@ function formatCallableError(err: unknown, fallback: string): string {
     if (details && !/^(internal|INTERNAL)$/i.test(details)) return details;
     return `${fallback} Erro interno no runner (sem detalhe no cliente). Tente de novo.`;
   }
-  if (code === "functions/unauthenticated") return "Faça login novamente para rodar a prévia.";
-  if (code === "functions/not-found") return "Repositório não encontrado ou privado.";
-  if (code === "functions/unavailable" || code === "functions/invalid-argument") {
+  if (code === "functions/unauthenticated") return "Faça login novamente e tente de novo.";
+  if (code === "functions/not-found") return raw.replace(/^.*?:\s*/, "") || "Recurso não encontrado.";
+  if (
+    code === "functions/unavailable" ||
+    code === "functions/invalid-argument" ||
+    code === "functions/failed-precondition" ||
+    code === "functions/permission-denied"
+  ) {
     return raw.replace(/^.*?:\s*/, "") || fallback;
   }
   if (raw && !/^(internal|INTERNAL)$/i.test(raw)) {

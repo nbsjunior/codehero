@@ -3,15 +3,17 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { doc, getDoc } from "firebase/firestore";
+import { buildCodeHeroWorkflowYaml, buildGithubCliSetupScript } from "@codehero/contracts";
 import AppShell from "@/components/AppShell";
 import AuthGate from "@/components/AuthGate";
 import CopyButton from "@/components/CopyButton";
 import { dbClient } from "@/lib/firebase";
-import { rotateIngestToken } from "@/lib/api";
+import { rotateIngestToken, startGithubActionInstall } from "@/lib/api";
 import { HERO_CORE_URL } from "@/lib/heroCoreUrl";
 
 interface ProjectData {
   name: string;
+  slug?: string;
   repoUrl: string | null;
   ingestToken: string;
   debtMinutes: number;
@@ -19,6 +21,8 @@ interface ProjectData {
   securityRating: string;
   qualityGateStatus: string;
   openIssues: number;
+  githubActionInstalledAt?: unknown;
+  githubActionRepo?: string;
 }
 
 const ratingColor: Record<string, string> = {
@@ -38,33 +42,9 @@ function parseOwnerRepo(repoUrl: string | null): { owner: string; repo: string }
   return { owner: m[1]!, repo: m[2]! };
 }
 
-function buildWorkflowYaml(orgId: string, projectId: string): string {
-  return `name: CodeHero Analysis
-on:
-  pull_request:
-  push:
-    branches: [main]
-
-jobs:
-  codehero:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
-      pull-requests: write
-    steps:
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
-
-      - uses: nbsjunior/codehero/packages/github-action@main
-        with:
-          server-url: \${{ vars.HERO_CORE_URL }}
-          token: \${{ secrets.HERO_TOKEN }}
-          org-id: "${orgId}"
-          project-id: "${projectId}"
-          path: "."
-          fail-on: CRITICAL
-`;
+function parseTab(raw: string | null): Tab {
+  if (raw === "vscode" || raw === "action" || raw === "mcp" || raw === "overview") return raw;
+  return "overview";
 }
 
 function ProjectSettings() {
@@ -75,10 +55,12 @@ function ProjectSettings() {
   const [project, setProject] = useState<ProjectData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [tab, setTab] = useState<Tab>("overview");
+  const [tab, setTab] = useState<Tab>(() => parseTab(search.get("tab")));
   const [rotateConfirm, setRotateConfirm] = useState(false);
   const [rotating, setRotating] = useState(false);
   const [rotateError, setRotateError] = useState<string | null>(null);
+  const [installingGha, setInstallingGha] = useState(false);
+  const [ghaBanner, setGhaBanner] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
 
   const load = useCallback(async () => {
     if (!orgId || !projectId) {
@@ -106,6 +88,43 @@ function ProjectSettings() {
   useEffect(() => {
     load();
   }, [load]);
+
+  useEffect(() => {
+    const gha = search.get("gha");
+    if (gha === "ok") {
+      setTab("action");
+      setGhaBanner({
+        kind: "ok",
+        text: "GitHub Action configurada: workflow + HERO_TOKEN + HERO_CORE_URL. O próximo push/PR já roda o scan.",
+      });
+    } else if (gha === "error") {
+      setTab("action");
+      setGhaBanner({
+        kind: "error",
+        text: search.get("msg") || "Falha ao instalar a Action no GitHub.",
+      });
+    }
+    if (gha === "ok") void load();
+  }, [search, load]);
+
+  async function handleOneClickInstall() {
+    setInstallingGha(true);
+    setGhaBanner(null);
+    try {
+      const { authorizeUrl } = await startGithubActionInstall({
+        orgId,
+        projectId,
+        returnOrigin: typeof window !== "undefined" ? window.location.origin : undefined,
+      });
+      window.location.assign(authorizeUrl);
+    } catch (err) {
+      setGhaBanner({
+        kind: "error",
+        text: err instanceof Error ? err.message : "Falha ao iniciar o OAuth do GitHub.",
+      });
+      setInstallingGha(false);
+    }
+  }
 
   async function handleRotate() {
     if (!rotateConfirm) {
@@ -145,8 +164,16 @@ function ProjectSettings() {
   }
 
   const ownerRepo = parseOwnerRepo(project.repoUrl);
-  const workflowYaml = buildWorkflowYaml(orgId, projectId);
-  const oneClickUrl = ownerRepo
+  const workflowYaml = buildCodeHeroWorkflowYaml(orgId, projectId);
+  const ghCliScript = ownerRepo
+    ? buildGithubCliSetupScript({
+        owner: ownerRepo.owner,
+        repo: ownerRepo.repo,
+        heroCoreUrl: HERO_CORE_URL,
+        ingestToken: project.ingestToken,
+      })
+    : null;
+  const deepLinkUrl = ownerRepo
     ? `https://github.com/${ownerRepo.owner}/${ownerRepo.repo}/new/main?filename=${encodeURIComponent(
         ".github/workflows/codehero.yml",
       )}&value=${encodeURIComponent(workflowYaml)}`
@@ -333,26 +360,55 @@ function ProjectSettings() {
             vincule o repositório em 1 clique · quality gate bloqueia o merge
           </p>
 
+          {ghaBanner && (
+            <div
+              className={ghaBanner.kind === "ok" ? "hero-success" : "hero-error"}
+              style={{ marginBottom: "1.25rem" }}
+              role="status"
+            >
+              {ghaBanner.text}
+            </div>
+          )}
+
+          {project.githubActionRepo && (
+            <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1.25rem" }}>
+              Já instalada em <strong>{project.githubActionRepo}</strong>
+              {project.githubActionInstalledAt ? " · pode reinstalar para atualizar workflow/secrets" : ""}.
+            </p>
+          )}
+
           <div className="hero-step">
             <span className="hero-step-num">1</span>
             <div style={{ flex: 1 }}>
               <p style={{ margin: "0 0 0.6rem" }}>
                 {ownerRepo ? (
                   <>
-                    Clique para abrir o GitHub já com o workflow pronto para commitar em{" "}
+                    Um clique autoriza o GitHub e configura a esteira no repo{" "}
                     <strong>
                       {ownerRepo.owner}/{ownerRepo.repo}
-                    </strong>
-                    :
+                    </strong>{" "}
+                    para o projeto <strong>{project.name}</strong>
+                    {project.slug ? (
+                      <>
+                        {" "}
+                        (<code>{project.slug}</code>)
+                      </>
+                    ) : null}
+                    . Você não precisa mexer em infraestrutura.
                   </>
                 ) : (
-                  <>Cadastre a URL do repositório GitHub no projeto (na criação, ou peça para editar) para habilitar o link de 1 clique.</>
+                  <>Cadastre a URL do repositório GitHub no projeto para habilitar a instalação.</>
                 )}
               </p>
-              {oneClickUrl ? (
-                <a className="hero-btn hero-btn-accent" href={oneClickUrl} target="_blank" rel="noreferrer" style={{ display: "inline-block", textDecoration: "none" }}>
-                  Adicionar workflow no GitHub (1 clique)
-                </a>
+              {ownerRepo ? (
+                <button
+                  type="button"
+                  className="hero-btn hero-btn-accent"
+                  disabled={installingGha}
+                  onClick={handleOneClickInstall}
+                >
+                  {installingGha ? "Redirecionando ao GitHub…" : "Configurar Action no GitHub (1 clique)"}
+                </button>
               ) : (
                 <span className="hero-badge">repoUrl não configurado</span>
               )}
@@ -362,7 +418,39 @@ function ProjectSettings() {
           <div className="hero-step">
             <span className="hero-step-num">2</span>
             <div style={{ flex: 1 }}>
-              <p style={{ margin: "0 0 0.6rem" }}>No repositório, configure (Settings → Secrets and variables → Actions):</p>
+              <p style={{ margin: "0 0 0.6rem" }}>
+                Alternativa com GitHub CLI (depois de criar o workflow):
+              </p>
+              {ghCliScript ? (
+                <div className="hero-copyrow">
+                  <pre className="hero-code" style={{ maxHeight: 140 }}>
+                    {ghCliScript}
+                  </pre>
+                  <CopyButton text={ghCliScript} label="Copiar script gh" />
+                </div>
+              ) : (
+                <span className="hero-badge">repoUrl não configurado</span>
+              )}
+            </div>
+          </div>
+
+          <div className="hero-step">
+            <span className="hero-step-num">3</span>
+            <div style={{ flex: 1 }}>
+              <p style={{ margin: "0 0 0.6rem" }}>
+                Ou só o arquivo do workflow (o one-click já preenche token e URL da API do portal):
+              </p>
+              {deepLinkUrl ? (
+                <a
+                  className="hero-btn hero-btn-outline"
+                  href={deepLinkUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ display: "inline-block", textDecoration: "none", marginBottom: "0.75rem" }}
+                >
+                  Abrir “new file” no GitHub
+                </a>
+              ) : null}
               <table className="hero-table" style={{ marginBottom: "0.5rem" }}>
                 <thead>
                   <tr>
@@ -394,13 +482,17 @@ function ProjectSettings() {
                   </tr>
                 </tbody>
               </table>
+              <p className="hero-caption" style={{ margin: "0.5rem 0 0" }}>
+                A variable aponta para a API pública do portal (<code>codehero.web.app/api</code>), não para
+                infraestrutura interna.
+              </p>
             </div>
           </div>
 
           <div className="hero-step" style={{ marginBottom: 0 }}>
-            <span className="hero-step-num">3</span>
+            <span className="hero-step-num">4</span>
             <div style={{ flex: 1 }}>
-              <p style={{ margin: "0 0 0.6rem" }}>Ou cole o YAML manualmente:</p>
+              <p style={{ margin: "0 0 0.6rem" }}>YAML completo (colar em <code>.github/workflows/codehero.yml</code>):</p>
               <div className="hero-copyrow">
                 <pre className="hero-code" style={{ maxHeight: 260 }}>
                   {workflowYaml}

@@ -13,7 +13,7 @@ import { tmpdir } from "node:os";
 import { pipeline } from "node:stream/promises";
 import { Readable } from "node:stream";
 import { createRequire } from "node:module";
-import { matchPattern, type HeroRule } from "@codehero/contracts";
+import { matchPattern, SDD_TEMPLATES, type HeroRule } from "@codehero/contracts";
 import { loadActiveRules } from "./lib/activeRules.ts";
 
 const require = createRequire(import.meta.url);
@@ -66,6 +66,12 @@ export const previewRepoScan = onCall(
       findingCount: findings.length,
       bySeverity: bySev,
       topFindings: findings.slice(0, 40),
+      // Grouped, actionable remediation guidance per rule that fired — not
+      // just a raw findings dump. Each group lists every affected file/line
+      // (read "file by file") plus the deterministic fix strategy from the
+      // SDD template catalog (same source the SDD Spec / MCP loop uses) —
+      // no LLM call in this path, so this stays cheap regardless of repo size.
+      recommendations: buildRecommendations(findings),
       overlayRuleCount: active.overlayCount,
       rulesVersion: active.version,
       scannedAt: new Date().toISOString(),
@@ -131,11 +137,65 @@ function parseGithubUrl(url: string): { owner: string; repo: string; branch: str
 
 interface PreviewFinding {
   ruleId: string;
+  ruleName: string;
+  sddTemplateId: string | null;
   severity: string;
   message: string;
   file: string;
   line: number;
   snippet: string;
+}
+
+export interface RecommendationGroup {
+  ruleId: string;
+  ruleName: string;
+  severity: string;
+  count: number;
+  strategy: string;
+  guidance: string;
+  constraints: string[];
+  files: Array<{ file: string; line: number }>;
+}
+
+const MAX_FILES_PER_GROUP = 25;
+
+/**
+ * Groups findings by rule and attaches the deterministic remediation
+ * guidance (strategy/constraints) from SDD_TEMPLATES — the same catalog the
+ * SDD Spec generator uses for the verified-fix MCP loop. Ordered worst
+ * severity first, so the highest-impact fix to make is always group #1.
+ */
+function buildRecommendations(findings: PreviewFinding[]): RecommendationGroup[] {
+  const byRule = new Map<
+    string,
+    { finding: PreviewFinding; count: number; files: Array<{ file: string; line: number }> }
+  >();
+  for (const f of findings) {
+    const existing = byRule.get(f.ruleId);
+    if (existing) {
+      existing.count += 1;
+      if (existing.files.length < MAX_FILES_PER_GROUP) existing.files.push({ file: f.file, line: f.line });
+    } else {
+      byRule.set(f.ruleId, { finding: f, count: 1, files: [{ file: f.file, line: f.line }] });
+    }
+  }
+
+  const groups: RecommendationGroup[] = [];
+  for (const { finding, count, files } of byRule.values()) {
+    const template = finding.sddTemplateId ? SDD_TEMPLATES[finding.sddTemplateId] : undefined;
+    groups.push({
+      ruleId: finding.ruleId,
+      ruleName: finding.ruleName,
+      severity: finding.severity,
+      count,
+      strategy: template?.strategy ?? "manual_fix",
+      guidance: template?.guidance ?? finding.message,
+      constraints: template?.constraints ?? ["Preservar comportamento observável.", "Manter estilo do arquivo."],
+      files,
+    });
+  }
+  groups.sort((a, b) => severityRank(b.severity) - severityRank(a.severity));
+  return groups;
 }
 
 const SCAN_EXTS = new Set([
@@ -180,6 +240,8 @@ function scanTree(root: string, rules: HeroRule[]): PreviewFinding[] {
       for (const m of matches) {
         findings.push({
           ruleId: rule.id,
+          ruleName: rule.name,
+          sddTemplateId: rule.sddTemplateId ?? null,
           severity: rule.severity,
           message: rule.message,
           file: rel,

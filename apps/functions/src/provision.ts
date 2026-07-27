@@ -1,6 +1,7 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { randomBytes } from "node:crypto";
 import { FieldValue } from "firebase-admin/firestore";
+import { slugifyProjectName } from "@codehero/contracts";
 import { db } from "./lib/firebase.ts";
 
 interface ProvisionInput {
@@ -24,6 +25,14 @@ export const provisionProject = onCall<ProvisionInput>(async (request) => {
   const projectRef = orgRef.collection("projects").doc();
   const ingestToken = `chp_${randomBytes(24).toString("hex")}`;
 
+  const baseSlug = slugifyProjectName(projectName);
+  let slug = baseSlug;
+  for (let i = 0; i < 8; i++) {
+    const slugSnap = await db.doc(`projectSlugs/${slug}`).get();
+    if (!slugSnap.exists) break;
+    slug = `${baseSlug}-${randomBytes(2).toString("hex")}`;
+  }
+
   const batch = db.batch();
   batch.set(orgRef, {
     name: orgName,
@@ -37,6 +46,7 @@ export const provisionProject = onCall<ProvisionInput>(async (request) => {
   });
   batch.set(projectRef, {
     name: projectName,
+    slug,
     repoUrl: repoUrl ?? null,
     mainBranch: "main",
     ingestToken,
@@ -47,11 +57,17 @@ export const provisionProject = onCall<ProvisionInput>(async (request) => {
     openIssues: 0,
     createdAt: FieldValue.serverTimestamp(),
   });
+  batch.set(db.doc(`projectSlugs/${slug}`), {
+    orgId: orgRef.id,
+    projectId: projectRef.id,
+    updatedAt: FieldValue.serverTimestamp(),
+  });
   await batch.commit();
 
   return {
     orgId: orgRef.id,
     projectId: projectRef.id,
+    slug,
     ingestToken, // shown once — stored as a CI secret by the caller
   };
 });

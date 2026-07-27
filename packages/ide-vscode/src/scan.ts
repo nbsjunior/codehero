@@ -48,7 +48,7 @@ interface SarifResult {
 }
 
 const SEV_ORDER = ["INFO", "MINOR", "MAJOR", "CRITICAL", "BLOCKER"];
-const DEFAULT_SERVER = "https://us-central1-apponti.cloudfunctions.net";
+const DEFAULT_SERVER = "https://codehero.web.app/api";
 
 export async function runScan(opts: {
   target: string;

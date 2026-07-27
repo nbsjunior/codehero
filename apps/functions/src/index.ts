@@ -19,3 +19,4 @@ export { previewRepoScan } from "./previewScan.ts";
 export { registerAccount } from "./registerAccount.ts";
 export { rotateIngestToken } from "./tokens.ts";
 export { getActiveRules, getActiveRulesCallable } from "./rulesApi.ts";
+export { startGithubActionInstall, githubOAuthCallback } from "./githubActionInstall.ts";

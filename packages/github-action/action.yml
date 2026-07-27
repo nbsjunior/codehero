@@ -7,7 +7,7 @@ branding:
 
 inputs:
   server-url:
-    description: "Base URL das Functions do CodeHero (ex: https://us-central1-<proj>.cloudfunctions.net)"
+    description: "Base URL da API CodeHero (ex: https://codehero.web.app/api)"
     required: true
   token:
     description: "Token de ingestão do projeto (secret)"

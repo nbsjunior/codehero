@@ -61,7 +61,7 @@ Setup local, MCP, emuladores Firebase e `hero-ruleforge`: ver [docs/ARCHITECTURE
 | hero-ruleforge (corpus + evolução) | ✅ determinístico + Genkit diário (`ruleforgeDaily`) |
 | Functions (ingest/sdd/query/provision/feedback) | ✅ compila + verificado no emulador |
 | MCP server | ✅ compila |
-| GitHub Action + workflow de deploy | ✅ scaffold pronto |
+| GitHub Action + workflow de deploy | ✅ scaffold + one-click OAuth / `gh` CLI |
 | Dashboard Next.js | ✅ Auth + Firestore + `provisionProject` / admin callables |
 | Motor nativo Rust/tree-sitter (escala 2B+ LOC) | ⬜ roadmap V1→Scale-up |
 

@@ -43,6 +43,21 @@ service cloud.firestore {
       allow write: if false; // granted only via scripts/seed-admin.mjs (Admin SDK)
     }
 
+    // Collection-group LIST rule for `members`, declared at the TOP LEVEL
+    // with a `{path=**}` wildcard parent. This is deliberate and required:
+    // Firestore does NOT reliably apply a `list`/collectionGroup rule from a
+    // block NESTED inside `match /orgs/{orgId}` — verified empirically
+    // (an unconditional `allow list: if true` nested under orgs/{orgId} was
+    // still denied by the emulator for a collectionGroup("members") query).
+    // A top-level `{path=**}` match is the documented, working pattern for
+    // collection-group queries. This is what lets a user discover "which
+    // orgs am I a member of" via collectionGroup("members").where("uid","==",uid).
+    // Reading a SPECIFIC known member doc (`get`) is unaffected and stays
+    // governed by the richer rule nested under orgs/{orgId}/members below.
+    match /{path=**}/members/{uid} {
+      allow list: if isSignedIn() && request.auth.uid == uid;
+    }
+
     // Daily Genkit ruleforge reports — platform admins may read; writes via Admin SDK only.
     match /ruleforgeRuns/{day} {
       allow read: if isPlatformAdmin();
@@ -65,17 +80,11 @@ service cloud.firestore {
       allow write: if false;
 
       match /members/{uid} {
-        // `get` and `list` are split deliberately: Firestore refuses an
-        // entire LIST/collectionGroup query if ANY branch of its `allow`
-        // condition needs exists()/get() (extra reads it can't prove safe
-        // ahead of time) — even an OR'd branch that alone would be list-safe
-        // doesn't save it. So `list` gets ONLY the self-contained,
-        // no-lookup condition (path segment == caller), which is what lets
-        // "which orgs am I a member of" work via collectionGroup("members").
-        // `get` (a single known doc) has no such restriction and keeps the
-        // richer org-membership/admin check for reading OTHER members' docs.
+        // `list` (collectionGroup, cross-org) is handled by the top-level
+        // `{path=**}/members/{uid}` rule above. This nested rule covers
+        // `get` — reading a single known member doc within an org you
+        // already belong to (or as a platform admin).
         allow get: if isOrgMember(orgId) || isPlatformAdmin() || (isSignedIn() && request.auth.uid == uid);
-        allow list: if true; // TEMP diagnostic — narrow back down once confirmed
         allow write: if false; // managed by functions
       }
 
