@@ -27,11 +27,11 @@ O Hosting reescreve essas rotas para as Functions; o cliente só vê `codehero.w
 1. GitHub → **OAuth Apps → New OAuth App**
    - Homepage: `https://codehero.web.app`
    - **Authorization callback URL:** `https://codehero.web.app/projeto/githubOauthCallback`
-2. Secrets no Firebase (`apponti`):
+2. Defina os params das Functions (`apponti`) — opcionais no deploy; sem eles o botão one-click avisa e o `gh`/deep link seguem disponíveis:
 
 ```bash
-firebase functions:secrets:set GITHUB_OAUTH_CLIENT_ID --project apponti
-firebase functions:secrets:set GITHUB_OAUTH_CLIENT_SECRET --project apponti
+firebase functions:params:set GITHUB_OAUTH_CLIENT_ID --project apponti
+firebase functions:params:set GITHUB_OAUTH_CLIENT_SECRET --project apponti
 ```
 
 3. Deploy hosting + `startGithubActionInstall` + `githubOAuthCallback` (já no `firebase-deploy.yml`).
