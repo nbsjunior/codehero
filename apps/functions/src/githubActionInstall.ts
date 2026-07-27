@@ -1,5 +1,5 @@
 import { onCall, onRequest, HttpsError } from "firebase-functions/v2/https";
-import { defineSecret } from "firebase-functions/params";
+import { defineString } from "firebase-functions/params";
 import { randomBytes } from "node:crypto";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import {
@@ -11,8 +11,11 @@ import {
 import { db, projectRef } from "./lib/firebase.ts";
 import { installCodeHeroOnRepo, parseGithubOwnerRepo } from "./lib/githubApi.ts";
 
-const GITHUB_OAUTH_CLIENT_ID = defineSecret("GITHUB_OAUTH_CLIENT_ID");
-const GITHUB_OAUTH_CLIENT_SECRET = defineSecret("GITHUB_OAUTH_CLIENT_SECRET");
+// Optional until platform ops creates the GitHub OAuth App. Empty defaults let
+// hosting/functions deploy without Secret Manager entries; one-click then returns
+// a clear "not configured" error instead of blocking CI.
+const GITHUB_OAUTH_CLIENT_ID = defineString("GITHUB_OAUTH_CLIENT_ID", { default: "" });
+const GITHUB_OAUTH_CLIENT_SECRET = defineString("GITHUB_OAUTH_CLIENT_SECRET", { default: "" });
 
 const STATE_TTL_MS = 15 * 60 * 1000;
 const ALLOWED_RETURN_ORIGINS = new Set([
@@ -79,9 +82,7 @@ async function ensureProjectSlug(orgId: string, projectId: string, name: string)
  * Starts GitHub OAuth for one-click Action install (repo admins / engineers).
  * Platform Firebase details stay server-side — the browser only sees portal URLs.
  */
-export const startGithubActionInstall = onCall<StartInput>(
-  { secrets: [GITHUB_OAUTH_CLIENT_ID], cors: true },
-  async (request) => {
+export const startGithubActionInstall = onCall<StartInput>({ cors: true }, async (request) => {
     const uid = request.auth?.uid;
     if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
 
@@ -149,16 +150,13 @@ export const startGithubActionInstall = onCall<StartInput>(
       projectSlug,
       callbackUrl: redirectUri,
     };
-  },
-);
+});
 
 /**
  * Portal OAuth callback (Hosting rewrite from /{slug}/githubOauthCallback).
  * Exchanges the code, installs workflow + secrets, redirects back to the project.
  */
-export const githubOAuthCallback = onRequest(
-  { secrets: [GITHUB_OAUTH_CLIENT_ID, GITHUB_OAUTH_CLIENT_SECRET], cors: false },
-  async (req, res) => {
+export const githubOAuthCallback = onRequest({ cors: false }, async (req, res) => {
     const fail = (origin: string, message: string, orgId?: string, projectId?: string, slug?: string) => {
       const url = new URL("/projects", origin);
       if (orgId) url.searchParams.set("org", orgId);
@@ -328,5 +326,4 @@ export const githubOAuthCallback = onRequest(
       const message = err instanceof Error ? err.message : "Falha ao instalar a Action.";
       fail(CODEHERO_PORTAL_ORIGIN, message);
     }
-  },
-);
+});
