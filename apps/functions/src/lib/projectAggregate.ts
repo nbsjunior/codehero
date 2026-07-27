@@ -1,17 +1,19 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { aggregateProjectMetrics, type Rating } from "@codehero/contracts";
 import { projectRef } from "./firebase.ts";
+import { applyPlatformSummaryDelta } from "./platformSummary.ts";
 
 /**
  * Recomputes a project's rolled-up metrics from its repos subcollection and
  * writes them onto the project doc. Called after any repo-level metrics
  * change (ingestion, repo added/removed) so the dashboard/admin consolidation
  * views can read one cheap project doc instead of fanning out to repos on
- * every page load.
+ * every page load. Also applies the platform-wide summary delta (see
+ * platformSummary.ts) so the admin KPI cards never need their own fan-out.
  */
 export async function recomputeProjectAggregate(orgId: string, projectId: string): Promise<void> {
   const pRef = projectRef(orgId, projectId);
-  const reposSnap = await pRef.collection("repos").get();
+  const [reposSnap, oldSnap] = await Promise.all([pRef.collection("repos").get(), pRef.get()]);
 
   const repos = reposSnap.docs.map((d) => {
     const data = d.data();
@@ -25,6 +27,8 @@ export async function recomputeProjectAggregate(orgId: string, projectId: string
   });
 
   const aggregate = aggregateProjectMetrics(repos);
+  const old = oldSnap.data() ?? {};
+
   await pRef.set(
     {
       repoCount: aggregate.repoCount,
@@ -37,4 +41,12 @@ export async function recomputeProjectAggregate(orgId: string, projectId: string
     },
     { merge: true },
   );
+
+  await applyPlatformSummaryDelta({
+    isNewProject: !oldSnap.exists,
+    oldGate: (old.qualityGateStatus as string) ?? null,
+    newGate: aggregate.qualityGateStatus,
+    oldSecurity: (old.securityRating as string) ?? null,
+    newSecurity: aggregate.securityRating,
+  });
 }

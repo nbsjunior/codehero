@@ -15,9 +15,20 @@ import { observe } from "./lib/observability.ts";
 const DEFAULT_PERIODICITY_DAYS = 7;
 const MIN_PERIODICITY_DAYS = 1;
 const MAX_PERIODICITY_DAYS = 90;
-/** Per-shard cap — 24 hourly shards × this ≈ daily throughput. */
-const MAX_REPOS_PER_SHARD = 40;
 const SHARD_COUNT = 24;
+/**
+ * Upper bound on repos considered per hourly shard run — a safety cap, not
+ * the real throughput limiter (that's TIME_BUDGET_MS below, since repo scans
+ * are now processed concurrently rather than one at a time). At 20k repos on
+ * the default 7-day cadence, ~2,857 repos/day need to cycle through; with
+ * CONCURRENCY workers and a ~480s usable budget per run, this clears that
+ * bar with headroom (any leftovers just get picked up on the next run).
+ */
+const MAX_REPOS_PER_SHARD = 300;
+/** Parallel repo scans per shard run. Each is a zip download + regex scan, not CPU-heavy, so this stays well within 1GiB. */
+const CONCURRENCY = 8;
+/** Stop starting new repos once this much of the 540s function timeout has elapsed — leaves buffer to finish in-flight work cleanly. */
+const TIME_BUDGET_MS = 480_000;
 
 async function requireOrgAccess(uid: string, orgId: string): Promise<void> {
   const member = await db.doc(`orgs/${orgId}/members/${uid}`).get();
@@ -176,7 +187,7 @@ export const autoScanRepos = onSchedule(
     timeoutSeconds: 540,
   },
   async () => {
-    const now = Date.now();
+    const startedAt = Date.now();
     const shard = new Date().getHours() % SHARD_COUNT;
     const enabledSnap = await db.collectionGroup("repos").where("autoScan.enabled", "==", true).get();
 
@@ -184,43 +195,59 @@ export const autoScanRepos = onSchedule(
       const repoId = d.id;
       if (autoScanShard(repoId) !== shard) return false;
       const nextRunAt = d.get("autoScan")?.nextRunAt?.toDate?.() ?? null;
-      return !nextRunAt || nextRunAt.getTime() <= now;
+      return !nextRunAt || nextRunAt.getTime() <= startedAt;
     });
+    const candidates = due.slice(0, MAX_REPOS_PER_SHARD);
 
     let scanned = 0;
     let failed = 0;
-    for (const d of due.slice(0, MAX_REPOS_PER_SHARD)) {
-      const parts = d.ref.path.split("/"); // orgs/{orgId}/projects/{projectId}/repos/{repoId}
-      const orgId = parts[1]!;
-      const projectId = parts[3]!;
-      const repoId = parts[5]!;
-      const repoUrl = d.get("repoUrl");
-      const periodicityDays = d.get("autoScan")?.periodicityDays ?? DEFAULT_PERIODICITY_DAYS;
+    let cursor = 0;
 
-      if (!repoUrl) continue;
-      try {
-        await scanAndPersistRepo(orgId, projectId, repoId, repoUrl);
-        await d.ref.set(
-          {
-            autoScan: {
-              lastRunAt: new Date(),
-              nextRunAt: new Date(now + periodicityDays * 86_400_000),
+    // Bounded-concurrency worker pool, self-limiting on a wall-clock budget
+    // rather than a fixed repo count — throughput adapts to how long repos
+    // actually take to scan instead of a guessed constant.
+    async function worker(): Promise<void> {
+      for (;;) {
+        if (Date.now() - startedAt > TIME_BUDGET_MS) return;
+        const i = cursor++;
+        if (i >= candidates.length) return;
+        const d = candidates[i]!;
+        const parts = d.ref.path.split("/"); // orgs/{orgId}/projects/{projectId}/repos/{repoId}
+        const orgId = parts[1]!;
+        const projectId = parts[3]!;
+        const repoId = parts[5]!;
+        const repoUrl = d.get("repoUrl");
+        const periodicityDays = d.get("autoScan")?.periodicityDays ?? DEFAULT_PERIODICITY_DAYS;
+        if (!repoUrl) continue;
+
+        try {
+          await scanAndPersistRepo(orgId, projectId, repoId, repoUrl);
+          await d.ref.set(
+            {
+              autoScan: {
+                lastRunAt: new Date(),
+                nextRunAt: new Date(Date.now() + periodicityDays * 86_400_000),
+              },
             },
-          },
-          { merge: true },
-        );
-        scanned += 1;
-      } catch (err) {
-        failed += 1;
-        logger.error("autoScanRepos: repo scan failed", { orgId, projectId, repoId, err: String(err) });
+            { merge: true },
+          );
+          scanned += 1;
+        } catch (err) {
+          failed += 1;
+          logger.error("autoScanRepos: repo scan failed", { orgId, projectId, repoId, err: String(err) });
+        }
       }
     }
+
+    await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()));
 
     observe("autoscan.shard_complete", {
       shard,
       dueCount: due.length,
+      candidateCount: candidates.length,
       scanned,
       failed,
+      elapsedMs: Date.now() - startedAt,
     });
     logger.info("autoScanRepos complete", { shard, dueCount: due.length, scanned, failed });
   },

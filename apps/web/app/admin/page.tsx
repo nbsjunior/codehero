@@ -1,22 +1,111 @@
 "use client";
-import { Fragment, useEffect, useState, type FormEvent } from "react";
+import { Fragment, Suspense, useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { collection, collectionGroup, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import AppShell from "@/components/AppShell";
 import AuthGate from "@/components/AuthGate";
+import AdminCockpitShell, { type CockpitNavGroup } from "@/components/AdminCockpitShell";
+import { Callout, DataSection, KpiCard, KpiGroup, PageHeader } from "@/components/AdminUi";
+import ProjectWorkspace from "@/components/admin/ProjectWorkspace";
+import WorkspaceWizard from "@/components/admin/WorkspaceWizard";
+import InstalacaoHome from "@/components/admin/InstalacaoHome";
+import UsersPanel from "@/components/admin/UsersPanel";
+import FindingsBrowser, { type FindingsBrowserItem } from "@/components/FindingsBrowser";
+import { dbClient } from "@/lib/firebase";
+import { useAuth } from "@/lib/useAuth";
 import {
+  adminGetPlatformSummary,
   adminListAllIssues,
   adminListAllProjects,
   checkPlatformAdmin,
+  getOrgQuotasCallable,
+  getPlatformOpsSettings,
+  listDressCodes,
   listFeatureFlags,
   listRuleforgeRuns,
+  repairIngestQueues,
+  runDetailPurgeNow,
+  runRuleforgeDailyNow,
   setFeatureFlag,
+  setOrgQuotas,
+  setPlatformOpsSettings,
+  submitDressCode,
   type AdminIssueRow,
   type AdminIssuesResult,
   type AdminProjectRow,
   type FeatureFlag,
+  type IngestQueueCounts,
+  type OrgQuotasView,
+  type PlatformOpsConfig,
+  type PlatformSummary,
   type RepoRow,
   type RuleforgeRun,
 } from "@/lib/api";
+
+const SHARED_GROUPS: CockpitNavGroup[] = [
+  {
+    id: "instalacao",
+    label: "Instalação",
+    items: [{ id: "instalacao", label: "Instalação" }],
+  },
+  {
+    id: "visao",
+    label: "Visão",
+    items: [
+      { id: "visao-geral", label: "Visão geral" },
+      { id: "apontamentos", label: "Apontamentos" },
+    ],
+  },
+  {
+    id: "projetos",
+    label: "Projetos",
+    items: [
+      { id: "todos-projetos", label: "Todos os projetos" },
+      { id: "workspace", label: "Workspace" },
+      { id: "novo-workspace", label: "Novo workspace" },
+    ],
+  },
+  {
+    id: "docs",
+    label: "Docs",
+    items: [{ id: "docs", label: "Documentação", href: "/docs/" }],
+  },
+  {
+    id: "estimativa",
+    label: "Estimativa de Build",
+    items: [{ id: "estimativa", label: "Abrir estimativa", href: "https://produtech.web.app", external: true }],
+  },
+];
+
+const ADMIN_ONLY_GROUPS: CockpitNavGroup[] = [
+  {
+    id: "plataforma",
+    label: "Plataforma",
+    items: [
+      { id: "dress-code", label: "Dress code" },
+      { id: "esteira", label: "Esteira" },
+      { id: "feature-toggles", label: "Feature toggles" },
+    ],
+  },
+  {
+    id: "operacoes",
+    label: "Operações",
+    items: [
+      { id: "escala", label: "Escala e filas" },
+      { id: "cotas", label: "Cotas" },
+    ],
+  },
+  {
+    id: "usuarios",
+    label: "Usuários",
+    items: [{ id: "usuarios", label: "Todos os usuários" }],
+  },
+];
+
+const TAB_IDS = new Set(
+  [...SHARED_GROUPS, ...ADMIN_ONLY_GROUPS].flatMap((g) => g.items.filter((i) => !i.href).map((i) => i.id)),
+);
 
 const ratingColor: Record<string, string> = {
   A: "var(--rating-a)",
@@ -25,7 +114,6 @@ const ratingColor: Record<string, string> = {
   D: "var(--rating-d)",
   E: "var(--rating-e)",
 };
-
 const severityColor: Record<string, string> = {
   BLOCKER: "var(--rating-e)",
   CRITICAL: "var(--rating-d)",
@@ -33,7 +121,6 @@ const severityColor: Record<string, string> = {
   MINOR: "var(--rating-b)",
   INFO: "var(--rating-a)",
 };
-
 const sourceLabel: Record<string, string> = {
   "github-action": "GitHub Action",
   "auto-scan": "Checagem automática",
@@ -45,161 +132,349 @@ function worseRating(a: string, b: string): string {
   return order.indexOf(a) >= order.indexOf(b) ? a : b;
 }
 
-function AdminHome() {
+function AdminPanelInner() {
+  const { user } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [status, setStatus] = useState<"checking" | "denied" | "loading" | "ready" | "error">("checking");
+  const [isPlatformAdmin, setIsPlatformAdmin] = useState(false);
+  const [tab, setTab] = useState("instalacao");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   const [orgCount, setOrgCount] = useState(0);
   const [projects, setProjects] = useState<AdminProjectRow[]>([]);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [nextOrgCursor, setNextOrgCursor] = useState<string | null>(null);
+  const [loadingMoreOrgs, setLoadingMoreOrgs] = useState(false);
+  const [platformSummary, setPlatformSummary] = useState<PlatformSummary | null>(null);
 
-  // Feature toggles
+  const [issues, setIssues] = useState<AdminIssuesResult | null>(null);
+  const [issuesLoading, setIssuesLoading] = useState(true);
+  const [issuesError, setIssuesError] = useState<string | null>(null);
+
   const [flags, setFlags] = useState<FeatureFlag[]>([]);
-  const [flagsLoading, setFlagsLoading] = useState(true);
   const [flagKey, setFlagKey] = useState("");
   const [flagDesc, setFlagDesc] = useState("");
   const [flagBusy, setFlagBusy] = useState(false);
   const [flagError, setFlagError] = useState<string | null>(null);
 
-  // Genkit agentic pipeline (hero-ruleforge daily)
+  const [ops, setOps] = useState<PlatformOpsConfig | null>(null);
+  const [queue, setQueue] = useState<IngestQueueCounts | null>(null);
+  const [opsBusy, setOpsBusy] = useState(false);
+  const [opsMsg, setOpsMsg] = useState<string | null>(null);
+  const [opsError, setOpsError] = useState<string | null>(null);
+  const [retentionDraft, setRetentionDraft] = useState("90");
+  const [intervalDraft, setIntervalDraft] = useState("7");
+  const [stuckDraft, setStuckDraft] = useState("30");
+
   const [runs, setRuns] = useState<RuleforgeRun[]>([]);
   const [runsLoading, setRunsLoading] = useState(true);
   const [runsError, setRunsError] = useState<string | null>(null);
+  const [runBusy, setRunBusy] = useState(false);
   const [expandedRun, setExpandedRun] = useState<string | null>(null);
 
-  // Apontamentos da esteira (github action + checagem automática), todos os repos
-  const [issues, setIssues] = useState<AdminIssuesResult | null>(null);
-  const [issuesLoading, setIssuesLoading] = useState(true);
-  const [issuesError, setIssuesError] = useState<string | null>(null);
+  const [dressItems, setDressItems] = useState<Array<Record<string, unknown>>>([]);
+  const [dressText, setDressText] = useState("");
+  const [dressBusy, setDressBusy] = useState(false);
+  const [dressError, setDressError] = useState<string | null>(null);
+  const [dressMsg, setDressMsg] = useState<string | null>(null);
+
+  const [quotaOrgId, setQuotaOrgId] = useState("");
+  const [quotas, setQuotas] = useState<OrgQuotasView | null>(null);
+  const [quotaBusy, setQuotaBusy] = useState(false);
+  const [quotaError, setQuotaError] = useState<string | null>(null);
+  const [maxReposDraft, setMaxReposDraft] = useState("");
+  const [maxBuildsDraft, setMaxBuildsDraft] = useState("");
+
+  const wsOrg = searchParams.get("org") ?? "";
+  const wsProject = searchParams.get("id") ?? "";
+  const wsRepo = searchParams.get("repo");
+
+  const orgs = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const p of projects) m.set(p.orgId, p.orgName);
+    return [...m.entries()].map(([orgId, orgName]) => ({ orgId, orgName }));
+  }, [projects]);
+
+  const groups = useMemo(() => {
+    const shared = SHARED_GROUPS.map((g) => {
+      if (isPlatformAdmin) return g;
+      if (g.id === "visao") return { ...g, items: g.items.filter((i) => i.id !== "apontamentos") };
+      if (g.id === "projetos") return { ...g, items: g.items.filter((i) => i.id !== "novo-workspace") };
+      return g;
+    });
+    return isPlatformAdmin ? [...shared, ...ADMIN_ONLY_GROUPS] : shared;
+  }, [isPlatformAdmin]);
+
+  const navigateWorkspace = useCallback(
+    (orgId: string, projectId: string, repoId?: string | null) => {
+      const q = new URLSearchParams({ org: orgId, id: projectId });
+      if (repoId) q.set("repo", repoId);
+      router.replace(`/admin/?${q.toString()}#workspace`);
+      setTab("workspace");
+    },
+    [router],
+  );
 
   useEffect(() => {
+    const fromHash = () => {
+      const id = window.location.hash.replace(/^#/, "");
+      if (id === "dashboard") {
+        setTab("visao-geral");
+        return;
+      }
+      if (TAB_IDS.has(id)) setTab(id);
+      else if (!id) setTab("instalacao");
+    };
+    fromHash();
+    window.addEventListener("hashchange", fromHash);
+    return () => window.removeEventListener("hashchange", fromHash);
+  }, []);
+
+  useEffect(() => {
+    if (wsOrg && wsProject && !window.location.hash) {
+      setTab("workspace");
+    }
+  }, [wsOrg, wsProject]);
+
+  function selectTab(id: string) {
+    setTab(id);
+    window.history.replaceState(null, "", `#${id}`);
+  }
+
+  async function loadMemberProjects(uid: string): Promise<AdminProjectRow[]> {
+    const membershipSnap = await getDocs(
+      query(collectionGroup(dbClient, "members"), where("uid", "==", uid)),
+    );
+    const orgIds = [
+      ...new Set(
+        membershipSnap.docs.map((d) => d.ref.parent.parent?.id).filter((id): id is string => Boolean(id)),
+      ),
+    ];
+    const rows: AdminProjectRow[] = [];
+    for (const orgId of orgIds) {
+      const orgSnap = await getDoc(doc(dbClient, "orgs", orgId));
+      const orgName = orgSnap.exists() ? ((orgSnap.data().name as string | undefined) ?? orgId) : orgId;
+      const projectsSnap = await getDocs(collection(dbClient, "orgs", orgId, "projects"));
+      for (const p of projectsSnap.docs) {
+        const data = p.data();
+        const reposSnap = await getDocs(collection(dbClient, "orgs", orgId, "projects", p.id, "repos"));
+        rows.push({
+          orgId,
+          orgName,
+          projectId: p.id,
+          name: (data.name as string | undefined) ?? p.id,
+          repoCount: reposSnap.size,
+          debtMinutes: (data.debtMinutes as number | undefined) ?? 0,
+          maintainabilityRating: (data.maintainabilityRating as string | undefined) ?? "A",
+          securityRating: (data.securityRating as string | undefined) ?? "A",
+          qualityGateStatus: (data.qualityGateStatus as string | undefined) ?? "PASSED",
+          openIssues: (data.openIssues as number | undefined) ?? 0,
+          lastAnalyzedAt: null,
+          repos: reposSnap.docs.map((r) => {
+            const rd = r.data();
+            return {
+              repoId: r.id,
+              name: (rd.name as string | undefined) ?? r.id,
+              repoUrl: (rd.repoUrl as string | null | undefined) ?? null,
+              debtMinutes: (rd.debtMinutes as number | undefined) ?? 0,
+              maintainabilityRating: (rd.maintainabilityRating as string | undefined) ?? "A",
+              securityRating: (rd.securityRating as string | undefined) ?? "A",
+              qualityGateStatus: (rd.qualityGateStatus as string | undefined) ?? "PASSED",
+              openIssues: (rd.openIssues as number | undefined) ?? 0,
+              lastAnalyzedAt: null,
+            };
+          }),
+        });
+      }
+    }
+    return rows;
+  }
+
+  useEffect(() => {
+    if (!user) return;
     let cancelled = false;
     (async () => {
       try {
-        const isAdmin = await checkPlatformAdmin();
-        if (cancelled) return;
-        if (!isAdmin) {
-          setStatus("denied");
-          return;
+        let admin = false;
+        try {
+          admin = (await getDoc(doc(dbClient, "platformAdmins", user.uid))).exists();
+        } catch {
+          admin = await checkPlatformAdmin();
         }
-        setStatus("loading");
-        const { orgCount: oc, projects: rows } = await adminListAllProjects();
         if (cancelled) return;
-        setOrgCount(oc);
-        setProjects(rows);
+        setIsPlatformAdmin(admin);
+
+        setStatus("loading");
+        if (admin) {
+          const [{ orgCount: oc, projects: rows, nextCursor }, summary] = await Promise.all([
+            adminListAllProjects(),
+            adminGetPlatformSummary().catch(() => null),
+          ]);
+          if (cancelled) return;
+          setOrgCount(oc);
+          setProjects(rows);
+          setNextOrgCursor(nextCursor);
+          setPlatformSummary(summary);
+          if (rows[0]) setQuotaOrgId((prev) => prev || rows[0].orgId);
+        } else {
+          if (wsOrg && wsProject) {
+            const member = await getDoc(doc(dbClient, "orgs", wsOrg, "members", user.uid));
+            if (!member.exists()) {
+              // still allow instalacao / own projects; workspace will gate itself
+            }
+          }
+          const rows = await loadMemberProjects(user.uid);
+          if (cancelled) return;
+          setOrgCount(new Set(rows.map((r) => r.orgId)).size);
+          setProjects(rows);
+        }
         setStatus("ready");
       } catch (err) {
         if (cancelled) return;
-        setErrorMsg(err instanceof Error ? err.message : "Falha ao carregar dados de admin.");
+        setErrorMsg(err instanceof Error ? err.message : "Falha ao carregar o painel.");
         setStatus("error");
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [user, wsOrg, wsProject]);
+
+  /**
+   * adminListAllProjects is paginated by org (25/page) — a full unbounded
+   * fan-out breaks down well before 20k repos. The KPI cards use
+   * adminGetPlatformSummary (aggregation queries) instead of summing this
+   * list, so they stay accurate regardless of how many pages are loaded.
+   */
+  async function loadMoreOrgs() {
+    if (!nextOrgCursor || loadingMoreOrgs) return;
+    setLoadingMoreOrgs(true);
+    try {
+      const { projects: rows, nextCursor } = await adminListAllProjects({ cursor: nextOrgCursor });
+      setProjects((prev) => [...prev, ...rows]);
+      setNextOrgCursor(nextCursor);
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : "Falha ao carregar mais organizações.");
+    } finally {
+      setLoadingMoreOrgs(false);
+    }
+  }
 
   useEffect(() => {
-    if (status !== "ready") return;
+    if (status !== "ready" || !isPlatformAdmin) return;
     let cancelled = false;
-    listFeatureFlags()
-      .then(({ flags: rows }) => {
-        if (!cancelled) setFlags(rows);
-      })
-      .catch(() => undefined)
-      .finally(() => {
-        if (!cancelled) setFlagsLoading(false);
-      });
-    listRuleforgeRuns(14)
-      .then(({ runs: rows }) => {
-        if (!cancelled) setRuns(rows);
-      })
-      .catch((err) => {
-        if (!cancelled) setRunsError(err instanceof Error ? err.message : "Falha ao carregar a esteira.");
-      })
-      .finally(() => {
-        if (!cancelled) setRunsLoading(false);
-      });
     adminListAllIssues()
       .then((res) => {
         if (!cancelled) setIssues(res);
       })
       .catch((err) => {
-        if (!cancelled) setIssuesError(err instanceof Error ? err.message : "Falha ao carregar os apontamentos.");
+        if (!cancelled) setIssuesError(err instanceof Error ? err.message : "Falha nos apontamentos.");
       })
       .finally(() => {
         if (!cancelled) setIssuesLoading(false);
       });
+    listFeatureFlags()
+      .then(({ flags: f }) => {
+        if (!cancelled) setFlags(f);
+      })
+      .catch(() => undefined);
+    getPlatformOpsSettings()
+      .then(({ config, queue: q }) => {
+        if (cancelled) return;
+        setOps(config);
+        setQueue(q);
+        setRetentionDraft(String(config.retentionDays));
+        setIntervalDraft(String(config.purgeIntervalDays));
+        setStuckDraft(String(config.queueStuckMinutes));
+      })
+      .catch((err) => {
+        if (!cancelled) setOpsError(err instanceof Error ? err.message : "Falha nas ops.");
+      });
+    listRuleforgeRuns(14)
+      .then(({ runs: r }) => {
+        if (!cancelled) setRuns(r);
+      })
+      .catch((err) => {
+        if (!cancelled) setRunsError(err instanceof Error ? err.message : "Falha na esteira.");
+      })
+      .finally(() => {
+        if (!cancelled) setRunsLoading(false);
+      });
+    listDressCodes({ scope: "global" })
+      .then(({ items }) => {
+        if (!cancelled) setDressItems(items);
+      })
+      .catch(() => undefined);
     return () => {
       cancelled = true;
     };
-  }, [status]);
+  }, [status, isPlatformAdmin]);
 
-  async function handleCreateFlag(e: FormEvent) {
-    e.preventDefault();
-    setFlagBusy(true);
-    setFlagError(null);
+  useEffect(() => {
+    if (!quotaOrgId || !isPlatformAdmin || tab !== "cotas") return;
+    let cancelled = false;
+    setQuotaBusy(true);
+    getOrgQuotasCallable({ orgId: quotaOrgId })
+      .then((res) => {
+        if (cancelled) return;
+        setQuotas(res.quotas);
+        setMaxReposDraft(String(res.quotas.maxRepos));
+        setMaxBuildsDraft(String(res.quotas.maxBuildsPerMonth));
+        setQuotaError(null);
+      })
+      .catch((err) => {
+        if (!cancelled) setQuotaError(err instanceof Error ? err.message : "Falha ao carregar cotas.");
+      })
+      .finally(() => {
+        if (!cancelled) setQuotaBusy(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [quotaOrgId, isPlatformAdmin, tab]);
+
+  async function patchOps(patch: Parameters<typeof setPlatformOpsSettings>[0], okMsg?: string) {
+    setOpsBusy(true);
+    setOpsError(null);
+    setOpsMsg(null);
     try {
-      await setFeatureFlag({ key: flagKey.trim(), enabled: true, description: flagDesc.trim() });
-      const { flags: rows } = await listFeatureFlags();
-      setFlags(rows);
-      setFlagKey("");
-      setFlagDesc("");
+      const config = await setPlatformOpsSettings(patch);
+      setOps(config);
+      setRetentionDraft(String(config.retentionDays));
+      setIntervalDraft(String(config.purgeIntervalDays));
+      setStuckDraft(String(config.queueStuckMinutes));
+      if (okMsg) setOpsMsg(okMsg);
     } catch (err) {
-      setFlagError(err instanceof Error ? err.message : "Falha ao criar o flag.");
+      setOpsError(err instanceof Error ? err.message : "Falha ao salvar.");
     } finally {
-      setFlagBusy(false);
+      setOpsBusy(false);
     }
-  }
-
-  async function handleToggleFlag(flag: FeatureFlag) {
-    setFlagError(null);
-    try {
-      await setFeatureFlag({ key: flag.key, enabled: !flag.enabled, description: flag.description });
-      setFlags((prev) => prev.map((f) => (f.key === flag.key ? { ...f, enabled: !f.enabled } : f)));
-    } catch (err) {
-      setFlagError(err instanceof Error ? err.message : "Falha ao atualizar o flag.");
-    }
-  }
-
-  function toggleExpanded(key: string) {
-    setExpanded((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
   }
 
   if (status === "checking" || status === "loading") {
     return (
       <main className="hero-shell">
-        <p className="hero-caption">Carregando painel de admin…</p>
+        <p className="hero-caption">Carregando painel…</p>
       </main>
     );
   }
-
   if (status === "denied") {
     return (
       <main className="hero-shell">
         <div className="hero-panel" style={{ padding: "2rem", textAlign: "center" }}>
-          <span className="hero-burst" style={{ margin: "0 auto 1rem" }}>
-            🚫
-          </span>
-          <h1 className="hero-display" style={{ fontSize: "1.8rem", margin: "0 0 0.5rem" }}>
+          <h1 className="hero-display" style={{ fontSize: "1.8rem" }}>
             Acesso restrito
           </h1>
-          <p style={{ color: "var(--muted)" }}>
-            Esta área é exclusiva do administrador geral da plataforma. Se você deveria ter acesso, peça para ele
-            rodar <code>node scripts/seed-admin.mjs seu-email@dominio.com</code>.
-          </p>
+          <p style={{ color: "var(--muted)" }}>Faça login com uma conta válida para abrir o painel.</p>
           <Link href="/" className="hero-link" style={{ display: "inline-block", marginTop: "1rem" }}>
-            ← Voltar ao dashboard
+            ← Voltar
           </Link>
         </div>
       </main>
     );
   }
-
   if (status === "error") {
     return (
       <main className="hero-shell">
@@ -209,475 +484,637 @@ function AdminHome() {
   }
 
   const allRepos = projects.flatMap((p) => p.repos);
-  const totalDebtHours = Math.round(projects.reduce((sum, p) => sum + p.debtMinutes, 0) / 60);
-  const totalOpenIssues = projects.reduce((sum, p) => sum + p.openIssues, 0);
-  const failingGates = projects.filter((p) => p.qualityGateStatus !== "PASSED").length;
-  const worstSecurity = projects.reduce((acc, p) => worseRating(acc, p.securityRating), "A");
+  // Platform admin: KPIs come from adminGetPlatformSummary (aggregation
+  // queries over the whole platform) rather than summing `projects`, which
+  // is now just the currently-loaded page(s) of orgs. Org members (not
+  // platform admin) never paginate — loadMemberProjects already returns
+  // just their own orgs — so the local reduce stays correct for them.
+  const orgCountDisplay = isPlatformAdmin ? platformSummary?.orgCount ?? orgCount : orgCount;
+  const projectCountDisplay = isPlatformAdmin ? platformSummary?.projectCount ?? projects.length : projects.length;
+  const repoCountDisplay = isPlatformAdmin ? platformSummary?.repoCount ?? allRepos.length : allRepos.length;
+  const totalDebtHours = Math.round(
+    (isPlatformAdmin ? platformSummary?.debtMinutes ?? projects.reduce((s, p) => s + p.debtMinutes, 0) : projects.reduce((s, p) => s + p.debtMinutes, 0)) / 60,
+  );
+  const totalOpenIssues = isPlatformAdmin
+    ? platformSummary?.openIssues ?? projects.reduce((s, p) => s + p.openIssues, 0)
+    : projects.reduce((s, p) => s + p.openIssues, 0);
+  const failingGates = isPlatformAdmin
+    ? platformSummary?.failingGates ?? projects.filter((p) => p.qualityGateStatus !== "PASSED").length
+    : projects.filter((p) => p.qualityGateStatus !== "PASSED").length;
+  const worstSecurity = isPlatformAdmin
+    ? platformSummary?.worstSecurityRating ?? projects.reduce((acc, p) => worseRating(acc, p.securityRating), "A")
+    : projects.reduce((acc, p) => worseRating(acc, p.securityRating), "A");
 
   return (
-    <main className="hero-shell">
-      <header>
-        <h1 className="hero-display" style={{ fontSize: "2.25rem", margin: "0 0 0.25rem" }}>
-          Painel do Admin Geral
-        </h1>
-        <p className="hero-caption" style={{ margin: 0 }}>
-          consolidação de resultados de toda a plataforma · {orgCount} organização(ões) · {projects.length}{" "}
-          projeto(s) · {allRepos.length} repositório(s)
-        </p>
-      </header>
+    <main className="hero-shell hero-shell--cockpit">
+      <AdminCockpitShell groups={groups} tab={tab} onSelectTab={selectTab}>
+        {tab === "instalacao" && <InstalacaoHome />}
 
-      <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", margin: "1.75rem 0" }}>
-        <StatCard label="Organizações" value={orgCount} />
-        <StatCard label="Projetos" value={projects.length} />
-        <StatCard label="Repositórios" value={allRepos.length} />
-        <StatCard label="Débito total" value={`${totalDebtHours}h`} />
-        <StatCard label="Issues abertas" value={totalOpenIssues} />
-        <StatCard label="Gates falhando" value={failingGates} accent={failingGates > 0} />
-        <StatCard
-          label="Pior segurança"
-          value={worstSecurity}
-          accentColor={ratingColor[worstSecurity]}
-        />
-      </div>
-
-      {/* Feature toggles — site-wide, admin geral only */}
-      <section className="hero-panel" style={{ padding: "1.5rem", marginBottom: "1.5rem" }}>
-        <h2 className="hero-display" style={{ fontSize: "1.3rem", margin: "0 0 0.35rem" }}>
-          Feature Toggles
-        </h2>
-        <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1.25rem" }}>
-          liga/desliga recursos em todo o site — qualquer código do portal pode checar um flag
-        </p>
-
-        <form onSubmit={handleCreateFlag} style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap", marginBottom: "1rem" }}>
-          <input
-            className="hero-input"
-            style={{ flex: "1 1 200px" }}
-            required
-            placeholder="chave-do-flag (ex.: cloud-preview-scan)"
-            value={flagKey}
-            onChange={(e) => setFlagKey(e.target.value)}
-          />
-          <input
-            className="hero-input"
-            style={{ flex: "2 1 260px" }}
-            placeholder="descrição (opcional)"
-            value={flagDesc}
-            onChange={(e) => setFlagDesc(e.target.value)}
-          />
-          <button type="submit" className="hero-btn hero-btn-accent" disabled={flagBusy}>
-            {flagBusy ? "Criando…" : "+ Criar flag (ligado)"}
-          </button>
-        </form>
-        {flagError && (
-          <div className="hero-error" style={{ marginBottom: "1rem" }}>
-            {flagError}
-          </div>
-        )}
-
-        {flagsLoading ? (
-          <p className="hero-caption">Carregando flags…</p>
-        ) : flags.length === 0 ? (
-          <p className="hero-caption">Nenhum flag criado ainda.</p>
-        ) : (
-          <div style={{ display: "grid", gap: "0.5rem" }}>
-            {flags.map((f) => (
-              <div
-                key={f.key}
-                className="hero-panel-sm"
-                style={{ padding: "0.7rem 1rem", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}
-              >
-                <div>
-                  <code style={{ fontWeight: 700 }}>{f.key}</code>
-                  {f.description ? <span className="hero-caption" style={{ marginLeft: "0.6rem" }}>{f.description}</span> : null}
-                </div>
-                <button
-                  type="button"
-                  className="hero-btn"
-                  style={{
-                    padding: "0.35rem 0.8rem",
-                    fontSize: "0.78rem",
-                    background: f.enabled ? "var(--rating-a)" : "var(--rating-e)",
-                    color: "#fff",
-                    border: "none",
-                  }}
-                  onClick={() => handleToggleFlag(f)}
-                >
-                  {f.enabled ? "Ligado" : "Desligado"}
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* Genkit agentic pipeline visibility */}
-      <section className="hero-panel" style={{ padding: "1.5rem", marginBottom: "1.5rem" }}>
-        <h2 className="hero-display" style={{ fontSize: "1.3rem", margin: "0 0 0.35rem" }}>
-          Esteira de Inteligência Agêntica (Genkit)
-        </h2>
-        <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1.25rem" }}>
-          1×/dia: consulta práticas de qualidade/segurança, OWASP e CVEs conhecidos → propõe mutações → o motor
-          determinístico (corpus golden + evolve) decide promoção. Plugin, MCP e GitHub Action buscam o resultado no
-          máximo 1×/dia via <code>getActiveRules</code>.
-        </p>
-
-        {runsError && <div className="hero-error" style={{ marginBottom: "1rem" }}>{runsError}</div>}
-
-        {runsLoading ? (
-          <p className="hero-caption">Carregando execuções…</p>
-        ) : runs.length === 0 ? (
-          <p className="hero-caption">Nenhuma execução registrada ainda — roda automaticamente às 06:05 (America/Sao_Paulo).</p>
-        ) : (
-          <div style={{ display: "grid", gap: "0.5rem" }}>
-            {runs.map((r) => {
-              const isOpen = expandedRun === r.day;
-              return (
-                <div key={r.day} className="hero-panel-sm" style={{ padding: "0.85rem 1rem" }}>
-                  <button
-                    type="button"
-                    onClick={() => setExpandedRun(isOpen ? null : r.day)}
-                    style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", background: "none", border: "none", cursor: "pointer", font: "inherit", color: "inherit", padding: 0, gap: "0.75rem", flexWrap: "wrap" }}
-                  >
-                    <span>
-                      {isOpen ? "▾" : "▸"} <strong>{r.day}</strong>
-                    </span>
-                    <span style={{ display: "flex", gap: "0.4rem" }}>
-                      <span className="hero-badge" style={{ background: "var(--rating-a)", color: "#fff" }}>
-                        {r.promotedCount} promovida(s)
-                      </span>
-                      <span className="hero-badge">{r.rejectedCount} rejeitada(s)</span>
-                    </span>
-                  </button>
-                  {isOpen && (
-                    <div style={{ marginTop: "0.75rem", overflowX: "auto" }}>
-                      <table className="hero-table">
-                        <thead>
-                          <tr>
-                            <th>Regra</th>
-                            <th>Decisão</th>
-                            <th>F1 antes → depois</th>
-                            <th>Motivo</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {r.rules.map((ro) => (
-                            <tr key={ro.ruleId}>
-                              <td>
-                                <code>{ro.ruleId}</code>
-                              </td>
-                              <td>
-                                <span
-                                  className="hero-badge"
-                                  style={{ background: ro.decision === "PROMOTED" ? "var(--rating-a)" : "var(--rating-e)", color: "#fff" }}
-                                >
-                                  {ro.decision}
-                                </span>
-                              </td>
-                              <td>
-                                {ro.baselineF1.toFixed(2)} → {ro.bestF1.toFixed(2)}
-                              </td>
-                              <td className="hero-caption">{ro.reason}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
-
-      {/* Apontamentos da esteira (GitHub Action + checagem automática), todos os repos */}
-      <section className="hero-panel" style={{ padding: "1.5rem", marginBottom: "1.5rem" }}>
-        <h2 className="hero-display" style={{ fontSize: "1.3rem", margin: "0 0 0.35rem" }}>
-          Apontamentos da Esteira (todos os repositórios)
-        </h2>
-        <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1.25rem" }}>
-          todo achado aberto reportado pela GitHub Action e pela checagem automática, consolidado por severidade e
-          origem
-        </p>
-
-        {issuesError && <div className="hero-error" style={{ marginBottom: "1rem" }}>{issuesError}</div>}
-
-        {issuesLoading ? (
-          <p className="hero-caption">Carregando apontamentos…</p>
-        ) : !issues || issues.total === 0 ? (
-          <p className="hero-caption">Nenhum apontamento aberto registrado ainda.</p>
-        ) : (
+        {tab === "visao-geral" && (
           <>
-            <div style={{ display: "grid", gap: "1.5rem", gridTemplateColumns: "minmax(220px, 1fr) minmax(220px, 1fr)", marginBottom: "1.5rem" }}>
-              <SeverityBarChart bySeverity={issues.bySeverity} total={issues.total} />
-              <SourceBreakdown bySource={issues.bySource} total={issues.total} />
-            </div>
+            <PageHeader
+              eyebrow="Visão"
+              title="Visão geral"
+              description={
+                isPlatformAdmin
+                  ? `${orgCountDisplay} org(s) · ${projectCountDisplay} projeto(s) · ${repoCountDisplay} repo(s)`
+                  : `${orgCount} org(s) · ${projects.length} projeto(s) seus`
+              }
+            />
+            <KpiGroup>
+              <KpiCard label="Organizações" value={orgCountDisplay} />
+              <KpiCard label="Projetos" value={projectCountDisplay} />
+              <KpiCard label="Repositórios" value={repoCountDisplay} />
+              <KpiCard label="Débito" value={`${totalDebtHours}h`} />
+              <KpiCard label="Issues" value={totalOpenIssues} />
+              <KpiCard label="Gates falhando" value={failingGates} tone={failingGates > 0 ? "danger" : "ok"} />
+              <KpiCard label="Pior segurança" value={worstSecurity} tone={worstSecurity === "A" ? "ok" : "warn"} />
+            </KpiGroup>
+            <p className="hero-caption" style={{ marginTop: "1.25rem" }}>
+              Atalhos:{" "}
+              <button type="button" className="hero-link" style={{ background: "none", border: 0, cursor: "pointer", font: "inherit" }} onClick={() => selectTab("instalacao")}>
+                Instalação
+              </button>
+              {" · "}
+              <button type="button" className="hero-link" style={{ background: "none", border: 0, cursor: "pointer", font: "inherit" }} onClick={() => selectTab("todos-projetos")}>
+                Projetos
+              </button>
+              {isPlatformAdmin && (
+                <>
+                  {" · "}
+                  <button type="button" className="hero-link" style={{ background: "none", border: 0, cursor: "pointer", font: "inherit" }} onClick={() => selectTab("escala")}>
+                    Escala e filas
+                  </button>
+                </>
+              )}
+            </p>
+          </>
+        )}
 
-            <div style={{ overflowX: "auto" }}>
-              <table className="hero-table">
-                <thead>
-                  <tr>
-                    <th>Severidade</th>
-                    <th>Regra</th>
-                    <th>Repositório</th>
-                    <th>Projeto</th>
-                    <th>Arquivo</th>
-                    <th>Origem</th>
-                    <th>Visto por último</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {issues.items.slice(0, 30).map((it: AdminIssueRow) => (
-                    <tr key={it.issueId}>
-                      <td>
-                        <span className="hero-badge" style={{ background: severityColor[it.severity] ?? "var(--muted)", color: "#fff" }}>
-                          {it.severity}
-                        </span>
-                      </td>
-                      <td>
-                        <code style={{ fontSize: "0.8rem" }}>{it.ruleId}</code>
-                      </td>
-                      <td>{it.repoName}</td>
-                      <td className="hero-caption">{it.projectName}</td>
-                      <td className="hero-caption" style={{ maxWidth: 260, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {it.file}:{it.line}
-                      </td>
-                      <td>
-                        <span className="hero-badge">{sourceLabel[it.source] ?? it.source}</span>
-                      </td>
-                      <td className="hero-caption">{it.lastSeen ? new Date(it.lastSeen).toLocaleDateString("pt-BR") : "—"}</td>
+        {tab === "apontamentos" && isPlatformAdmin && (
+          <>
+            <PageHeader
+              eyebrow="Visão"
+              title="Apontamentos"
+              description="Achados abertos em toda a plataforma — clique para abrir a ficha"
+            />
+            {issuesError && <div className="hero-error">{issuesError}</div>}
+            <FindingsBrowser
+              title={`${issues?.total ?? 0} abertos`}
+              subtitle="Navegue com ← → no modal. Para marcar falso positivo, abra o Workspace do repositório."
+              findings={(issues?.items ?? []).slice(0, 80).map(
+                (it: AdminIssueRow): FindingsBrowserItem => ({
+                  id: it.issueId,
+                  ruleId: it.ruleId,
+                  severity: it.severity,
+                  issueType: it.issueType,
+                  message: it.message,
+                  file: it.file,
+                  line: it.line,
+                  meta: `${it.repoName} · ${it.orgName} · ${sourceLabel[it.source] ?? it.source}`,
+                }),
+              )}
+              loading={issuesLoading}
+              emptyMessage="Nenhum apontamento aberto."
+            />
+          </>
+        )}
+
+        {tab === "todos-projetos" && (
+          <>
+            <PageHeader
+              eyebrow="Projetos"
+              title="Todos os projetos"
+              description="Consolidação por projeto — abra o workspace para configurar Action, scan e plugin"
+              actions={
+                isPlatformAdmin ? (
+                  <button type="button" className="hero-btn hero-btn-accent" onClick={() => selectTab("novo-workspace")}>
+                    Novo workspace
+                  </button>
+                ) : undefined
+              }
+            />
+            {projects.length === 0 ? (
+              <Callout tone="neutral" title="Nenhum projeto">
+                Use <strong>Instalação → Novo projeto</strong>
+                {isPlatformAdmin ? " ou Novo workspace" : ""} para começar.
+              </Callout>
+            ) : (
+              <div className="hero-panel" style={{ overflowX: "auto" }}>
+                <table className="hero-table">
+                  <thead>
+                    <tr>
+                      <th />
+                      <th>Projeto</th>
+                      <th>Org</th>
+                      <th>Repos</th>
+                      <th>Gate</th>
+                      <th>Seg</th>
+                      <th>Issues</th>
+                      <th />
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            {issues.total > 30 && (
-              <p className="hero-caption" style={{ marginTop: "0.75rem" }}>
-                mostrando 30 de {issues.total} apontamento(s) abertos
-              </p>
+                  </thead>
+                  <tbody>
+                    {projects.map((p) => {
+                      const key = `${p.orgId}/${p.projectId}`;
+                      const open = expanded.has(key);
+                      return (
+                        <Fragment key={key}>
+                          <tr
+                            style={{ cursor: "pointer" }}
+                            onClick={() =>
+                              setExpanded((prev) => {
+                                const n = new Set(prev);
+                                if (n.has(key)) n.delete(key);
+                                else n.add(key);
+                                return n;
+                              })
+                            }
+                          >
+                            <td>{open ? "▾" : "▸"}</td>
+                            <td style={{ fontWeight: 700 }}>{p.name}</td>
+                            <td>{p.orgName}</td>
+                            <td>
+                              <span className="hero-badge">{p.repoCount}</span>
+                            </td>
+                            <td>
+                              <span
+                                className="hero-badge"
+                                style={{
+                                  background: p.qualityGateStatus === "PASSED" ? "var(--rating-a)" : "var(--rating-e)",
+                                  color: "#fff",
+                                }}
+                              >
+                                {p.qualityGateStatus}
+                              </span>
+                            </td>
+                            <td>
+                              <span className="hero-rating" style={{ background: ratingColor[p.securityRating] }}>
+                                {p.securityRating}
+                              </span>
+                            </td>
+                            <td>{p.openIssues}</td>
+                            <td>
+                              <button
+                                type="button"
+                                className="hero-btn hero-btn-outline"
+                                style={{ padding: "0.35rem 0.7rem", fontSize: "0.78rem" }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigateWorkspace(p.orgId, p.projectId, p.repos[0]?.repoId);
+                                }}
+                              >
+                                Workspace
+                              </button>
+                            </td>
+                          </tr>
+                          {open &&
+                            p.repos.map((r: RepoRow) => (
+                              <tr key={r.repoId} style={{ background: "color-mix(in srgb, var(--line) 4%, transparent)" }}>
+                                <td />
+                                <td colSpan={2} style={{ paddingLeft: "1.5rem" }}>
+                                  ↳ {r.name}
+                                </td>
+                                <td />
+                                <td>
+                                  <span className="hero-badge">{r.qualityGateStatus}</span>
+                                </td>
+                                <td>
+                                  <span className="hero-rating" style={{ background: ratingColor[r.securityRating] }}>
+                                    {r.securityRating}
+                                  </span>
+                                </td>
+                                <td>{r.openIssues}</td>
+                                <td>
+                                  <button
+                                    type="button"
+                                    className="hero-link"
+                                    style={{ background: "none", border: 0, cursor: "pointer", font: "inherit", fontSize: "0.78rem" }}
+                                    onClick={() => navigateWorkspace(p.orgId, p.projectId, r.repoId)}
+                                  >
+                                    abrir
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                        </Fragment>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            {isPlatformAdmin && nextOrgCursor && (
+              <button
+                type="button"
+                className="hero-btn hero-btn-outline"
+                style={{ marginTop: "1rem" }}
+                disabled={loadingMoreOrgs}
+                onClick={loadMoreOrgs}
+              >
+                {loadingMoreOrgs ? "Carregando…" : "Carregar mais organizações"}
+              </button>
             )}
           </>
         )}
-      </section>
 
-      <p className="hero-caption" style={{ margin: "0 0 0.75rem" }}>
-        qualidade geral por projeto — clique em uma linha para abrir a quebra por repositório
-      </p>
+        {tab === "workspace" && (
+          <>
+            <PageHeader
+              eyebrow="Projetos"
+              title="Workspace"
+              description="Configuração do projeto e repositórios (Action, scan, plugin, issues)"
+            />
+            {!wsOrg || !wsProject ? (
+              <Callout tone="warn" title="Selecione um projeto">
+                Vá em <strong>Todos os projetos</strong>
+                {isPlatformAdmin ? " ou Novo workspace" : " ou Instalação"}.
+                <button type="button" className="hero-btn" style={{ marginTop: "0.75rem" }} onClick={() => selectTab("todos-projetos")}>
+                  Ver projetos
+                </button>
+              </Callout>
+            ) : (
+              <Suspense fallback={<p className="hero-caption">Carregando workspace…</p>}>
+                <ProjectWorkspace
+                  orgId={wsOrg}
+                  projectId={wsProject}
+                  initialRepoId={wsRepo}
+                  onNavigate={({ orgId, projectId, repoId }) => navigateWorkspace(orgId, projectId, repoId)}
+                />
+              </Suspense>
+            )}
+          </>
+        )}
 
-      {projects.length === 0 ? (
-        <p style={{ color: "var(--muted)" }}>Nenhum projeto foi provisionado na plataforma ainda.</p>
-      ) : (
-        <div className="hero-panel" style={{ overflowX: "auto" }}>
-          <table className="hero-table">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Projeto</th>
-                <th>Organização</th>
-                <th>Repos</th>
-                <th>Gate</th>
-                <th>Segurança</th>
-                <th>Manutenib.</th>
-                <th>Débito</th>
-                <th>Issues</th>
-                <th>Última análise</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {projects.map((p) => {
-                const key = `${p.orgId}/${p.projectId}`;
-                const isOpen = expanded.has(key);
-                return (
-                  <Fragment key={key}>
-                    <tr key={key} style={{ cursor: p.repos.length > 0 ? "pointer" : "default" }} onClick={() => p.repos.length > 0 && toggleExpanded(key)}>
-                      <td style={{ width: "1.5rem", textAlign: "center" }}>{p.repos.length > 0 ? (isOpen ? "▾" : "▸") : ""}</td>
-                      <td style={{ fontWeight: 700 }}>{p.name}</td>
-                      <td>{p.orgName}</td>
-                      <td>
-                        <span className="hero-badge">{p.repoCount}</span>
-                      </td>
-                      <td>
-                        <span
-                          className="hero-badge"
-                          style={{ background: p.qualityGateStatus === "PASSED" ? "var(--rating-a)" : "var(--rating-e)", color: "#fff" }}
-                        >
-                          {p.qualityGateStatus}
-                        </span>
-                      </td>
-                      <td>
-                        <span className="hero-rating" style={{ background: ratingColor[p.securityRating] ?? "var(--muted)" }}>
-                          {p.securityRating}
-                        </span>
-                      </td>
-                      <td>
-                        <span className="hero-rating" style={{ background: ratingColor[p.maintainabilityRating] ?? "var(--muted)" }}>
-                          {p.maintainabilityRating}
-                        </span>
-                      </td>
-                      <td>{Math.round(p.debtMinutes / 60)}h</td>
-                      <td>{p.openIssues}</td>
-                      <td className="hero-caption">{p.lastAnalyzedAt ? new Date(p.lastAnalyzedAt).toLocaleDateString("pt-BR") : "—"}</td>
-                      <td>
-                        <Link
-                          href={`/projects?org=${encodeURIComponent(p.orgId)}&id=${encodeURIComponent(p.projectId)}`}
-                          className="hero-btn hero-btn-outline"
-                          style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem", textDecoration: "none", display: "inline-block" }}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          Configurar
-                        </Link>
-                      </td>
-                    </tr>
-                    {isOpen &&
-                      p.repos.map((r: RepoRow) => (
-                        <tr key={`${key}/${r.repoId}`} style={{ background: "color-mix(in srgb, var(--line) 4%, transparent)" }}>
-                          <td></td>
-                          <td colSpan={2} style={{ paddingLeft: "1.75rem" }}>
-                            ↳ {r.name}
-                            {r.repoUrl ? (
-                              <span className="hero-caption" style={{ marginLeft: "0.5rem" }}>
-                                {r.repoUrl.replace(/^https?:\/\//, "")}
-                              </span>
-                            ) : null}
-                          </td>
-                          <td></td>
-                          <td>
-                            <span
-                              className="hero-badge"
-                              style={{ background: r.qualityGateStatus === "PASSED" ? "var(--rating-a)" : "var(--rating-e)", color: "#fff" }}
-                            >
-                              {r.qualityGateStatus}
-                            </span>
-                          </td>
-                          <td>
-                            <span className="hero-rating" style={{ background: ratingColor[r.securityRating] ?? "var(--muted)" }}>
-                              {r.securityRating}
-                            </span>
-                          </td>
-                          <td>
-                            <span className="hero-rating" style={{ background: ratingColor[r.maintainabilityRating] ?? "var(--muted)" }}>
-                              {r.maintainabilityRating}
-                            </span>
-                          </td>
-                          <td>{Math.round(r.debtMinutes / 60)}h</td>
-                          <td>{r.openIssues}</td>
-                          <td className="hero-caption">{r.lastAnalyzedAt ? new Date(r.lastAnalyzedAt).toLocaleDateString("pt-BR") : "—"}</td>
-                          <td>
-                            <Link
-                              href={`/projects?org=${encodeURIComponent(p.orgId)}&id=${encodeURIComponent(p.projectId)}&repo=${encodeURIComponent(r.repoId)}`}
-                              className="hero-link"
-                              style={{ fontSize: "0.78rem" }}
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              abrir
-                            </Link>
-                          </td>
-                        </tr>
-                      ))}
-                    {isOpen && p.repos.length === 0 && (
-                      <tr key={`${key}/empty`}>
-                        <td></td>
-                        <td colSpan={9} className="hero-caption" style={{ paddingLeft: "1.75rem" }}>
-                          Nenhum repositório adicionado a este projeto ainda.
-                        </td>
-                      </tr>
-                    )}
-                  </Fragment>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </main>
-  );
-}
+        {tab === "novo-workspace" && isPlatformAdmin && (
+          <WorkspaceWizard projects={projects} onOpenWorkspace={navigateWorkspace} />
+        )}
 
-function SeverityBarChart({ bySeverity, total }: { bySeverity: Record<string, number>; total: number }) {
-  const order = ["BLOCKER", "CRITICAL", "MAJOR", "MINOR", "INFO"];
-  return (
-    <div className="hero-panel-sm" style={{ padding: "1.1rem" }}>
-      <p className="hero-label" style={{ marginBottom: "0.75rem" }}>
-        Por severidade
-      </p>
-      <div style={{ display: "grid", gap: "0.45rem" }}>
-        {order
-          .filter((sev) => bySeverity[sev])
-          .map((sev) => {
-            const count = bySeverity[sev] ?? 0;
-            const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-            return (
-              <div key={sev} style={{ display: "grid", gridTemplateColumns: "5.5rem 1fr 2.5rem", alignItems: "center", gap: "0.5rem" }}>
-                <span className="hero-caption" style={{ fontSize: "0.75rem" }}>
-                  {sev}
-                </span>
-                <div style={{ background: "color-mix(in srgb, var(--line) 12%, transparent)", borderRadius: 4, overflow: "hidden", height: 10 }}>
-                  <div style={{ width: `${pct}%`, background: severityColor[sev] ?? "var(--muted)", height: "100%" }} />
+        {tab === "dress-code" && isPlatformAdmin && (
+          <>
+            <PageHeader eyebrow="Plataforma" title="Dress code" description="Políticas em linguagem natural → regras ativas em todos os scans" />
+            {dressError && <div className="hero-error">{dressError}</div>}
+            {dressMsg && <Callout tone="ok">{dressMsg}</Callout>}
+            <DataSection title="Novo dress code global">
+              <form
+                onSubmit={async (e: FormEvent) => {
+                  e.preventDefault();
+                  setDressBusy(true);
+                  setDressError(null);
+                  setDressMsg(null);
+                  try {
+                    const res = await submitDressCode({
+                      naturalLanguage: dressText,
+                      scope: "global",
+                      activate: true,
+                    });
+                    setDressMsg(`${res.ruleCount} regra(s) ativada(s): ${res.summary}`);
+                    setDressText("");
+                    const { items } = await listDressCodes({ scope: "global" });
+                    setDressItems(items);
+                  } catch (err) {
+                    setDressError(err instanceof Error ? err.message : "Falha.");
+                  } finally {
+                    setDressBusy(false);
+                  }
+                }}
+                style={{ display: "grid", gap: "0.75rem" }}
+              >
+                <textarea
+                  className="hero-input"
+                  rows={4}
+                  placeholder="Ex.: Sem console.log em produção; sem Math.random em tokens…"
+                  value={dressText}
+                  onChange={(e) => setDressText(e.target.value)}
+                  required
+                  minLength={8}
+                />
+                <button type="submit" className="hero-btn hero-btn-accent" disabled={dressBusy}>
+                  {dressBusy ? "Interpretando…" : "Criar e ativar"}
+                </button>
+              </form>
+            </DataSection>
+            <DataSection title="Recentes">
+              {dressItems.length === 0 ? (
+                <p className="hero-caption">Nenhum dress code global ainda.</p>
+              ) : (
+                <div style={{ display: "grid", gap: "0.5rem" }}>
+                  {dressItems.slice(0, 20).map((d) => (
+                    <div key={String(d.id)} className="hero-panel-sm" style={{ padding: "0.75rem 1rem" }}>
+                      <strong>{String(d.status ?? "")}</strong>
+                      <p className="hero-caption" style={{ margin: "0.25rem 0 0" }}>
+                        {String(d.summary ?? d.naturalLanguage ?? "").slice(0, 200)}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-                <span className="hero-caption" style={{ fontSize: "0.75rem", textAlign: "right" }}>
-                  {count}
-                </span>
-              </div>
-            );
-          })}
-      </div>
-    </div>
-  );
-}
+              )}
+            </DataSection>
+          </>
+        )}
 
-function SourceBreakdown({ bySource, total }: { bySource: Record<string, number>; total: number }) {
-  return (
-    <div className="hero-panel-sm" style={{ padding: "1.1rem" }}>
-      <p className="hero-label" style={{ marginBottom: "0.75rem" }}>
-        Por origem
-      </p>
-      <div style={{ display: "grid", gap: "0.45rem" }}>
-        {Object.entries(bySource).map(([source, count]) => {
-          const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-          return (
-            <div key={source} style={{ display: "grid", gridTemplateColumns: "9rem 1fr 2.5rem", alignItems: "center", gap: "0.5rem" }}>
-              <span className="hero-caption" style={{ fontSize: "0.75rem" }}>
-                {sourceLabel[source] ?? source}
-              </span>
-              <div style={{ background: "color-mix(in srgb, var(--line) 12%, transparent)", borderRadius: 4, overflow: "hidden", height: 10 }}>
-                <div style={{ width: `${pct}%`, background: "var(--accent)", height: "100%" }} />
+        {tab === "esteira" && isPlatformAdmin && (
+          <>
+            <PageHeader
+              eyebrow="Plataforma"
+              title="Esteira de regras"
+              description="1×/dia propõe melhorias; o motor determinístico decide promoção"
+              actions={
+                <button
+                  type="button"
+                  className="hero-btn hero-btn-accent"
+                  disabled={runBusy}
+                  onClick={async () => {
+                    setRunBusy(true);
+                    setRunsError(null);
+                    try {
+                      await runRuleforgeDailyNow();
+                      const { runs: r } = await listRuleforgeRuns(14);
+                      setRuns(r);
+                    } catch (err) {
+                      setRunsError(err instanceof Error ? err.message : "Falha ao rodar.");
+                    } finally {
+                      setRunBusy(false);
+                    }
+                  }}
+                >
+                  {runBusy ? "Rodando…" : "Rodar agora"}
+                </button>
+              }
+            />
+            {runsError && <div className="hero-error">{runsError}</div>}
+            {runsLoading ? (
+              <p className="hero-caption">Carregando…</p>
+            ) : runs.length === 0 ? (
+              <p className="hero-caption">Nenhuma execução ainda.</p>
+            ) : (
+              <div style={{ display: "grid", gap: "0.5rem" }}>
+                {runs.map((r) => (
+                  <div key={r.day} className="hero-panel-sm" style={{ padding: "0.85rem 1rem" }}>
+                    <button
+                      type="button"
+                      onClick={() => setExpandedRun(expandedRun === r.day ? null : r.day)}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        width: "100%",
+                        background: "none",
+                        border: 0,
+                        cursor: "pointer",
+                        font: "inherit",
+                        color: "inherit",
+                        padding: 0,
+                      }}
+                    >
+                      <span>
+                        {expandedRun === r.day ? "▾" : "▸"} <strong>{r.day}</strong>
+                      </span>
+                      <span>
+                        <span className="hero-badge" style={{ background: "var(--rating-a)", color: "#fff", marginRight: 6 }}>
+                          {r.promotedCount} ok
+                        </span>
+                        <span className="hero-badge">{r.rejectedCount} rejeitadas</span>
+                      </span>
+                    </button>
+                    {expandedRun === r.day && (
+                      <ul className="hero-caption" style={{ marginTop: "0.75rem" }}>
+                        {r.rules.map((ro) => (
+                          <li key={ro.ruleId}>
+                            <code>{ro.ruleId}</code> — {ro.decision} ({ro.baselineF1.toFixed(2)} → {ro.bestF1.toFixed(2)})
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))}
               </div>
-              <span className="hero-caption" style={{ fontSize: "0.75rem", textAlign: "right" }}>
-                {count}
-              </span>
+            )}
+          </>
+        )}
+
+        {tab === "feature-toggles" && isPlatformAdmin && (
+          <>
+            <PageHeader eyebrow="Plataforma" title="Feature toggles" description="Liga/desliga recursos do portal" />
+            {flagError && <div className="hero-error">{flagError}</div>}
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setFlagBusy(true);
+                setFlagError(null);
+                try {
+                  await setFeatureFlag({ key: flagKey.trim(), enabled: true, description: flagDesc.trim() });
+                  const { flags: f } = await listFeatureFlags();
+                  setFlags(f);
+                  setFlagKey("");
+                  setFlagDesc("");
+                } catch (err) {
+                  setFlagError(err instanceof Error ? err.message : "Falha.");
+                } finally {
+                  setFlagBusy(false);
+                }
+              }}
+              style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "1rem" }}
+            >
+              <input className="hero-input" style={{ flex: "1 1 160px" }} required placeholder="chave" value={flagKey} onChange={(e) => setFlagKey(e.target.value)} />
+              <input className="hero-input" style={{ flex: "2 1 220px" }} placeholder="descrição" value={flagDesc} onChange={(e) => setFlagDesc(e.target.value)} />
+              <button type="submit" className="hero-btn hero-btn-accent" disabled={flagBusy}>
+                Criar
+              </button>
+            </form>
+            <div style={{ display: "grid", gap: "0.5rem" }}>
+              {flags.map((f) => (
+                <div key={f.key} className="hero-panel-sm" style={{ padding: "0.7rem 1rem", display: "flex", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap" }}>
+                  <div>
+                    <code style={{ fontWeight: 700 }}>{f.key}</code>
+                    {f.description ? <span className="hero-caption" style={{ marginLeft: "0.5rem" }}>{f.description}</span> : null}
+                  </div>
+                  <button
+                    type="button"
+                    className="hero-btn"
+                    style={{
+                      padding: "0.3rem 0.7rem",
+                      fontSize: "0.75rem",
+                      background: f.enabled ? "var(--rating-a)" : "var(--rating-e)",
+                      color: "#fff",
+                      border: 0,
+                    }}
+                    onClick={async () => {
+                      try {
+                        await setFeatureFlag({ key: f.key, enabled: !f.enabled, description: f.description });
+                        setFlags((prev) => prev.map((x) => (x.key === f.key ? { ...x, enabled: !x.enabled } : x)));
+                      } catch (err) {
+                        setFlagError(err instanceof Error ? err.message : "Falha.");
+                      }
+                    }}
+                  >
+                    {f.enabled ? "Ligado" : "Desligado"}
+                  </button>
+                </div>
+              ))}
             </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
+          </>
+        )}
 
-function StatCard({
-  label,
-  value,
-  accent,
-  accentColor,
-}: {
-  label: string;
-  value: string | number;
-  accent?: boolean;
-  accentColor?: string;
-}) {
-  return (
-    <div className="hero-panel-sm" style={{ padding: "1.1rem" }}>
-      <p className="hero-label" style={{ marginBottom: "0.4rem" }}>
-        {label}
-      </p>
-      <p
-        className="hero-display"
-        style={{ fontSize: "1.8rem", margin: 0, color: accentColor ?? (accent ? "var(--accent)" : "var(--ink)") }}
-      >
-        {value}
-      </p>
-    </div>
+        {tab === "escala" && isPlatformAdmin && ops && (
+          <>
+            <PageHeader eyebrow="Operações" title="Escala e filas" description="Expurgo, ingest assíncrono e correção de filas" />
+            {opsError && <div className="hero-error">{opsError}</div>}
+            {opsMsg && <Callout tone="ok">{opsMsg}</Callout>}
+            <div style={{ display: "grid", gap: "0.6rem", marginBottom: "1.25rem" }}>
+              {(
+                [
+                  ["purgeEnabled", "Expurgo de detalhe", ops.purgeEnabled],
+                  ["deferIssueWrites", "Ingest assíncrono", ops.deferIssueWrites],
+                  ["queueAutoRetry", "Correção auto das filas", ops.queueAutoRetry],
+                ] as const
+              ).map(([key, label, enabled]) => (
+                <div key={key} className="hero-panel-sm" style={{ padding: "0.75rem 1rem", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.75rem" }}>
+                  <strong>{label}</strong>
+                  <button
+                    type="button"
+                    className="hero-btn"
+                    disabled={opsBusy}
+                    style={{ background: enabled ? "var(--rating-a)" : "var(--rating-e)", color: "#fff", border: 0, padding: "0.3rem 0.7rem", fontSize: "0.75rem" }}
+                    onClick={() => patchOps({ [key]: !enabled })}
+                  >
+                    {enabled ? "Ligado" : "Desligado"}
+                  </button>
+                </div>
+              ))}
+            </div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                void patchOps(
+                  {
+                    retentionDays: Number(retentionDraft),
+                    purgeIntervalDays: Number(intervalDraft),
+                    queueStuckMinutes: Number(stuckDraft),
+                  },
+                  "Periodicidade salva.",
+                );
+              }}
+              style={{ display: "grid", gap: "0.75rem", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", alignItems: "end", marginBottom: "1rem" }}
+            >
+              <label style={{ display: "grid", gap: "0.3rem" }}>
+                <span className="hero-label">Retenção (dias)</span>
+                <input className="hero-input" type="number" value={retentionDraft} onChange={(e) => setRetentionDraft(e.target.value)} />
+              </label>
+              <label style={{ display: "grid", gap: "0.3rem" }}>
+                <span className="hero-label">Intervalo expurgo</span>
+                <input className="hero-input" type="number" value={intervalDraft} onChange={(e) => setIntervalDraft(e.target.value)} />
+              </label>
+              <label style={{ display: "grid", gap: "0.3rem" }}>
+                <span className="hero-label">Fila travada (min)</span>
+                <input className="hero-input" type="number" value={stuckDraft} onChange={(e) => setStuckDraft(e.target.value)} />
+              </label>
+              <button type="submit" className="hero-btn hero-btn-accent" disabled={opsBusy}>
+                Salvar
+              </button>
+            </form>
+            {queue && (
+              <p className="hero-caption">
+                Fila: pending {queue.pending} · running {queue.running} · failed {queue.failed} · done {queue.done}
+              </p>
+            )}
+            <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "0.75rem" }}>
+              <button
+                type="button"
+                className="hero-btn"
+                disabled={opsBusy}
+                onClick={async () => {
+                  setOpsBusy(true);
+                  try {
+                    const res = await repairIngestQueues();
+                    setQueue(res.queue);
+                    setOpsMsg(`${res.requeued} job(s) reenfileirado(s).`);
+                  } catch (err) {
+                    setOpsError(err instanceof Error ? err.message : "Falha.");
+                  } finally {
+                    setOpsBusy(false);
+                  }
+                }}
+              >
+                Corrigir filas
+              </button>
+              <button
+                type="button"
+                className="hero-btn hero-btn-outline"
+                disabled={opsBusy || !ops.purgeEnabled}
+                onClick={async () => {
+                  if (!window.confirm("Rodar expurgo agora?")) return;
+                  setOpsBusy(true);
+                  try {
+                    const res = await runDetailPurgeNow();
+                    setOpsMsg(`Expurgo: ${res.analysesDeleted} analyses, ${res.issuesDeleted} issues.`);
+                  } catch (err) {
+                    setOpsError(err instanceof Error ? err.message : "Falha.");
+                  } finally {
+                    setOpsBusy(false);
+                  }
+                }}
+              >
+                Expurgo agora
+              </button>
+            </div>
+          </>
+        )}
+
+        {tab === "cotas" && isPlatformAdmin && (
+          <>
+            <PageHeader eyebrow="Operações" title="Cotas" description="Limites de repos e builds por organização" />
+            {quotaError && <div className="hero-error">{quotaError}</div>}
+            <label style={{ display: "grid", gap: "0.35rem", marginBottom: "1rem", maxWidth: 360 }}>
+              <span className="hero-label">Organização</span>
+              <select className="hero-input" value={quotaOrgId} onChange={(e) => setQuotaOrgId(e.target.value)}>
+                {orgs.map((o) => (
+                  <option key={o.orgId} value={o.orgId}>
+                    {o.orgName}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {quotas && (
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  setQuotaBusy(true);
+                  setQuotaError(null);
+                  try {
+                    const res = await setOrgQuotas({
+                      orgId: quotaOrgId,
+                      maxRepos: Number(maxReposDraft),
+                      maxBuildsPerMonth: Number(maxBuildsDraft),
+                    });
+                    setQuotas(res.quotas);
+                  } catch (err) {
+                    setQuotaError(err instanceof Error ? err.message : "Falha.");
+                  } finally {
+                    setQuotaBusy(false);
+                  }
+                }}
+                style={{ display: "grid", gap: "0.75rem", maxWidth: 400 }}
+              >
+                <label style={{ display: "grid", gap: "0.3rem" }}>
+                  <span className="hero-label">Máx. repositórios</span>
+                  <input className="hero-input" type="number" value={maxReposDraft} onChange={(e) => setMaxReposDraft(e.target.value)} />
+                </label>
+                <label style={{ display: "grid", gap: "0.3rem" }}>
+                  <span className="hero-label">Máx. builds / mês</span>
+                  <input className="hero-input" type="number" value={maxBuildsDraft} onChange={(e) => setMaxBuildsDraft(e.target.value)} />
+                </label>
+                <p className="hero-caption">Builds neste mês: {quotas.buildsThisMonth}</p>
+                <button type="submit" className="hero-btn hero-btn-accent" disabled={quotaBusy}>
+                  Salvar cotas
+                </button>
+              </form>
+            )}
+          </>
+        )}
+
+        {tab === "usuarios" && isPlatformAdmin && <UsersPanel />}
+      </AdminCockpitShell>
+    </main>
   );
 }
 
@@ -685,7 +1122,9 @@ export default function AdminPage() {
   return (
     <AuthGate>
       <AppShell>
-        <AdminHome />
+        <Suspense fallback={<p className="hero-caption" style={{ padding: "2rem" }}>Carregando…</p>}>
+          <AdminPanelInner />
+        </Suspense>
       </AppShell>
     </AuthGate>
   );

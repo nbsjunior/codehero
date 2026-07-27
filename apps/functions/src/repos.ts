@@ -30,7 +30,10 @@ export const addRepoToProject = onCall<AddRepoInput>(async (request) => {
   }
 
   const member = await db.doc(`orgs/${orgId}/members/${uid}`).get();
-  if (!member.exists) throw new HttpsError("permission-denied", "not a member of this org");
+  const admin = await db.doc(`platformAdmins/${uid}`).get();
+  if (!member.exists && !admin.exists) {
+    throw new HttpsError("permission-denied", "not a member of this org");
+  }
 
   const pRef = projectRef(orgId, projectId);
   const pSnap = await pRef.get();

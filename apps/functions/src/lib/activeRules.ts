@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { RULES, matchPattern, type HeroRule } from "@codehero/contracts";
+import { RULES, matchPattern, isUnsafeRegex, type HeroRule } from "@codehero/contracts";
 import { db } from "./firebase.ts";
 
 export interface ActiveRulesPayload {
@@ -78,6 +78,13 @@ async function loadOverlayRules(orgId?: string, projectId?: string): Promise<Her
 function normalizeOverlayRule(raw: Record<string, unknown>): HeroRule | null {
   const pattern = raw.pattern as HeroRule["pattern"] | undefined;
   if (!pattern?.regex || typeof pattern.regex !== "string") return null;
+  // Defense in depth: re-check every load, not just at submitDressCode time,
+  // so a rule that predates this check (or was written another way) never
+  // runs unsandboxed against scan input.
+  if (isUnsafeRegex(pattern.regex) || (pattern.unless && isUnsafeRegex(pattern.unless))) {
+    console.warn("skipping overlay rule with unsafe (ReDoS-shaped) regex", raw.id);
+    return null;
+  }
   try {
     matchPattern(pattern, "smoke");
   } catch {

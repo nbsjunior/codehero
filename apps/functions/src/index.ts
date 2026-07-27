@@ -5,16 +5,29 @@ process.env.FIRESTORE_DATABASE_ID = process.env.FIRESTORE_DATABASE_ID?.trim() ||
 process.env.FIREBASE_STORAGE_BUCKET = process.env.FIREBASE_STORAGE_BUCKET?.trim() || "apponti-codehero";
 process.env.GEMINI_MODEL = process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash";
 
-setGlobalOptions({ region: "us-central1", maxInstances: 200 });
+setGlobalOptions({ region: "us-central1", maxInstances: 200, invoker: "public" });
 
 export { ingestAnalysis } from "./ingest.ts";
 export { processIngestJob } from "./ingestWorker.ts";
 export { purgeStaleDetail, runDetailPurgeNow } from "./retention.ts";
+export {
+  getPlatformOpsSettings,
+  setPlatformOpsSettings,
+  repairIngestQueues,
+  autoRepairIngestQueues,
+} from "./platformOps.ts";
 export { generateSddSpec } from "./sdd.ts";
 export { provisionProject } from "./provision.ts";
 export { listIssues, sddSpec } from "./query.ts";
 export { flagIssueFeedback, submitFixResult } from "./feedback.ts";
-export { adminListAllProjects, checkPlatformAdmin, adminListAllIssues } from "./admin.ts";
+export { adminListAllProjects, checkPlatformAdmin, adminListAllIssues, adminGetPlatformSummary } from "./admin.ts";
+export {
+  adminListUsers,
+  adminSetPlatformAdmin,
+  adminUpdateUser,
+  adminResetUserPassword,
+} from "./adminUsers.ts";
+export { adminCreateProject, getOrgQuotasCallable, setOrgQuotas } from "./adminWorkspaces.ts";
 export { ruleforgeDaily, runRuleforgeDaily, listRuleforgeRuns } from "./ruleforgeDaily.ts";
 export { submitDressCode, listDressCodes } from "./dressCode.ts";
 export { previewRepoScan } from "./previewScan.ts";

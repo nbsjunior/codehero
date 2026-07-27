@@ -19,13 +19,15 @@ type FichaLike = {
 export default function FindingFichaCard({
   ficha,
   compact = false,
+  hideHeader = false,
 }: {
   ficha: FichaLike;
   compact?: boolean;
+  hideHeader?: boolean;
 }) {
   return (
     <article className={`hero-ficha${compact ? " is-compact" : ""}`}>
-      {(ficha.ruleName || ficha.ruleId) && (
+      {!hideHeader && (ficha.ruleName || ficha.ruleId) && (
         <header className="hero-ficha-head">
           <strong>{ficha.ruleName ?? ficha.ruleId}</strong>
           {ficha.severity ? <span className="hero-badge">{ficha.severity}</span> : null}

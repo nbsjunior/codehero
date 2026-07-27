@@ -2,46 +2,55 @@
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "firebase/auth";
+import { signOut, sendEmailVerification } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/lib/useAuth";
-import { checkPlatformAdmin } from "@/lib/api";
 
-interface NavItem {
-  href: string;
-  label: string;
-  icon: string;
-  adminOnly?: boolean;
-  external?: boolean;
+/** Persistent nudge until the user confirms email — previews/scans require it (see previewScan.ts). */
+function EmailVerifyBanner() {
+  const { user } = useAuth();
+  const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  if (!user || user.emailVerified) return null;
+
+  return (
+    <div className="hero-verify-banner" role="status">
+      <span>
+        Confirme seu e-mail (<strong>{user.email}</strong>) para rodar prévias e scans.
+      </span>
+      <button
+        type="button"
+        className="hero-btn hero-btn-outline"
+        style={{ padding: "0.35rem 0.8rem", fontSize: "0.8rem" }}
+        disabled={busy || sent}
+        onClick={async () => {
+          setBusy(true);
+          try {
+            await sendEmailVerification(user);
+            setSent(true);
+          } catch {
+            /* best-effort — user can retry */
+          } finally {
+            setBusy(false);
+          }
+        }}
+      >
+        {sent ? "Link enviado ✓" : busy ? "Enviando…" : "Reenviar link"}
+      </button>
+    </div>
+  );
 }
 
-const NAV_ITEMS: NavItem[] = [
-  { href: "/", label: "Dashboard", icon: "◆" },
-  { href: "/admin/", label: "Admin", icon: "▲", adminOnly: true },
-  { href: "/docs/", label: "Docs", icon: "▤" },
-  { href: "https://produtech.web.app", label: "Estimativa Build", icon: "▣", external: true },
-];
-
+/**
+ * Chrome mínimo fora do /admin (Docs etc.). Em /admin o menu único vive no
+ * AdminCockpitShell — aqui só brand + sair, sem segunda sidebar.
+ */
 export default function AppShell({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const pathname = usePathname();
-  const [isAdmin, setIsAdmin] = useState(false);
+  const onAdmin = Boolean(pathname?.startsWith("/admin"));
   const [navOpen, setNavOpen] = useState(false);
-
-  useEffect(() => {
-    if (!user) return;
-    let cancelled = false;
-    checkPlatformAdmin()
-      .then((v) => {
-        if (!cancelled) setIsAdmin(v);
-      })
-      .catch(() => {
-        if (!cancelled) setIsAdmin(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [user]);
 
   useEffect(() => {
     setNavOpen(false);
@@ -60,53 +69,19 @@ export default function AppShell({ children }: { children: ReactNode }) {
     };
   }, [navOpen]);
 
-  const items = NAV_ITEMS.filter((item) => !item.adminOnly || isAdmin);
-
-  function renderNav(onNavigate?: () => void) {
-    return items.map((item) => {
-      const active =
-        !item.external &&
-        (pathname === item.href ||
-          pathname === item.href.replace(/\/$/, "") ||
-          (item.href !== "/" && pathname?.startsWith(item.href.replace(/\/$/, ""))));
-      const className = `hero-sidebar-link${active ? " is-active" : ""}`;
-      const content = (
-        <>
-          <span aria-hidden>{item.icon}</span>
-          {item.label}
-          {item.adminOnly && (
-            <span className="hero-badge" style={{ marginLeft: "auto", fontSize: "0.6rem" }}>
-              Admin
-            </span>
-          )}
-        </>
-      );
-      if (item.external) {
-        return (
-          <a
-            key={item.href}
-            href={item.href}
-            className={className}
-            target="_blank"
-            rel="noreferrer"
-            onClick={onNavigate}
-          >
-            {content}
-          </a>
-        );
-      }
-      return (
-        <Link key={item.href} href={item.href} className={className} onClick={onNavigate}>
-          {content}
-        </Link>
-      );
-    });
+  if (onAdmin) {
+    return (
+      <div className="hero-app-shell hero-app-shell--cockpit-only">
+        <EmailVerifyBanner />
+        {children}
+      </div>
+    );
   }
 
   return (
     <div className="hero-app-shell">
       <header className="hero-mobile-bar">
-        <Link href="/" className="hero-sidebar-brand" onClick={() => setNavOpen(false)}>
+        <Link href="/admin/#instalacao" className="hero-sidebar-brand" onClick={() => setNavOpen(false)}>
           <span className="hero-burst">⚡</span>
           <span className="hero-display">CodeHero</span>
         </Link>
@@ -123,22 +98,40 @@ export default function AppShell({ children }: { children: ReactNode }) {
       </header>
 
       {navOpen ? (
-        <button
-          type="button"
-          className="hero-mobile-backdrop"
-          aria-label="Fechar menu"
-          onClick={() => setNavOpen(false)}
-        />
+        <button type="button" className="hero-mobile-backdrop" aria-label="Fechar menu" onClick={() => setNavOpen(false)} />
       ) : null}
 
       <aside id="hero-mobile-drawer" className={`hero-sidebar${navOpen ? " is-open" : ""}`}>
-        <Link href="/" className="hero-sidebar-brand hero-sidebar-brand-desktop" onClick={() => setNavOpen(false)}>
+        <Link href="/admin/#instalacao" className="hero-sidebar-brand hero-sidebar-brand-desktop" onClick={() => setNavOpen(false)}>
           <span className="hero-burst">⚡</span>
           <span className="hero-display">CodeHero</span>
         </Link>
 
-        <p className="hero-sidebar-kicker">Plataforma</p>
-        <nav className="hero-sidebar-nav">{renderNav(() => setNavOpen(false))}</nav>
+        <p className="hero-sidebar-kicker">Navegação</p>
+        <nav className="hero-sidebar-nav">
+          <Link href="/admin/#instalacao" className="hero-sidebar-link" onClick={() => setNavOpen(false)}>
+            <span aria-hidden>◆</span>
+            Painel
+          </Link>
+          <Link
+            href="/docs/"
+            className={`hero-sidebar-link${pathname?.startsWith("/docs") ? " is-active" : ""}`}
+            onClick={() => setNavOpen(false)}
+          >
+            <span aria-hidden>▤</span>
+            Docs
+          </Link>
+          <a
+            href="https://produtech.web.app"
+            className="hero-sidebar-link"
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => setNavOpen(false)}
+          >
+            <span aria-hidden>▣</span>
+            Estimativa Build
+          </a>
+        </nav>
 
         <div className="hero-sidebar-spacer" />
 
@@ -163,28 +156,20 @@ export default function AppShell({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
-      <div className="hero-main">{children}</div>
+      <div className="hero-main">
+        <EmailVerifyBanner />
+        {children}
+      </div>
 
       <nav className="hero-bottom-nav" aria-label="Navegação principal">
-        {items
-          .filter((i) => !i.external)
-          .slice(0, 4)
-          .map((item) => {
-            const active =
-              pathname === item.href ||
-              pathname === item.href.replace(/\/$/, "") ||
-              (item.href !== "/" && pathname?.startsWith(item.href.replace(/\/$/, "")));
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`hero-bottom-link${active ? " is-active" : ""}`}
-              >
-                <span aria-hidden>{item.icon}</span>
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+        <Link href="/admin/#instalacao" className="hero-bottom-link">
+          <span aria-hidden>◆</span>
+          <span>Painel</span>
+        </Link>
+        <Link href="/docs/" className={`hero-bottom-link${pathname?.startsWith("/docs") ? " is-active" : ""}`}>
+          <span aria-hidden>▤</span>
+          <span>Docs</span>
+        </Link>
       </nav>
     </div>
   );

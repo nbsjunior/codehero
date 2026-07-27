@@ -51,11 +51,20 @@ export function parseGithubUrl(url: string): { owner: string; repo: string; bran
   return { owner: m[1]!, repo: m[2]!.replace(/\.git$/, ""), branch: m[3] ?? "main" };
 }
 
-export function loadAdmZip(): new (path: string) => { extractAllTo: (dir: string, overwrite: boolean) => void } {
+export interface AdmZipEntry {
+  entryName: string;
+  isDirectory: boolean;
+}
+
+export interface AdmZipInstance {
+  extractAllTo: (dir: string, overwrite: boolean) => void;
+  getEntries: () => AdmZipEntry[];
+  extractEntryTo: (entry: AdmZipEntry, targetPath: string, maintainEntryPath: boolean, overwrite: boolean) => boolean;
+}
+
+export function loadAdmZip(): new (path: string) => AdmZipInstance {
   try {
-    return require("adm-zip") as new (path: string) => {
-      extractAllTo: (dir: string, overwrite: boolean) => void;
-    };
+    return require("adm-zip") as new (path: string) => AdmZipInstance;
   } catch (err) {
     console.error("adm-zip require failed", err);
     throw new HttpsError("failed-precondition", "Dependência adm-zip ausente no runtime da function.");
@@ -103,6 +112,35 @@ const SCAN_EXTS = new Set([
   ".hcl",
 ]);
 
+const EXCLUDED_DIR_NAMES = new Set(["node_modules", ".git", "dist", ".next"]);
+
+function extOf(name: string): string {
+  const dot = name.lastIndexOf(".");
+  return dot >= 0 ? name.slice(dot).toLowerCase() : "";
+}
+
+/**
+ * Extracts only zip entries this scanner will actually read (matching
+ * SCAN_EXTS, outside excluded dirs) instead of adm-zip's `extractAllTo`,
+ * which writes every entry to disk — including node_modules, .git, images,
+ * binaries — before any of it is examined. For a large real-world repo this
+ * is most of the zip's bytes; skipping it cuts disk/time cost substantially
+ * with no change in what actually gets scanned.
+ */
+export function extractScannableEntries(zip: AdmZipInstance, extractDir: string, budget: number): number {
+  let extracted = 0;
+  for (const entry of zip.getEntries()) {
+    if (extracted >= budget) break;
+    if (entry.isDirectory) continue;
+    const parts = entry.entryName.split("/");
+    if (parts.some((p) => EXCLUDED_DIR_NAMES.has(p))) continue;
+    if (!SCAN_EXTS.has(extOf(entry.entryName))) continue;
+    zip.extractEntryTo(entry, extractDir, true, true);
+    extracted += 1;
+  }
+  return extracted;
+}
+
 export function listFiles(dir: string, budget: number, acc: string[] = []): string[] {
   if (acc.length >= budget || !existsSync(dir)) return acc;
   let entries: string[];
@@ -113,7 +151,7 @@ export function listFiles(dir: string, budget: number, acc: string[] = []): stri
   }
   for (const name of entries) {
     if (acc.length >= budget) break;
-    if (name === "node_modules" || name === ".git" || name === "dist" || name === ".next") continue;
+    if (EXCLUDED_DIR_NAMES.has(name)) continue;
     const p = join(dir, name);
     let st;
     try {
@@ -122,11 +160,7 @@ export function listFiles(dir: string, budget: number, acc: string[] = []): stri
       continue;
     }
     if (st.isDirectory()) listFiles(p, budget, acc);
-    else {
-      const dot = name.lastIndexOf(".");
-      const ext = dot >= 0 ? name.slice(dot).toLowerCase() : "";
-      if (SCAN_EXTS.has(ext)) acc.push(p);
-    }
+    else if (SCAN_EXTS.has(extOf(name))) acc.push(p);
   }
   return acc;
 }
@@ -138,12 +172,23 @@ export function severityRank(s: string): number {
 export interface ScanTreeResult {
   findings: RepoScanFinding[];
   linesOfCode: number;
+  filesScanned: number;
+  /** True when the file budget was hit — coverage may be partial; there could be more matching files than were scanned. */
+  truncated: boolean;
 }
 
-export function scanTree(root: string, rules: HeroRule[], fileBudget = 400): ScanTreeResult {
+/** Default file cap per repo scan — raised from an earlier, much tighter 400
+ *  now that extraction is selective (see extractScannableEntries), so the
+ *  cost of a bigger budget is mostly read+regex time, not disk I/O. */
+export const DEFAULT_FILE_BUDGET = 3000;
+/** Files larger than this are skipped entirely (not read, not counted in LOC) — guards against pathological single-file cost (minified bundles, generated code, data dumps). */
+const MAX_FILE_SIZE_BYTES = 3_000_000;
+
+export function scanTree(root: string, rules: HeroRule[], fileBudget = DEFAULT_FILE_BUDGET): ScanTreeResult {
   const findings: RepoScanFinding[] = [];
   const files = listFiles(root, fileBudget);
   let linesOfCode = 0;
+  let filesScanned = 0;
   for (const file of files) {
     let source: string;
     try {
@@ -151,7 +196,8 @@ export function scanTree(root: string, rules: HeroRule[], fileBudget = 400): Sca
     } catch {
       continue;
     }
-    if (source.length > 1_500_000) continue;
+    if (source.length > MAX_FILE_SIZE_BYTES) continue;
+    filesScanned += 1;
     linesOfCode += source.length ? source.split("\n").length : 0;
     const rel = file.slice(root.length + 1).replace(/\\/g, "/");
     for (const rule of rules) {
@@ -201,7 +247,7 @@ export function scanTree(root: string, rules: HeroRule[], fileBudget = 400): Sca
     }
   }
   findings.sort((a, b) => severityRank(b.severity) - severityRank(a.severity));
-  return { findings, linesOfCode };
+  return { findings, linesOfCode, filesScanned, truncated: files.length >= fileBudget };
 }
 
 /** Clone (zip download) a public repo into a temp dir and scan it. Caller must clean up `extractDir`'s parent. */
@@ -209,7 +255,15 @@ export async function downloadAndScanRepo(
   repoUrl: string,
   rules: HeroRule[],
   workDir: string,
-): Promise<{ owner: string; repo: string; findings: RepoScanFinding[]; linesOfCode: number }> {
+  fileBudget = DEFAULT_FILE_BUDGET,
+): Promise<{
+  owner: string;
+  repo: string;
+  findings: RepoScanFinding[];
+  linesOfCode: number;
+  filesScanned: number;
+  truncated: boolean;
+}> {
   const parsed = parseGithubUrl(repoUrl.trim());
   if (!parsed) {
     throw new HttpsError("invalid-argument", "Informe um repositório GitHub público (https://github.com/org/repo).");
@@ -221,10 +275,10 @@ export async function downloadAndScanRepo(
   const extractDir = join(workDir, "src");
   mkdirSync(extractDir, { recursive: true });
   const AdmZip = loadAdmZip();
-  new AdmZip(zipPath).extractAllTo(extractDir, true);
+  extractScannableEntries(new AdmZip(zipPath), extractDir, fileBudget);
 
-  const { findings, linesOfCode } = scanTree(extractDir, rules);
-  return { owner: parsed.owner, repo: parsed.repo, findings, linesOfCode };
+  const { findings, linesOfCode, filesScanned, truncated } = scanTree(extractDir, rules, fileBudget);
+  return { owner: parsed.owner, repo: parsed.repo, findings, linesOfCode, filesScanned, truncated };
 }
 
 /**

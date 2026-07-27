@@ -5,9 +5,15 @@ import { Timestamp } from "firebase-admin/firestore";
 import { db, storage, STORAGE_BUCKET_NAME } from "./lib/firebase.ts";
 import { archiveAnalysisSnapshot, type AnalysisSummaryLike } from "./lib/analytics.ts";
 import { cleanupIngestJobs } from "./ingestWorker.ts";
+import {
+  getPlatformOpsConfig,
+  markPurgeRan,
+  shouldRunPurgeNow,
+  DEFAULT_PLATFORM_OPS,
+} from "./lib/platformOps.ts";
 
-/** Detailed operational data retention window (3 months). */
-export const DETAIL_RETENTION_DAYS = 90;
+/** Default detailed retention window (3 months) — overridable via platform ops settings. */
+export const DETAIL_RETENTION_DAYS = DEFAULT_PLATFORM_OPS.retentionDays;
 
 /**
  * Purge detailed analysis artifacts older than 90 days.
@@ -150,19 +156,28 @@ export async function runDetailPurge(options?: {
 }
 
 /**
- * Weekly purge pass — deletes up to `batchSize` of each category per run.
- * With ~100k builds/month, weekly runs drain the backlog of 90d+ detail.
- * Schedule is weekly; retention window is 90 days (3 months).
+ * Daily tick — actual purge respects platform ops settings:
+ * purgeEnabled, purgeIntervalDays, retentionDays, purgeBatchSize.
  */
 export const purgeStaleDetail = onSchedule(
   {
-    schedule: "0 3 * * 0",
+    schedule: "0 3 * * *",
     timeZone: "America/Sao_Paulo",
     region: "us-central1",
     memory: "1GiB",
     timeoutSeconds: 540,
   },
   async () => {
+    const cfg = await getPlatformOpsConfig();
+    if (!shouldRunPurgeNow(cfg)) {
+      logger.info("purgeStaleDetail skipped", {
+        purgeEnabled: cfg.purgeEnabled,
+        purgeIntervalDays: cfg.purgeIntervalDays,
+        purgeLastRunAt: cfg.purgeLastRunAt,
+      });
+      return;
+    }
+
     let total = {
       analysesDeleted: 0,
       issuesDeleted: 0,
@@ -171,9 +186,11 @@ export const purgeStaleDetail = onSchedule(
       jobsCleaned: 0,
       sarifDeleted: 0,
     };
-    // Multiple passes per weekly run drain large backlogs within the 540s budget.
     for (let pass = 0; pass < 8; pass++) {
-      const result = await runDetailPurge({ batchSize: 400 });
+      const result = await runDetailPurge({
+        batchSize: cfg.purgeBatchSize,
+        retentionDays: cfg.retentionDays,
+      });
       total = {
         analysesDeleted: total.analysesDeleted + result.analysesDeleted,
         issuesDeleted: total.issuesDeleted + result.issuesDeleted,
@@ -191,11 +208,12 @@ export const purgeStaleDetail = onSchedule(
         break;
       }
     }
-    logger.info("purgeStaleDetail complete", { retentionDays: DETAIL_RETENTION_DAYS, ...total });
+    await markPurgeRan();
+    logger.info("purgeStaleDetail complete", { retentionDays: cfg.retentionDays, ...total });
   },
 );
 
-/** Platform-admin manual trigger (same purge as the weekly job). */
+/** Platform-admin manual trigger (bypasses interval; still uses configured retention). */
 export const runDetailPurgeNow = onCall(
   { timeoutSeconds: 540, memory: "1GiB" },
   async (request) => {
@@ -203,6 +221,15 @@ export const runDetailPurgeNow = onCall(
     if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
     const admin = await db.doc(`platformAdmins/${uid}`).get();
     if (!admin.exists) throw new HttpsError("permission-denied", "platform admin only");
-    return runDetailPurge({ batchSize: 400 });
+    const cfg = await getPlatformOpsConfig();
+    if (!cfg.purgeEnabled) {
+      throw new HttpsError("failed-precondition", "expurgo desabilitado nas configurações da plataforma");
+    }
+    const result = await runDetailPurge({
+      batchSize: cfg.purgeBatchSize,
+      retentionDays: cfg.retentionDays,
+    });
+    await markPurgeRan();
+    return result;
   },
 );
