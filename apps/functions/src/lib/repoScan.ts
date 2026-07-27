@@ -261,6 +261,8 @@ export function toSarifResults(findings: RepoScanFinding[]): SarifResult[] {
         howToFix: f.ficha.howToFix,
         strategy: f.ficha.strategy,
         constraints: f.ficha.constraints,
+        referenceExample: f.ficha.referenceExample,
+        cwe: f.ficha.cwe,
       },
     };
   });

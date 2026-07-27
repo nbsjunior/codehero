@@ -1,5 +1,6 @@
 import Link from "next/link";
 import MermaidDiagram from "@/components/MermaidDiagram";
+import DocsTopNav from "@/components/DocsTopNav";
 
 export const metadata = {
   title: "Docs — CodeHero",
@@ -171,28 +172,7 @@ const DIAGRAM_F1_DETAIL = `flowchart LR
 export default function DocsPage() {
   return (
     <div className="cr-page">
-      <nav className="cr-docs-nav">
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "#fff" }}>
-          <span className="cr-nav-mark" aria-hidden>
-            H
-          </span>
-          <strong>CodeHero</strong>
-        </Link>
-        <div style={{ display: "flex", gap: "1.25rem", alignItems: "center", flexWrap: "wrap" }}>
-          <a href="https://produtech.web.app" target="_blank" rel="noreferrer">
-            Estimativa Build
-          </a>
-          <a href="https://github.com/nbsjunior/codehero" target="_blank" rel="noreferrer">
-            GitHub
-          </a>
-          <a href="https://github.com/nbsjunior/codehero/wiki" target="_blank" rel="noreferrer">
-            Wiki
-          </a>
-          <Link href="/" className="cr-btn cr-btn-primary" style={{ textDecoration: "none", padding: "0.5rem 1rem" }}>
-            Entrar
-          </Link>
-        </div>
-      </nav>
+      <DocsTopNav />
 
       <div className="cr-docs-shell">
         <aside className="cr-docs-toc" aria-label="Sumário">

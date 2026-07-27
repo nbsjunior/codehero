@@ -5,9 +5,11 @@ process.env.FIRESTORE_DATABASE_ID = process.env.FIRESTORE_DATABASE_ID?.trim() ||
 process.env.FIREBASE_STORAGE_BUCKET = process.env.FIREBASE_STORAGE_BUCKET?.trim() || "apponti-codehero";
 process.env.GEMINI_MODEL = process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash";
 
-setGlobalOptions({ region: "us-central1", maxInstances: 10 });
+setGlobalOptions({ region: "us-central1", maxInstances: 200 });
 
 export { ingestAnalysis } from "./ingest.ts";
+export { processIngestJob } from "./ingestWorker.ts";
+export { purgeStaleDetail, runDetailPurgeNow } from "./retention.ts";
 export { generateSddSpec } from "./sdd.ts";
 export { provisionProject } from "./provision.ts";
 export { listIssues, sddSpec } from "./query.ts";

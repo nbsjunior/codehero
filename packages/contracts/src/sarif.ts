@@ -57,6 +57,8 @@ export interface SarifResult {
     howToFix?: string;
     strategy?: string;
     constraints?: string[];
+    referenceExample?: { before: string; after: string };
+    cwe?: string[];
   };
 }
 

@@ -8,8 +8,25 @@ import AppShell from "@/components/AppShell";
 import AuthGate from "@/components/AuthGate";
 import CopyButton from "@/components/CopyButton";
 import FindingFichaCard from "@/components/FindingFichaCard";
+import {
+  DebtMeter,
+  GatePill,
+  RatingRing,
+  SeverityBars,
+  VerticalBars,
+  countByField,
+} from "@/components/RepoHealthCharts";
 import { dbClient } from "@/lib/firebase";
-import { addRepoToProject, rotateIngestToken, runRepoAutoScanNow, setRepoAutoScan, startGithubActionInstall, type RepoAutoScan } from "@/lib/api";
+import {
+  addRepoToProject,
+  flagIssueFeedback,
+  rotateIngestToken,
+  runRepoAutoScanNow,
+  setRepoAutoScan,
+  startGithubActionInstall,
+  type IssueFeedbackVerdict,
+  type RepoAutoScan,
+} from "@/lib/api";
 import { HERO_CORE_URL } from "@/lib/heroCoreUrl";
 
 interface ProjectData {
@@ -38,6 +55,13 @@ interface RepoData {
   autoScan?: RepoAutoScan;
 }
 
+interface IssueFeedbackEntry {
+  verdict: "false_positive" | "confirmed" | "fix_accepted" | "fix_rejected";
+  note: string | null;
+  uid: string;
+  at: string;
+}
+
 interface RepoIssue {
   fingerprint: string;
   ruleId: string;
@@ -49,6 +73,16 @@ interface RepoIssue {
   snippet?: string;
   sddTemplateId?: string | null;
   remediationEffortMin?: number;
+  // Ficha persistida no próprio issue (preferida); ausente em issues antigas,
+  // que caem no fallback de recomputar via buildFindingFicha no cliente.
+  risk?: string | null;
+  reason?: string | null;
+  howToFix?: string | null;
+  strategy?: string | null;
+  constraints?: string[];
+  referenceExample?: { before: string; after: string } | null;
+  cwe?: string[];
+  feedback?: IssueFeedbackEntry[];
 }
 
 const ratingColor: Record<string, string> = {
@@ -120,6 +154,13 @@ function ProjectSettings() {
   const [issues, setIssues] = useState<RepoIssue[]>([]);
   const [issuesLoading, setIssuesLoading] = useState(false);
   const [openIssueFp, setOpenIssueFp] = useState<string | null>(null);
+
+  const [feedbackBusyFp, setFeedbackBusyFp] = useState<string | null>(null);
+  const [feedbackError, setFeedbackError] = useState<string | null>(null);
+
+  // Gráfico de manutenibilidade/segurança com drill-down até a lista de apontamentos
+  const [drillOpen, setDrillOpen] = useState<"maintainability" | "security" | null>(null);
+  const [issueFilter, setIssueFilter] = useState<{ label: string; severity?: string; issueType?: string } | null>(null);
 
   // Auto-scan (checagem automática periódica)
   const [autoScanBusy, setAutoScanBusy] = useState(false);
@@ -298,6 +339,29 @@ function ProjectSettings() {
     }
   }
 
+  async function handleIssueFeedback(issue: RepoIssue, verdict: IssueFeedbackVerdict) {
+    if (!selectedRepo) return;
+    setFeedbackBusyFp(issue.fingerprint);
+    setFeedbackError(null);
+    try {
+      await flagIssueFeedback({ orgId, projectId, repoId: selectedRepo.repoId, fingerprint: issue.fingerprint, verdict });
+      setIssues((prev) =>
+        prev.map((it) =>
+          it.fingerprint === issue.fingerprint
+            ? {
+                ...it,
+                feedback: [...(it.feedback ?? []), { verdict, note: null, uid: "you", at: new Date().toISOString() }],
+              }
+            : it,
+        ),
+      );
+    } catch (err) {
+      setFeedbackError(err instanceof Error ? err.message : "Falha ao registrar o feedback.");
+    } finally {
+      setFeedbackBusyFp(null);
+    }
+  }
+
   async function handleSaveAutoScan(enabled: boolean, periodicityDays: number) {
     if (!selectedRepo) return;
     setAutoScanBusy(true);
@@ -442,25 +506,36 @@ function ProjectSettings() {
       <Link href="/" className="hero-breadcrumb hero-link" style={{ textDecoration: "none" }}>
         ← Dashboard
       </Link>
-      <header style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem", marginTop: "0.5rem" }}>
+      <header
+        className="ch-section-title"
+        style={{ marginTop: "0.75rem", alignItems: "flex-start" }}
+      >
         <div>
-          <h1 className="hero-display" style={{ fontSize: "2.25rem", margin: "0 0 0.25rem" }}>
+          <p className="hero-caption" style={{ margin: "0 0 0.35rem" }}>
+            Admin do repositório
+          </p>
+          <h1 className="hero-display" style={{ fontSize: "clamp(1.8rem, 5vw, 2.4rem)", margin: "0 0 0.35rem" }}>
             {project.name}
           </h1>
           <p className="hero-caption" style={{ margin: 0 }}>
-            {orgId} / {projectId} · consolidado de {project.repoCount} repositório(s)
+            {orgId} / {projectId} · {project.repoCount} repositório(s)
           </p>
         </div>
-        <RatingBadges p={project} />
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.5rem" }}>
+          <GatePill status={project.qualityGateStatus} />
+          <RatingBadges p={project} />
+        </div>
       </header>
 
-      {/* Repo picker — a project consolidates one or more repos */}
       <section className="hero-panel" style={{ padding: "1.25rem", marginTop: "1.5rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem", flexWrap: "wrap", gap: "0.5rem" }}>
-          <h2 className="hero-display" style={{ fontSize: "1.1rem", margin: 0 }}>
-            Repositórios do projeto
-          </h2>
-          <button type="button" className="hero-btn hero-btn-outline" style={{ padding: "0.45rem 0.9rem", fontSize: "0.8rem" }} onClick={() => setShowAddRepo((v) => !v)}>
+        <div className="ch-section-title">
+          <h2 style={{ fontSize: "1.2rem" }}>Repositórios</h2>
+          <button
+            type="button"
+            className="hero-btn hero-btn-outline"
+            style={{ padding: "0.45rem 0.9rem", fontSize: "0.8rem" }}
+            onClick={() => setShowAddRepo((v) => !v)}
+          >
             {showAddRepo ? "Fechar" : "+ Adicionar repositório"}
           </button>
         </div>
@@ -500,33 +575,30 @@ function ProjectSettings() {
         {repos.length === 0 ? (
           <p className="hero-caption">Nenhum repositório ainda — adicione um acima para começar a escanear.</p>
         ) : (
-          <div style={{ display: "grid", gap: "0.6rem" }}>
+          <div style={{ display: "grid", gap: "0.65rem" }}>
             {repos.map((r) => (
               <button
                 key={r.repoId}
                 type="button"
                 onClick={() => selectRepo(r.repoId)}
-                className="hero-panel-sm"
-                style={{
-                  padding: "0.75rem 1rem",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  gap: "0.75rem",
-                  flexWrap: "wrap",
-                  textAlign: "left",
-                  cursor: "pointer",
-                  border: r.repoId === selectedRepoId ? "2px solid var(--accent)" : undefined,
-                  background: "var(--paper-raised)",
-                  font: "inherit",
-                  color: "inherit",
-                }}
+                className={`ch-repo-card${r.repoId === selectedRepoId ? " is-selected" : ""}`}
               >
-                <span>
-                  <strong>{r.name}</strong>
-                  {r.repoUrl ? <span className="hero-caption" style={{ marginLeft: "0.5rem" }}>{r.repoUrl.replace(/^https?:\/\//, "")}</span> : null}
-                </span>
-                <RatingBadges p={r} />
+                <div className="ch-repo-card-top">
+                  <span>
+                    <strong style={{ fontSize: "1rem" }}>{r.name}</strong>
+                    {r.repoUrl ? (
+                      <span className="hero-caption" style={{ display: "block", marginTop: "0.25rem" }}>
+                        {r.repoUrl.replace(/^https?:\/\//, "")}
+                      </span>
+                    ) : null}
+                  </span>
+                  <RatingBadges p={r} />
+                </div>
+                <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginTop: "0.75rem" }}>
+                  <span className="hero-caption">{r.openIssues} issues</span>
+                  <span className="hero-caption">{Math.round(r.debtMinutes / 60)}h débito</span>
+                  <GatePill status={r.qualityGateStatus} />
+                </div>
               </button>
             ))}
           </div>
@@ -558,34 +630,126 @@ function ProjectSettings() {
           </p>
 
           {tab === "overview" && (
-            <section className="hero-panel" style={{ padding: "1.75rem" }}>
-              <h2 className="hero-display" style={{ fontSize: "1.4rem", margin: "0 0 1rem" }}>
-                Visão geral do repositório
-              </h2>
-              <dl style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "1.25rem", margin: 0 }}>
-                <div>
-                  <dt className="hero-label">Débito técnico</dt>
-                  <dd style={{ margin: 0, fontSize: "1.3rem", fontWeight: 700 }}>{Math.round(selectedRepo.debtMinutes / 60)}h</dd>
-                </div>
-                <div>
-                  <dt className="hero-label">Issues abertas</dt>
-                  <dd style={{ margin: 0, fontSize: "1.3rem", fontWeight: 700 }}>{selectedRepo.openIssues}</dd>
-                </div>
-                <div>
-                  <dt className="hero-label">Repositório</dt>
-                  <dd style={{ margin: 0 }}>
-                    {selectedRepo.repoUrl ? (
-                      <a href={selectedRepo.repoUrl} target="_blank" rel="noreferrer" className="hero-link">
-                        {selectedRepo.repoUrl.replace(/^https?:\/\//, "")}
-                      </a>
-                    ) : (
-                      <span className="hero-caption">não configurado</span>
-                    )}
-                  </dd>
-                </div>
-              </dl>
+            <section className="hero-panel" style={{ padding: "1.5rem" }}>
+              <div className="ch-section-title">
+                <h2>Saúde do repositório</h2>
+                {selectedRepo.repoUrl ? (
+                  <a href={selectedRepo.repoUrl} target="_blank" rel="noreferrer" className="hero-link">
+                    Abrir no GitHub
+                  </a>
+                ) : null}
+              </div>
 
-              <h3 className="hero-display" style={{ fontSize: "1.1rem", margin: "1.75rem 0 0.5rem" }}>
+              <div className="ch-metric-grid">
+                <div className="ch-metric-card">
+                  <h3>Ratings</h3>
+                  <div className="ch-rings-row">
+                    <RatingRing
+                      label="Segurança"
+                      rating={selectedRepo.securityRating}
+                      active={drillOpen === "security"}
+                      onClick={() => setDrillOpen((prev) => (prev === "security" ? null : "security"))}
+                    />
+                    <RatingRing
+                      label="Manutenib."
+                      rating={selectedRepo.maintainabilityRating}
+                      active={drillOpen === "maintainability"}
+                      onClick={() => setDrillOpen((prev) => (prev === "maintainability" ? null : "maintainability"))}
+                    />
+                  </div>
+                  <div style={{ marginTop: "0.85rem", textAlign: "center" }}>
+                    <GatePill status={selectedRepo.qualityGateStatus} />
+                  </div>
+                  <p className="hero-caption" style={{ textAlign: "center", marginTop: "0.6rem", marginBottom: 0 }}>
+                    clique num anel para ver o detalhe
+                  </p>
+                </div>
+                <div className="ch-metric-card">
+                  <h3>Débito técnico</h3>
+                  <DebtMeter debtMinutes={selectedRepo.debtMinutes} openIssues={selectedRepo.openIssues} />
+                </div>
+                <div className="ch-metric-card">
+                  <h3>Severidade dos apontamentos</h3>
+                  {issuesLoading ? (
+                    <p className="hero-caption">Carregando…</p>
+                  ) : (
+                    <SeverityBars
+                      counts={countByField(issues as unknown as Array<Record<string, unknown>>, "severity")}
+                      totalHint={issues.length || selectedRepo.openIssues}
+                    />
+                  )}
+                </div>
+                <div className="ch-metric-card">
+                  <h3>Tipos de issue</h3>
+                  {issuesLoading ? (
+                    <p className="hero-caption">Carregando…</p>
+                  ) : (
+                    <VerticalBars
+                      data={Object.entries(
+                        countByField(issues as unknown as Array<Record<string, unknown>>, "issueType"),
+                      ).map(([label, value]) => ({
+                        label: label === "undefined" || label === "—" ? "OUTRO" : label,
+                        value,
+                        color:
+                          label === "VULNERABILITY"
+                            ? "#e8121f"
+                            : label === "BUG"
+                              ? "#ea580c"
+                              : label === "SECURITY_HOTSPOT"
+                                ? "#ca8a04"
+                                : "#64748b",
+                      }))}
+                    />
+                  )}
+                </div>
+              </div>
+
+              {drillOpen && (
+                <div className="ch-drill-panel">
+                  {(() => {
+                    const kind = drillOpen;
+                    const relevantType = kind === "security" ? "VULNERABILITY" : "CODE_SMELL";
+                    const relevant = issues.filter((i) => (i.issueType ?? "CODE_SMELL") === relevantType);
+                    const bySev: Record<string, number> = {};
+                    for (const i of relevant) bySev[i.severity] = (bySev[i.severity] ?? 0) + 1;
+                    const order = ["BLOCKER", "CRITICAL", "MAJOR", "MINOR", "INFO"];
+                    const present = order.filter((s) => bySev[s]);
+                    return (
+                      <>
+                        <p className="hero-caption" style={{ margin: "0 0 0.6rem" }}>
+                          {kind === "security" ? "Vulnerabilidades" : "Code smells"} abertos por severidade — clique para
+                          ver a lista de apontamentos.
+                        </p>
+                        {present.length === 0 ? (
+                          <p className="hero-caption" style={{ margin: 0 }}>
+                            Nenhum apontamento de {kind === "security" ? "segurança" : "manutenibilidade"} em aberto.
+                          </p>
+                        ) : (
+                          present.map((sev) => (
+                            <button
+                              key={sev}
+                              type="button"
+                              className="ch-drill-chip"
+                              onClick={() => {
+                                setIssueFilter({
+                                  label: `${kind === "security" ? "Segurança" : "Manutenibilidade"} · ${sev}`,
+                                  severity: sev,
+                                  issueType: relevantType,
+                                });
+                                document.getElementById("findings-list")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                              }}
+                            >
+                              {sev} <span style={{ opacity: 0.7 }}>({bySev[sev]})</span>
+                            </button>
+                          ))
+                        )}
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
+
+              <h3 className="hero-display" style={{ fontSize: "1.1rem", margin: "1.5rem 0 0.5rem" }}>
                 Checagem automática
               </h3>
               <p className="hero-caption" style={{ marginTop: 0, marginBottom: "0.75rem" }}>
@@ -644,12 +808,24 @@ function ProjectSettings() {
                 </div>
               )}
 
-              <h3 className="hero-display" style={{ fontSize: "1.1rem", margin: "1.75rem 0 0.5rem" }}>
+              <h3 id="findings-list" className="hero-display" style={{ fontSize: "1.1rem", margin: "1.75rem 0 0.5rem" }}>
                 Apontamentos (esteira / ingestão)
               </h3>
               <p className="hero-caption" style={{ marginTop: 0, marginBottom: "0.75rem" }}>
-                Cada finding da Action tem ficha com risco, motivo e como corrigir — clique para abrir.
+                Cada finding tem ficha com risco, motivo, exemplo e como corrigir — clique para abrir e dar feedback.
               </p>
+              {issueFilter && (
+                <div style={{ marginBottom: "0.75rem" }}>
+                  <button type="button" className="ch-drill-chip" style={{ borderColor: "var(--accent)" }} onClick={() => setIssueFilter(null)}>
+                    filtro: {issueFilter.label} ✕
+                  </button>
+                </div>
+              )}
+              {feedbackError && (
+                <div className="hero-error" style={{ marginBottom: "0.75rem" }}>
+                  {feedbackError}
+                </div>
+              )}
               {issuesLoading ? (
                 <p className="hero-caption">Carregando apontamentos…</p>
               ) : issues.length === 0 ? (
@@ -658,9 +834,16 @@ function ProjectSettings() {
                 </p>
               ) : (
                 <div className="hero-ficha-list">
-                  {issues.map((issue) => {
+                  {issues
+                    .filter((issue) => {
+                      if (!issueFilter) return true;
+                      if (issueFilter.severity && issue.severity !== issueFilter.severity) return false;
+                      if (issueFilter.issueType && (issue.issueType ?? "CODE_SMELL") !== issueFilter.issueType) return false;
+                      return true;
+                    })
+                    .map((issue) => {
                     const open = openIssueFp === issue.fingerprint;
-                    const ficha = buildFindingFicha({
+                    const computed = buildFindingFicha({
                       ruleId: issue.ruleId,
                       message: issue.message,
                       severity: issue.severity,
@@ -671,6 +854,19 @@ function ProjectSettings() {
                       line: issue.line,
                       snippet: issue.snippet,
                     });
+                    // Ficha persistida no issue tem prioridade — cobre regras
+                    // de dress code dinâmicas, ausentes do catálogo estático.
+                    const ficha = {
+                      ...computed,
+                      risk: issue.risk ?? computed.risk,
+                      reason: issue.reason ?? computed.reason,
+                      howToFix: issue.howToFix ?? computed.howToFix,
+                      strategy: issue.strategy ?? computed.strategy,
+                      constraints: issue.constraints?.length ? issue.constraints : computed.constraints,
+                      referenceExample: issue.referenceExample ?? computed.referenceExample,
+                      cwe: issue.cwe?.length ? issue.cwe : computed.cwe,
+                    };
+                    const lastVerdict = issue.feedback?.[issue.feedback.length - 1]?.verdict ?? null;
                     return (
                       <div key={issue.fingerprint}>
                         <button
@@ -699,18 +895,47 @@ function ProjectSettings() {
                             <span className="hero-caption" style={{ marginLeft: "0.5rem" }}>
                               {issue.file}:{issue.line ?? "?"}
                             </span>
+                            {lastVerdict && (
+                              <span className="hero-caption" style={{ marginLeft: "0.5rem" }}>
+                                · feedback: {lastVerdict === "false_positive" ? "falso positivo" : lastVerdict === "confirmed" ? "confirmado" : lastVerdict}
+                              </span>
+                            )}
                           </span>
                           <span className="hero-caption">{open ? "fechar ficha" : "ver ficha"}</span>
                         </button>
                         {open ? (
-                          <FindingFichaCard
-                            ficha={{
-                              ...ficha,
-                              file: issue.file,
-                              line: issue.line,
-                              snippet: issue.snippet,
-                            }}
-                          />
+                          <>
+                            <FindingFichaCard
+                              ficha={{
+                                ...ficha,
+                                file: issue.file,
+                                line: issue.line,
+                                snippet: issue.snippet,
+                              }}
+                            />
+                            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", padding: "0 0.25rem 0.75rem" }}>
+                              <span className="hero-caption">este apontamento é:</span>
+                              <button
+                                type="button"
+                                className="hero-btn hero-btn-outline"
+                                style={{ padding: "0.3rem 0.75rem", fontSize: "0.78rem" }}
+                                disabled={feedbackBusyFp === issue.fingerprint}
+                                onClick={() => handleIssueFeedback(issue, "confirmed")}
+                              >
+                                ✓ Confirmado (verdadeiro positivo)
+                              </button>
+                              <button
+                                type="button"
+                                className="hero-btn hero-btn-outline"
+                                style={{ padding: "0.3rem 0.75rem", fontSize: "0.78rem" }}
+                                disabled={feedbackBusyFp === issue.fingerprint}
+                                onClick={() => handleIssueFeedback(issue, "false_positive")}
+                              >
+                                ✕ Falso positivo
+                              </button>
+                              <span className="hero-caption">alimenta o motor determinístico (hero-ruleforge)</span>
+                            </div>
+                          </>
                         ) : null}
                       </div>
                     );

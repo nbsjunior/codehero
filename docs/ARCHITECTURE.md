@@ -99,20 +99,30 @@ Credenciais e secrets (API keys, service account, chave do modelo) ficam em Secr
 ```
 platformAdmins/{uid}                 → grant out-of-band (scripts/seed-admin.mjs)
 ruleforgeRuns/{yyyy-mm-dd}           → relatório Genkit diário (promoted/rejected + patterns)
+analyticsDaily/{yyyy-mm-dd}          → rollup diário (sobrevive ao expurgo)
+analyticsMonthly/{yyyy-mm}           → rollup mensal
+analyticsRepos/{org_proj_repo}        → último build + contadores por repo
+analyticsArchives/{id}               → snapshot slim de analyses expurgadas
+ingestJobs/{jobId}                   → fila de upsert de issues (async ingest)
 
 orgs/{orgId}
   ├─ name, ownerUid, createdAt
+  ├─ settings/quotas                 → maxRepos / maxBuildsPerMonth
   ├─ members/{uid}                   → { role: owner|admin|member }
-  ├─ ruleforgeFeedback/{id}          → telemetria FP/confirmed (humano)
+  ├─ ruleforgeFeedback/{id}          → telemetria FP/confirmed (humano) — NÃO expurga
+  ├─ sddOutcomes/{id}                → telemetria de fix (expurga após 90d)
   └─ projects/{projectId}
-       ├─ name, repoUrl, mainBranch, ingestToken
-       ├─ debtMinutes, maintainabilityRating, securityRating, qualityGateStatus, openIssues
-       ├─ analyses/{analysisId}      → { branch, commit, summary, sarifPath }
-       ├─ issues/{fingerprint}       → { ruleId, severity, file, line, snippet, status, … }
-       └─ sddSpecs/{specId}          → SDD Spec + createdBy
+       ├─ name, …, métricas agregadas
+       ├─ sddSpecs/{specId}
+       └─ repos/{repoId}
+            ├─ ingestToken, autoScan, métricas
+            ├─ analyses/{analysisId} → detalhe + sarifPath (expurga após 90d)
+            └─ issues/{fingerprint}  → detalhe (expurga após 90d; FP fica)
 ```
 
-**Storage:** `orgs/{orgId}/projects/{projectId}/analyses/{analysisId}.sarif.json` — só Admin SDK (rules deny client).
+**Storage:** `orgs/{orgId}/projects/{projectId}/repos/{repoId}/analyses/{analysisId}.sarif.json` — só Admin SDK (rules deny client). Expurgado com o analysis.
+
+**Retenção (3 meses):** `purgeStaleDetail` (domingo 03:00 BRT) remove detalhe com `createdAt`/`lastSeen` > 90 dias após arquivar summary em `analyticsArchives`. Mantém analytics + `ruleforgeFeedback` + issues `status=false_positive`.
 
 **Segurança:** escritas de análise/issue/provisionamento só via Functions (Admin SDK). Cliente: *read-mostly* por `isOrgMember` / `isPlatformAdmin`. CI autentica com `ingestToken` (bearer). Ver `firestore.rules` e `storage.rules`.
 
@@ -120,14 +130,17 @@ orgs/{orgId}
 
 | Export | Tipo | Papel |
 |---|---|---|
-| `ingestAnalysis` | HTTP | CI → SARIF + métricas SQALE + quality gate (`BulkWriter`) |
-| `listIssues` / `sddSpec` | HTTP | MCP/CI com bearer `ingestToken` |
+| `ingestAnalysis` | HTTP | CI → SARIF Storage + gate sync; issues via `ingestJobs` |
+| `processIngestJob` | Firestore trigger | BulkWriter de issues a partir do SARIF |
+| `purgeStaleDetail` / `runDetailPurgeNow` | schedule / callable | expurgo 90d do detalhe |
+| `listIssues` / `sddSpec` | HTTP | MCP/CI com bearer `ingestToken` (+ cursor/`limit`) |
 | `generateSddSpec` | callable | Auth + membership → SDD Spec |
 | `provisionProject` | callable | cria org + member + projeto + `ingestToken` (mostrado 1×) |
 | `flagIssueFeedback` / `submitFixResult` | callable / HTTP | telemetria humana / agente |
 | `checkPlatformAdmin` / `adminListAllProjects` | callable | visão global (só `platformAdmins`) |
 | `ruleforgeDaily` | **schedule** diário | Genkit propõe → evolve determinístico → `ruleforgeRuns` |
 | `runRuleforgeDaily` | callable | disparo manual (platform admin) |
+| `autoScanRepos` | **schedule** horário | shards 0–23 × até 40 repos/shard |
 
 ## Dashboard (`apps/web`)
 
@@ -159,7 +172,7 @@ orgs/{orgId}
 | **0 — Fundação** | Monorepo, contratos (SARIF+/SDD/SQALE), Firebase config, regras | ✅ |
 | **1 — MVP** | Scanner→SARIF, ingest, débito/QG, Action, dashboard Auth+provision | ✅ |
 | **2 — V1** | SDD + MCP (Claude/Cursor/Copilot) + ruleforge Genkit + IDE VS Code + engine AST/taint JS/TS + cache incremental | ✅ |
-| **3 — Scale-up** | BigQuery, taint multi-arquivo (Rust), RBAC/SSO, merge automático corpus←feedback | ⬜ |
+| **3 — Scale-up** | Ingest async + analytics + purge 90d + shards auto-scan; BigQuery stream opcional; taint multi-arquivo (Rust); RBAC/SSO | 🟡 (ingest/purge/analytics ✅) |
 
 ## Dependências críticas
 
@@ -268,11 +281,15 @@ Espelha a divisão **CodeQL (determinístico) + AI detections (complementar)** d
 
 CLI: `npm run scan -- <path> [--sarif] [--cache]`. IDE: `packages/ide-vscode`. MCP: `integrations/mcp/*.example.json`.
 
-## Escala: 100 mil repos / 2B LOC
+## Escala: 100 mil repos / ~1B LOC / 100k builds·mês
 
-1. **Scan** — na borda do cliente (CI de cada repo); backend só recebe SARIF agregado.
-2. **Ingest** — `BulkWriter` (não `WriteBatch` de 500 ops); métricas denormalizadas no doc do projeto.
-3. **Match em escala** — cache incremental por hash; Rust/SMT/multi-arquivo no Scale-up.
+1. **Scan** — na borda (CI/IDE); backend só recebe SARIF agregado.
+2. **Ingest async** — SARIF → Storage → summary/gate sync → `ingestJobs` + `processIngestJob` (BulkWriter); `maxInstances` 200; idempotência 24h + cotas `orgs/{org}/settings/quotas`.
+3. **Analytics** — `analyticsDaily` / `analyticsMonthly` / `analyticsRepos` (prontos para stream BigQuery); archives no purge.
+4. **Retenção 90 dias** — `purgeStaleDetail` remove detalhe; mantém analytics + FP (`ruleforgeFeedback` / issues `false_positive`).
+5. **Auto-scan** — cron horário com 24 shards (`sha256(repoId) % 24`), até 40 repos/shard.
+6. **listIssues** — `limit` + `cursor` (paginação).
+7. **Observabilidade** — eventos estruturados (`observe`) para log-based metrics no Cloud Logging.
 
 ## Pacotes do monorepo
 

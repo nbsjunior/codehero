@@ -84,6 +84,32 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Analytical rollups (survive 90-day detail purge). Writes via Admin SDK only.
+    match /analyticsDaily/{day} {
+      allow read: if isPlatformAdmin();
+      allow write: if false;
+    }
+    match /analyticsMonthly/{month} {
+      allow read: if isPlatformAdmin();
+      allow write: if false;
+    }
+    match /analyticsRepos/{repoKey} {
+      allow read: if isPlatformAdmin()
+        || (isSignedIn()
+          && resource.data.orgId is string
+          && isOrgMember(resource.data.orgId));
+      allow write: if false;
+    }
+    match /analyticsArchives/{id} {
+      allow read: if isPlatformAdmin();
+      allow write: if false;
+    }
+
+    // Async ingest queue — Admin SDK / Functions only.
+    match /ingestJobs/{jobId} {
+      allow read, write: if false;
+    }
+
     match /orgs/{orgId} {
       allow read: if isOrgMember(orgId) || isPlatformAdmin();
       // Org creation/mutation handled by callable functions (Admin SDK).
@@ -134,6 +160,22 @@ service cloud.firestore {
           allow read: if isOrgMember(orgId) || isPlatformAdmin();
           allow write: if false;
         }
+      }
+
+      // FP / confirmed labels for rule-motor training — never purged.
+      match /ruleforgeFeedback/{id} {
+        allow read: if isOrgMember(orgId) || isPlatformAdmin();
+        allow write: if false;
+      }
+
+      match /sddOutcomes/{id} {
+        allow read: if isOrgMember(orgId) || isPlatformAdmin();
+        allow write: if false;
+      }
+
+      match /settings/{docId} {
+        allow read: if isOrgMember(orgId) || isPlatformAdmin();
+        allow write: if false;
       }
     }
   }

@@ -350,6 +350,24 @@ export async function adminListAllIssues(): Promise<AdminIssuesResult> {
   }
 }
 
+export type IssueFeedbackVerdict = "false_positive" | "confirmed" | "fix_accepted" | "fix_rejected";
+
+export async function flagIssueFeedback(input: {
+  orgId: string;
+  projectId: string;
+  repoId: string;
+  fingerprint: string;
+  verdict: IssueFeedbackVerdict;
+  note?: string;
+}): Promise<void> {
+  const fn = httpsCallable<typeof input, { ok: true }>(functions, "flagIssueFeedback");
+  try {
+    await fn(input);
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha ao registrar o feedback."));
+  }
+}
+
 function formatCallableError(err: unknown, fallback: string): string {
   const fe = err as { code?: string; message?: string; details?: unknown };
   const code = fe?.code ?? "";

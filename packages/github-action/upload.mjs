@@ -1,7 +1,53 @@
 // Uploads the SARIF report to the CodeHero ingest endpoint and enforces the
 // quality gate. Pure Node (>=18) — uses the built-in fetch, no dependencies.
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync, appendFileSync } from "node:fs";
 import { execSync } from "node:child_process";
+
+const SEVERITY_ORDER = ["BLOCKER", "CRITICAL", "MAJOR", "MINOR", "INFO"];
+
+/**
+ * One Markdown report per run, one section per finding, built straight from
+ * the SARIF `properties` the scanner already computed (risk/reason/how to
+ * fix/before-after example) — no extra API call. Meant to be handed to an AI
+ * coding agent (Copilot/Claude/Cursor) as the autofix worklist for this run.
+ */
+function renderFindingsMarkdown(sarif, repoLabel) {
+  const results = [...(sarif.runs?.[0]?.results ?? [])].sort(
+    (a, b) => SEVERITY_ORDER.indexOf(a.properties?.severity ?? "INFO") - SEVERITY_ORDER.indexOf(b.properties?.severity ?? "INFO"),
+  );
+  const lines = [
+    `# CodeHero — apontamentos para autofix (${repoLabel})`,
+    ``,
+    `${results.length} apontamento(s) aberto(s) nesta análise. Cada seção abaixo é uma unidade de trabalho`,
+    `independente: aplique a correção descrita em "Como corrigir", preservando as restrições listadas.`,
+    ``,
+  ];
+  for (const r of results) {
+    const p = r.properties ?? {};
+    const loc = r.locations?.[0]?.physicalLocation;
+    const file = loc?.artifactLocation?.uri ?? "?";
+    const line = loc?.region?.startLine ?? "?";
+    lines.push(
+      `## [${p.severity ?? "INFO"}] ${r.ruleId} — \`${file}:${line}\``,
+      ``,
+      `**Risco:** ${p.risk ?? "—"}`,
+      ``,
+      `**Motivo:** ${p.reason ?? r.message?.text ?? "—"}`,
+      ``,
+      `**Como corrigir:** ${p.howToFix ?? "—"}`,
+      ``,
+    );
+    if (p.snippet) lines.push("```", p.snippet, "```", ``);
+    if (p.referenceExample) {
+      lines.push(`**Antes:**`, "```", p.referenceExample.before, "```", ``, `**Depois:**`, "```", p.referenceExample.after, "```", ``);
+    }
+    if (p.constraints?.length) {
+      lines.push(`**Restrições:**`, ...p.constraints.map((c) => `- ${c}`), ``);
+    }
+    lines.push(`---`, ``);
+  }
+  return lines.join("\n");
+}
 
 const { HERO_URL, HERO_TOKEN, ORG_ID, PROJECT_ID, REPO_ID } = process.env;
 if (!HERO_URL || !HERO_TOKEN || !ORG_ID || !PROJECT_ID || !REPO_ID) {
@@ -33,6 +79,12 @@ try {
     .filter(Boolean);
 } catch {
   /* best-effort */
+}
+
+const findingsMdPath = "codehero-findings.md";
+writeFileSync(findingsMdPath, renderFindingsMarkdown(sarif, `${ORG_ID}/${PROJECT_ID}/${REPO_ID}`));
+if (process.env.GITHUB_OUTPUT) {
+  appendFileSync(process.env.GITHUB_OUTPUT, `findings-md=${findingsMdPath}\n`);
 }
 
 const res = await fetch(`${HERO_URL}/ingestAnalysis`, {

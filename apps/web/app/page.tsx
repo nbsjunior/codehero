@@ -247,7 +247,10 @@ function DashboardHome() {
     <main className="hero-shell">
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem", flexWrap: "wrap" }}>
         <div>
-          <h1 className="hero-display" style={{ fontSize: "2.25rem", margin: "0 0 0.25rem" }}>
+          <p className="hero-caption" style={{ margin: "0 0 0.35rem" }}>
+            Área logada
+          </p>
+          <h1 className="hero-display" style={{ fontSize: "clamp(1.8rem, 5vw, 2.4rem)", margin: "0 0 0.25rem" }}>
             Dashboard
           </h1>
           <p className="hero-caption" style={{ margin: 0 }}>
