@@ -1,6 +1,6 @@
 import { z } from "genkit";
 import { isUnsafeRegex } from "@codehero/contracts";
-import { ai, googleAI } from "./ai.ts";
+import { generateStructured } from "./generate.ts";
 import type { ProposalFamily } from "../ruleProposals.ts";
 
 const NewRuleDraftSchema = z.object({
@@ -86,11 +86,14 @@ Regras de saída:
 - idSlug único no lote.
 - Se não houver proposta útil, rules: [].`;
 
-  const { output } = await ai.generate({
-    model: googleAI.model(process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash"),
+  // Papel "hard-rule": sintetizar regra nova a partir de CVE e de lacuna de
+  // taxonomia e o ponto do pipeline onde a qualidade do raciocinio mais paga.
+  // O avaliador deterministico continua sendo quem decide.
+  const output = await generateStructured({
+    role: "hard-rule",
     prompt,
-    output: { schema: BatchSchema },
-    config: { temperature: 0.25 },
+    schema: BatchSchema,
+    temperature: 0.25,
   });
 
   const drafts = (output?.rules ?? []).filter(

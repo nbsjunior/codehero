@@ -1,5 +1,5 @@
 import { z } from "genkit";
-import { ai, googleAI } from "./ai.ts";
+import { generateStructured } from "./generate.ts";
 
 const DraftRuleSchema = z.object({
   idSlug: z
@@ -62,11 +62,13 @@ Regras de saída:
 - NÃO invente taint/AST — só L0 pattern.
 - Se o texto for vago demais, proponha as interpretações mais conservadoras (menos FP).`;
 
-  const { output } = await ai.generate({
-    model: googleAI.model(process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash"),
+  // Papel "hard-rule": traduzir linguagem natural em regra deterministica e
+  // o diferencial do produto e e sincrono para o usuario — vale o modelo bom.
+  const output = await generateStructured({
+    role: "hard-rule",
     prompt,
-    output: { schema: DressCodeProposalSchema },
-    config: { temperature: 0.15 },
+    schema: DressCodeProposalSchema,
+    temperature: 0.15,
   });
 
   if (!output?.rules?.length) {

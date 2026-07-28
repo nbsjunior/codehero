@@ -13,6 +13,7 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.115.0",
     "@codehero/contracts": "*",
     "@codehero/ruleforge": "*",
     "@genkit-ai/google-genai": "^1.40.1",
@@ -21,7 +22,8 @@
     "firebase-functions": "^6.3.0",
     "genkit": "^1.40.1",
     "tweetsodium": "^0.0.5",
-    "zod": "^3.24.1"
+    "zod": "^3.24.1",
+    "zod-to-json-schema": "^3.25.2"
   },
   "devDependencies": {
     "@types/adm-zip": "^0.5.8"

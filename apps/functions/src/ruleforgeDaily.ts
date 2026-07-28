@@ -10,6 +10,7 @@ import { loadActiveRules } from "./lib/activeRules.ts";
 import { ruleforgeDailyFlow, type RuleforgeDailyReport } from "./genkit/ruleforgeFlow.ts";
 import { draftToEnqueue, proposeNewRulesBatch } from "./genkit/newRulesFlow.ts";
 import { getCveDigestForPrompt } from "./lib/cveWatchlist.ts";
+import { describeRouting } from "./genkit/models.ts";
 import {
   enqueueEvolveProposalsFromReport,
   enqueueNewRuleProposals,
@@ -103,6 +104,12 @@ async function runDaily(trigger: "schedule" | "manual"): Promise<
   } catch (err) {
     logger.warn("new rules proposal batch failed", err);
   }
+
+  logger.info("model routing", {
+    routes: describeRouting().map(
+      (r) => `${r.role}=${r.resolved.provider}:${r.resolved.model}${r.isFallback ? " (fallback)" : ""}`,
+    ),
+  });
 
   logger.info("ruleforgeDaily complete", {
     path,

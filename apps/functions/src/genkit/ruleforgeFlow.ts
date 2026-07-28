@@ -8,7 +8,8 @@ import {
   type RuleCandidateGenerator,
 } from "@codehero/ruleforge";
 import { RULES_BY_ID } from "@codehero/contracts";
-import { ai, googleAI } from "./ai.ts";
+import { ai } from "./ai.ts";
+import { generateStructured } from "./generate.ts";
 
 const MutationSpecSchema = z.object({
   id: z.string().describe("slug único, ex: llm-widen-template-literal"),
@@ -73,11 +74,14 @@ export function createGenkitCandidateGenerator(): RuleCandidateGenerator {
       const rule = RULES_BY_ID[input.ruleId];
       if (!rule) return [];
 
-      const { output } = await ai.generate({
-        model: googleAI.model(process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash"),
+      // Papel "batch": mutacao de regra existente, alto volume e baixo valor
+      // unitario — cada proposta e medida no corpus antes de virar qualquer
+      // coisa, entao o modelo mais barato basta.
+      const output = await generateStructured({
+        role: "batch",
         prompt: buildPrompt(input, rule.pattern.regex, rule.pattern.unless, rule.category),
-        output: { schema: ProposalSchema },
-        config: { temperature: 0.2 },
+        schema: ProposalSchema,
+        temperature: 0.2,
       });
 
       const specs = (output?.mutations ?? []) as MutationSpec[];

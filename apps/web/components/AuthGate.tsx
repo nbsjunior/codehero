@@ -361,10 +361,34 @@ export default function AuthGate({ children }: { children: ReactNode }) {
                 </tr>
                 <tr>
                   <th scope="row">Linguagens legadas</th>
-                  <td className="cr-compare-highlight">COBOL, DB2, VB.Net inclusos</td>
+                  <td className="cr-compare-highlight">COBOL, DB2, T-SQL, VB.Net inclusos</td>
                   <td>Add-on separado</td>
                   <td>Raro</td>
                   <td>Não</td>
+                </tr>
+                <tr>
+                  <th scope="row">Apontamento pronto para autofix</th>
+                  <td className="cr-compare-highlight">Risco, motivo e correção no próprio SARIF</td>
+                  <td>Só o achado</td>
+                  <td>Texto sem estrutura</td>
+                  <td>Só o achado</td>
+                </tr>
+                <tr>
+                  <th scope="row">Tempo de scan</th>
+                  <td className="cr-compare-highlight">Segundos</td>
+                  <td>Minutos</td>
+                  <td>Minutos + custo por token</td>
+                  <td>Segundos</td>
+                </tr>
+                {/* Linha em que perdemos, deliberadamente mantida. Uma tabela
+                    em que um lado vence tudo é descontada inteira por comprador
+                    técnico — e esta é a limitação real do motor L0. */}
+                <tr>
+                  <th scope="row">Fluxo entre arquivos</th>
+                  <td className="cr-compare-highlight">Taint dentro do arquivo (JS/TS)</td>
+                  <td>Taint entre arquivos</td>
+                  <td>Varia</td>
+                  <td>Não faz</td>
                 </tr>
                 <tr>
                   <th scope="row">Setup</th>
@@ -376,6 +400,11 @@ export default function AuthGate({ children }: { children: ReactNode }) {
               </tbody>
             </table>
           </div>
+          <p className="cr-compare-note">
+            Onde a análise profunda entre arquivos é o requisito, o CodeHero ingere o SARIF de
+            motores como CodeQL e Semgrep e continua sendo a camada de política, gate e autofix —
+            complementar, não substituto.
+          </p>
         </section>
 
         <section id="como" className="cr-section">
