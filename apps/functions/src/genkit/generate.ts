@@ -14,6 +14,24 @@ import { resolveRoute, type ModelRole } from "./models.ts";
 // malformed structured output fails here rather than downstream.
 // ---------------------------------------------------------------------------
 
+/**
+ * `thinking: {type: "adaptive"}` e `output_config.effort` são da família 4.6+;
+ * enviá-los para um modelo anterior (Haiku 4.5, por exemplo) devolve 400.
+ * A lista é de inclusão e o default é NÃO enviar, porque omitir os dois é
+ * sempre válido — um modelo novo que não esteja aqui roda sem thinking, o que
+ * degrada a qualidade mas nunca quebra a esteira.
+ */
+const SUPPORTS_ADAPTIVE_THINKING = [
+  /^claude-opus-4-(6|7|8)/,
+  /^claude-sonnet-(5|4-6)/,
+  /^claude-fable-5/,
+  /^claude-mythos-5/,
+];
+
+export function supportsAdaptiveThinking(model: string): boolean {
+  return SUPPORTS_ADAPTIVE_THINKING.some((re) => re.test(model));
+}
+
 let anthropicClient: Anthropic | null = null;
 
 function getAnthropic(): Anthropic {
@@ -67,14 +85,18 @@ async function generateWithAnthropic<T extends z.ZodTypeAny>(
     $refStrategy: "none",
   });
 
+  const modern = supportsAdaptiveThinking(model);
+
   const response = await getAnthropic().messages.create({
     model,
     max_tokens: opts.maxTokens ?? 16000,
-    // Adaptive is the only on-mode on Opus 4.8 / Sonnet 5, and it is off
-    // unless asked for explicitly. No temperature — those models reject it.
-    thinking: { type: "adaptive" },
+    // Adaptive é o único on-mode no Sonnet 5, e fica desligado se não for
+    // pedido explicitamente. Sem temperature — esses modelos a rejeitam.
+    ...(modern ? { thinking: { type: "adaptive" as const } } : {}),
     output_config: {
-      ...(effort ? { effort: effort as "low" | "medium" | "high" | "xhigh" | "max" } : {}),
+      ...(modern && effort
+        ? { effort: effort as "low" | "medium" | "high" | "xhigh" | "max" }
+        : {}),
       format: { type: "json_schema", schema: jsonSchema as Record<string, unknown> },
     },
     messages: [{ role: "user", content: opts.prompt }],

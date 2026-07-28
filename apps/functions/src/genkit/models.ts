@@ -41,17 +41,27 @@ export interface ModelRoute {
 }
 
 /**
- * Cost per million tokens at time of writing, for the record:
- *   gemini-2.5-flash  — cheapest, fine when the evaluator is the real judge
+ * Cost per million tokens (input / output) at time of writing:
+ *   gemini-2.5-flash  — o mais barato; suficiente onde o avaliador é o juiz
  *   claude-haiku-4-5  — $1 / $5
  *   claude-sonnet-5   — $3 / $15
- *   claude-opus-4-8   — $5 / $25
+ *
+ * Opus foi deliberadamente deixado de fora: no volume desta esteira (um lote
+ * por dia) ele custaria ~50% a mais que o Sonnet sem ganho que o avaliador
+ * determinístico consiga medir. Se algum dia um papel justificar, basta a
+ * variável de ambiente — não precisa deploy.
  */
 const DEFAULT_ROUTES: Record<ModelRole, ModelRoute> = {
+  // Volume alto, valor unitário baixo: cada mutação é medida no corpus antes
+  // de virar qualquer coisa, então o modelo mais barato basta.
   batch: { provider: "google", model: "gemini-2.5-flash" },
-  "hard-rule": { provider: "anthropic", model: "claude-opus-4-8", effort: "high" },
-  triage: { provider: "anthropic", model: "claude-sonnet-5", effort: "medium" },
-  autofix: { provider: "anthropic", model: "claude-opus-4-8", effort: "xhigh" },
+  // Síntese de regra nova e tradução de dress code — o diferencial do produto.
+  "hard-rule": { provider: "anthropic", model: "claude-sonnet-5", effort: "high" },
+  // Julgamento simples sobre um trecho curto; é onde o Haiku rende melhor.
+  // Sem `effort`: o parâmetro é da família 4.6+ e o Haiku 4.5 o rejeita.
+  triage: { provider: "anthropic", model: "claude-haiku-4-5" },
+  // Escreve o patch: precisa de qualidade, mas roda sob demanda, não em lote.
+  autofix: { provider: "anthropic", model: "claude-sonnet-5", effort: "xhigh" },
 };
 
 const ENV_KEY: Record<ModelRole, string> = {
