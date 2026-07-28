@@ -106,9 +106,43 @@ const taintLattice: Lattice<TaintFact> = {
   equals: factsEqual,
 };
 
-function exprTaint(node: Node | null | undefined, fact: TaintFact): string[] | null {
+function isSanitizerName(callName: string | null, sanitizers: Set<string>): boolean {
+  if (!callName) return false;
+  for (const s of sanitizers) {
+    if (callName === s || callName.endsWith(`.${s}`)) return true;
+  }
+  return false;
+}
+
+function calleeName(node: t.CallExpression | t.NewExpression): string | null {
+  return memberPath(node.callee) ?? (t.isIdentifier(node.callee) ? node.callee.name : null);
+}
+
+/**
+ * Taint of an expression under `fact`.
+ *
+ * `sources` matters: without it only variables ALREADY in `fact` count, so a
+ * source used inline — `db.query(req.query.id)` or `` `... ${req.query.id}` ``
+ * — was invisible, and only the via-a-variable form was ever reported. Those
+ * inline shapes are the common ones in real code.
+ *
+ * `sanitizers` clears taint at a wrapping call: `escape(req.query.id)` is
+ * clean. Previously only the sink's own callee was checked for sanitization,
+ * which was invisible while inline sources went undetected anyway.
+ */
+function exprTaint(
+  node: Node | null | undefined,
+  fact: TaintFact,
+  sources: string[] = [],
+  sanitizers: Set<string> = new Set(),
+): string[] | null {
   if (!node) return null;
-  if (t.isIdentifier(node)) return fact.get(node.name) ?? null;
+  if (t.isIdentifier(node)) {
+    const known = fact.get(node.name);
+    if (known) return known;
+    const kind = sourceKindFor(node.name, sources);
+    return kind ? [`source:${kind}`] : null;
+  }
   if (t.isMemberExpression(node)) {
     const mp = memberPath(node);
     if (mp) {
@@ -118,33 +152,41 @@ function exprTaint(node: Node | null | undefined, fact: TaintFact): string[] | n
         const p = fact.get(prefix);
         if (p) return [...p, mp];
       }
+      // `req.query.id` is a source even though no prefix is bound in `fact`;
+      // check the whole path and then each prefix (`req.query`).
+      for (let i = parts.length; i >= 1; i--) {
+        const prefix = parts.slice(0, i).join(".");
+        const kind = sourceKindFor(prefix, sources);
+        if (kind) return [`source:${kind}`, mp];
+      }
     }
-    return exprTaint(node.object, fact) ?? exprTaint(node.property as Node, fact);
+    return exprTaint(node.object, fact, sources, sanitizers) ?? exprTaint(node.property as Node, fact, sources, sanitizers);
   }
   if (t.isBinaryExpression(node) && node.operator === "+") {
-    return exprTaint(node.left, fact) ?? exprTaint(node.right, fact);
+    return exprTaint(node.left, fact, sources, sanitizers) ?? exprTaint(node.right, fact, sources, sanitizers);
   }
   if (t.isLogicalExpression(node)) {
-    return exprTaint(node.left, fact) ?? exprTaint(node.right, fact);
+    return exprTaint(node.left, fact, sources, sanitizers) ?? exprTaint(node.right, fact, sources, sanitizers);
   }
   if (t.isTemplateLiteral(node)) {
     for (const ex of node.expressions) {
-      const p = exprTaint(ex, fact);
+      const p = exprTaint(ex, fact, sources, sanitizers);
       if (p) return p;
     }
     return null;
   }
   if (t.isCallExpression(node) || t.isNewExpression(node)) {
+    if (isSanitizerName(calleeName(node), sanitizers)) return null;
     for (const a of node.arguments) {
       if (t.isSpreadElement(a) || t.isArgumentPlaceholder(a)) continue;
-      const p = exprTaint(a, fact);
+      const p = exprTaint(a, fact, sources, sanitizers);
       if (p) return p;
     }
     return null;
   }
-  if (t.isAssignmentExpression(node)) return exprTaint(node.right, fact);
+  if (t.isAssignmentExpression(node)) return exprTaint(node.right, fact, sources, sanitizers);
   if (t.isConditionalExpression(node)) {
-    return exprTaint(node.consequent, fact) ?? exprTaint(node.alternate, fact);
+    return exprTaint(node.consequent, fact, sources, sanitizers) ?? exprTaint(node.alternate, fact, sources, sanitizers);
   }
   return null;
 }
@@ -170,13 +212,7 @@ function analyzeRegion(
   const cfg = buildCfg(stmts);
   if (cfg.length === 0) return { fact: initial, sinks };
 
-  const isSanitized = (callName: string | null): boolean => {
-    if (!callName) return false;
-    for (const s of sanitizers) {
-      if (callName === s || callName.endsWith(`.${s}`)) return true;
-    }
-    return false;
-  };
+  const isSanitized = (callName: string | null): boolean => isSanitizerName(callName, sanitizers);
 
   const transfer = (fact: TaintFact, node: Node): TaintFact => {
     const next = cloneFact(fact);
@@ -192,7 +228,7 @@ function analyzeRegion(
             continue;
           }
         }
-        const path = exprTaint(d.init, next);
+        const path = exprTaint(d.init, next, allSources, sanitizers);
         if (path) next.set(d.id.name, path);
         else next.delete(d.id.name);
       }
@@ -211,7 +247,7 @@ function analyzeRegion(
             return next;
           }
         }
-        const path = exprTaint(node.right, next);
+        const path = exprTaint(node.right, next, allSources, sanitizers);
         if (path) next.set(node.left.name, path);
         else next.delete(node.left.name);
       }
@@ -220,7 +256,7 @@ function analyzeRegion(
         if (leftPath) {
           const sink = sinkKindFor(leftPath, allSinks);
           if (sink) {
-            const path = exprTaint(node.right, next);
+            const path = exprTaint(node.right, next, allSources, sanitizers);
             if (path) sinks.push({ node, sinkKind: sink, path: [...path, `sink:${sink}`] });
           }
         }
@@ -244,7 +280,7 @@ function analyzeRegion(
                 : node.arguments;
           for (const arg of args) {
             if (t.isSpreadElement(arg) || t.isArgumentPlaceholder(arg)) continue;
-            const path = exprTaint(arg, next);
+            const path = exprTaint(arg, next, allSources, sanitizers);
             if (path) sinks.push({ node, sinkKind: sink, path: [...path, `sink:${sink}`] });
           }
         }
@@ -256,7 +292,7 @@ function analyzeRegion(
       if (t.isIdentifier(node.callee) && node.callee.name === "Function" && allSinks.includes("function_ctor")) {
         const last = node.arguments[node.arguments.length - 1];
         if (last && !t.isSpreadElement(last)) {
-          const path = exprTaint(last as Node, next);
+          const path = exprTaint(last as Node, next, allSources, sanitizers);
           if (path) sinks.push({ node, sinkKind: "function_ctor", path: [...path, "sink:function_ctor"] });
         }
       }
@@ -341,28 +377,62 @@ export function runTaintRules(ast: File, file: string, source: string, rules: He
   const seededParams = new Map<string, TaintFact>();
   const globalFact = moduleResult.fact;
 
-  traverse(ast, {
-    CallExpression(path) {
-      const node = path.node as t.CallExpression;
-      const name = memberPath(node.callee) ?? (t.isIdentifier(node.callee) ? node.callee.name : null);
-      if (!name) return;
-      const target = functions.find((f) => f.name === name);
-      if (!target) return;
-      const seed = seededParams.get(name) ?? new Map<string, string[]>();
-      let changed = false;
-      node.arguments.forEach((arg, i) => {
-        if (t.isSpreadElement(arg) || t.isArgumentPlaceholder(arg)) return;
-        const pathT = exprTaint(arg, globalFact);
-        const param = target.params[i];
-        if (pathT && param) {
-          seed.set(param, [...pathT, `arg→${param}`]);
-          changed = true;
-        }
-      });
-      if (changed) seededParams.set(name, seed);
-    },
-  });
+  const byName = new Map(functions.filter((f) => f.name).map((f) => [f.name as string, f]));
 
+  /**
+   * Seeds callee parameters from every call site in `stmts`, using `fact` as
+   * the taint state of the calling region. Returns true if any seed GREW —
+   * only ever adding keys, which is what makes the fixpoint below terminate.
+   */
+  const propagateCalls = (stmts: Statement[], fact: TaintFact): boolean => {
+    let grew = false;
+    for (const stmt of stmts) {
+      t.traverseFast(stmt, (node) => {
+        if (!t.isCallExpression(node)) return;
+        const name =
+          memberPath(node.callee) ?? (t.isIdentifier(node.callee) ? node.callee.name : null);
+        if (!name) return;
+        const target = byName.get(name);
+        if (!target) return;
+
+        const seed = seededParams.get(name) ?? new Map<string, string[]>();
+        node.arguments.forEach((arg, i) => {
+          if (t.isSpreadElement(arg) || t.isArgumentPlaceholder(arg)) return;
+          const param = target.params[i];
+          if (!param || seed.has(param)) return;
+          const argPath = exprTaint(arg as Node, fact, allSources, sanitizers);
+          if (!argPath) return;
+          seed.set(param, [...argPath, `arg→${param}`]);
+          grew = true;
+        });
+        if (seed.size > 0) seededParams.set(name, seed);
+      });
+    }
+    return grew;
+  };
+
+  // Fixpoint over the call graph. A single pass only ever finds 1-hop flows:
+  // taint that reaches f's parameter has to be re-propagated before g, called
+  // from inside f, can be seeded. Iterating until no seed grows converges on
+  // chains of any depth, independent of declaration order.
+  //
+  // Termination: propagateCalls only ADDS parameter keys, and the parameter
+  // set is finite, so the seeds form a monotone increasing chain. MAX_ROUNDS
+  // is belt-and-braces against a pathological graph, not the actual bound.
+  const MAX_ROUNDS = 12;
+  propagateCalls(programBody, globalFact);
+  for (let round = 0; round < MAX_ROUNDS; round++) {
+    let grew = false;
+    for (const fn of functions) {
+      const seed = (fn.name && seededParams.get(fn.name)) || new Map<string, string[]>();
+      const { fact } = analyzeRegion(fn.body, seed, allSources, allSinks, sanitizers);
+      if (propagateCalls(fn.body, fact)) grew = true;
+    }
+    if (!grew) break;
+  }
+
+  // Only now collect sinks: reporting during the rounds above would emit
+  // findings from seeds that were still incomplete.
   for (const fn of functions) {
     const seed = (fn.name && seededParams.get(fn.name)) || new Map();
     const { sinks } = analyzeRegion(fn.body, seed, allSources, allSinks, sanitizers);
