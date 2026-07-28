@@ -1073,6 +1073,43 @@ a.hero-link {
   line-height: 1.55;
 }
 
+.cr-models {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+}
+
+.cr-model {
+  padding: 1.25rem 1.2rem;
+  border: 1px solid var(--cr-border);
+  border-radius: 10px;
+  background: var(--cr-bg-2);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cr-model__role {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: var(--cr-muted);
+}
+
+.cr-model__name {
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.cr-model p {
+  margin: 0.15rem 0 0;
+  color: var(--cr-muted);
+  font-size: 0.93rem;
+  line-height: 1.55;
+}
+
 .cr-compare-note {
   margin: 1rem auto 0;
   max-width: 62ch;

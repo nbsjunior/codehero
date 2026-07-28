@@ -178,6 +178,9 @@ export default function AuthGate({ children }: { children: ReactNode }) {
           <a href="#missao" onClick={() => setNavOpen(false)}>
             Missão
           </a>
+          <a href="#modelos" onClick={() => setNavOpen(false)}>
+            Modelos
+          </a>
           <a href="#como" onClick={() => setNavOpen(false)}>
             Como funciona
           </a>
@@ -404,6 +407,59 @@ export default function AuthGate({ children }: { children: ReactNode }) {
             Onde a análise profunda entre arquivos é o requisito, o CodeHero ingere o SARIF de
             motores como CodeQL e Semgrep e continua sendo a camada de política, gate e autofix —
             complementar, não substituto.
+          </p>
+        </section>
+
+        <section id="modelos" className="cr-section">
+          <div className="cr-section-head">
+            <h2>Onde a IA entra — e onde não entra</h2>
+            <p>
+              Cada função da esteira usa o modelo que o trabalho justifica. Nenhum deles lê o seu
+              código.
+            </p>
+          </div>
+
+          <div className="cr-models">
+            <article className="cr-model">
+              <span className="cr-model__role">Evolução de regra</span>
+              <strong className="cr-model__name">Gemini 2.5 Flash</strong>
+              <p>
+                Muta padrões existentes em lote, todo dia. Volume alto e valor unitário baixo — cada
+                mutação é medida no corpus antes de virar qualquer coisa, então o modelo mais barato
+                basta.
+              </p>
+            </article>
+            <article className="cr-model">
+              <span className="cr-model__role">Regra nova e dress code</span>
+              <strong className="cr-model__name">Claude Sonnet 5</strong>
+              <p>
+                Transforma CVE recente e política escrita em português numa regra determinística.
+                É onde a qualidade do raciocínio realmente paga.
+              </p>
+            </article>
+            <article className="cr-model">
+              <span className="cr-model__role">Triagem de falso positivo</span>
+              <strong className="cr-model__name">Claude Haiku 4.5</strong>
+              <p>
+                Julgamento curto sobre um trecho e seu entorno, em grande quantidade. Rápido e
+                barato, que é exatamente o perfil da tarefa.
+              </p>
+            </article>
+            <article className="cr-model">
+              <span className="cr-model__role">Correção assistida</span>
+              <strong className="cr-model__name">Claude Sonnet 5</strong>
+              <p>
+                Converte a ficha do apontamento em patch aplicável. Roda sob demanda, nunca em lote.
+              </p>
+            </article>
+          </div>
+
+          <p className="cr-compare-note">
+            <strong>O scan em si nunca usa IA.</strong> Os modelos acima trabalham offline, sobre o
+            catálogo de regras — nunca sobre o seu repositório. Quem analisa o seu código é sempre o
+            motor determinístico, e é por isso que o mesmo commit produz o mesmo resultado no CI, no
+            editor e na prévia. Toda regra proposta por um modelo só entra em produção depois de
+            provar precisão contra um corpus rotulado e passar por aprovação humana.
           </p>
         </section>
 
