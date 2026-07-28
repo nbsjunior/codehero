@@ -2429,6 +2429,24 @@ a.hero-link {
   margin-bottom: 1.25rem;
 }
 
+.rules-catalog__gaps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.rules-catalog__gaps .hero-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--muted);
+  font-size: 0.72rem;
+  cursor: default;
+}
+
 .rules-catalog {
   display: grid;
   gap: 0.75rem;

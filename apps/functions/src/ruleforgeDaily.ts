@@ -4,7 +4,9 @@ import { defineSecret } from "firebase-functions/params";
 import { logger } from "firebase-functions";
 import { FieldValue } from "firebase-admin/firestore";
 import { loadCorpus } from "@codehero/ruleforge";
+import { computeLintCoverage, formatLintGapDigest, lintGapWindowSeed } from "@codehero/contracts";
 import { db } from "./lib/firebase.ts";
+import { loadActiveRules } from "./lib/activeRules.ts";
 import { ruleforgeDailyFlow, type RuleforgeDailyReport } from "./genkit/ruleforgeFlow.ts";
 import { draftToEnqueue, proposeNewRulesBatch } from "./genkit/newRulesFlow.ts";
 import { getCveDigestForPrompt } from "./lib/cveWatchlist.ts";
@@ -36,6 +38,26 @@ async function loadFeedbackContext(): Promise<string> {
   } catch (err) {
     logger.warn("ruleforge feedback context unavailable", err);
     return "Telemetria indisponível neste run.";
+  }
+}
+
+/**
+ * Coverage is computed against the ACTIVE catalog (core + approved overlays),
+ * so a topic approved yesterday stops being proposed today.
+ */
+async function loadLintGapDigest(day: string): Promise<string> {
+  try {
+    const active = await loadActiveRules();
+    const coverage = computeLintCoverage(active.rules);
+    logger.info("lint knowledge base coverage", {
+      covered: coverage.covered.length,
+      uncovered: coverage.uncovered.length,
+      activeRules: active.rules.length,
+    });
+    return formatLintGapDigest(coverage, 18, lintGapWindowSeed(day));
+  } catch (err) {
+    logger.warn("lint gap digest unavailable", err);
+    return "Lacunas de lint/clean-code indisponíveis neste run.";
   }
 }
 
@@ -72,7 +94,8 @@ async function runDaily(trigger: "schedule" | "manual"): Promise<
   try {
     const day = report.ranAt.slice(0, 10);
     const cveDigest = await getCveDigestForPrompt();
-    const batch = await proposeNewRulesBatch(`${context}\n\n${cveDigest}`);
+    const lintGapDigest = await loadLintGapDigest(day);
+    const batch = await proposeNewRulesBatch(`${context}\n\n${cveDigest}\n\n${lintGapDigest}`);
     newRuleProposals = await enqueueNewRuleProposals(
       batch.drafts.map((d) => draftToEnqueue(d, day)),
       corpus,
