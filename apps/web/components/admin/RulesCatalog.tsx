@@ -5,6 +5,7 @@ import { Callout, PageHeader } from "@/components/AdminUi";
 import {
   deleteOverlayRule,
   listMotorRules,
+  type MotorLintCoverage,
   type MotorRuleGroup,
   type MotorRuleRow,
   type MotorRulesTotals,
@@ -23,6 +24,7 @@ type SourceFilter = "all" | "core" | "custom";
 export default function RulesCatalog() {
   const [groups, setGroups] = useState<MotorRuleGroup[]>([]);
   const [totals, setTotals] = useState<MotorRulesTotals | null>(null);
+  const [lintCoverage, setLintCoverage] = useState<MotorLintCoverage | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
@@ -39,6 +41,7 @@ export default function RulesCatalog() {
       const res = await listMotorRules();
       setGroups(res.groups);
       setTotals(res.totals);
+      setLintCoverage(res.lintCoverage ?? null);
       setOpenGroups(new Set(res.groups.map((g) => g.id)));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha ao carregar regras.");
@@ -130,6 +133,31 @@ export default function RulesCatalog() {
         <p className="hero-caption" style={{ marginTop: "-0.5rem", marginBottom: "1rem" }}>
           {totals.all} regras · {totals.core} core · {totals.platform} plataforma · {totals.project} projeto
         </p>
+      )}
+
+      {lintCoverage && lintCoverage.total > 0 && (
+        <Callout
+          tone={lintCoverage.gaps.length > 0 ? "warn" : "ok"}
+          title={`Cobertura da taxonomia de lint/clean-code: ${lintCoverage.covered}/${lintCoverage.total}`}
+        >
+          {lintCoverage.gaps.length === 0 ? (
+            "Nenhuma lacuna determinística pendente na taxonomia."
+          ) : (
+            <>
+              <p style={{ margin: "0 0 0.5rem" }}>
+                {lintCoverage.gaps.length} classes de defeito conhecidas ainda sem regra ativa. A
+                esteira usa exatamente esta lista para priorizar as propostas diárias.
+              </p>
+              <div className="rules-catalog__gaps">
+                {lintCoverage.gaps.map((g) => (
+                  <span key={g.id} className="hero-chip" title={`${g.family} · ${g.languages.join(", ")}`}>
+                    {g.title}
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
+        </Callout>
       )}
 
       {error && <div className="hero-error">{error}</div>}

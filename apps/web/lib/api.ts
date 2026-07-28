@@ -773,14 +773,29 @@ export interface MotorRulesTotals {
   all: number;
 }
 
+export interface LintCoverageGap {
+  id: string;
+  title: string;
+  family: "security" | "dress" | "smell";
+  languages: string[];
+}
+
+/** Taxonomy coverage that also grounds the daily rule-proposal prompt. */
+export interface MotorLintCoverage {
+  covered: number;
+  total: number;
+  gaps: LintCoverageGap[];
+}
+
 export async function listMotorRules(): Promise<{
   groups: MotorRuleGroup[];
   totals: MotorRulesTotals;
+  lintCoverage?: MotorLintCoverage;
 }> {
-  const fn = httpsCallable<undefined, { groups: MotorRuleGroup[]; totals: MotorRulesTotals }>(
-    functions,
-    "listMotorRules",
-  );
+  const fn = httpsCallable<
+    undefined,
+    { groups: MotorRuleGroup[]; totals: MotorRulesTotals; lintCoverage?: MotorLintCoverage }
+  >(functions, "listMotorRules");
   try {
     const res = await fn();
     return res.data;

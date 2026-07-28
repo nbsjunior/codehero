@@ -22,7 +22,26 @@ const NewRuleDraftSchema = z.object({
   ]),
   severity: z.enum(["BLOCKER", "CRITICAL", "MAJOR", "MINOR", "INFO"]),
   type: z.enum(["VULNERABILITY", "BUG", "CODE_SMELL", "SECURITY_HOTSPOT"]),
-  languages: z.array(z.enum(["javascript", "typescript", "python", "java", "go", "any"])).min(1),
+  // Mirrors RuleLanguage in @codehero/contracts — the enterprise/legacy
+  // languages must be here too, otherwise the lint gaps we ground the prompt
+  // with (C#, VB.NET, COBOL, T-SQL, DB2) would be unexpressable in the output.
+  languages: z
+    .array(
+      z.enum([
+        "javascript",
+        "typescript",
+        "python",
+        "java",
+        "go",
+        "csharp",
+        "vbnet",
+        "cobol",
+        "tsql",
+        "db2sql",
+        "any",
+      ]),
+    )
+    .min(1),
   patternRegex: z.string(),
   patternUnless: z.string().optional(),
   rationale: z.string().describe("por que esta regra (OWASP/CVE/prática) — 1-2 frases"),
@@ -51,10 +70,12 @@ Proponha até 6 regras SAST DETERMINÍSTICAS (regex por linha) que ainda NÃO es
 Foque em:
 1) security — priorize os CVEs/advisories REAIS listados abaixo no contexto do batch (não invente CVE de memória;
    se a lista de CVEs estiver vazia ou não sugerir nada acionável, aí sim use OWASP Top 10 / padrões clássicos).
-2) dress / smell — práticas de engenharia (console.log em prod, TODO crítico, Math.random em token, etc.)
+2) dress / smell — priorize as LACUNAS de lint/clean-code listadas no contexto: elas foram calculadas contra o
+   catálogo ativo e representam o que de fato falta. Não reproponha tema já coberto.
 
-Contexto do batch (inclui, quando disponível, um digest de CVEs/advisories recentes de
-GitHub Security Advisories — use isso como fonte primária, é dado real e atual, não sua memória de treino):
+Contexto do batch — duas fontes de grounding, ambas dado real e atual, prefira-as à sua memória de treino:
+(a) digest de CVEs/advisories recentes do GitHub Security Advisories;
+(b) lacunas de lint/clean-code ainda não cobertas pelo catálogo ativo do CodeHero.
 ${context}
 
 Regras de saída:

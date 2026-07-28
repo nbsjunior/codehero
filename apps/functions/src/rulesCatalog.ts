@@ -1,5 +1,11 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
-import { RULES, type HeroRule, type IssueType } from "@codehero/contracts";
+import {
+  RULES,
+  computeLintCoverage,
+  type HeroRule,
+  type IssueType,
+  type RuleLanguage,
+} from "@codehero/contracts";
 import { db } from "./lib/firebase.ts";
 
 const GROUP_ORDER: IssueType[] = ["VULNERABILITY", "SECURITY_HOTSPOT", "BUG", "CODE_SMELL"];
@@ -230,6 +236,17 @@ export const listMotorRules = onCall(async (request) => {
     });
   }
 
+  // Same taxonomy that grounds the daily proposal prompt — surfacing it here
+  // lets an admin see WHY the esteira is proposing what it proposes.
+  const coverage = computeLintCoverage(
+    unique.map((r) => ({
+      id: r.id,
+      name: r.name,
+      message: r.message,
+      languages: r.languages as RuleLanguage[],
+    })),
+  );
+
   return {
     groups,
     totals: {
@@ -237,6 +254,18 @@ export const listMotorRules = onCall(async (request) => {
       platform: unique.filter((r) => r.source === "platform").length,
       project: unique.filter((r) => r.source === "project").length,
       all: unique.length,
+    },
+    lintCoverage: {
+      covered: coverage.covered.length,
+      total: coverage.covered.length + coverage.uncovered.length,
+      gaps: coverage.uncovered
+        .filter((t) => t.regexFeasible)
+        .map((t) => ({
+          id: t.id,
+          title: t.title,
+          family: t.family,
+          languages: t.languages,
+        })),
     },
   };
 });
