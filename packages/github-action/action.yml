@@ -46,6 +46,31 @@ runs:
       with:
         node-version: "22"
 
+    # `required: true` em input de composite action NÃO é validado pelo runner:
+    # um input ausente chega como string vazia e só quebra lá no upload, com
+    # mensagem críptica. Falhar aqui, nomeando o que falta, é o que torna a
+    # integração diagnosticável por quem está configurando.
+    - name: Validar configuração
+      shell: bash
+      env:
+        SERVER_URL: ${{ inputs.server-url }}
+        TOKEN: ${{ inputs.token }}
+        ORG_ID: ${{ inputs.org-id }}
+        PROJECT_ID: ${{ inputs.project-id }}
+        REPO_ID: ${{ inputs.repo-id }}
+      run: |
+        missing=""
+        [ -n "$SERVER_URL" ] || missing="$missing server-url"
+        [ -n "$TOKEN" ]      || missing="$missing token"
+        [ -n "$ORG_ID" ]     || missing="$missing org-id"
+        [ -n "$PROJECT_ID" ] || missing="$missing project-id"
+        [ -n "$REPO_ID" ]    || missing="$missing repo-id"
+        if [ -n "$missing" ]; then
+          echo "::error::CodeHero: input(s) obrigatório(s) sem valor:$missing"
+          echo "::error::Configure as variables/secrets correspondentes no repositório (Settings > Secrets and variables > Actions)."
+          exit 1
+        fi
+
     - name: Run CodeHero scanner
       id: scan
       shell: bash
@@ -63,6 +88,14 @@ runs:
         else
           npx --yes @codehero/scanner "${{ inputs.path }}" --sarif --out codehero.sarif \
             --server "$HERO_CORE_URL" --token "$HERO_TOKEN" --org "$HERO_ORG_ID" --project "$HERO_PROJECT_ID" || true
+        fi
+        # O `|| true` acima é intencional: o scanner sai não-zero quando ACHA
+        # apontamentos, e quem decide o gate é o upload. Mas ele também
+        # mascarava "binário não encontrado" — daí a checagem do relatório.
+        if [ ! -f codehero.sarif ]; then
+          echo "::error::CodeHero: o scanner não gerou codehero.sarif (binário ausente ou falha na execução)."
+          echo "::error::No monorepo, rode o build do scanner antes desta action; fora dele, verifique o pacote @codehero/scanner."
+          exit 1
         fi
         echo "sarif=codehero.sarif" >> "$GITHUB_OUTPUT"
 
