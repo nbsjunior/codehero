@@ -10,6 +10,7 @@ import {
 } from "@codehero/contracts";
 import { analyzeSource, enableScanCache, type Finding } from "./engine.ts";
 import { collectFiles } from "./walk.ts";
+import { loadIgnoreFile, makeIgnoreMatcher, IGNORE_FILE } from "./ignore.ts";
 import { buildSarif } from "./sarif.ts";
 import { loadRulesFile, resolveActiveRules } from "./fetchRules.ts";
 
@@ -25,6 +26,7 @@ interface CliOptions {
   token: string | null;
   orgId: string | null;
   projectId: string | null;
+  ignore: string[];
 }
 
 function parseArgs(argv: string[]): CliOptions {
@@ -40,6 +42,7 @@ function parseArgs(argv: string[]): CliOptions {
     token: null,
     orgId: null,
     projectId: null,
+    ignore: [],
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -54,6 +57,10 @@ function parseArgs(argv: string[]): CliOptions {
     else if (a === "--token") opts.token = argv[++i] ?? null;
     else if (a === "--org") opts.orgId = argv[++i] ?? null;
     else if (a === "--project") opts.projectId = argv[++i] ?? null;
+    else if (a === "--ignore") {
+      const v = argv[++i];
+      if (v) opts.ignore.push(v);
+    }
     else if (a?.startsWith("-")) continue;
     else if (a) opts.paths.push(a);
   }
@@ -69,7 +76,9 @@ async function main(): Promise<void> {
 
   const { rules, meta } = await loadRules(opts);
   const cwd = process.cwd();
-  const files = collectFiles(opts.paths);
+  // CLI patterns stack on top of .codeheroignore rather than replacing it.
+  const ignorePatterns = [...loadIgnoreFile(cwd), ...opts.ignore];
+  const files = collectFiles(opts.paths, makeIgnoreMatcher(ignorePatterns));
   const findings: Finding[] = [];
 
   for (const file of files) {
@@ -90,7 +99,7 @@ async function main(): Promise<void> {
     if (opts.out) writeFileSync(opts.out, json);
     else process.stdout.write(json + "\n");
   } else {
-    printPretty(findings, files.length, rules.length, meta);
+    printPretty(findings, files.length, rules.length, meta, ignorePatterns.length);
     if (opts.out) writeFileSync(opts.out, JSON.stringify(sarif, null, 2));
   }
 
@@ -123,7 +132,13 @@ async function loadRules(opts: CliOptions): Promise<{ rules: HeroRule[]; meta: s
   };
 }
 
-function printPretty(findings: Finding[], fileCount: number, ruleCount: number, meta: string): void {
+function printPretty(
+  findings: Finding[],
+  fileCount: number,
+  ruleCount: number,
+  meta: string,
+  ignoreCount = 0,
+): void {
   const bySev = new Map<Severity, number>();
   for (const f of findings) bySev.set(f.rule.severity, (bySev.get(f.rule.severity) ?? 0) + 1);
 

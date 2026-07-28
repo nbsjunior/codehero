@@ -187,9 +187,17 @@ export const RULES: HeroRule[] = [
     message: "Entrada de usuário alcança child_process (command injection).",
     sddTemplateId: "sdd.cmd.avoid-shell",
     category: "string-injection",
+    // O padrão anterior — `(exec|execSync|spawn)\s*\(` — casava com qualquer
+    // `exec(`, confundindo RegExp.prototype.exec (`re.exec(line)`) com
+    // child_process.exec e disparando até dentro de comentários. Medido no
+    // avaliador determinístico: precision 0.545 -> 1.000, recall 1.000
+    // mantido (casos os-01..os-12 em corpus/golden.json).
+    // A forma de método só conta quando o receptor nomeia child_process;
+    // a chamada nua continua contando.
     pattern: {
-      regex: "(?i)(exec|execSync|spawn)\\s*\\(",
-      unless: "(?i)(shell\\s*:\\s*false)",
+      regex:
+        "(?i)(?:\\b(?:child_process|childProcess|cp)\\s*\\.\\s*(?:execSync|execFileSync|spawnSync|execFile|exec|spawn)\\s*\\(|(?:^|[^.\\w])(?:execSync|execFileSync|spawnSync|execFile|exec|spawn)\\s*\\()",
+      unless: "(?i)(shell\\s*:\\s*false)|^\\s*(//|\\*|#)",
     },
     taint: {
       sources: ["http.param", "http.body", "process.argv"],

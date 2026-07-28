@@ -1,0 +1,18 @@
+# Exclusões do scan do CodeHero sobre o próprio CodeHero.
+# Só entram aqui coisas que NÃO são código de produção — nada de esconder
+# apontamento real. Sintaxe: subconjunto do gitignore (ver packages/scanner/src/ignore.ts).
+
+# --- Fixtures deliberadamente vulneráveis (são o material de demonstração) ---
+examples/
+packages/engine/src/fixtures.ts
+packages/engine/src/selftest.ts
+packages/ruleforge/corpus/
+
+# --- O catálogo se auto-detecta: o texto das mensagens e o source das
+# regexes contêm, por definição, os padrões que as regras caçam ---
+packages/contracts/src/rules.ts
+packages/contracts/src/sdd.ts
+
+# --- Artefatos e rascunhos ---
+tmp/
+*.min.js
