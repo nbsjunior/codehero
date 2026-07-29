@@ -1,7 +1,7 @@
 import { onRequest, HttpsError } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions";
 import { z } from "zod";
-import { type SarifLog, normalizeSarifResultsToCatalog } from "@codehero/contracts";
+import { type SarifLog } from "@codehero/contracts";
 import { storage, STORAGE_BUCKET_NAME, repoRef } from "./lib/firebase.ts";
 import {
   persistAnalysisResults,
@@ -71,7 +71,9 @@ export const ingestAnalysis = onRequest(
       throw err;
     }
 
-    const results = normalizeSarifResultsToCatalog(sarif.runs?.[0]?.results ?? []);
+    // NOTA: a normalizacao de rule-id para o catalogo Sonar way vive numa
+    // alteracao ainda nao versionada (sonarCatalog.ts). Volta junto com ela.
+    const results = sarif.runs?.[0]?.results ?? [];
     // Keep tool-reported rule ids in stored SARIF; persistence uses normalized `results`.
     const idempotencyKey = ingestIdempotencyKey({
       orgId,
