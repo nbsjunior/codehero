@@ -13,13 +13,21 @@ import { logger } from "firebase-functions";
 // can be re-pointed without a deploy of new code.
 // ---------------------------------------------------------------------------
 
-// Ativar o provedor Anthropic exige DOIS passos, nesta ordem:
-//   1. firebase functions:secrets:set ANTHROPIC_API_KEY --project apponti
-//   2. declarar defineSecret("ANTHROPIC_API_KEY") e somar ao `secrets: []`
-//      de ruleforgeDaily / runRuleforgeDaily / submitDressCode
-// A ordem importa: vincular um secret que ainda nao existe no Secret Manager
-// faz `firebase deploy --non-interactive` falhar. Sem a chave, resolveRoute
-// degrada tudo para o Gemini e a esteira roda exatamente como hoje.
+// ATIVAR O CLAUDE (caminho Vertex — sem fornecedor novo, sem secret):
+//   1. Habilitar os modelos Anthropic no Model Garden do projeto `apponti`
+//   2. Conceder `roles/aiplatform.user` à service account do runtime das
+//      Functions (a mesma que já roda hoje)
+//   3. Criar a repository variable HERO_VERTEX_ENABLED=true e re-rodar o
+//      workflow de deploy — ele monta apps/functions/.env a partir dela
+//
+// A ordem importa: sem os passos 1 e 2 a chamada volta 403/404 do Model
+// Garden. Por isso `vertexAvailable()` exige o opt-in EXPLÍCITO em vez de
+// apenas detectar o projeto GCP — que no runtime das Functions está sempre
+// presente e ligaria o Vertex sozinho, no primeiro deploy, antes da hora.
+//
+// Enquanto a flag estiver desligada, tudo degrada para o Gemini e a esteira
+// roda exatamente como hoje. A API direta da Anthropic segue disponível como
+// override (`HERO_MODEL_*=anthropic:...` + secret ANTHROPIC_API_KEY).
 
 export type ModelRole =
   /** Daily batch of rule proposals. High volume, low unit value — the evaluator filters. */
@@ -31,12 +39,19 @@ export type ModelRole =
   /** Turns a finding's ficha into an applied patch. Highest perceived value. */
   | "autofix";
 
-export type ModelProvider = "google" | "anthropic";
+/**
+ * `vertex` e `anthropic` servem os MESMOS modelos Claude — muda só por onde
+ * a conta passa. O padrão é `vertex`: cobrança na fatura do GCP que já existe,
+ * autenticação pela service account do runtime, sem fornecedor novo e sem
+ * secret para criar. `anthropic` (API direta, exige ANTHROPIC_API_KEY) fica
+ * disponível como override.
+ */
+export type ModelProvider = "google" | "vertex" | "anthropic";
 
 export interface ModelRoute {
   provider: ModelProvider;
   model: string;
-  /** Used only by the Anthropic provider; Gemini ignores it. */
+  /** Só vale para Claude (vertex/anthropic); o Gemini ignora. */
   effort?: "low" | "medium" | "high" | "xhigh" | "max";
 }
 
@@ -56,12 +71,12 @@ const DEFAULT_ROUTES: Record<ModelRole, ModelRoute> = {
   // de virar qualquer coisa, então o modelo mais barato basta.
   batch: { provider: "google", model: "gemini-2.5-flash" },
   // Síntese de regra nova e tradução de dress code — o diferencial do produto.
-  "hard-rule": { provider: "anthropic", model: "claude-sonnet-5", effort: "high" },
+  "hard-rule": { provider: "vertex", model: "claude-sonnet-5", effort: "high" },
   // Julgamento simples sobre um trecho curto; é onde o Haiku rende melhor.
   // Sem `effort`: o parâmetro é da família 4.6+ e o Haiku 4.5 o rejeita.
-  triage: { provider: "anthropic", model: "claude-haiku-4-5" },
+  triage: { provider: "vertex", model: "claude-haiku-4-5" },
   // Escreve o patch: precisa de qualidade, mas roda sob demanda, não em lote.
-  autofix: { provider: "anthropic", model: "claude-sonnet-5", effort: "xhigh" },
+  autofix: { provider: "vertex", model: "claude-sonnet-5", effort: "xhigh" },
 };
 
 const ENV_KEY: Record<ModelRole, string> = {
@@ -71,27 +86,60 @@ const ENV_KEY: Record<ModelRole, string> = {
   autofix: "HERO_MODEL_AUTOFIX",
 };
 
-/** `anthropic:claude-opus-4-8:high` or `google:gemini-2.5-flash`. */
+const PROVIDERS: ModelProvider[] = ["google", "vertex", "anthropic"];
+
+/** `vertex:claude-sonnet-5:high` ou `google:gemini-2.5-flash`. */
 function parseRoute(raw: string): ModelRoute | null {
   const [provider, model, effort] = raw.split(":").map((s) => s.trim());
-  if (provider !== "google" && provider !== "anthropic") return null;
+  if (!PROVIDERS.includes(provider as ModelProvider)) return null;
   if (!model) return null;
   return {
-    provider,
+    provider: provider as ModelProvider,
     model,
     ...(effort ? { effort: effort as ModelRoute["effort"] } : {}),
   };
+}
+
+/** Projeto GCP do runtime — as Functions já expõem isto sozinhas. */
+export function vertexProjectId(): string | null {
+  return (
+    process.env.HERO_VERTEX_PROJECT?.trim() ||
+    process.env.GCLOUD_PROJECT?.trim() ||
+    process.env.GOOGLE_CLOUD_PROJECT?.trim() ||
+    null
+  );
+}
+
+/** `global` não tem o prêmio de 10% dos endpoints regionais. */
+export function vertexRegion(): string {
+  return process.env.HERO_VERTEX_REGION?.trim() || "global";
+}
+
+/**
+ * Vertex exige opt-in EXPLÍCITO, mesmo o projeto GCP estando sempre presente
+ * no runtime. Sem isso, o primeiro deploy passaria a chamar o Model Garden
+ * antes de alguém ter habilitado o Claude lá ou dado `aiplatform.user` à
+ * service account — e a esteira quebraria sozinha. Com o opt-in desligado
+ * tudo degrada para o Gemini, exatamente como hoje.
+ */
+export function vertexAvailable(): boolean {
+  return process.env.HERO_VERTEX_ENABLED?.trim() === "true" && Boolean(vertexProjectId());
 }
 
 export function anthropicAvailable(): boolean {
   return Boolean(process.env.ANTHROPIC_API_KEY?.trim());
 }
 
+function providerAvailable(provider: ModelProvider): boolean {
+  if (provider === "vertex") return vertexAvailable();
+  if (provider === "anthropic") return anthropicAvailable();
+  return true;
+}
+
 /**
- * Resolves the route for a role, applying two fallbacks in order:
- * an env override, then — if the route needs Anthropic and no key is
- * configured — the batch route, so a missing secret degrades the esteira
- * to today's behaviour instead of breaking it.
+ * Resolve a rota do papel: override por env primeiro; depois, se o provedor
+ * escolhido não estiver configurado, cai na rota `batch` (Gemini) — degradar
+ * é sempre melhor que derrubar o run.
  */
 export function resolveRoute(role: ModelRole): ModelRoute {
   const override = process.env[ENV_KEY[role]]?.trim();
@@ -101,12 +149,16 @@ export function resolveRoute(role: ModelRole): ModelRoute {
   }
   const route = parsed ?? DEFAULT_ROUTES[role];
 
-  if (route.provider === "anthropic" && !anthropicAvailable()) {
+  if (!providerAvailable(route.provider)) {
     const fallback = DEFAULT_ROUTES.batch;
-    logger.warn("ANTHROPIC_API_KEY not configured — falling back", {
+    logger.warn("provedor de modelo não configurado — degradando", {
       role,
       wanted: `${route.provider}:${route.model}`,
       using: `${fallback.provider}:${fallback.model}`,
+      hint:
+        route.provider === "vertex"
+          ? "defina HERO_VERTEX_ENABLED=true após habilitar o Claude no Model Garden"
+          : "defina o secret ANTHROPIC_API_KEY",
     });
     return fallback;
   }
@@ -123,7 +175,7 @@ export function describeRouting(): Array<{ role: ModelRole; resolved: ModelRoute
     return {
       role,
       resolved,
-      isFallback: wanted.provider === "anthropic" && resolved.provider !== "anthropic",
+      isFallback: wanted.provider !== "google" && resolved.provider === "google",
     };
   });
 }

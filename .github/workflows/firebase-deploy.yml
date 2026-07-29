@@ -40,6 +40,19 @@ jobs:
           NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}
         run: npm run build
 
+      # Runtime env das Functions. O Firebase CLI lê apps/functions/.env no
+      # deploy; o arquivo é gitignored, então é montado aqui a partir de
+      # variables do repositório. Ligar o Claude no Vertex vira uma mudança
+      # de variable + re-run do workflow, sem editar código.
+      - name: Montar .env das Functions
+        run: |
+          cat > apps/functions/.env <<EOF
+          HERO_VERTEX_ENABLED=${{ vars.HERO_VERTEX_ENABLED || 'false' }}
+          HERO_VERTEX_REGION=${{ vars.HERO_VERTEX_REGION || 'global' }}
+          EOF
+          echo "--- apps/functions/.env ---"
+          cat apps/functions/.env
+
       - name: Autenticar no Google Cloud
         uses: google-github-actions/auth@v3
         with:
