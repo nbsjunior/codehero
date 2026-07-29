@@ -1,9 +1,16 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { AnthropicVertex } from "@anthropic-ai/vertex-sdk";
 import { logger } from "firebase-functions";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import type { z } from "genkit";
 import { ai, googleAI } from "./ai.ts";
-import { resolveRoute, type ModelRole } from "./models.ts";
+import {
+  resolveRoute,
+  vertexProjectId,
+  vertexRegion,
+  type ModelProvider,
+  type ModelRole,
+} from "./models.ts";
 
 // ---------------------------------------------------------------------------
 // One structured-generation entry point for every ruleforge flow, so a role
@@ -32,10 +39,40 @@ export function supportsAdaptiveThinking(model: string): boolean {
   return SUPPORTS_ADAPTIVE_THINKING.some((re) => re.test(model));
 }
 
-let anthropicClient: Anthropic | null = null;
+/**
+ * IDs no Vertex nem sempre batem com os da API direta: modelos de geração
+ * atual usam o ID puro, mas snapshots datados levam separador `@`. Errar isso
+ * dá 404 no Model Garden, não erro de validação — por isso a tradução é
+ * explícita em vez de heurística.
+ */
+const VERTEX_MODEL_IDS: Record<string, string> = {
+  "claude-haiku-4-5": "claude-haiku-4-5@20251001",
+  "claude-sonnet-4-5": "claude-sonnet-4-5@20250929",
+  "claude-opus-4-5": "claude-opus-4-5@20251101",
+};
 
-function getAnthropic(): Anthropic {
-  // Lazily constructed: the secret is only bound at call time in Functions.
+export function toVertexModelId(model: string): string {
+  return VERTEX_MODEL_IDS[model] ?? model;
+}
+
+let anthropicClient: Anthropic | null = null;
+let vertexClient: AnthropicVertex | null = null;
+
+/**
+ * Ambos os clientes expõem a mesma `messages.create`, então o resto do
+ * adaptador não precisa saber por onde a chamada saiu.
+ */
+function getClaudeClient(provider: ModelProvider): Anthropic | AnthropicVertex {
+  if (provider === "vertex") {
+    // Autenticação por Application Default Credentials: nas Functions é a
+    // própria service account do runtime, sem chave para guardar.
+    vertexClient ??= new AnthropicVertex({
+      projectId: vertexProjectId() ?? undefined,
+      region: vertexRegion(),
+    });
+    return vertexClient;
+  }
+  // Construído tarde: o secret só existe no momento da chamada.
   anthropicClient ??= new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   return anthropicClient;
 }
@@ -54,8 +91,8 @@ export async function generateStructured<T extends z.ZodTypeAny>(
 ): Promise<z.infer<T> | null> {
   const route = resolveRoute(opts.role);
 
-  if (route.provider === "anthropic") {
-    return generateWithAnthropic(opts, route.model, route.effort);
+  if (route.provider === "vertex" || route.provider === "anthropic") {
+    return generateWithClaude(opts, route.provider, route.model, route.effort);
   }
   return generateWithGemini(opts, route.model);
 }
@@ -73,8 +110,9 @@ async function generateWithGemini<T extends z.ZodTypeAny>(
   return (output as z.infer<T> | undefined) ?? null;
 }
 
-async function generateWithAnthropic<T extends z.ZodTypeAny>(
+async function generateWithClaude<T extends z.ZodTypeAny>(
   opts: GenerateOptions<T>,
+  provider: ModelProvider,
   model: string,
   effort: string | undefined,
 ): Promise<z.infer<T> | null> {
@@ -85,10 +123,13 @@ async function generateWithAnthropic<T extends z.ZodTypeAny>(
     $refStrategy: "none",
   });
 
+  // A checagem de capacidade usa o ID canônico; o sufixo `@data` do Vertex
+  // quebraria os padrões.
   const modern = supportsAdaptiveThinking(model);
+  const wireModel = provider === "vertex" ? toVertexModelId(model) : model;
 
-  const response = await getAnthropic().messages.create({
-    model,
+  const response = await getClaudeClient(provider).messages.create({
+    model: wireModel,
     max_tokens: opts.maxTokens ?? 16000,
     // Adaptive é o único on-mode no Sonnet 5, e fica desligado se não for
     // pedido explicitamente. Sem temperature — esses modelos a rejeitam.
@@ -103,8 +144,9 @@ async function generateWithAnthropic<T extends z.ZodTypeAny>(
   });
 
   if (response.stop_reason === "refusal") {
-    logger.warn("anthropic declined the ruleforge prompt", {
-      model,
+    logger.warn("claude declinou o prompt da ruleforge", {
+      provider,
+      model: wireModel,
       category: response.stop_details?.type,
     });
     return null;
@@ -120,14 +162,15 @@ async function generateWithAnthropic<T extends z.ZodTypeAny>(
   try {
     raw = JSON.parse(text);
   } catch {
-    logger.warn("anthropic returned non-JSON under a json_schema format", { model });
+    logger.warn("claude devolveu não-JSON sob json_schema", { provider, model: wireModel });
     return null;
   }
 
   const parsed = opts.schema.safeParse(raw);
   if (!parsed.success) {
-    logger.warn("anthropic output failed schema validation", {
-      model,
+    logger.warn("saída do claude falhou na validação de schema", {
+      provider,
+      model: wireModel,
       issues: parsed.error.issues.slice(0, 3),
     });
     return null;
