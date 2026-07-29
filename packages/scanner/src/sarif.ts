@@ -9,9 +9,10 @@ import {
   type SarifReportingDescriptor,
   type SarifResult,
 } from "@codehero/contracts";
+import type { CoverageReport } from "@codehero/contracts";
 import type { Finding } from "./engine.ts";
 
-export function buildSarif(findings: Finding[]): SarifLog {
+export function buildSarif(findings: Finding[], coverage?: CoverageReport | null): SarifLog {
   const seenRules = new Map<string, SarifReportingDescriptor>();
   const results: SarifResult[] = [];
 
@@ -101,6 +102,26 @@ export function buildSarif(findings: Finding[]): SarifLog {
           },
         },
         results,
+        // Cobertura viaja em `properties` do run porque o SARIF não tem
+        // lugar canônico para métrica de projeto — só para achados. O ingest
+        // lê daqui; nenhuma outra ferramenta se importa com o campo.
+        ...(coverage
+          ? {
+              properties: {
+                coverage: {
+                  format: coverage.format,
+                  lines: coverage.lines,
+                  ...(coverage.branches ? { branches: coverage.branches } : {}),
+                  files: coverage.files.map((f) => ({
+                    path: f.path,
+                    lines: f.lines,
+                    uncoveredLines: f.uncoveredLines,
+                    coveredLines: f.coveredLines,
+                  })),
+                },
+              },
+            }
+          : {}),
       },
     ],
   };

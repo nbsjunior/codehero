@@ -72,8 +72,14 @@ export const DEFAULT_QUALITY_GATE: QualityGateThresholds = {
 };
 
 export interface QualityGateInput {
-  newCodeCoverage: number;
-  newCodeDuplication: number;
+  /**
+   * `null` = não medido (nenhum relatório de cobertura enviado). A condição é
+   * PULADA nesse caso, em vez de reprovar — ver coverage.ts. Um número, mesmo
+   * 0, significa medido e é avaliado normalmente.
+   */
+  newCodeCoverage: number | null;
+  /** `null` = não medido; a condição é pulada, como em `newCodeCoverage`. */
+  newCodeDuplication: number | null;
   newBlockerIssues: number;
   securityRating: Rating;
   maintainabilityRating: Rating;
@@ -131,10 +137,14 @@ export function evaluateQualityGate(
   thresholds: QualityGateThresholds = DEFAULT_QUALITY_GATE,
 ): QualityGateResult {
   const failed: string[] = [];
-  if (input.newCodeCoverage < thresholds.minNewCodeCoverage)
-    failed.push(`Coverage on new code ${input.newCodeCoverage}% < ${thresholds.minNewCodeCoverage}%`);
-  if (input.newCodeDuplication > thresholds.maxNewCodeDuplication)
-    failed.push(`Duplication on new code ${input.newCodeDuplication}% > ${thresholds.maxNewCodeDuplication}%`);
+  if (input.newCodeCoverage !== null && input.newCodeCoverage < thresholds.minNewCodeCoverage)
+    failed.push(
+      `Cobertura em código novo ${input.newCodeCoverage}% < ${thresholds.minNewCodeCoverage}%`,
+    );
+  if (input.newCodeDuplication !== null && input.newCodeDuplication > thresholds.maxNewCodeDuplication)
+    failed.push(
+      `Duplicação em código novo ${input.newCodeDuplication}% > ${thresholds.maxNewCodeDuplication}%`,
+    );
   if (input.newBlockerIssues > thresholds.maxNewBlockerIssues)
     failed.push(`New blocker issues ${input.newBlockerIssues} > ${thresholds.maxNewBlockerIssues}`);
   if (ratingIsWorseThan(input.securityRating, thresholds.maxSecurityRating))

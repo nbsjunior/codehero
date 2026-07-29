@@ -1,9 +1,14 @@
 import { onRequest, HttpsError } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions";
 import { z } from "zod";
-import { type SarifLog } from "@codehero/contracts";
+import { type SarifLog, normalizeSarifResultsToCatalog } from "@codehero/contracts";
 import { storage, STORAGE_BUCKET_NAME, repoRef } from "./lib/firebase.ts";
-import { persistAnalysisResults, enqueueIssueUpsertJob, upsertIssuesFromResults } from "./lib/ingestCore.ts";
+import {
+  persistAnalysisResults,
+  enqueueIssueUpsertJob,
+  upsertIssuesFromResults,
+  coverageFromSarif,
+} from "./lib/ingestCore.ts";
 import { ingestIdempotencyKey, findRecentIngest } from "./lib/ingestIdempotency.ts";
 import { assertBuildQuota, incrementBuildQuota } from "./lib/quotas.ts";
 import { getPlatformOpsConfig } from "./lib/platformOps.ts";
@@ -66,7 +71,8 @@ export const ingestAnalysis = onRequest(
       throw err;
     }
 
-    const results = sarif.runs?.[0]?.results ?? [];
+    const results = normalizeSarifResultsToCatalog(sarif.runs?.[0]?.results ?? []);
+    // Keep tool-reported rule ids in stored SARIF; persistence uses normalized `results`.
     const idempotencyKey = ingestIdempotencyKey({
       orgId,
       projectId,
@@ -118,6 +124,7 @@ export const ingestAnalysis = onRequest(
       commit: commit ?? null,
       linesOfCode,
       newCodeFingerprints,
+      coveragePercent: coverageFromSarif(sarif),
       sarifPath,
       source: "github-action",
       idempotencyKey,

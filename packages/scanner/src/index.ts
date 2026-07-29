@@ -3,6 +3,9 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { relative } from "node:path";
 import {
   RULES,
+  mergeCoverageReports,
+  coveragePercent,
+  type CoverageReport,
   technicalDebtMinutes,
   formatDebt,
   type HeroRule,
@@ -11,6 +14,7 @@ import {
 import { analyzeSource, enableScanCache, type Finding } from "./engine.ts";
 import { collectFiles } from "./walk.ts";
 import { loadIgnoreFile, makeIgnoreMatcher, IGNORE_FILE } from "./ignore.ts";
+import { parseCoverageFile } from "./coverage.ts";
 import { buildSarif } from "./sarif.ts";
 import { loadRulesFile, resolveActiveRules } from "./fetchRules.ts";
 
@@ -27,6 +31,7 @@ interface CliOptions {
   orgId: string | null;
   projectId: string | null;
   ignore: string[];
+  coverage: string[];
 }
 
 function parseArgs(argv: string[]): CliOptions {
@@ -43,6 +48,7 @@ function parseArgs(argv: string[]): CliOptions {
     orgId: null,
     projectId: null,
     ignore: [],
+    coverage: [],
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -57,6 +63,10 @@ function parseArgs(argv: string[]): CliOptions {
     else if (a === "--token") opts.token = argv[++i] ?? null;
     else if (a === "--org") opts.orgId = argv[++i] ?? null;
     else if (a === "--project") opts.projectId = argv[++i] ?? null;
+    else if (a === "--coverage") {
+      const v = argv[++i];
+      if (v) opts.coverage.push(v);
+    }
     else if (a === "--ignore") {
       const v = argv[++i];
       if (v) opts.ignore.push(v);
@@ -92,14 +102,27 @@ async function main(): Promise<void> {
     for (const f of analyzeSource(rel, source, rules)) findings.push(f);
   }
 
-  const sarif = buildSarif(findings);
+  // Cobertura é INGERIDA, não calculada: cada caminho é um relatório que o
+  // test runner já produziu. Vários são aceitos (monorepo com um por pacote).
+  const coverageReports = opts.coverage
+    .map((p) => parseCoverageFile(p))
+    .filter((r): r is CoverageReport => r !== null);
+  if (opts.coverage.length > 0 && coverageReports.length === 0) {
+    process.stderr.write(
+      `CodeHero: nenhum relatório de cobertura pôde ser lido de ${opts.coverage.join(", ")}
+`,
+    );
+  }
+  const coverage = mergeCoverageReports(coverageReports);
+
+  const sarif = buildSarif(findings, coverage);
 
   if (opts.format === "sarif") {
     const json = JSON.stringify(sarif, null, 2);
     if (opts.out) writeFileSync(opts.out, json);
     else process.stdout.write(json + "\n");
   } else {
-    printPretty(findings, files.length, rules.length, meta, ignorePatterns.length);
+    printPretty(findings, files.length, rules.length, meta, ignorePatterns.length, coverage);
     if (opts.out) writeFileSync(opts.out, JSON.stringify(sarif, null, 2));
   }
 
@@ -138,6 +161,7 @@ function printPretty(
   ruleCount: number,
   meta: string,
   ignoreCount = 0,
+  coverage: CoverageReport | null = null,
 ): void {
   const bySev = new Map<Severity, number>();
   for (const f of findings) bySev.set(f.rule.severity, (bySev.get(f.rule.severity) ?? 0) + 1);
@@ -164,6 +188,13 @@ function printPretty(
     .join("  ");
   if (summary) process.stdout.write(summary + "\n");
   process.stdout.write(`Débito técnico (code smells): ${formatDebt(debtMin)}\n`);
+  if (coverage) {
+    const branch = coverage.branches ? ` · branch ${coveragePercent(coverage.branches)}%` : "";
+    process.stdout.write(
+      `Cobertura (${coverage.format}): linha ${coveragePercent(coverage.lines)}%` +
+        `${branch} em ${coverage.files.length} arquivo(s)\n`,
+    );
+  }
 }
 
 function sevBadge(sev: Severity): string {
