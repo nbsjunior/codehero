@@ -7,6 +7,9 @@ import {
   evaluateQualityGate,
   SEVERITIES,
   type Severity,
+  coveragePercent as coveragePct,
+  type CoverageCounter,
+  type SarifLog,
   type SarifResult,
 } from "@codehero/contracts";
 import { db, repoRef } from "./firebase.ts";
@@ -28,6 +31,8 @@ export interface PersistAnalysisInput {
   idempotencyKey?: string | null;
   /** When true, only write analysis/repo metrics — issues go to ingestJobs worker. */
   deferIssueWrites?: boolean;
+  /** Cobertura medida no build; `null`/ausente pula a condição do gate. */
+  coveragePercent?: number | null;
   analysisId?: string;
 }
 
@@ -44,10 +49,27 @@ export interface PersistAnalysisResult {
   };
 }
 
+/**
+ * Extrai o percentual de cobertura das `properties` do run do SARIF, onde o
+ * scanner o deposita. Ausente → `null`, que o gate trata como não medido.
+ */
+export function coverageFromSarif(sarif: SarifLog): number | null {
+  const raw = (sarif.runs?.[0] as { properties?: { coverage?: { lines?: CoverageCounter } } })
+    ?.properties?.coverage?.lines;
+  if (!raw || typeof raw.total !== "number" || raw.total <= 0) return null;
+  return coveragePct(raw);
+}
+
 export function computeAnalysisSummary(
   results: SarifResult[],
   linesOfCode: number,
   newCodeFingerprints?: string[],
+  /**
+   * Percentual de cobertura medido, ou `null` quando o build não enviou
+   * relatório. `null` PULA a condição no gate — antes daqui passava um `100`
+   * fixo, que fazia a condição existir no papel e nunca reprovar nada.
+   */
+  coveragePercent?: number | null,
 ): PersistAnalysisResult["summary"] {
   const newSet = new Set(newCodeFingerprints ?? []);
   const bySeverity: Record<Severity, number> = { BLOCKER: 0, CRITICAL: 0, MAJOR: 0, MINOR: 0, INFO: 0 };
@@ -70,8 +92,9 @@ export function computeAnalysisSummary(
   const maintRating = maintainabilityRating(debtRatio);
   const securityRating = ratingFromWorstSeverity(vulnSeverities);
   const gate = evaluateQualityGate({
-    newCodeCoverage: 100,
-    newCodeDuplication: 0,
+    newCodeCoverage: coveragePercent ?? null,
+    // Duplicação ainda não é medida — `null` para não fingir aprovação.
+    newCodeDuplication: null,
     newBlockerIssues,
     securityRating,
     maintainabilityRating: maintRating,
@@ -157,7 +180,12 @@ export async function persistAnalysisResults(input: PersistAnalysisInput): Promi
   const rRef = repoRef(orgId, projectId, repoId);
   const analysisId = input.analysisId ?? `${Date.now()}`;
   const now = FieldValue.serverTimestamp();
-  const summary = computeAnalysisSummary(results, linesOfCode, input.newCodeFingerprints);
+  const summary = computeAnalysisSummary(
+    results,
+    linesOfCode,
+    input.newCodeFingerprints,
+    input.coveragePercent,
+  );
 
   if (!input.deferIssueWrites) {
     await upsertIssuesFromResults({

@@ -29,6 +29,14 @@ inputs:
     description: "Severidade mínima que reprova o job (BLOCKER|CRITICAL|MAJOR|MINOR|INFO)"
     required: false
     default: "CRITICAL"
+  coverage:
+    description: >
+      Caminho(s) do relatório de cobertura já produzido pelos seus testes, um
+      por linha. Formatos detectados pelo conteúdo: lcov, Cobertura XML
+      (coverage.py/coverlet), JaCoCo XML e `go test -coverprofile`.
+      Sem isto, a condição de cobertura do quality gate é PULADA — não reprova.
+    required: false
+    default: ""
 
 outputs:
   sarif-file:
@@ -79,14 +87,24 @@ runs:
         HERO_TOKEN: ${{ inputs.token }}
         HERO_ORG_ID: ${{ inputs.org-id }}
         HERO_PROJECT_ID: ${{ inputs.project-id }}
+        HERO_COVERAGE: ${{ inputs.coverage }}
       run: |
+        # Cada linha de `coverage` vira um --coverage. Sem valor, array vazio
+        # e o scanner nem tenta ler nada.
+        COV_ARGS=()
+        while IFS= read -r p; do
+          [ -n "$p" ] && COV_ARGS+=(--coverage "$p")
+        done <<< "$HERO_COVERAGE"
+
         # Busca regras ativas no servidor (canônicas + dress code) e analisa.
         # Em produção: npx @codehero/scanner. No monorepo, usa o binário local se disponível.
         if [ -f packages/scanner/dist/index.js ]; then
           node packages/scanner/dist/index.js "${{ inputs.path }}" --sarif --out codehero.sarif \
+            "${COV_ARGS[@]}" \
             --server "$HERO_CORE_URL" --token "$HERO_TOKEN" --org "$HERO_ORG_ID" --project "$HERO_PROJECT_ID" || true
         else
           npx --yes @codehero/scanner "${{ inputs.path }}" --sarif --out codehero.sarif \
+            "${COV_ARGS[@]}" \
             --server "$HERO_CORE_URL" --token "$HERO_TOKEN" --org "$HERO_ORG_ID" --project "$HERO_PROJECT_ID" || true
         fi
         # O `|| true` acima é intencional: o scanner sai não-zero quando ACHA
