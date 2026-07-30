@@ -59,6 +59,12 @@ export interface SarifResult {
     constraints?: string[];
     referenceExample?: { before: string; after: string };
     cwe?: string[];
+    /** Procedência: "imported" = achado de outra ferramenta, não do CodeHero. */
+    source?: "imported";
+    tool?: string;
+    originalRuleId?: string;
+    /** Vulnerabilidade de dependência (SCA), não de código autoral. */
+    isDependency?: boolean;
   };
 }
 
