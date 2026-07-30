@@ -8,6 +8,7 @@ import {
   enqueueIssueUpsertJob,
   upsertIssuesFromResults,
   coverageFromSarif,
+  duplicationFromSarif,
 } from "./lib/ingestCore.ts";
 import { ingestIdempotencyKey, findRecentIngest } from "./lib/ingestIdempotency.ts";
 import { assertBuildQuota, incrementBuildQuota } from "./lib/quotas.ts";
@@ -127,6 +128,7 @@ export const ingestAnalysis = onRequest(
       linesOfCode,
       newCodeFingerprints,
       coveragePercent: coverageFromSarif(sarif),
+      duplicationPercent: duplicationFromSarif(sarif),
       sarifPath,
       source: "github-action",
       idempotencyKey,

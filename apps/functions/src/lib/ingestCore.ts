@@ -33,6 +33,8 @@ export interface PersistAnalysisInput {
   deferIssueWrites?: boolean;
   /** Cobertura medida no build; `null`/ausente pula a condição do gate. */
   coveragePercent?: number | null;
+  /** Duplicação medida (--metrics); `null`/ausente pula a condição. */
+  duplicationPercent?: number | null;
   analysisId?: string;
 }
 
@@ -53,6 +55,16 @@ export interface PersistAnalysisResult {
  * Extrai o percentual de cobertura das `properties` do run do SARIF, onde o
  * scanner o deposita. Ausente → `null`, que o gate trata como não medido.
  */
+/**
+ * Duplicação das `properties` do run. Ausente → `null` (não medida), que o
+ * gate pula — mesma semântica da cobertura.
+ */
+export function duplicationFromSarif(sarif: SarifLog): number | null {
+  const raw = (sarif.runs?.[0] as { properties?: { duplication?: { percent?: number } } })
+    ?.properties?.duplication?.percent;
+  return typeof raw === "number" ? raw : null;
+}
+
 export function coverageFromSarif(sarif: SarifLog): number | null {
   const raw = (sarif.runs?.[0] as { properties?: { coverage?: { lines?: CoverageCounter } } })
     ?.properties?.coverage?.lines;
@@ -70,6 +82,7 @@ export function computeAnalysisSummary(
    * fixo, que fazia a condição existir no papel e nunca reprovar nada.
    */
   coveragePercent?: number | null,
+  duplicationPercent?: number | null,
 ): PersistAnalysisResult["summary"] {
   const newSet = new Set(newCodeFingerprints ?? []);
   const bySeverity: Record<Severity, number> = { BLOCKER: 0, CRITICAL: 0, MAJOR: 0, MINOR: 0, INFO: 0 };
@@ -93,8 +106,7 @@ export function computeAnalysisSummary(
   const securityRating = ratingFromWorstSeverity(vulnSeverities);
   const gate = evaluateQualityGate({
     newCodeCoverage: coveragePercent ?? null,
-    // Duplicação ainda não é medida — `null` para não fingir aprovação.
-    newCodeDuplication: null,
+    newCodeDuplication: duplicationPercent ?? null,
     newBlockerIssues,
     securityRating,
     maintainabilityRating: maintRating,
@@ -185,6 +197,7 @@ export async function persistAnalysisResults(input: PersistAnalysisInput): Promi
     linesOfCode,
     input.newCodeFingerprints,
     input.coveragePercent,
+    input.duplicationPercent,
   );
 
   if (!input.deferIssueWrites) {

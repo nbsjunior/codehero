@@ -17,11 +17,20 @@ import { dirname, join } from "node:path";
 // ---------------------------------------------------------------------------
 
 /** Linguagens com gramática madura disponível. COBOL, T-SQL, DB2 e VB.NET não têm. */
-export type StructuralLanguage = "javascript" | "typescript" | "python" | "java" | "go" | "csharp";
+export type StructuralLanguage =
+  | "javascript"
+  | "typescript"
+  /** JSX exige gramática própria: a de `typescript` REJEITA sintaxe JSX. */
+  | "tsx"
+  | "python"
+  | "java"
+  | "go"
+  | "csharp";
 
 const WASM_FILE: Record<StructuralLanguage, string> = {
   javascript: "tree-sitter-javascript.wasm",
   typescript: "tree-sitter-typescript.wasm",
+  tsx: "tree-sitter-tsx.wasm",
   python: "tree-sitter-python.wasm",
   java: "tree-sitter-java.wasm",
   go: "tree-sitter-go.wasm",
@@ -30,11 +39,14 @@ const WASM_FILE: Record<StructuralLanguage, string> = {
 
 const EXT_TO_LANG: Record<string, StructuralLanguage> = {
   ".js": "javascript",
-  ".jsx": "javascript",
+  ".jsx": "tsx",
   ".mjs": "javascript",
   ".cjs": "javascript",
   ".ts": "typescript",
-  ".tsx": "typescript",
+  // .tsx e .jsx vão para a gramática tsx — a de typescript nao aceita JSX e
+  // todos os componentes React caiam como erro de sintaxe, sumindo das
+  // metricas exatamente onde aninhamento costuma doer.
+  ".tsx": "tsx",
   ".mts": "typescript",
   ".py": "python",
   ".java": "java",

@@ -23,3 +23,16 @@ export type {
   StructuralFinding,
   StructuralThresholds,
 } from "./structural/metrics.ts";
+
+// Duplicação por hash de forma de subárvore (pega clone com renomeação).
+export {
+  candidatesFor,
+  findDuplicates,
+  summarizeDuplication,
+} from "./structural/duplication.ts";
+export type {
+  DuplicateBlock,
+  DuplicateCandidate,
+  DuplicateGroup,
+  DuplicationSummary,
+} from "./structural/duplication.ts";

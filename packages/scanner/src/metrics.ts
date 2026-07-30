@@ -1,4 +1,7 @@
 import {
+  candidatesFor,
+  findDuplicates,
+  summarizeDuplication,
   computeFileMetrics,
   parseStructural,
   structuralFindings,
@@ -6,6 +9,8 @@ import {
   DEFAULT_STRUCTURAL_THRESHOLDS,
   type FileMetrics,
   type StructuralFinding,
+  type DuplicateCandidate,
+  type DuplicationSummary,
   type StructuralThresholds,
 } from "@codehero/engine";
 
@@ -24,6 +29,7 @@ export interface StructuralSummary {
   /** Métricas por arquivo, só das linguagens com gramática madura. */
   files: FileMetrics[];
   findings: StructuralFinding[];
+  duplication: DuplicationSummary;
   /** Arquivos que a gramática rejeitou — números seriam pela metade. */
   parseErrors: string[];
   /** Analisáveis mas fora do alcance do tree-sitter (COBOL, T-SQL, DB2, VB.NET). */
@@ -46,6 +52,7 @@ export async function collectStructural(
 ): Promise<StructuralSummary> {
   const out: FileMetrics[] = [];
   const findings: StructuralFinding[] = [];
+  const dupCandidatos: DuplicateCandidate[] = [];
   const parseErrors: string[] = [];
   let skippedLanguages = 0;
 
@@ -63,6 +70,7 @@ export async function collectStructural(
     out.push(m);
     if (m.parseError) parseErrors.push(f.path);
     findings.push(...structuralFindings(m, thresholds));
+    dupCandidatos.push(...candidatesFor(f.path, parsed));
   }
 
   const todasFuncoes = out.flatMap((m) => m.functions);
@@ -71,9 +79,15 @@ export async function collectStructural(
   const media = (xs: number[]) =>
     xs.length ? Math.round((xs.reduce((a, b) => a + b, 0) / xs.length) * 10) / 10 : 0;
 
+  const duplication = summarizeDuplication(
+    findDuplicates(dupCandidatos),
+    out.reduce((a, m) => a + m.linesOfCode, 0),
+  );
+
   return {
     files: out,
     findings,
+    duplication,
     parseErrors,
     skippedLanguages,
     totals: {
