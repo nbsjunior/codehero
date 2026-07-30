@@ -37,6 +37,15 @@ inputs:
       Sem isto, a condição de cobertura do quality gate é PULADA — não reprova.
     required: false
     default: ""
+  metrics:
+    description: >
+      Calcula complexidade ciclomática, cognitiva, aninhamento, tamanho de
+      função e densidade de comentários via tree-sitter. Custa alguns segundos
+      no scan; ligado por padrão porque no CI isso não pesa. Cobre JS, TS,
+      Python, Java, Go e C# — COBOL, T-SQL, DB2 e VB.Net não têm gramática
+      madura disponível e são ignorados por este passo.
+    required: false
+    default: "true"
 
 outputs:
   sarif-file:
@@ -88,6 +97,7 @@ runs:
         HERO_ORG_ID: ${{ inputs.org-id }}
         HERO_PROJECT_ID: ${{ inputs.project-id }}
         HERO_COVERAGE: ${{ inputs.coverage }}
+        HERO_METRICS: ${{ inputs.metrics }}
       run: |
         # Cada linha de `coverage` vira um --coverage. Sem valor, array vazio
         # e o scanner nem tenta ler nada.
@@ -96,15 +106,18 @@ runs:
           [ -n "$p" ] && COV_ARGS+=(--coverage "$p")
         done <<< "$HERO_COVERAGE"
 
+        EXTRA_ARGS=()
+        [ "$HERO_METRICS" = "true" ] && EXTRA_ARGS+=(--metrics)
+
         # Busca regras ativas no servidor (canônicas + dress code) e analisa.
         # Em produção: npx @codehero/scanner. No monorepo, usa o binário local se disponível.
         if [ -f packages/scanner/dist/index.js ]; then
           node packages/scanner/dist/index.js "${{ inputs.path }}" --sarif --out codehero.sarif \
-            "${COV_ARGS[@]}" \
+            "${COV_ARGS[@]}" "${EXTRA_ARGS[@]}" \
             --server "$HERO_CORE_URL" --token "$HERO_TOKEN" --org "$HERO_ORG_ID" --project "$HERO_PROJECT_ID" || true
         else
           npx --yes @codehero/scanner "${{ inputs.path }}" --sarif --out codehero.sarif \
-            "${COV_ARGS[@]}" \
+            "${COV_ARGS[@]}" "${EXTRA_ARGS[@]}" \
             --server "$HERO_CORE_URL" --token "$HERO_TOKEN" --org "$HERO_ORG_ID" --project "$HERO_PROJECT_ID" || true
         fi
         # O `|| true` acima é intencional: o scanner sai não-zero quando ACHA

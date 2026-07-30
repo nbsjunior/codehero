@@ -12,7 +12,31 @@ import {
 import type { CoverageReport } from "@codehero/contracts";
 import type { Finding } from "./engine.ts";
 
-export function buildSarif(findings: Finding[], coverage?: CoverageReport | null): SarifLog {
+/** Resumo estrutural que o scanner produz com --metrics (ver metrics.ts). */
+export interface StructuralForSarif {
+  totals: {
+    functions: number;
+    avgCyclomatic: number;
+    avgCognitive: number;
+    maxCyclomatic: number;
+    maxNesting: number;
+    commentDensity: number;
+  };
+  files: Array<{
+    file: string;
+    cyclomatic: number;
+    cognitive: number;
+    maxNesting: number;
+    functions: Array<{ startLine: number; cyclomatic: number; cognitive: number; lines: number }>;
+  }>;
+}
+
+export function buildSarif(
+  findings: Finding[],
+  coverage?: CoverageReport | null,
+  linesOfCode?: number,
+  structural?: StructuralForSarif | null,
+): SarifLog {
   const seenRules = new Map<string, SarifReportingDescriptor>();
   const results: SarifResult[] = [];
 
@@ -102,23 +126,45 @@ export function buildSarif(findings: Finding[], coverage?: CoverageReport | null
           },
         },
         results,
-        // Cobertura viaja em `properties` do run porque o SARIF não tem
-        // lugar canônico para métrica de projeto — só para achados. O ingest
-        // lê daqui; nenhuma outra ferramenta se importa com o campo.
-        ...(coverage
+        // Métricas de projeto (LOC / cobertura) viajam em `properties` do run —
+        // o SARIF não tem lugar canônico. Plugin e ingest leem daqui.
+        ...(coverage || typeof linesOfCode === "number" || structural
           ? {
               properties: {
-                coverage: {
-                  format: coverage.format,
-                  lines: coverage.lines,
-                  ...(coverage.branches ? { branches: coverage.branches } : {}),
-                  files: coverage.files.map((f) => ({
-                    path: f.path,
-                    lines: f.lines,
-                    uncoveredLines: f.uncoveredLines,
-                    coveredLines: f.coveredLines,
-                  })),
-                },
+                ...(typeof linesOfCode === "number" ? { linesOfCode } : {}),
+                ...(structural
+                  ? {
+                      complexity: {
+                        ...structural.totals,
+                        // Só os arquivos que de fato têm função — arquivo de
+                        // constantes não precisa ocupar espaço no relatório.
+                        files: structural.files
+                          .filter((f) => f.functions.length > 0)
+                          .map((f) => ({
+                            file: f.file,
+                            cyclomatic: f.cyclomatic,
+                            cognitive: f.cognitive,
+                            maxNesting: f.maxNesting,
+                            functions: f.functions,
+                          })),
+                      },
+                    }
+                  : {}),
+                ...(coverage
+                  ? {
+                      coverage: {
+                        format: coverage.format,
+                        lines: coverage.lines,
+                        ...(coverage.branches ? { branches: coverage.branches } : {}),
+                        files: coverage.files.map((f) => ({
+                          path: f.path,
+                          lines: f.lines,
+                          uncoveredLines: f.uncoveredLines,
+                          coveredLines: f.coveredLines,
+                        })),
+                      },
+                    }
+                  : {}),
               },
             }
           : {}),

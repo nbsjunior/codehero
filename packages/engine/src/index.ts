@@ -7,3 +7,19 @@ export { runAstRules } from "./astRules.ts";
 export { runTaintRules } from "./taint.ts";
 export { buildCfg } from "./cfg.ts";
 export { runForwardWorklist } from "./dataflow.ts";
+
+// Métricas estruturais (tree-sitter WASM): ciclomática, cognitiva,
+// aninhamento, tamanho de função e nº de parâmetros.
+export { parseStructural, structuralLanguageFor } from "./structural/parser.ts";
+export type { StructuralLanguage, ParsedFile } from "./structural/parser.ts";
+export {
+  computeFileMetrics,
+  structuralFindings,
+  DEFAULT_STRUCTURAL_THRESHOLDS,
+} from "./structural/metrics.ts";
+export type {
+  FileMetrics,
+  FunctionMetrics,
+  StructuralFinding,
+  StructuralThresholds,
+} from "./structural/metrics.ts";
