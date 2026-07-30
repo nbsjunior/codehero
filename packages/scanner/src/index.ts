@@ -16,6 +16,7 @@ import { collectFiles } from "./walk.ts";
 import { loadIgnoreFile, makeIgnoreMatcher, IGNORE_FILE } from "./ignore.ts";
 import { parseCoverageFile } from "./coverage.ts";
 import { collectStructural, type StructuralSummary } from "./metrics.ts";
+import { importSarifFiles, type ImportSummary } from "./importSarif.ts";
 import { buildSarif } from "./sarif.ts";
 import { loadRulesFile, resolveActiveRules } from "./fetchRules.ts";
 
@@ -34,6 +35,7 @@ interface CliOptions {
   ignore: string[];
   coverage: string[];
   metrics: boolean;
+  importSarif: string[];
 }
 
 function parseArgs(argv: string[]): CliOptions {
@@ -52,6 +54,7 @@ function parseArgs(argv: string[]): CliOptions {
     ignore: [],
     coverage: [],
     metrics: false,
+    importSarif: [],
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -61,6 +64,10 @@ function parseArgs(argv: string[]): CliOptions {
     else if (a === "--sarif") opts.format = "sarif";
     else if (a === "--cache") opts.cache = true;
     else if (a === "--metrics") opts.metrics = true;
+    else if (a === "--import") {
+      const v = argv[++i];
+      if (v) opts.importSarif.push(v);
+    }
     else if (a === "--rules-file") opts.rulesFile = argv[++i] ?? null;
     else if (a === "--no-fetch-rules") opts.fetchRules = false;
     else if (a === "--server") opts.serverUrl = argv[++i] ?? null;
@@ -130,7 +137,18 @@ async function main(): Promise<void> {
   }
   const coverage = mergeCoverageReports(coverageReports);
 
-  const sarif = buildSarif(findings, coverage, linesOfCode, structural);
+  // Terceiros: CodeQL/Semgrep cobrem fluxo entre arquivos que o L0 nao alcanca;
+  // osv-scanner/trivy cobrem dependencia, eixo que analise de codigo nao ve.
+  const imported: ImportSummary | null =
+    opts.importSarif.length > 0 ? importSarifFiles(opts.importSarif) : null;
+  if (imported?.failed.length) {
+    process.stderr.write(
+      `CodeHero: nao foi possivel ler como SARIF: ${imported.failed.join(", ")}
+`,
+    );
+  }
+
+  const sarif = buildSarif(findings, coverage, linesOfCode, structural, imported?.findings);
 
   if (opts.format === "sarif") {
     const json = JSON.stringify(sarif, null, 2);
@@ -145,16 +163,19 @@ async function main(): Promise<void> {
       ignorePatterns.length,
       coverage,
       structural,
+      imported,
     );
     if (opts.out) writeFileSync(opts.out, JSON.stringify(sarif, null, 2));
   }
 
   if (opts.failOn) {
     const threshold = SEV_ORDER.indexOf(opts.failOn);
-    const worst = findings.reduce(
-      (acc, f) => Math.max(acc, SEV_ORDER.indexOf(f.rule.severity)),
-      -1,
-    );
+    // Achado importado PARTICIPA do gate: ingerir CodeQL sem deixar o
+    // resultado reprovar o build nao serviria para nada.
+    const worst = [
+      ...findings.map((f) => f.rule.severity),
+      ...(imported?.findings.map((f) => f.severity) ?? []),
+    ].reduce((acc, sev) => Math.max(acc, SEV_ORDER.indexOf(sev)), -1);
     if (worst >= threshold) process.exitCode = 1;
   }
 }
@@ -186,6 +207,7 @@ function printPretty(
   ignoreCount = 0,
   coverage: CoverageReport | null = null,
   structural: StructuralSummary | null = null,
+  imported: ImportSummary | null = null,
 ): void {
   const bySev = new Map<Severity, number>();
   for (const f of findings) bySev.set(f.rule.severity, (bySev.get(f.rule.severity) ?? 0) + 1);
@@ -240,6 +262,18 @@ function printPretty(
       process.stdout.write(
         `  (${structural.parseErrors.length} arquivo(s) com erro de sintaxe — métrica omitida)\n`,
       );
+    }
+  }
+  if (imported && imported.findings.length > 0) {
+    const porFerramenta = Object.entries(imported.byTool)
+      .map(([t, n]) => `${t}: ${n}`)
+      .join(" · ");
+    const dep = imported.findings.filter((f) => f.isDependency).length;
+    process.stdout.write(
+      `Importado de terceiros: ${imported.findings.length} apontamento(s) — ${porFerramenta}\n`,
+    );
+    if (dep > 0) {
+      process.stdout.write(`  dos quais ${dep} em dependência (SCA), não em código autoral\n`);
     }
   }
 }

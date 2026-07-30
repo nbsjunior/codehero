@@ -40,11 +40,30 @@ export interface StructuralForSarif {
   };
 }
 
+/** Achado vindo de outra ferramenta, já normalizado (ver importSarif.ts). */
+export interface ImportedForSarif {
+  ruleId: string;
+  tool: string;
+  originalRuleId: string;
+  severity: string;
+  message: string;
+  file: string;
+  startLine: number;
+  startColumn: number;
+  endColumn: number;
+  snippet: string;
+  fingerprint: string;
+  cwe: string[];
+  isDependency: boolean;
+  helpUri?: string;
+}
+
 export function buildSarif(
   findings: Finding[],
   coverage?: CoverageReport | null,
   linesOfCode?: number,
   structural?: StructuralForSarif | null,
+  imported?: ImportedForSarif[],
 ): SarifLog {
   const seenRules = new Map<string, SarifReportingDescriptor>();
   const results: SarifResult[] = [];
@@ -117,6 +136,57 @@ export function buildSarif(
         constraints: ficha.constraints,
         referenceExample: ficha.referenceExample,
         cwe: ficha.cwe,
+      },
+    });
+  }
+
+  // Achados de terceiros entram no MESMO run, mas com procedência explícita:
+  // `properties.source` diz de quem é a afirmação e `properties.tool` qual
+  // ferramenta afirmou. Sem isso o relatório atribuiria ao CodeHero um achado
+  // que não é dele — o mesmo erro que as regras mal mapeadas do Sonar way.
+  for (const im of imported ?? []) {
+    if (!seenRules.has(im.ruleId)) {
+      seenRules.set(im.ruleId, {
+        id: im.ruleId,
+        name: im.originalRuleId,
+        shortDescription: { text: `[${im.tool}] ${im.message}`.slice(0, 300) },
+        ...(im.helpUri ? { help: { text: im.helpUri } } : {}),
+        properties: {
+          ...(im.cwe.length ? { cwe: im.cwe } : {}),
+          tags: ["imported", im.tool, ...(im.isDependency ? ["dependency"] : [])],
+        },
+      });
+    }
+    results.push({
+      ruleId: im.ruleId,
+      level: severityToSarifLevel(im.severity as Finding["rule"]["severity"]),
+      message: { text: im.message },
+      locations: [
+        {
+          physicalLocation: {
+            artifactLocation: { uri: im.file },
+            region: {
+              startLine: im.startLine,
+              startColumn: im.startColumn,
+              endLine: im.startLine,
+              endColumn: im.endColumn,
+              ...(im.snippet ? { snippet: { text: im.snippet } } : {}),
+            },
+          },
+        },
+      ],
+      partialFingerprints: { [HERO_FINGERPRINT_ALGO]: im.fingerprint },
+      properties: {
+        severity: im.severity,
+        // Dependência vulnerável não é dívida de código escrito aqui: entra
+        // como VULNERABILITY, nunca como CODE_SMELL, para não inflar o débito.
+        issueType: "VULNERABILITY",
+        source: "imported",
+        tool: im.tool,
+        originalRuleId: im.originalRuleId,
+        isDependency: im.isDependency,
+        ...(im.cwe.length ? { cwe: im.cwe } : {}),
+        ...(im.snippet ? { snippet: im.snippet } : {}),
       },
     });
   }
