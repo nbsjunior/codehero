@@ -29,6 +29,15 @@ export interface StructuralForSarif {
     maxNesting: number;
     functions: Array<{ startLine: number; cyclomatic: number; cognitive: number; lines: number }>;
   }>;
+  duplication: {
+    percent: number;
+    duplicatedLines: number;
+    totalLines: number;
+    groups: Array<{
+      lines: number;
+      blocks: Array<{ file: string; startLine: number; endLine: number }>;
+    }>;
+  };
 }
 
 export function buildSarif(
@@ -134,6 +143,14 @@ export function buildSarif(
                 ...(typeof linesOfCode === "number" ? { linesOfCode } : {}),
                 ...(structural
                   ? {
+                      duplication: {
+                        percent: structural.duplication.percent,
+                        duplicatedLines: structural.duplication.duplicatedLines,
+                        totalLines: structural.duplication.totalLines,
+                        // Só os 50 maiores: um repo com muita duplicação
+                        // geraria um SARIF de dezenas de MB sem ganho prático.
+                        groups: structural.duplication.groups.slice(0, 50),
+                      },
                       complexity: {
                         ...structural.totals,
                         // Só os arquivos que de fato têm função — arquivo de

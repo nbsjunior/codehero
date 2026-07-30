@@ -226,6 +226,11 @@ function printPretty(
         ` (máx ${t.maxCyclomatic}) | cognitiva média ${t.avgCognitive}` +
         ` | aninhamento máx ${t.maxNesting} | comentários ${t.commentDensity}%\n`,
     );
+    const d = structural.duplication;
+    process.stdout.write(
+      `Duplicação: ${d.percent}% (${d.duplicatedLines} de ${d.totalLines} linhas)` +
+        ` em ${d.groups.length} bloco(s) repetido(s)\n`,
+    );
     if (structural.skippedLanguages > 0) {
       process.stdout.write(
         `  (${structural.skippedLanguages} arquivo(s) sem gramática estrutural — COBOL, T-SQL, DB2, VB.Net)\n`,
