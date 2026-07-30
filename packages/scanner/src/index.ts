@@ -15,6 +15,7 @@ import { analyzeSource, enableScanCache, type Finding } from "./engine.ts";
 import { collectFiles } from "./walk.ts";
 import { loadIgnoreFile, makeIgnoreMatcher, IGNORE_FILE } from "./ignore.ts";
 import { parseCoverageFile } from "./coverage.ts";
+import { collectStructural, type StructuralSummary } from "./metrics.ts";
 import { buildSarif } from "./sarif.ts";
 import { loadRulesFile, resolveActiveRules } from "./fetchRules.ts";
 
@@ -32,6 +33,7 @@ interface CliOptions {
   projectId: string | null;
   ignore: string[];
   coverage: string[];
+  metrics: boolean;
 }
 
 function parseArgs(argv: string[]): CliOptions {
@@ -49,6 +51,7 @@ function parseArgs(argv: string[]): CliOptions {
     projectId: null,
     ignore: [],
     coverage: [],
+    metrics: false,
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -57,6 +60,7 @@ function parseArgs(argv: string[]): CliOptions {
     else if (a === "--fail-on") opts.failOn = (argv[++i] as Severity) ?? null;
     else if (a === "--sarif") opts.format = "sarif";
     else if (a === "--cache") opts.cache = true;
+    else if (a === "--metrics") opts.metrics = true;
     else if (a === "--rules-file") opts.rulesFile = argv[++i] ?? null;
     else if (a === "--no-fetch-rules") opts.fetchRules = false;
     else if (a === "--server") opts.serverUrl = argv[++i] ?? null;
@@ -90,6 +94,11 @@ async function main(): Promise<void> {
   const ignorePatterns = [...loadIgnoreFile(cwd), ...opts.ignore];
   const files = collectFiles(opts.paths, makeIgnoreMatcher(ignorePatterns));
   const findings: Finding[] = [];
+  let linesOfCode = 0;
+
+  // Guardado só quando --metrics: manter o fonte de todo o repo na memória sem
+  // necessidade seria desperdício num scan de 20 mil arquivos.
+  const paraMetricas: Array<{ path: string; source: string }> = [];
 
   for (const file of files) {
     let source: string;
@@ -98,9 +107,15 @@ async function main(): Promise<void> {
     } catch {
       continue;
     }
+    linesOfCode += source.length ? source.split("\n").length : 0;
     const rel = relative(cwd, file) || file;
     for (const f of analyzeSource(rel, source, rules)) findings.push(f);
+    if (opts.metrics) paraMetricas.push({ path: rel, source });
   }
+
+  const structural: StructuralSummary | null = opts.metrics
+    ? await collectStructural(paraMetricas)
+    : null;
 
   // Cobertura é INGERIDA, não calculada: cada caminho é um relatório que o
   // test runner já produziu. Vários são aceitos (monorepo com um por pacote).
@@ -115,14 +130,22 @@ async function main(): Promise<void> {
   }
   const coverage = mergeCoverageReports(coverageReports);
 
-  const sarif = buildSarif(findings, coverage);
+  const sarif = buildSarif(findings, coverage, linesOfCode, structural);
 
   if (opts.format === "sarif") {
     const json = JSON.stringify(sarif, null, 2);
     if (opts.out) writeFileSync(opts.out, json);
     else process.stdout.write(json + "\n");
   } else {
-    printPretty(findings, files.length, rules.length, meta, ignorePatterns.length, coverage);
+    printPretty(
+      findings,
+      files.length,
+      rules.length,
+      meta,
+      ignorePatterns.length,
+      coverage,
+      structural,
+    );
     if (opts.out) writeFileSync(opts.out, JSON.stringify(sarif, null, 2));
   }
 
@@ -162,6 +185,7 @@ function printPretty(
   meta: string,
   ignoreCount = 0,
   coverage: CoverageReport | null = null,
+  structural: StructuralSummary | null = null,
 ): void {
   const bySev = new Map<Severity, number>();
   for (const f of findings) bySev.set(f.rule.severity, (bySev.get(f.rule.severity) ?? 0) + 1);
@@ -194,6 +218,24 @@ function printPretty(
       `Cobertura (${coverage.format}): linha ${coveragePercent(coverage.lines)}%` +
         `${branch} em ${coverage.files.length} arquivo(s)\n`,
     );
+  }
+  if (structural) {
+    const t = structural.totals;
+    process.stdout.write(
+      `Complexidade: ${t.functions} função(ões) | ciclomática média ${t.avgCyclomatic}` +
+        ` (máx ${t.maxCyclomatic}) | cognitiva média ${t.avgCognitive}` +
+        ` | aninhamento máx ${t.maxNesting} | comentários ${t.commentDensity}%\n`,
+    );
+    if (structural.skippedLanguages > 0) {
+      process.stdout.write(
+        `  (${structural.skippedLanguages} arquivo(s) sem gramática estrutural — COBOL, T-SQL, DB2, VB.Net)\n`,
+      );
+    }
+    if (structural.parseErrors.length > 0) {
+      process.stdout.write(
+        `  (${structural.parseErrors.length} arquivo(s) com erro de sintaxe — métrica omitida)\n`,
+      );
+    }
   }
 }
 
