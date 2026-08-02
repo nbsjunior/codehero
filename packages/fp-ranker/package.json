@@ -1,0 +1,24 @@
+{
+  "name": "@codehero/fp-ranker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "hero-fp-ranker": "./dist/cli.js"
+  },
+  "files": ["dist", "models"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "train": "node dist/cli.js train",
+    "eval": "node dist/cli.js eval",
+    "clean": "rimraf dist"
+  }
+}

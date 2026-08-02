@@ -1,0 +1,25 @@
+{
+  "name": "@codehero/cpg-joern",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "hero-joern": "./dist/cli.js"
+  },
+  "files": ["dist", "queries"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rimraf dist"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

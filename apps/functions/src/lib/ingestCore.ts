@@ -12,6 +12,7 @@ import {
   type SarifLog,
   type SarifResult,
 } from "@codehero/contracts";
+import { scoreFinding, DEFAULT_MODEL } from "@codehero/fp-ranker";
 import { db, repoRef } from "./firebase.ts";
 import { recomputeProjectAggregate } from "./projectAggregate.ts";
 import { recordAnalysisAnalytics } from "./analytics.ts";
@@ -155,6 +156,21 @@ export async function upsertIssuesFromResults(input: {
     const sev = (r.properties?.severity as Severity) ?? "INFO";
     const issueType = r.properties?.issueType ?? "CODE_SMELL";
     const loc = r.locations?.[0]?.physicalLocation;
+    const file = loc?.artifactLocation?.uri ?? "";
+    const rank =
+      typeof r.properties?.assertiveness === "number"
+        ? {
+            assertiveness: r.properties.assertiveness,
+            fpLikelihood: r.properties.fpLikelihood ?? 1 - r.properties.assertiveness,
+            modelVersion: r.properties.rankerModel ?? DEFAULT_MODEL.version,
+          }
+        : scoreFinding(DEFAULT_MODEL, {
+            ruleId: r.ruleId,
+            file,
+            severity: sev,
+            engine: r.properties?.engine ?? null,
+            findingSource: r.properties?.source === "imported" ? "imported" : "native",
+          });
 
     bulkWriter.set(
       rRef.collection("issues").doc(fp),
@@ -164,7 +180,7 @@ export async function upsertIssuesFromResults(input: {
         severity: sev,
         issueType,
         message: r.message?.text ?? "",
-        file: loc?.artifactLocation?.uri ?? "",
+        file,
         line: loc?.region?.startLine ?? 0,
         column: loc?.region?.startColumn ?? 0,
         snippet: r.properties?.snippet ?? loc?.region?.snippet?.text ?? "",
@@ -177,12 +193,14 @@ export async function upsertIssuesFromResults(input: {
         constraints: r.properties?.constraints ?? [],
         referenceExample: r.properties?.referenceExample ?? null,
         cwe: r.properties?.cwe ?? [],
-        // Provenance: BYO analyzers (imported) vs native CodeHero engines.
         findingSource: r.properties?.source === "imported" ? "imported" : "native",
         tool: r.properties?.tool ?? null,
         originalRuleId: r.properties?.originalRuleId ?? null,
         isDependency: r.properties?.isDependency === true,
         engine: r.properties?.engine ?? null,
+        assertiveness: Math.round(rank.assertiveness * 1000) / 1000,
+        fpLikelihood: Math.round(rank.fpLikelihood * 1000) / 1000,
+        rankerModel: rank.modelVersion,
         status: "open",
         isNewCode: newSet.has(fp),
         branch: input.branch,

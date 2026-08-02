@@ -36,6 +36,7 @@ mkdirSync(vendorDir, { recursive: true });
 
 copyPkg("contracts");
 copyPkg("ruleforge");
+copyPkg("fp-ranker");
 
 const ruleforgePkgPath = join(vendorDir, "ruleforge", "package.json");
 const ruleforgePkg = JSON.parse(readFileSync(ruleforgePkgPath, "utf8"));
@@ -52,7 +53,8 @@ pkg.dependencies = {
   ...pkg.dependencies,
   "@codehero/contracts": "file:./vendor/contracts",
   "@codehero/ruleforge": "file:./vendor/ruleforge",
+  "@codehero/fp-ranker": "file:./vendor/fp-ranker",
 };
 writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
 
-console.log("prepared apps/functions/vendor (contracts + ruleforge)");
+console.log("prepared apps/functions/vendor (contracts + ruleforge + fp-ranker)");

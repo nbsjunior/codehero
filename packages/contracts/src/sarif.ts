@@ -66,7 +66,11 @@ export interface SarifResult {
     /** Vulnerabilidade de dependência (SCA), não de código autoral. */
     isDependency?: boolean;
     /** Motor nativo: L0 pattern, Babel AST/taint, ou tree-sitter structural. */
-    engine?: "pattern" | "ast" | "taint" | "structural";
+    engine?: "pattern" | "ast" | "taint" | "structural" | "cpg";
+    /** Score do ranqueador FP (0–1): alto = mais assertivo / provável TP. */
+    assertiveness?: number;
+    fpLikelihood?: number;
+    rankerModel?: string;
   };
 }
 

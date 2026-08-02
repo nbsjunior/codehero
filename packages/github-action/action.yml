@@ -56,6 +56,13 @@ inputs:
       vulnerável (SCA), que o motor determinístico não cobre.
     required: false
     default: ""
+  joern:
+    description: >
+      Opt-in Code Property Graph via Joern (requer JDK+joern-scan ou Docker).
+      Achados entram como EXT:joern:* no mesmo SARIF. Desligado por padrão —
+      CPG é a decisão de arquitetura mais pesada (JVM no ambiente de scan).
+    required: false
+    default: "false"
 
 outputs:
   sarif-file:
@@ -109,6 +116,7 @@ runs:
         HERO_COVERAGE: ${{ inputs.coverage }}
         HERO_METRICS: ${{ inputs.metrics }}
         HERO_IMPORT_SARIF: ${{ inputs.import-sarif }}
+        HERO_JOERN: ${{ inputs.joern }}
       run: |
         # Cada linha de `coverage` vira um --coverage. Sem valor, array vazio
         # e o scanner nem tenta ler nada.
@@ -119,6 +127,7 @@ runs:
 
         EXTRA_ARGS=()
         [ "$HERO_METRICS" = "true" ] && EXTRA_ARGS+=(--metrics)
+        [ "$HERO_JOERN" = "true" ] && EXTRA_ARGS+=(--joern)
         while IFS= read -r p; do
           [ -n "$p" ] && EXTRA_ARGS+=(--import "$p")
         done <<< "$HERO_IMPORT_SARIF"
