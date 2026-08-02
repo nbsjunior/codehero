@@ -87,6 +87,8 @@ interface RepoIssue {
   engine?: string | null;
   isDependency?: boolean;
   isNewCode?: boolean;
+  assertiveness?: number | null;
+  fpLikelihood?: number | null;
 }
 
 const ratingColor: Record<string, string> = {
@@ -299,6 +301,8 @@ export default function ProjectWorkspace({
         engine: issue.engine ?? null,
         isDependency: issue.isDependency === true,
         isNewCode: issue.isNewCode === true,
+        assertiveness: issue.assertiveness ?? null,
+        fpLikelihood: issue.fpLikelihood ?? null,
       })),
     [issues],
   );

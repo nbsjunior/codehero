@@ -738,6 +738,24 @@ export async function flagIssueFeedback(input: {
   }
 }
 
+/** Exporta rótulos confirmado/FP para treino do ranqueador (`hero-fp-ranker train`). */
+export async function exportRuleforgeFeedback(input: {
+  orgId: string;
+  limit?: number;
+  onlyUnmerged?: boolean;
+}): Promise<{ orgId: string; count: number; examples: unknown[] }> {
+  const fn = httpsCallable<typeof input, { orgId: string; count: number; examples: unknown[] }>(
+    functions,
+    "exportRuleforgeFeedback",
+  );
+  try {
+    const res = await fn(input);
+    return res.data;
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha ao exportar feedback."));
+  }
+}
+
 export type MotorRuleSource = "core" | "platform" | "project";
 
 export interface MotorRuleRow {

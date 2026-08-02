@@ -608,13 +608,15 @@ export default function DocsPage() {
               </p>
             </div>
             <div className="cr-docs-callout">
-              <strong>Estratégia A + B</strong>
+              <strong>Movimentos 2 · 3 · 4</strong>
               <p style={{ margin: "0.5rem 0 0" }}>
-                <strong>A — orquestração:</strong> traga analyzers fortes com <code>import-sarif</code>; o CodeHero
-                normaliza, aplica gate e política. <strong>B — depth nativo:</strong> L0 + AST/taint (JS/TS) +
-                tree-sitter (JS/TS/Python/Java/Go/C#) + parsers estruturais para <strong>COBOL/T-SQL</strong>; stubs
-                Sonar Way são backlog, não marketing. Onde o Sonar é forte (JS/TS moderno), o CodeHero orquestra; onde
-                ele deixa vazio (legado), o CodeHero aprofunda.
+                <strong>2 — CPG (Joern):</strong> <code>--joern</code> / Action <code>joern: true</code> (JDK ou
+                Docker). Achados entram como <code>EXT:joern:*</code>. Opt-in — JVM no scan é escolha consciente.{" "}
+                <strong>3 — Ranqueador FP:</strong> gradient boosting de stumps em features (teste/dist, taxa histórica,
+                severidade…). Modelo versionado; confirmar/descartar no workspace gera rótulos;{" "}
+                <code>exportRuleforgeFeedback</code> + <code>hero-fp-ranker train</code>.{" "}
+                <strong>4 — CVE mine:</strong> <code>npm run cve:mine</code> extrai pares antes/depois de GHSA/OSV para o
+                corpus do ruleforge (Genkit propõe offline; F1/P≥0.85 decide).
               </p>
             </div>
 

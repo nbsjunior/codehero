@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@codehero/contracts": "*",
-    "@codehero/engine": "*"
+    "@codehero/cpg-joern": "*",
+    "@codehero/engine": "*",
+    "@codehero/fp-ranker": "*"
   }
 }

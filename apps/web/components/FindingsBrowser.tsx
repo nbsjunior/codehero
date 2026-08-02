@@ -44,6 +44,8 @@ export type FindingsBrowserItem = {
   engine?: string | null;
   isDependency?: boolean;
   isNewCode?: boolean;
+  assertiveness?: number | null;
+  fpLikelihood?: number | null;
 };
 
 function verdictLabel(v: IssueFeedbackVerdict | null | undefined): string | null {
@@ -74,6 +76,11 @@ export function provenanceLabel(item: FindingsBrowserItem): string | null {
     bits.push(item.tool);
   }
   if (item.isNewCode) bits.push("código novo");
+  if (typeof item.fpLikelihood === "number" && item.fpLikelihood >= 0.55) {
+    bits.push(`possível FP ${Math.round(item.fpLikelihood * 100)}%`);
+  } else if (typeof item.assertiveness === "number" && item.assertiveness >= 0.7) {
+    bits.push(`assertivo ${Math.round(item.assertiveness * 100)}%`);
+  }
   return bits.length ? bits.join(" · ") : null;
 }
 
