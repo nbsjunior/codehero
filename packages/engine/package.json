@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "node --import tsx src/selftest.ts",
+    "test": "node --import tsx src/selftest.ts && node test/semantic.mjs",
     "clean": "rimraf dist"
   },
   "dependencies": {
@@ -25,7 +25,8 @@
     "@babel/types": "^7.26.0",
     "@codehero/contracts": "*",
     "tree-sitter-wasms": "^0.1.13",
-    "web-tree-sitter": "^0.20.8"
+    "web-tree-sitter": "^0.20.8",
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
     "@types/babel__traverse": "^7.20.6",

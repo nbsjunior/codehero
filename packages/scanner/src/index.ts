@@ -16,9 +16,12 @@ import { collectFiles } from "./walk.ts";
 import { loadIgnoreFile, makeIgnoreMatcher, IGNORE_FILE } from "./ignore.ts";
 import { parseCoverageFile } from "./coverage.ts";
 import { collectStructural, type StructuralSummary } from "./metrics.ts";
+import { buildSemanticIndex, EMPTY_SEMANTIC_INDEX } from "@codehero/engine";
 import { importSarifFiles, type ImportSummary } from "./importSarif.ts";
 import { buildSarif } from "./sarif.ts";
 import { loadRulesFile, resolveActiveRules } from "./fetchRules.ts";
+import { runJoernScan } from "@codehero/cpg-joern";
+import { scoreFinding, DEFAULT_MODEL } from "@codehero/fp-ranker";
 
 interface CliOptions {
   paths: string[];
@@ -35,7 +38,10 @@ interface CliOptions {
   ignore: string[];
   coverage: string[];
   metrics: boolean;
+  semantic: boolean;
   importSarif: string[];
+  /** Opt-in CPG via Joern (JVM/Docker). */
+  joern: boolean;
 }
 
 function parseArgs(argv: string[]): CliOptions {
@@ -54,7 +60,9 @@ function parseArgs(argv: string[]): CliOptions {
     ignore: [],
     coverage: [],
     metrics: false,
+    semantic: false,
     importSarif: [],
+    joern: false,
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -64,6 +72,8 @@ function parseArgs(argv: string[]): CliOptions {
     else if (a === "--sarif") opts.format = "sarif";
     else if (a === "--cache") opts.cache = true;
     else if (a === "--metrics") opts.metrics = true;
+    else if (a === "--semantic") { opts.semantic = true; opts.metrics = true; }
+    else if (a === "--joern") opts.joern = true;
     else if (a === "--import") {
       const v = argv[++i];
       if (v) opts.importSarif.push(v);
@@ -120,8 +130,24 @@ async function main(): Promise<void> {
     if (opts.metrics) paraMetricas.push({ path: rel, source });
   }
 
+  // Camada semântica: resolve TIPO, não forma. Custa segundos (monta o Program
+  // do TypeScript inteiro), contra milissegundos do tree-sitter — por isso é
+  // pedida explicitamente e nunca ligada por padrão.
+  const semantic =
+    opts.metrics && opts.semantic
+      ? await buildSemanticIndex(
+          paraMetricas.map((f) => f.path),
+          { cwd },
+        )
+      : EMPTY_SEMANTIC_INDEX;
+  if (opts.semantic && semantic.stats.files === 0) {
+    process.stderr.write(
+      "CodeHero: camada semantica indisponivel (typescript ausente ou nenhum arquivo TS/JS); regras que exigem tipo ficarao em silencio\n",
+    );
+  }
+
   const structural: StructuralSummary | null = opts.metrics
-    ? await collectStructural(paraMetricas)
+    ? await collectStructural(paraMetricas, undefined, semantic)
     : null;
 
   // Cobertura é INGERIDA, não calculada: cada caminho é um relatório que o
@@ -139,8 +165,25 @@ async function main(): Promise<void> {
 
   // Terceiros: CodeQL/Semgrep cobrem fluxo entre arquivos que o L0 nao alcanca;
   // osv-scanner/trivy cobrem dependencia, eixo que analise de codigo nao ve.
+  // --joern (opt-in): CPG interprocedural via Joern → mesmo caminho --import.
+  const importPaths = [...opts.importSarif];
+  if (opts.joern) {
+    const root = opts.paths[0] ?? ".";
+    const jr = runJoernScan({ sourceRoot: root });
+    if (!jr.ok || !jr.sarifPath) {
+      process.stderr.write(
+        `CodeHero: --joern falhou (${jr.backend}): ${jr.hint ?? jr.stderr}\n`,
+      );
+    } else {
+      process.stderr.write(
+        `CodeHero: Joern CPG (${jr.backend}) → ${jr.findingsApprox} finding(s)\n`,
+      );
+      importPaths.push(jr.sarifPath);
+    }
+  }
+
   const imported: ImportSummary | null =
-    opts.importSarif.length > 0 ? importSarifFiles(opts.importSarif) : null;
+    importPaths.length > 0 ? importSarifFiles(importPaths) : null;
   if (imported?.failed.length) {
     process.stderr.write(
       `CodeHero: nao foi possivel ler como SARIF: ${imported.failed.join(", ")}
@@ -149,6 +192,29 @@ async function main(): Promise<void> {
   }
 
   const sarif = buildSarif(findings, coverage, linesOfCode, structural, imported?.findings);
+
+  // Assertividade (ranqueador FP): anota properties no SARIF — determinístico.
+  for (const run of sarif.runs ?? []) {
+    for (const r of run.results ?? []) {
+      const file = r.locations?.[0]?.physicalLocation?.artifactLocation?.uri ?? "";
+      const score = scoreFinding(DEFAULT_MODEL, {
+        ruleId: r.ruleId,
+        file,
+        severity: r.properties?.severity,
+        engine: r.properties?.engine ?? null,
+        findingSource: r.properties?.source === "imported" ? "imported" : "native",
+        taintPathLength: Array.isArray((r.properties as { taintPath?: string[] } | undefined)?.taintPath)
+          ? ((r.properties as { taintPath: string[] }).taintPath.length)
+          : undefined,
+      });
+      r.properties = {
+        ...r.properties,
+        assertiveness: Math.round(score.assertiveness * 1000) / 1000,
+        fpLikelihood: Math.round(score.fpLikelihood * 1000) / 1000,
+        rankerModel: score.modelVersion,
+      };
+    }
+  }
 
   if (opts.format === "sarif") {
     const json = JSON.stringify(sarif, null, 2);
@@ -164,6 +230,7 @@ async function main(): Promise<void> {
       coverage,
       structural,
       imported,
+      semantic.stats,
     );
     if (opts.out) writeFileSync(opts.out, JSON.stringify(sarif, null, 2));
   }
@@ -208,6 +275,7 @@ function printPretty(
   coverage: CoverageReport | null = null,
   structural: StructuralSummary | null = null,
   imported: ImportSummary | null = null,
+  semanticStats: { files: number; calls: number; ms: number } | null = null,
 ): void {
   const bySev = new Map<Severity, number>();
   for (const f of findings) bySev.set(f.rule.severity, (bySev.get(f.rule.severity) ?? 0) + 1);
@@ -248,6 +316,12 @@ function printPretty(
         ` (máx ${t.maxCyclomatic}) | cognitiva média ${t.avgCognitive}` +
         ` | aninhamento máx ${t.maxNesting} | comentários ${t.commentDensity}%\n`,
     );
+    if (semanticStats && semanticStats.files > 0) {
+      process.stdout.write(
+        `Camada semantica: ${semanticStats.calls} chamada(s) com tipo resolvido` +
+          ` em ${semanticStats.files} arquivo(s) (${(semanticStats.ms / 1000).toFixed(1)}s)\n`,
+      );
+    }
     if (structural.ruleFindings.length > 0) {
       const porRegra = new Map<string, number>();
       for (const f of structural.ruleFindings)
@@ -268,7 +342,7 @@ function printPretty(
     );
     if (structural.skippedLanguages > 0) {
       process.stdout.write(
-        `  (${structural.skippedLanguages} arquivo(s) sem gramática estrutural — COBOL, T-SQL, DB2, VB.Net)\n`,
+        `  (${structural.skippedLanguages} arquivo(s) sem parser estrutural — DB2 dedicado, VB.Net)\n`,
       );
     }
     if (structural.parseErrors.length > 0) {
