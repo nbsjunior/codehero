@@ -2,6 +2,7 @@ import { onDocumentCreated } from "firebase-functions/v2/firestore";
 import { logger } from "firebase-functions";
 import { FieldValue } from "firebase-admin/firestore";
 import type { SarifLog } from "@codehero/contracts";
+import { normalizeSarifResultsToCatalog } from "@codehero/contracts";
 import { db, storage, STORAGE_BUCKET_NAME, FIRESTORE_DATABASE_ID, repoRef } from "./lib/firebase.ts";
 import { upsertIssuesFromResults } from "./lib/ingestCore.ts";
 
@@ -48,7 +49,7 @@ export const processIngestJob = onDocumentCreated(
     try {
       const [buf] = await storage.bucket(STORAGE_BUCKET_NAME).file(sarifPath).download();
       const sarif = JSON.parse(buf.toString("utf8")) as SarifLog;
-      const results = sarif.runs?.[0]?.results ?? [];
+      const results = normalizeSarifResultsToCatalog(sarif.runs?.[0]?.results ?? []);
 
       await upsertIssuesFromResults({
         orgId,

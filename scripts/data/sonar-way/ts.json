@@ -1,0 +1,6853 @@
+{
+  "fetchedAt": "2026-07-28T13:07:41.908Z",
+  "language": "ts",
+  "heroLanguages": [
+    "typescript"
+  ],
+  "note": null,
+  "profileKey": "AV1gnN4ytVGzJ3NclDBO",
+  "profileName": "Sonar way",
+  "activeRuleCount": 483,
+  "rules": [
+    {
+      "key": "typescript:S2699",
+      "name": "Tests should include assertions",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "chai",
+        "type-dependent",
+        "mocha",
+        "jest",
+        "jasmine",
+        "cypress",
+        "node",
+        "sinon",
+        "tests",
+        "playwright",
+        "editable-source",
+        "bun",
+        "supertest",
+        "vitest"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8959",
+      "name": "UI test debug commands should not be committed to version control",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "tests",
+        "playwright",
+        "testing-library",
+        "bad-practice",
+        "cypress"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S9107",
+      "name": "Vue component prop types should be constructors",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "vue"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7763",
+      "name": "Re-exports should use \"export...from\" syntax",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "es2015",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S9073",
+      "name": "Composite assertions should be split",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "node",
+        "tests",
+        "bun",
+        "vitest",
+        "jest"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S9078",
+      "name": "Parameterized tests should not contain duplicate test cases",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "bun",
+        "vitest",
+        "jest",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2004",
+      "name": "Functions should not be nested too deeply",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6582",
+      "name": "Optional chaining should be preferred",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "type-dependent",
+        "es2020"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S9072",
+      "name": "Synchronous exception assertions should receive synchronous callbacks",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "tests",
+        "async-await",
+        "type-dependent",
+        "bun",
+        "promise",
+        "vitest",
+        "jest"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8998",
+      "name": "Parameterized tests should not have empty datasets",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "tests",
+        "bun",
+        "vitest",
+        "jest",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5976",
+      "name": "Similar tests should be grouped in a single Parameterized test",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "playwright",
+        "bad-practice",
+        "bun",
+        "vitest",
+        "jest",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8784",
+      "name": "Assertions should be placed inside test cases or hooks",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "chai",
+        "mocha",
+        "jest",
+        "jasmine",
+        "pitfall",
+        "cypress",
+        "node",
+        "sinon",
+        "tests",
+        "playwright",
+        "supertest",
+        "bun",
+        "vitest"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8780",
+      "name": "Async test assertions should be awaited or returned",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "node",
+        "tests",
+        "async-await",
+        "playwright",
+        "bun",
+        "promise",
+        "vitest",
+        "jasmine",
+        "jest"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8781",
+      "name": "Test and suite titles should not be empty or whitespace-only",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "node",
+        "karma",
+        "tests",
+        "playwright",
+        "mocha",
+        "bun",
+        "confusing",
+        "vitest",
+        "jest",
+        "jasmine",
+        "cypress"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8961",
+      "name": "Vue component events should be explicitly declared",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "vue"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8754",
+      "name": "Test titles should be unique within the same suite",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "node",
+        "tests",
+        "playwright",
+        "mocha",
+        "bun",
+        "confusing",
+        "vitest",
+        "jest"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6845",
+      "name": "Non-interactive DOM elements should not have the `tabindex` attribute",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S9020",
+      "name": "Use \"find*\" to query Testing Library elements that may not be available yet",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "testing-library"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S9026",
+      "name": "Promises returned by Testing Library async queries should be handled",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "tests",
+        "testing-library"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S9025",
+      "name": "Asynchronous actions should not be used in Vue computed properties",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "vue"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S9027",
+      "name": "Testing Library queries should match presence assertions",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "testing-library"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1534",
+      "name": "Member names should not be duplicated within a class or object literal",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "vue",
+        "react",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S9019",
+      "name": "Vue refs should not be used as operands",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "vue"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S9011",
+      "name": "\"<button>\" elements should have an explicit \"type\" attribute",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "vue",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S9012",
+      "name": "Snapshots should not be generated inside Testing Library async utilities",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "tests",
+        "testing-library"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8678",
+      "name": "Confidential data should not be sent to a remote LLM",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8987",
+      "name": "\"v-if\" and \"v-for\" should not be used on the same element",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "vue"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8990",
+      "name": "Promises should not be passed to \"fireEvent\"",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "tests",
+        "testing-library"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6551",
+      "name": "Objects and classes converted or coerced to strings should define a \"toString()\" method",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "string",
+        "type-dependent",
+        "object"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8988",
+      "name": "Side effects should not be performed inside Vue computed properties",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "vue"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8985",
+      "name": "Side effects should not be performed inside \"waitFor\" callbacks",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "tests",
+        "testing-library"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1848",
+      "name": "Objects should not be created to be dropped immediately without being used",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2933",
+      "name": "Fields that are only assigned in the constructor should be \"readonly\"",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "type-dependent",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6478",
+      "name": "React components should not be nested",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "react",
+        "jsx"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8981",
+      "name": "Regular expressions used in Testing Library queries should not have the global flag",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex",
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8982",
+      "name": "HTML elements with v-for should have a :key attribute",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "vue"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8984",
+      "name": "Vue v-for directives should be valid",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "vue"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8980",
+      "name": "React Testing Library calls should not be wrapped in \"act()\"",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2486",
+      "name": "Exceptions should not be ignored",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "error-handling",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6842",
+      "name": "Non-interactive DOM elements should not have interactive ARIA roles",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8962",
+      "name": "Vue ref and shallowRef calls should be typed",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "vue"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8957",
+      "name": "Vue component props should declare a type",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "vue"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8951",
+      "name": "Vue component props should not be mutated directly",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "vue"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8950",
+      "name": "Vue props with a default value should not be required",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "vue"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8968",
+      "name": "Tests should be skipped explicitly",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "node",
+        "tests",
+        "playwright",
+        "mocha",
+        "bun",
+        "vitest"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2068",
+      "name": "Credentials should not be hard-coded",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "secret",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6437",
+      "name": "Credentials should not be hard-coded",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "secret"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6418",
+      "name": "Secrets should not be hard-coded",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "secret",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7766",
+      "name": "Ternary expressions should be replaced with \"Math.min()\" or \"Math.max()\" for simple comparisons",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "readability",
+        "editable-source",
+        "type-dependent",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8967",
+      "name": "Inline snapshots should not contain interpolations",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "editable-source",
+        "vitest",
+        "jest"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8960",
+      "name": "Test and hook callbacks should use a single completion style",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "async",
+        "tests",
+        "mocha",
+        "jest",
+        "jasmine"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6819",
+      "name": "Prefer tag over ARIA role",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5906",
+      "name": "The most specific assertion should be used",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "chai",
+        "playwright",
+        "vitest",
+        "jest",
+        "cypress"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5914",
+      "name": "Assertions should not be trivially true",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "node",
+        "chai",
+        "tests",
+        "playwright",
+        "bun",
+        "confusing",
+        "suspicious",
+        "vitest",
+        "jest",
+        "jasmine",
+        "cypress"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8785",
+      "name": "Tests should not be registered asynchronously in suite callbacks",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "async",
+        "tests",
+        "mocha",
+        "jest",
+        "cypress"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6479",
+      "name": "JSX list components should not use array indexes as key",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "react",
+        "jsx"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2925",
+      "name": "Fixed waits should not be used in tests",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "playwright",
+        "puppeteer",
+        "bad-practice",
+        "cypress"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S7518",
+      "name": "Privileged prompts should not be vulnerable to injection attacks",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8702",
+      "name": "Agentic workflows should not be vulnerable to SQL injection attacks",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8703",
+      "name": "Agentic workflows should not be vulnerable to server-side request forgery",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8704",
+      "name": "Agentic workflows should not be vulnerable to code injection attacks",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8705",
+      "name": "Agentic workflows should not be vulnerable to argument injection attacks",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8701",
+      "name": "Agentic workflows should not be vulnerable to command injection attacks",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8706",
+      "name": "Agentic workflows should not be vulnerable to connection string injection",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8707",
+      "name": "Agentic workflows should not be vulnerable to path injection attacks",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6853",
+      "name": "Label elements should have a text label and an associated control",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1313",
+      "name": "IP addresses should not be hardcoded",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8927",
+      "name": "Default imports from modular utility libraries should not be used",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "es2015"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8932",
+      "name": "Lodash and Underscore.js `memoize` calls on functions with multiple parameters should use an explicit cache key function",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "underscore.js",
+        "lodash"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5852",
+      "name": "Regular expressions should not cause catastrophic backtracking",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "regex",
+        "type-dependent",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5542",
+      "name": "Encryption algorithms should be used with secure mode and padding scheme",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7742",
+      "name": "Polyfills should not be used when native support is available in target environments",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "polyfill",
+        "editable-source",
+        "bundle-size"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8907",
+      "name": "Native APIs should be preferred over Lodash and Underscore.js methods",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "underscore.js",
+        "lodash",
+        "modernize"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8783",
+      "name": "Forced browser interactions should not bypass actionability checks",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "playwright",
+        "cypress"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8786",
+      "name": "Regular expressions should not cause non-linear backtracking",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex",
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8782",
+      "name": "Lifecycle hooks should not be interleaved with test cases or nested suites",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "mocha",
+        "vitest",
+        "jest"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3799",
+      "name": "Destructuring patterns should not be empty",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6821",
+      "name": "DOM elements with ARIA roles should have a valid non-abstract role",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6822",
+      "name": "No redundant ARIA role",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "editable-source",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1135",
+      "name": "Track uses of \"TODO\" tags",
+      "lang": "ts",
+      "severity": "INFO",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2589",
+      "name": "Boolean expressions should not be gratuitous",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "suspicious",
+        "redundant"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5734",
+      "name": "Browsers should not be allowed to perform MIME type sniffing",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "express.js",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5856",
+      "name": "Regular expressions should be syntactically valid",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6823",
+      "name": "DOM elements with the `aria-activedescendant` property should be accessible via the tab key",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6824",
+      "name": "No ARIA role or property for unsupported DOM elements",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1134",
+      "name": "Track uses of \"FIXME\" tags",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4524",
+      "name": "\"default\" clauses should be last",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5850",
+      "name": "Alternatives in regular expressions should be grouped when used with anchors",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "regex",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5973",
+      "name": "Tests should be stable",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "design",
+        "editable-source",
+        "unpredictable"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5736",
+      "name": "HTTP Referrer-Policy should not be set to an unsafe value",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "express.js",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6825",
+      "name": "Focusable elements should not have \"aria-hidden\" attribute",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6827",
+      "name": "Anchors should contain accessible content",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1143",
+      "name": "Jump statements should not occur in \"finally\" blocks",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "error-handling"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1264",
+      "name": "A \"while\" loop should be used instead of a \"for\" loop",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2234",
+      "name": "Parameters should be passed in the correct order",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2598",
+      "name": "File uploads should be restricted",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "express.js"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5739",
+      "name": "HTTP Strict-Transport-Security policy should not be disabled",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "express.js",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5860",
+      "name": "Names of regular expressions named groups should be used",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5863",
+      "name": "Assertions should not be given twice the same argument",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "tests",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5868",
+      "name": "Unicode Grapheme Clusters should be avoided inside regex character classes",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "regex",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5869",
+      "name": "Character classes in regular expressions should not contain the same character twice",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6836",
+      "name": "\"case\" and \"default\" clauses should not contain lexical declarations",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6957",
+      "name": "Deprecated React APIs should not be used",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6958",
+      "name": "Literals should not be used as functions",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6959",
+      "name": "\"Array.reduce()\" calls should include an initial value",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S878",
+      "name": "Comma operator should not be used",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2688",
+      "name": "\"NaN\" should not be used in comparisons",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3776",
+      "name": "Cognitive Complexity of functions should not be too high",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4621",
+      "name": "Union and intersection types should not include duplicated constituents",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2201",
+      "name": "Return values from functions without side effects should not be ignored",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2685",
+      "name": "\"arguments.caller\" and \"arguments.callee\" should not be used",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "obsolete"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4502",
+      "name": "CSRF protections should not be disabled",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "express.js",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4623",
+      "name": "\"undefined\" should not be passed as the value of optional parameters",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "type-dependent",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4624",
+      "name": "Template literals should not be nested",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "es2015",
+        "brain-overload",
+        "editable-source",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3531",
+      "name": "Generators should explicitly \"yield\" a value",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "api-design",
+        "es2015"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1119",
+      "name": "Labels should not be used",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1472",
+      "name": "Function call arguments should not start on new lines",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2681",
+      "name": "Multiline blocks should be enclosed in curly braces",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6807",
+      "name": "DOM elements with ARIA roles should have the required properties",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3415",
+      "name": "Assertion arguments should be passed in the correct order",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "chai",
+        "tests",
+        "editable-source",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4507",
+      "name": "Debugging features should not be enabled in production",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "error-handling",
+        "debug",
+        "user-experience",
+        "express.js",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5842",
+      "name": "Repeated patterns in regular expressions should not match the empty string",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5843",
+      "name": "Regular expressions should not be too complicated",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex",
+        "editable-source",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5958",
+      "name": "Tests should check which exception is thrown",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "chai",
+        "editable-source",
+        "mocha"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6811",
+      "name": "DOM elements with ARIA role should only have supported properties",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1125",
+      "name": "Boolean literals should not be used in comparisons",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4634",
+      "name": "Shorthand promises should be used",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "es2015",
+        "editable-source",
+        "proficiency"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5845",
+      "name": "Assertions comparing incompatible types should not be made",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "node",
+        "tests",
+        "chai",
+        "playwright",
+        "type-dependent",
+        "editable-source",
+        "bun",
+        "vitest",
+        "jasmine",
+        "jest",
+        "cypress"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1121",
+      "name": "Assignments should not be made from within sub-expressions",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1244",
+      "name": "Floating point numbers should not be tested for equality",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2692",
+      "name": "\"indexOf\" checks should not be for positive numbers",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "type-dependent",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5725",
+      "name": "Remote artifacts should not be used without integrity checks",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "type-dependent",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1128",
+      "name": "Unnecessary imports should be removed",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "es2015",
+        "type-dependent",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3358",
+      "name": "Ternary operators should not be nested",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5728",
+      "name": "Content security policy fetch directives should not be disabled",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "express.js",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6747",
+      "name": "JSX elements should not use unknown properties and attributes",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "react",
+        "jsx"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4322",
+      "name": "Type predicates should be used",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "proficiency"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4323",
+      "name": "Type aliases should be used",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "proficiency"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6746",
+      "name": "In React \"this.state\" should not be mutated directly",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6749",
+      "name": "Redundant JSX fragments should be removed",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6861",
+      "name": "Mutable variables should not be exported",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5659",
+      "name": "JWT should be signed and verified with strong cipher algorithms",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6509",
+      "name": "Extra boolean casts should be removed",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6627",
+      "name": "Users should not use internal APIs",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "gradle"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6748",
+      "name": "React \"children\" should not be passed as prop",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7718",
+      "name": "Error parameters in catch clauses should follow a consistent naming convention",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "error-handling",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7719",
+      "name": "Date objects should be cloned directly without calling \"getTime()\"",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "readability",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6756",
+      "name": "\"setState\" should use a callback when referencing the previous state",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7723",
+      "name": "Built-in constructors should be called consistently with or without \"new\"",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4335",
+      "name": "Type intersections should use meaningful types",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "type-dependent",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6635",
+      "name": "Constructors should not return values",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7724",
+      "name": "ESLint disable comments should specify which rules to disable",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "eslint",
+        "editable-source",
+        "linting"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7725",
+      "name": "Getters and setters should not recursively access the same property",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6637",
+      "name": "Unnecessary calls to \".bind()\" should not be used",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7726",
+      "name": "Default exports should be named",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "es2015",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1068",
+      "name": "Unused private class members should be removed",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "es2022"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5547",
+      "name": "Cipher algorithms should be robust",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6757",
+      "name": "\"this\" should not be used in functional components",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7720",
+      "name": "Ternary expressions in array spreads should use consistent types",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "es2015",
+        "editable-source",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1186",
+      "name": "Functions should not be empty",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3001",
+      "name": "\"delete\" should be used only with object properties",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6754",
+      "name": "The return value of \"useState\" should be destructured and named symmetrically",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7721",
+      "name": "Functions should be moved to the highest possible scope",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "optimization",
+        "editable-source",
+        "javascript"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7722",
+      "name": "Built-in error objects should have meaningful messages",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7727",
+      "name": "Function references should not be passed directly to iterator methods",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "iterator",
+        "array",
+        "type-dependent",
+        "callback",
+        "javascript"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6638",
+      "name": "Binary expressions should not always return the same value",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6759",
+      "name": "React props should be read-only",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "type-dependent",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7729",
+      "name": "Array method callbacks should not use the \"thisArg\" parameter",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "type-dependent",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2392",
+      "name": "Variables should be used in the blocks where they are declared",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6750",
+      "name": "The return value of \"ReactDOM.render\" should not be used",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6843",
+      "name": "Interactive DOM elements should not have non-interactive ARIA roles",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5876",
+      "name": "A new session should be created during user authentication",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3699",
+      "name": "The return value of void functions should not be used",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6844",
+      "name": "Anchor tags should not be used as buttons",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2245",
+      "name": "Pseudorandom number generators (PRNGs) should not be used in security contexts",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3579",
+      "name": "Array indexes should be numeric",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "type-dependent",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4423",
+      "name": "Weak SSL/TLS protocols should not be used",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4426",
+      "name": "Cryptographic keys should be robust",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6846",
+      "name": "DOM elements should not use the \"accesskey\" property",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6840",
+      "name": "DOM elements should use the \"autocomplete\" attribute correctly",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2123",
+      "name": "Values should not be uselessly incremented",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3696",
+      "name": "Literals should not be thrown",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "api-design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4782",
+      "name": "Optional property declarations should not use both '?' and 'undefined' syntax",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "type-dependent",
+        "redundant"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6841",
+      "name": "\"tabIndex\" values should be 0 or -1",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3330",
+      "name": "Cookies should have the \"HttpOnly\" flag",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy",
+        "express.js",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6606",
+      "name": "Nullish coalescing should be preferred",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "type-dependent",
+        "nullish-coalescing",
+        "es2020"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6847",
+      "name": "Non-interactive elements shouldn't have event handlers",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2137",
+      "name": "Special identifiers should not be bound or assigned",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6848",
+      "name": "Non-interactive DOM elements should not have an interactive handler",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6850",
+      "name": "Heading elements should have accessible content",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6851",
+      "name": "Images should have a non-redundant alternate description",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4790",
+      "name": "Weak hashing algorithms should not be used",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5527",
+      "name": "Server hostnames should be verified during SSL/TLS connections",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy",
+        "ssl"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6852",
+      "name": "Elements with an interactive role should support focus",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6859",
+      "name": "Imports should not use absolute paths",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "paths",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1533",
+      "name": "Wrapper objects should not be used for primitive types",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2251",
+      "name": "A \"for\" loop update clause should move the counter in the right direction",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1656",
+      "name": "Variables should not be self-assigned",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1301",
+      "name": "\"if\" statements should be preferred over \"switch\" when simpler",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "type-dependent",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2870",
+      "name": "\"delete\" should not be used on arrays",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2871",
+      "name": "\"Array.prototype.sort()\" and \"Array.prototype.toSorted()\" should use a compare function",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "type-dependent",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S905",
+      "name": "Non-empty statements should change control flow or have at least one side-effect",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2990",
+      "name": "The global \"this\" object should not be used",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1788",
+      "name": "Function parameters with default values should be last",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "es2015"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1874",
+      "name": "Deprecated APIs should not be used",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "type-dependent",
+        "obsolete"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2639",
+      "name": "Empty character classes should not be used",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2755",
+      "name": "XML parsers should not be vulnerable to XXE attacks",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2757",
+      "name": "Non-existent operators '=+', '=-' and '=!' should not be used",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2999",
+      "name": "\"new\" should only be used with functions and classes",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1751",
+      "name": "Loops with at most one iteration should be refactored",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "editable-source",
+        "bad-practice",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1871",
+      "name": "Two branches in a conditional structure should not have exactly the same implementation",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1994",
+      "name": "\"for\" loop increment clauses should modify the loops' counters",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1515",
+      "name": "Functions should not be defined inside loops",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1516",
+      "name": "Multiline string literals should not be used",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1764",
+      "name": "Identical expressions should not be used on both sides of a binary operator",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3812",
+      "name": "Parentheses should be used when negating \"in\" and \"instanceof\" operations",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6080",
+      "name": "Disabling Mocha timeouts should be explicit",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7059",
+      "name": "Constructors should not contain asynchronous operations",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "type-dependent",
+        "es2017"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1529",
+      "name": "Bitwise operators should not be used in boolean contexts",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1763",
+      "name": "All code should be reachable",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2970",
+      "name": "Assertions should be complete",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2612",
+      "name": "File permissions should not be set to world-accessible values",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2737",
+      "name": "\"catch\" clauses should do more than rethrow",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "editable-source",
+        "unused",
+        "finding",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1523",
+      "name": "Dynamic code execution should not use user-controlled data",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6092",
+      "name": "Chai assertions should have only one reason to succeed",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "chai",
+        "tests",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7060",
+      "name": "Module should not import itself",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2301",
+      "name": "Methods should not contain selector parameters",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "type-dependent",
+        "design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1219",
+      "name": "\"switch\" statements should not contain non-case labels",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3516",
+      "name": "Function returns should not be invariant",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1226",
+      "name": "Initial values of parameters, caught exceptions, and loop variables should not be ignored",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2310",
+      "name": "Loop counters should not be assigned within the loop body",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2430",
+      "name": "Constructor names should start with an upper case letter",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4619",
+      "name": "\"in\" should not be used on arrays",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "type-dependent",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1439",
+      "name": "Only \"while\", \"do\", \"for\" and \"switch\" statements should be labelled",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3854",
+      "name": "\"super()\" should be invoked appropriately",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3972",
+      "name": "Conditionals should start on new lines",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4822",
+      "name": "Promise rejections should not be caught by \"try\" blocks",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "es2017",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3616",
+      "name": "Comma and logical OR operators should not be used in switch cases",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3735",
+      "name": "\"void\" should not be used",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "type-dependent",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1314",
+      "name": "Octal values should not be used",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1444",
+      "name": "Public \"static\" fields should be read-only",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3984",
+      "name": "Errors should not be created without being thrown",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "error-handling"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4830",
+      "name": "Server certificates should be verified during SSL/TLS connections",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy",
+        "ssl"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3504",
+      "name": "Variables should be declared with \"let\" or \"const\"",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "es2015",
+        "editable-source",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3626",
+      "name": "Jump statements should not be redundant",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "redundant",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3863",
+      "name": "Imports from the same module should be merged",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "es2015",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3981",
+      "name": "Collection size and array length comparisons should make sense",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6268",
+      "name": "Angular built-in sanitization should not be disabled",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1940",
+      "name": "Boolean checks should not be inverted",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4084",
+      "name": "Media elements should have captions",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6035",
+      "name": "Single-character alternations in regular expressions should be replaced with character classes",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6265",
+      "name": "S3 buckets should not grant access to all users or authenticated users",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6275",
+      "name": "EBS volumes should be encrypted",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8441",
+      "name": "Static Assets should not serve session cookies",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6249",
+      "name": "S3 buckets should enforce HTTPS-only access",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6270",
+      "name": "AWS resource-based policies should not grant public access",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6397",
+      "name": "Character classes in regular expressions should not contain only one character",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex",
+        "editable-source",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6486",
+      "name": "JSX list components keys should match up between renders",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "react",
+        "jsx"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6019",
+      "name": "Reluctant quantifiers in regular expressions should be followed by an expression that can't match the empty string",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6481",
+      "name": "React Context Provider values should have stable identities",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "react",
+        "jsx"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1854",
+      "name": "Unused assignments should be removed",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "editable-source",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2819",
+      "name": "Origins should be verified during cross-origin communications",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "html5",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6252",
+      "name": "Amazon S3 buckets should have versioning enabled",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1862",
+      "name": "\"if/else if\" chains and \"switch\" cases should not have the same condition",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "unused",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S3923",
+      "name": "All branches in a conditional structure should not have exactly the same implementation",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6079",
+      "name": "Tests should not execute any code after \"done()\" is called",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "unpredictable",
+        "mocha"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S128",
+      "name": "Switch cases should end with an unconditional \"break\" statement",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6281",
+      "name": "Amazon S3 bucket public access should be fully blocked",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S8479",
+      "name": "DOMPurify configuration should not be bypassable",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1607",
+      "name": "Tests should not be skipped without providing a reason",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "node",
+        "karma",
+        "tests",
+        "playwright",
+        "editable-source",
+        "mocha",
+        "vitest",
+        "jest",
+        "jasmine",
+        "cypress"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6788",
+      "name": "React's \"findDOMNode\" should not be used",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7756",
+      "name": "Modern Blob methods should be used instead of FileReader",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "modernization",
+        "editable-source",
+        "promise",
+        "javascript"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6426",
+      "name": "Exclusive tests should not be committed to version control",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "tests",
+        "playwright",
+        "mocha",
+        "vitest",
+        "jest",
+        "cypress"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6789",
+      "name": "React's \"isMounted\" should not be used",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7757",
+      "name": "Class properties should be declared as fields rather than assigned in constructors",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2022"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4123",
+      "name": "\"await\" should only be used with promises",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "es2017"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7752",
+      "name": "Array methods \".map().flat()\" should be replaced with \".flatMap()\"",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "es2019",
+        "performance",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7753",
+      "name": "\"indexOf()\" and \"lastIndexOf()\" should be used instead of \"findIndex()\" and \"findLastIndex()\" for simple equality searches",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "array",
+        "editable-source",
+        "javascript"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7758",
+      "name": "Unicode-aware string methods should be used for proper character handling",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "internationalization",
+        "es2015",
+        "unicode"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7759",
+      "name": "Use \"Date.now()\" instead of creating Date objects to get current timestamp",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "readability",
+        "performance",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5332",
+      "name": "Clear-text protocols should not be used",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7754",
+      "name": "Use \".some()\" instead of \".filter().length\" checks or \".find()\" for existence testing",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "readability",
+        "performance",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6302",
+      "name": "Policies should not grant all privileges",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "gcp",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6303",
+      "name": "Amazon RDS resources should be encrypted at rest",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6544",
+      "name": "Promises should not be misused",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "async",
+        "type-dependent",
+        "es2017",
+        "promise"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6666",
+      "name": "Spread syntax should be used instead of \"apply()\"",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7755",
+      "name": "Complex index access patterns should be replaced with \".at()\" method",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "readability",
+        "performance",
+        "editable-source",
+        "type-dependent",
+        "es2022"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2187",
+      "name": "Test files should contain at least one test case",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "node",
+        "karma",
+        "tests",
+        "playwright",
+        "editable-source",
+        "mocha",
+        "unused",
+        "confusing",
+        "vitest",
+        "jest",
+        "jasmine",
+        "cypress"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4124",
+      "name": "Constructors should not be declared inside interfaces",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6308",
+      "name": "OpenSearch domains should have encryption at rest enabled",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6660",
+      "name": "If statements should not be the only statement in else blocks",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7639",
+      "name": "Wallet phrases should not be hard-coded",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7750",
+      "name": "Array methods \".find()\" and \".findLast()\" should be preferred over \".filter()\" for single element retrieval",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "readability",
+        "performance",
+        "es2015",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7751",
+      "name": "Array flattening should use the native \"flat()\" method",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "es2019",
+        "readability",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S107",
+      "name": "Functions should not have too many parameters",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5693",
+      "name": "HTTP request content length should be limited",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "express.js",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6661",
+      "name": "Object spread syntax should be used instead of \"Object.assign\"",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "es2018",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S108",
+      "name": "Nested blocks of code should not be left empty",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1090",
+      "name": "iFrames must have a title",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4138",
+      "name": "\"for of\" should be used with Iterables",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6679",
+      "name": "\"Number.isNaN()\" should be used to check for \"NaN\" value",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7647",
+      "name": "Empty Angular lifecycle methods should be removed",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "angular",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7767",
+      "name": "Bitwise operators should not be used to truncate numbers",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "es2015",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7768",
+      "name": "Modern DOM manipulation methods should be used instead of legacy alternatives",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "modernization",
+        "dom",
+        "best-practice",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6317",
+      "name": "AWS IAM policies should limit the scope of permissions given",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6438",
+      "name": "Comments inside JSX expressions should be enclosed in curly braces",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "react",
+        "jsx"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6439",
+      "name": "React components should not render non-boolean condition values",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "type-dependent",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6557",
+      "name": "Ends of strings should be checked with \"startsWith()\" and \"endsWith()\"",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "es2015",
+        "editable-source",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7649",
+      "name": "Input bindings should not be aliased",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "angular",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7769",
+      "name": "Modern Math APIs should be used instead of legacy mathematical expressions",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "es2015",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6435",
+      "name": "React \"render\" functions should return a value",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7765",
+      "name": "Existence checks should use \".includes()\" instead of \".indexOf()\" or \".lastIndexOf()\"",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "readability",
+        "es2016",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6676",
+      "name": "Calls to \".call()\" and \".apply()\" methods should not be redundant",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2077",
+      "name": "SQL queries should not be dynamically formatted",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "type-dependent",
+        "bad-practice",
+        "sql",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6319",
+      "name": "SageMaker notebook instances should be encrypted at rest",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6550",
+      "name": "All enum members should be literals",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "enum"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6671",
+      "name": "Literals should not be used for promise rejection",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6791",
+      "name": "React legacy lifecycle methods should not be used",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7760",
+      "name": "Default parameters should be used instead of reassigning parameters with literal fallback values",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "es2015",
+        "editable-source",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6793",
+      "name": "ARIA properties in DOM elements should have valid values",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7641",
+      "name": "Angular lifecycle methods should be used in the correct context",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "lifecycle",
+        "angular"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7761",
+      "name": "Data attributes should be accessed using \".dataset\"",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "dom",
+        "editable-source",
+        "html",
+        "api"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7762",
+      "name": "DOM nodes should be removed using \"remove()\" instead of \"removeChild()\"",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "dom",
+        "editable-source",
+        "modernize",
+        "javascript"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6790",
+      "name": "String references should not be used",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7734",
+      "name": "Default imports and exports should use the dedicated syntax",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "es2015",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6767",
+      "name": "Unused React typed props should be removed",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "type-dependent",
+        "editable-source",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7736",
+      "name": "Negated expressions should not be used in equality checks",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "confusing",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1199",
+      "name": "Nested code blocks should not be used",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6647",
+      "name": "Unnecessary constructors should be removed",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "es2015",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7737",
+      "name": "Objects should not be used as default parameters",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "confusing",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1077",
+      "name": "Image, area, button with image and object elements should have an alternative text",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react",
+        "wcag2-a"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6763",
+      "name": "\"shouldComponentUpdate\" should not be defined when extending \"React.PureComponent\"",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7732",
+      "name": "\"instanceof\" should not be used with built-in objects",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cross-browser"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6522",
+      "name": "Import variables should not be reassigned",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "es2015",
+        "bad-practice",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6523",
+      "name": "Optional chaining should not be used if returning \"undefined\" throws an error",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "bad-practice",
+        "es2020"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6643",
+      "name": "Prototypes of builtin objects should not be modified",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6644",
+      "name": "Ternary operator should not be used instead of simpler alternatives",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7733",
+      "name": "HTTP GET and HEAD requests should not include a request body",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "fetch",
+        "runtime-error",
+        "http"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6657",
+      "name": "Octal escape sequences should not be used",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6761",
+      "name": "\"children\" and \"dangerouslySetInnerHTML\" should not be used together",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7738",
+      "name": "Single-element arrays should not be passed to Promise methods",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "confusing",
+        "javascript"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7739",
+      "name": "Objects should not have a \"then\" property",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "async",
+        "thenable",
+        "promise"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7745",
+      "name": "Array length checks should not be used before \"some()\" and \"every()\" calls",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5689",
+      "name": "Web application technologies should not disclose version information",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "express.js",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7746",
+      "name": "Promise.resolve() and Promise.reject() should not be used in async functions or promise callbacks",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "async",
+        "editable-source",
+        "promise",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6535",
+      "name": "Unnecessary character escapes should be removed",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7747",
+      "name": "Spread syntax should not be used unnecessarily",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "readability",
+        "performance",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5443",
+      "name": "Temporary files should not be created in publicly writable directories",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6653",
+      "name": "Use Object.hasOwn static method instead of hasOwnProperty",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "es2022"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7741",
+      "name": "\"typeof\" should not be used to check for \"undefined\"",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "readability",
+        "editable-source",
+        "style"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7743",
+      "name": "Immediately invoked arrow functions with parenthesized expressions should be avoided",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "arrow-function",
+        "iife"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S101",
+      "name": "Class names should comply with a naming convention",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6534",
+      "name": "Numbers should not lose precision",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "precision",
+        "numbers",
+        "floating-point"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6775",
+      "name": "All \"defaultProps\" should have non-required PropTypes",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6654",
+      "name": "__proto__ property should not be used",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7744",
+      "name": "Unnecessary fallback objects should not be used when spreading in object literals",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "unnecessary",
+        "spread-operator"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7749",
+      "name": "Numeric literals should use consistent digit grouping with separators",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "readability",
+        "editable-source",
+        "formatting"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1082",
+      "name": "Mouse events should have corresponding keyboard events",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6650",
+      "name": "Renaming import, export, and destructuring assignments should not be to the same name",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6770",
+      "name": "User-defined JSX components should use Pascal case",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6772",
+      "name": "Spacing between inline elements should be explicit",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7740",
+      "name": "Variables should not be assigned the value of \"this\"",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "obsolete",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5256",
+      "name": "Tables should have headers",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "accessibility",
+        "wcag2-a"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5257",
+      "name": "HTML \"<table>\" should not be used for layout purposes",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4043",
+      "name": "Array-mutating methods should not be used misleadingly",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6583",
+      "name": "Enum members should not mix value types",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "type-dependent",
+        "enum"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4165",
+      "name": "Assignments should not be redundant",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "redundant"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5254",
+      "name": "HTML elements should have a valid language attribute",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6477",
+      "name": "JSX list components should have a key property",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "react",
+        "jsx"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6598",
+      "name": "Function types should be preferred",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "function",
+        "type"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7790",
+      "name": "Templates should not be constructed dynamically",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5148",
+      "name": "Opened windows should not have access to the originating page",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "phishing",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6351",
+      "name": "Regular expressions with the global flag should be used with caution",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6353",
+      "name": "Regular expression quantifiers and character classes should be used concisely",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex",
+        "type-dependent",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6594",
+      "name": "\"RegExp.exec()\" should be preferred over \"String.match()\"",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex",
+        "editable-source",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5260",
+      "name": "Table cells should reference their headers",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "accessibility",
+        "wcag2-a"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5264",
+      "name": "\"<object>\" tags should provide an alternative content",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "accessibility",
+        "react",
+        "wcag2-a"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6327",
+      "name": "Amazon SNS topics should be encrypted at rest",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6569",
+      "name": "Unnecessary type constraints should be removed",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6590",
+      "name": "\"as const\" assertions should be preferred",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "assertion"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7778",
+      "name": "Multiple consecutive calls to methods that accept multiple arguments should be combined",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "readability",
+        "performance",
+        "editable-source",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6326",
+      "name": "Regular expressions should not contain multiple spaces",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex",
+        "editable-source",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6328",
+      "name": "Replacement strings should reference existing regular expression groups",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "regex",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6329",
+      "name": "Public network access to cloud resources should be disabled",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6568",
+      "name": "Non-null assertions should not be used misleadingly",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6323",
+      "name": "Alternation in regular expressions should not contain empty alternatives",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "regex",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6565",
+      "name": "Prefer the return type \"this\" in fluent interfaces",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "api-design",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7653",
+      "name": "Output bindings should not be aliased",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "angular"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7774",
+      "name": "Methods should be accessed from prototypes, not instances",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "readability",
+        "performance",
+        "editable-source",
+        "best-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6443",
+      "name": "React state setter function should not be called with its matching state variable",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6564",
+      "name": "Redundant type aliases should not be used",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7654",
+      "name": "The \"outputs\" metadata property should not be used in Angular components and directives",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "angular",
+        "style"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4144",
+      "name": "Functions should not have identical implementations",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "duplicate",
+        "confusing",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6324",
+      "name": "Regular expressions should not contain control characters",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "regex",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6325",
+      "name": "Regular expression literals should be used when possible",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7655",
+      "name": "Angular classes should implement lifecycle interfaces for their lifecycle methods",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "lifecycle",
+        "angular",
+        "interfaces",
+        "typescript"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7656",
+      "name": "Angular Pipes should implement PipeTransform interface",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "angular",
+        "typescript"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7776",
+      "name": "Arrays used only for existence checks should be Sets",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "es2015",
+        "optimization",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7777",
+      "name": "Set size should be accessed directly instead of converting to array first",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "es2015",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7770",
+      "name": "Wrapper functions around built-in type conversion functions should be avoided",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "editable-source",
+        "unnecessary"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4140",
+      "name": "Sparse arrays should not be created with extra commas",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7650",
+      "name": "Components and directives should not use the \"inputs\" metadata property",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "angular",
+        "style"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7771",
+      "name": "Negative indices should be used instead of length calculations",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "readability",
+        "performance",
+        "editable-source",
+        "es2022"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6442",
+      "name": "React's useState hook should not be used directly in the render function or body of a component",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7651",
+      "name": "Output bindings should not be named as standard DOM events",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "angular"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7772",
+      "name": "Node.js built-in modules should be imported using the \"node:\" protocol",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "import",
+        "editable-source",
+        "nodejs"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4143",
+      "name": "Collection elements should not be replaced unconditionally",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6321",
+      "name": "Administration services access should be restricted to specific IP addresses",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6441",
+      "name": "Unused methods of React components should be removed",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "react"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7652",
+      "name": "Output bindings should not be named \"on\" or prefixed with \"on\"",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "angular"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7773",
+      "name": "Number static methods and properties should be preferred over global equivalents",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "es2015",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S888",
+      "name": "Equality operators should not be used in \"for\" loop termination conditions",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7785",
+      "name": "Top-level await should be preferred over promise chains and async wrappers",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "async",
+        "editable-source",
+        "type-dependent",
+        "es2022",
+        "esm-only",
+        "modernize"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4036",
+      "name": "OS commands should not rely on PATH resolution",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4156",
+      "name": "\"module\" should not be used",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "obsolete"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7786",
+      "name": "Generic \"Error\" should be \"TypeError\" when thrown after type checking",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "convention",
+        "editable-source",
+        "type-checking"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4158",
+      "name": "Empty collections should not be accessed or iterated",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5247",
+      "name": "Auto-escaping in HTML template engines should not be disabled",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "type-dependent",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6333",
+      "name": "AWS API Gateway should require authentication",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6578",
+      "name": "Enum values should be unique",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7787",
+      "name": "Import and export statements should not have empty specifier lists",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "es6",
+        "unused",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6330",
+      "name": "SQS queues should be encrypted",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6572",
+      "name": "Enum member values should be either all initialized or none",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7781",
+      "name": "Strings should use \"replaceAll()\" instead of \"replace()\" with global regex",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "readability",
+        "editable-source",
+        "es2021"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S5122",
+      "name": "Cross-Origin Resource Sharing (CORS) policy should be restricted to trusted origins",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "express.js",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6332",
+      "name": "Amazon EFS file systems should be encrypted",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6571",
+      "name": "Type constituents of unions and intersections should not be redundant",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "type-dependent",
+        "redundant"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7783",
+      "name": "\"trimLeft()\" and \"trimRight()\" should be replaced with \"trimStart()\" and \"trimEnd()\"",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "es2019",
+        "deprecated",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2094",
+      "name": "Classes should not be empty",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4030",
+      "name": "Collection contents should be used",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "editable-source",
+        "unused",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S4275",
+      "name": "Getters and setters should access the expected fields",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S6331",
+      "name": "Regular expressions should not contain empty groups",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex",
+        "type-dependent"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7784",
+      "name": "\"structuredClone()\" should be used instead of other deep cloning methods",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "es2022",
+        "modernize"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S2092",
+      "name": "Cookies should have the \"secure\" flag",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy",
+        "express.js",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S7780",
+      "name": "String literals with escaped backslashes should use `String.raw` template literals",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "readability",
+        "es2015",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S5144",
+      "name": "Server-side requests should not be vulnerable to forging attacks",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S6641",
+      "name": "Connection strings should not be vulnerable to injection attacks",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8466",
+      "name": "LLM inference scores should not be leaked",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8689",
+      "name": "Confidential data should not be logged",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8690",
+      "name": "Confidential data should not be sent in HTTP GET parameters",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8691",
+      "name": "Confidential data should not be indexed into AI pipelines",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "typescript:S1479",
+      "name": "\"switch\" statements should not have too many \"case\" clauses",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload",
+        "editable-source"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8348",
+      "name": "CORS policies should not be vulnerable to injections",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S3649",
+      "name": "Database queries should not be vulnerable to injection attacks",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S6350",
+      "name": "System command arguments constructed from user input should be validated",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S6109",
+      "name": "Objects should not be vulnerable to Prototype Pollution attacks",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8480",
+      "name": "Streaming connections should not be vulnerable to hijacking attacks",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8475",
+      "name": "Browser storage should not be poisoned",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8478",
+      "name": "CSS should not be vulnerable to injection attacks",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8476",
+      "name": "Client-side requests should not be vulnerable to forging attacks",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8477",
+      "name": "Client-side database connections should not be vulnerable to injection attacks",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsarchitecture:S8483",
+      "name": "Architecture directive to rename a component should be applied",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-directive",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsarchitecture:S8484",
+      "name": "Architecture directive to move a component should be applied",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-directive",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsarchitecture:S8487",
+      "name": "Relationships should align with the interface design of the intended architecture",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-deviation",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S6547",
+      "name": "Environment variables should not be defined from untrusted input",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "sans-top25-insecure"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S6549",
+      "name": "Accessing files should not lead to filesystem oracle attacks",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S4684",
+      "name": "Database Operations should not be vulnerable to mass assignment",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S5696",
+      "name": "DOM updates should not lead to cross-site scripting (XSS) attacks",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S6105",
+      "name": "DOM updates should not lead to open redirect vulnerabilities",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8349",
+      "name": "Content-Security policies should not be vulnerable to injections",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S5334",
+      "name": "Dynamic code execution should not be vulnerable to injection attacks",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S5131",
+      "name": "Endpoints should not be vulnerable to reflected cross-site scripting (XSS) attacks",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8387",
+      "name": "Inter-process communication should not be vulnerable to injection attacks",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S2083",
+      "name": "I/O function calls should not be vulnerable to path injection attacks",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S5496",
+      "name": "Server-side templates should not be vulnerable to injection attacks",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "python3",
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S6287",
+      "name": "Applications should not create session cookies from untrusted input",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S2631",
+      "name": "Regular expressions should not be vulnerable to Denial of Service attacks",
+      "lang": "ts",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "denial-of-service"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S5146",
+      "name": "HTTP request redirections should not be open to forging attacks",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S5883",
+      "name": "OS commands should not be vulnerable to argument injection attacks",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S2078",
+      "name": "LDAP queries should not be vulnerable to injection attacks",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S5145",
+      "name": "Logging should not be vulnerable to injection attacks",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S2076",
+      "name": "OS commands should not be vulnerable to command injection attacks",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S6776",
+      "name": "Stack traces should not be disclosed",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S5147",
+      "name": "NoSQL operations should not be vulnerable to injection attacks",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S7044",
+      "name": "Server-side requests should not be vulnerable to traversing attacks",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S8378",
+      "name": "DOM XPath queries should not be vulnerable to injection attacks",
+      "lang": "ts",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S2091",
+      "name": "XPath expressions should not be vulnerable to injection attacks",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S6096",
+      "name": "Extracting archives should not lead to zip slip vulnerabilities",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tssecurity:S5335",
+      "name": "Imports should not be vulnerable to injection attacks",
+      "lang": "ts",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsarchitecture:S8464",
+      "name": "Intended architecture components should be implemented",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-deviation",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsarchitecture:S7789",
+      "name": "Files should be located according to the intended architecture",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-deviation",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsarchitecture:S7788",
+      "name": "Relationships should align with the intended architecture",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-deviation",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsarchitecture:S8134",
+      "name": "Forbidden relationships should be removed to solve tangles as directed by the project's architect",
+      "lang": "ts",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-directive",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    }
+  ]
+}

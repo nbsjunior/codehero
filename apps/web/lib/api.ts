@@ -693,7 +693,9 @@ export interface AdminRuleCause {
 export interface AdminRepoFindingCount {
   repoId: string;
   repoName: string;
+  projectId?: string;
   projectName: string;
+  orgId?: string;
   orgName: string;
   count: number;
 }
@@ -750,6 +752,8 @@ export interface MotorRuleRow {
   patternRegex: string | null;
   source: MotorRuleSource;
   sourceLabel: string;
+  implementation?: "core" | "sonar-port" | "stub" | "overlay" | null;
+  sonarKey?: string | null;
   canDelete: boolean;
   orgId: string | null;
   projectId: string | null;
@@ -768,6 +772,9 @@ export interface MotorRuleGroup {
 
 export interface MotorRulesTotals {
   core: number;
+  sonar?: number;
+  sonarLive?: number;
+  sonarStub?: number;
   platform: number;
   project: number;
   all: number;

@@ -48,9 +48,9 @@ export interface RuleProposalDoc {
     // (the LLM's own 1-2 examples) since there's no golden-corpus history
     // yet for a rule that doesn't exist. ownCases/crossCorpus* exist so the
     // reviewer sees exactly how thin that evidence is, not just a bare F1.
-    ownPrecision?: number;
-    ownRecall?: number;
-    ownF1?: number;
+    ownPrecision?: number | null;
+    ownRecall?: number | null;
+    ownF1?: number | null;
     ownCases?: number;
     /** How many UNRELATED corpus cases (any rule) this pattern also matches — signal of an overly broad regex. */
     crossCorpusMatches?: number;
@@ -160,7 +160,7 @@ function scoreNewRuleProposal(
     ruleId: "__proposed__",
     code: c.code,
     expected: c.expected,
-    note: c.note,
+    ...(c.note ? { note: c.note } : {}),
   }));
   const ownEval = asCorpusCases.length > 0 ? evaluateRule(pattern, asCorpusCases) : null;
 
@@ -173,10 +173,11 @@ function scoreNewRuleProposal(
     }
   }
 
+  // Always concrete values — Firestore rejects `undefined` unless ignoreUndefinedProperties.
   return {
-    ownPrecision: ownEval?.precision,
-    ownRecall: ownEval?.recall,
-    ownF1: ownEval?.f1,
+    ownPrecision: ownEval == null ? null : ownEval.precision,
+    ownRecall: ownEval == null ? null : ownEval.recall,
+    ownF1: ownEval == null ? null : ownEval.f1,
     ownCases: asCorpusCases.length,
     crossCorpusMatches,
     crossCorpusSampleSize: existingCorpus.length,

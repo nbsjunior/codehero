@@ -19,7 +19,7 @@ const severityTone: Record<string, string> = {
   INFO: "var(--rating-a)",
 };
 
-type SourceFilter = "all" | "core" | "custom";
+type SourceFilter = "all" | "core" | "sonar" | "sonar-live" | "sonar-stub" | "custom";
 
 export default function RulesCatalog() {
   const [groups, setGroups] = useState<MotorRuleGroup[]>([]);
@@ -59,7 +59,11 @@ export default function RulesCatalog() {
     return groups
       .map((g) => {
         const rules = g.rules.filter((r) => {
-          if (sourceFilter === "core" && r.source !== "core") return false;
+          const isSonar = r.id.startsWith("SONAR-") || !!r.sonarKey;
+          if (sourceFilter === "core" && (r.source !== "core" || isSonar)) return false;
+          if (sourceFilter === "sonar" && !isSonar) return false;
+          if (sourceFilter === "sonar-live" && r.implementation !== "sonar-port") return false;
+          if (sourceFilter === "sonar-stub" && r.implementation !== "stub") return false;
           if (sourceFilter === "custom" && r.source === "core") return false;
           if (!q) return true;
           return (
@@ -67,6 +71,7 @@ export default function RulesCatalog() {
             r.name.toLowerCase().includes(q) ||
             r.message.toLowerCase().includes(q) ||
             (r.category ?? "").toLowerCase().includes(q) ||
+            (r.sonarKey ?? "").toLowerCase().includes(q) ||
             (r.projectName ?? "").toLowerCase().includes(q)
           );
         });
@@ -126,14 +131,23 @@ export default function RulesCatalog() {
       <PageHeader
         eyebrow="Projetos"
         title="Regras do motor"
-        description="Catálogo do motor determinístico: core + regras criadas por dress code. Core não pode ser excluído."
+        description="Catálogo completo: core CodeHero + 2.668 regras Sonar way (detectores L0 + stubs de catálogo) + dress code. Stubs recebem findings via ingestão SARIF Sonar."
       />
 
       {totals && (
         <p className="hero-caption" style={{ marginTop: "-0.5rem", marginBottom: "1rem" }}>
-          {totals.all} regras · {totals.core} core · {totals.platform} plataforma · {totals.project} projeto
+          {totals.all} regras · {totals.core} core · {totals.sonar ?? 0} Sonar way (
+          {totals.sonarLive ?? 0} L0 · {totals.sonarStub ?? 0} catálogo) · {totals.platform} plataforma ·{" "}
+          {totals.project} projeto
+          {lintCoverage ? ` · lacunas lint ${lintCoverage.covered}/${lintCoverage.total}` : ""}
         </p>
       )}
+
+      <Callout tone="ok" title="Sonar way no CodeHero">
+        As 2.668 regras do Sonar way (JS/TS, Python, Java, C#, COBOL, T‑SQL/DB2) estão no catálogo. Detectores L0
+        rodam no scanner CodeHero; as demais ficam como stubs de catálogo e passam a gerar apontamentos quando o
+        SARIF do Sonar é ingerido (rule keys mapeadas para <code>SONAR-*</code>).
+      </Callout>
 
       {lintCoverage && lintCoverage.total > 0 && (
         <Callout
@@ -176,6 +190,9 @@ export default function RulesCatalog() {
             [
               ["all", "Todas"],
               ["core", "Só core"],
+              ["sonar", "Sonar way"],
+              ["sonar-live", "Sonar L0"],
+              ["sonar-stub", "Sonar catálogo"],
               ["custom", "Criadas (dress code)"],
             ] as const
           ).map(([id, label]) => (

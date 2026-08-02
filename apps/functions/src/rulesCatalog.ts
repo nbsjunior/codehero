@@ -1,6 +1,6 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import {
-  RULES,
+  CATALOG_RULES,
   computeLintCoverage,
   type HeroRule,
   type IssueType,
@@ -31,6 +31,8 @@ export interface MotorRuleRow {
   patternRegex: string | null;
   source: RuleSource;
   sourceLabel: string;
+  implementation: "core" | "sonar-port" | "stub" | "overlay" | null;
+  sonarKey: string | null;
   canDelete: boolean;
   orgId: string | null;
   projectId: string | null;
@@ -92,7 +94,15 @@ function toRow(
     remediationEffortMin: r.remediationEffortMin ?? 0,
     patternRegex: r.pattern?.regex ?? null,
     source: opts.source,
-    sourceLabel,
+    sourceLabel: r.sonarKey
+      ? r.implementation === "stub"
+        ? `Sonar way · catálogo (${r.sonarKey})`
+        : `Sonar way · detector L0 (${r.sonarKey})`
+      : sourceLabel,
+    implementation:
+      r.implementation ??
+      (opts.source === "core" ? "core" : "overlay"),
+    sonarKey: r.sonarKey ?? null,
     canDelete: opts.canDelete,
     orgId: opts.orgId ?? null,
     projectId: opts.projectId ?? null,
@@ -125,15 +135,15 @@ function asHeroRule(data: Record<string, unknown>, id: string): OverlayRule | nu
 }
 
 /**
- * Catalog: core RULES + dress overlays (platform + projects the user can see),
- * grouped by issue type. Core rules are never deletable.
+ * Catalog: core + Sonar way (live + stubs) + dress overlays,
+ * grouped by issue type. Package rules are never deletable.
  */
 export const listMotorRules = onCall(async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
 
   const admin = await isPlatformAdmin(uid);
-  const rows: MotorRuleRow[] = RULES.map((r) => toRow(r, { source: "core", canDelete: false }));
+  const rows: MotorRuleRow[] = CATALOG_RULES.map((r) => toRow(r, { source: "core", canDelete: false }));
 
   try {
     const globalSnap = await db.collection("platformDressRules").limit(500).get();
@@ -250,7 +260,10 @@ export const listMotorRules = onCall(async (request) => {
   return {
     groups,
     totals: {
-      core: unique.filter((r) => r.source === "core").length,
+      core: unique.filter((r) => r.source === "core" && !r.id.startsWith("SONAR-")).length,
+      sonar: unique.filter((r) => r.id.startsWith("SONAR-")).length,
+      sonarLive: unique.filter((r) => r.id.startsWith("SONAR-") && r.implementation === "sonar-port").length,
+      sonarStub: unique.filter((r) => r.id.startsWith("SONAR-") && r.implementation === "stub").length,
       platform: unique.filter((r) => r.source === "platform").length,
       project: unique.filter((r) => r.source === "project").length,
       all: unique.length,

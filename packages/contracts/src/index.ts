@@ -10,6 +10,7 @@ export * from "./githubAction.ts";
 export * from "./findingFicha.ts";
 export * from "./lintKnowledgeBase.ts";
 export * from "./coverage.ts";
+export * from "./sonarCatalog.ts";
 
 export const TOOL_NAME = "CodeHero";
 export const TOOL_VERSION = "0.1.0";

@@ -52,7 +52,7 @@ graph TB
     end
 
     subgraph AI["Camada agêntica (correção)"]
-        MCP["hero-mcp<br/>get_issues · sdd · run_scan · apply_sdd_workflow"]
+        MCP["hero-mcp<br/>get_generation_context · get_active_rules · get_issues · sdd · run_scan"]
         AGENTS["Claude Desktop · Cursor · Copilot"]
     end
 
@@ -243,8 +243,7 @@ O portão continua valendo: proposta (humana ou de IA) **não** vira regra sem g
 |---|---|---|
 | T-SQL / DB2 | `HERO-SEC-0089-dynamic-sql-tsql` | `SET @sql = … + …` / `EXEC(…)` |
 | C# / VB.Net | `HERO-SEC-0089-adonet-sqli` | `new SqlCommand(…)` |
-| COBOL | `HERO-SEC-0798-cobol-hardcoded-secret` | `MOVE '…' TO …`, hífens em ids |
-| COBOL | `HERO-SMELL-0goto-cobol` | `GO TO` procedural |
+| COBOL | `cobolRules.ts` (IBM ZCodeScan / RAA L0) | GO TO, ALTER, NEXT SENTENCE, PERFORM THRU, secrets, EXEC SQL hygiene |
 
 Regras novas no corpus com F1 = 1.00 (`npm run ruleforge:evaluate`), com traps de FP.
 

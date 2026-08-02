@@ -1,0 +1,790 @@
+{
+  "fetchedAt": "2026-07-28T13:07:41.908Z",
+  "language": "tsql",
+  "heroLanguages": [
+    "tsql"
+  ],
+  "note": null,
+  "profileKey": "AWWt7R2tQwUgk31erFiI",
+  "profileName": "Sonar way",
+  "activeRuleCount": 59,
+  "rules": [
+    {
+      "key": "tsql:S1110",
+      "name": "Redundant pairs of parentheses should be removed",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S2068",
+      "name": "Credentials should not be hard-coded",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "secret",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1313",
+      "name": "IP addresses should not be hardcoded",
+      "lang": "tsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1764",
+      "name": "Identical expressions should not be used on both sides of a binary operator",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1523",
+      "name": "Dynamic code execution should not use user-controlled data",
+      "lang": "tsql",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S4790",
+      "name": "Weak hashing algorithms should not be used",
+      "lang": "tsql",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1499",
+      "name": "Columns to be read with a \"SELECT\" statement should be clearly defined",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1134",
+      "name": "Track uses of \"FIXME\" tags",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1135",
+      "name": "Track uses of \"TODO\" tags",
+      "lang": "tsql",
+      "severity": "INFO",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S107",
+      "name": "Functions and procedures should not have too many parameters",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S117",
+      "name": "Local variable and parameter names should comply with a naming convention",
+      "lang": "tsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1871",
+      "name": "Two branches in a conditional structure should not have exactly the same implementation",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S2681",
+      "name": "Multiline blocks should be enclosed in BEGIN...END blocks",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1763",
+      "name": "All code should be reachable",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S6498",
+      "name": "\"ANSI_WARNINGS\" and \"ARITHABORT\" options should not be set to OFF",
+      "lang": "tsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "performance",
+        "unpredictable"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1481",
+      "name": "Unused local variables should be removed",
+      "lang": "tsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S4075",
+      "name": "Deprecated features should not be used",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "obsolete"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1751",
+      "name": "Loops with at most one iteration should be refactored",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "bad-practice",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1659",
+      "name": "Multiple variables should not be declared on the same line",
+      "lang": "tsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1735",
+      "name": "Column names should be used in an \"ORDER BY\" clause",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1739",
+      "name": "\"LIKE\" clauses should not start with wildcard characters",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S3358",
+      "name": "Ternary operators should not be nested",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S3633",
+      "name": "\"WHERE\" clause conditions should not be contradictory",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S4801",
+      "name": "\"SELECT\" statements used as argument of \"EXISTS\" statements should be selective",
+      "lang": "tsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1656",
+      "name": "Variables should not be self-assigned",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S907",
+      "name": "\"GOTO\" statements should not be used",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1172",
+      "name": "Unused procedure and function parameters should be removed",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1065",
+      "name": "Unused labels should be removed",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1066",
+      "name": "Mergeable \"if\" statements should be combined",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1542",
+      "name": "Function and procedure names should comply with a naming convention",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1745",
+      "name": "\"INSERT\" statements should explicitly list the columns to be set",
+      "lang": "tsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1862",
+      "name": "Related \"IF\"/\"ELSE IF\" statements and \"WHEN\" clauses in a \"CASE\" should not have the same condition",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "unused",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1940",
+      "name": "Boolean checks should not be inverted",
+      "lang": "tsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S3641",
+      "name": "Nullable subqueries should not be used in \"NOT IN\" conditions",
+      "lang": "tsql",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S3643",
+      "name": "\"LIKE\" clauses should not be used without wildcards",
+      "lang": "tsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S3923",
+      "name": "All branches in a conditional structure should not have exactly the same implementation",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S4054",
+      "name": "Queries that use \"TOP\" should have an \"ORDER BY\"",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S4094",
+      "name": "\"CASE\" input expressions should be invariant",
+      "lang": "tsql",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "unpredictable"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1631",
+      "name": "Queries should not join too many tables",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "brain-overload",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S3972",
+      "name": "Conditionals should start on new lines",
+      "lang": "tsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S3973",
+      "name": "Conditionally executed code should be denoted by either indentation or BEGIN...END block",
+      "lang": "tsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S4104",
+      "name": "\"COALESCE\", \"IIF\", and \"CASE\" input expressions should not contain subqueries",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unpredictable"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S4149",
+      "name": "Column references should not have more than two-parts",
+      "lang": "tsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "obsolete"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S2761",
+      "name": "Unary prefix operators should not be repeated",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1116",
+      "name": "Empty statements should be removed",
+      "lang": "tsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S125",
+      "name": "Sections of code should not be commented out",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1479",
+      "name": "\"CASE\" expressions should not have too many \"WHEN\" clauses",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S1590",
+      "name": "\"DELETE\" and \"UPDATE\" statements should contain \"WHERE\" clauses",
+      "lang": "tsql",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S2527",
+      "name": "\"NULL\" should not be compared directly",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S4102",
+      "name": "\"CHECK\" or \"NOCHECK\" should be specified explicitly when constraints are activated",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S4103",
+      "name": "The number of variables in a FETCH statement should match the number of columns in the cursor",
+      "lang": "tsql",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S4108",
+      "name": "\"@@IDENTITY\" should not be used",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unpredictable",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S4109",
+      "name": "Triggers should not \"PRINT\", \"SELECT\", or \"FETCH\"",
+      "lang": "tsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S2737",
+      "name": "\"CATCH\" clauses should do more than rethrow",
+      "lang": "tsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "unused",
+        "finding",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S3626",
+      "name": "Jump statements should not be redundant",
+      "lang": "tsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "redundant",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S4078",
+      "name": "Size should be specified for \"varchar\" variables and parameters",
+      "lang": "tsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S4154",
+      "name": "\"ANSI_NULLS\", \"ANSI_PADDING\" and \"CONCAT_NULL_YIELDS_NULL\" should not be configured",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "obsolete"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S4155",
+      "name": "Deprecated system tables and views should not be used",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "obsolete"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "tsql:S4196",
+      "name": "Output parameters should be assigned",
+      "lang": "tsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    }
+  ]
+}

@@ -36,7 +36,7 @@ export { cveWatchlistSync, runCveWatchlistSyncNow, listCveWatchlist } from "./cv
 export { previewRepoScan } from "./previewScan.ts";
 export { registerAccount } from "./registerAccount.ts";
 export { rotateIngestToken } from "./tokens.ts";
-export { getActiveRules, getActiveRulesCallable } from "./rulesApi.ts";
+export { getActiveRules, getActiveRulesCallable, getRulesCatalog } from "./rulesApi.ts";
 export { startGithubActionInstall, githubOAuthCallback } from "./githubActionInstall.ts";
 export { addRepoToProject, listProjectRepos } from "./repos.ts";
 export { listFeatureFlags, setFeatureFlag } from "./featureFlags.ts";

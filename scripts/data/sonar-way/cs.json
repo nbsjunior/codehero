@@ -1,0 +1,4888 @@
+{
+  "fetchedAt": "2026-07-28T13:07:41.908Z",
+  "language": "cs",
+  "heroLanguages": [
+    "csharp"
+  ],
+  "note": null,
+  "profileKey": "AVyxQJFtFpfr6sfa6FAY",
+  "profileName": "Sonar way",
+  "activeRuleCount": 373,
+  "rules": [
+    {
+      "key": "csharpsquid:S1244",
+      "name": "Floating point numbers should not be tested for equality",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S8733",
+      "name": "Potential Cartesian Explosion",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "database",
+        "performance",
+        "entity-framework-core",
+        "entity-framework",
+        "orm"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S8718",
+      "name": "Client-evaluated default values should use database functions",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "database",
+        "entity-framework-core",
+        "orm",
+        "entity-framework"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1110",
+      "name": "Redundant pairs of parentheses should be removed",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S8969",
+      "name": "Null-forgiving operators should not be redundant",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "redundant"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6781",
+      "name": "JWT secret keys should not be disclosed",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "symbolic-execution",
+        "cwe",
+        "secret"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S8970",
+      "name": "Null-forgiving operators should not be used when nullable warnings are disabled",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "redundant"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6418",
+      "name": "Secrets should not be hard-coded",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "secret",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S8747",
+      "name": "Migrations should not narrow column types without converting existing data",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "database",
+        "migration",
+        "entity-framework-core",
+        "entity-framework",
+        "orm"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S8949",
+      "name": "The overload accepting a 'CancellationToken' should be used",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "async",
+        "performance",
+        "concurrency"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2115",
+      "name": "A secure password should be used when connecting to a database",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "secret"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2068",
+      "name": "Credentials should not be hard-coded",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "secret",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6444",
+      "name": "Regular expressions should be executed with a timeout",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "regex",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1133",
+      "name": "Deprecated code should be removed",
+      "lang": "cs",
+      "severity": "INFO",
+      "type": "CODE_SMELL",
+      "tags": [
+        "obsolete"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1135",
+      "name": "Track uses of \"TODO\" tags",
+      "lang": "cs",
+      "severity": "INFO",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2696",
+      "name": "Instance members should not write to \"static\" fields",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "multi-threading"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S5542",
+      "name": "Encryption algorithms should be used with secure mode and padding scheme",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6966",
+      "name": "Awaitable method should be used",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "async-await"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3456",
+      "name": "\"string.ToCharArray()\" and \"ReadOnlySpan<T>.ToArray()\" should not be called redundantly",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1313",
+      "name": "IP addresses should not be hardcoded",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S108",
+      "name": "Nested blocks of code should not be left empty",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3251",
+      "name": "Implementations should be provided for \"partial\" methods",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S101",
+      "name": "Types should be named in PascalCase",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S5753",
+      "name": "ASP.NET Request Validation should not be disabled",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S5766",
+      "name": "Serializable objects should validate data during deserialization",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S5332",
+      "name": "Clear-text protocols should not be used",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S5693",
+      "name": "HTTP request content length should be limited",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6640",
+      "name": "Unsafe code blocks should not be used",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S5443",
+      "name": "Temporary files should not be created in publicly writable directories",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4502",
+      "name": "CSRF protections should not be disabled",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4507",
+      "name": "Debugging features should not be enabled in production",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "error-handling",
+        "cwe",
+        "debug",
+        "user-experience",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2245",
+      "name": "Pseudorandom number generators (PRNGs) should not be used in security contexts",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3330",
+      "name": "Cookies should have the \"HttpOnly\" flag",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4790",
+      "name": "Weak hashing algorithms should not be used",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2077",
+      "name": "SQL queries should not be dynamically formatted",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "bad-practice",
+        "sql",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S5122",
+      "name": "Cross-Origin Resource Sharing (CORS) policy should be restricted to trusted origins",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2092",
+      "name": "Cookies should have the \"secure\" flag",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S8717",
+      "name": "Multiple \"[Key]\" attributes should not be used to define a composite key",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "database",
+        "entity-framework-core",
+        "entity-framework",
+        "orm"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2257",
+      "name": "Custom cryptographic algorithms should not be used",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4036",
+      "name": "OS commands should not rely on PATH resolution",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S5144",
+      "name": "Server-side requests should not be vulnerable to forging attacks",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S6641",
+      "name": "Connection strings should not be vulnerable to injection attacks",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3457",
+      "name": "Composite format strings should be used correctly",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6669",
+      "name": "Logger field or property name should comply with a naming convention",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "logging"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2629",
+      "name": "Logging templates should be constant",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "logging"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4426",
+      "name": "Cryptographic keys should be robust",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4347",
+      "name": "Secure random number generators should not output predictable values",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "symbolic-execution",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S6350",
+      "name": "System command arguments constructed from user input should be validated",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S3649",
+      "name": "Database queries should not be vulnerable to injection attacks",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3877",
+      "name": "Exceptions should not be thrown from unexpected methods",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4456",
+      "name": "Parameter validation in yielding methods should be wrapped",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "yield"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2612",
+      "name": "File permissions should not be set to world-accessible values",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S8380",
+      "name": "Return types named \"partial\" should be escaped with \"@\"",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "breaking-change",
+        "csharp14"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1694",
+      "name": "An abstract class should have both abstract and concrete methods",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2190",
+      "name": "Loops and recursions should not be infinite",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S8367",
+      "name": "Identifiers should not conflict with the C# 14 \"field\" contextual keyword",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "upgrade",
+        "compatibility",
+        "csharp-14"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3267",
+      "name": "Loops should be simplified with \"LINQ\" expressions",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S8381",
+      "name": "\"scoped\" should be escaped when used as an identifier or type name in parenthesized lambda parameter lists",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "breaking-change",
+        "lambda",
+        "csharp14"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S8368",
+      "name": "Identifiers should not conflict with the C# 14 \"extension\" contextual keyword",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "breaking-change",
+        "contextual-keyword",
+        "csharp14"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6960",
+      "name": "Controllers should not have mixed responsibilities",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "asp.net"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S6547",
+      "name": "Environment variables should not be defined from untrusted input",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "sans-top25-insecure"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S7714",
+      "name": "XSLT Transformations should not be vulnerable to injection attacks",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S5135",
+      "name": "Deserialization should not be vulnerable to injection attacks",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S6549",
+      "name": "Accessing files should not lead to filesystem oracle attacks",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S5334",
+      "name": "Dynamic code execution should not be vulnerable to injection attacks",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S2083",
+      "name": "I/O function calls should not be vulnerable to path injection attacks",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S5131",
+      "name": "Endpoints should not be vulnerable to reflected cross-site scripting (XSS) attacks",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S6287",
+      "name": "Applications should not create session cookies from untrusted input",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S6680",
+      "name": "Loop boundaries should not be vulnerable to injection attacks",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S2631",
+      "name": "Regular expressions should not be vulnerable to Denial of Service attacks",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "denial-of-service"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S5146",
+      "name": "HTTP request redirections should not be open to forging attacks",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S2078",
+      "name": "LDAP queries should not be vulnerable to injection attacks",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S5883",
+      "name": "OS commands should not be vulnerable to argument injection attacks",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S6399",
+      "name": "XML operations should not be vulnerable to injection attacks",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S2076",
+      "name": "OS commands should not be vulnerable to command injection attacks",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S5145",
+      "name": "Logging should not be vulnerable to injection attacks",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S5147",
+      "name": "NoSQL operations should not be vulnerable to injection attacks",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S6639",
+      "name": "Memory allocations should not be vulnerable to Denial of Service attacks",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S6776",
+      "name": "Stack traces should not be disclosed",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S7044",
+      "name": "Server-side requests should not be vulnerable to traversing attacks",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S6096",
+      "name": "Extracting archives should not lead to zip slip vulnerabilities",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S6173",
+      "name": "Reflection should not be vulnerable to injection attacks",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "roslyn.sonaranalyzer.security.cs:S2091",
+      "name": "XPath expressions should not be vulnerable to injection attacks",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2225",
+      "name": "\"ToString()\" method should not return null",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2223",
+      "name": "Non-constant static fields should not be visible",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2346",
+      "name": "Flags enumerations zero-value members should be named \"None\"",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2589",
+      "name": "Boolean expressions should not be gratuitous",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "symbolic-execution",
+        "suspicious",
+        "redundant"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3433",
+      "name": "Test method signatures should be correct",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S5856",
+      "name": "Regular expressions should be syntactically valid",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2345",
+      "name": "Flags enumerations should explicitly initialize all their members",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1134",
+      "name": "Track uses of \"FIXME\" tags",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2222",
+      "name": "Locks should be released on all paths",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "symbolic-execution",
+        "cwe",
+        "multi-threading"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2342",
+      "name": "Enumeration types should comply with a naming convention",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2583",
+      "name": "Conditionally executed code should be reachable",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "symbolic-execution",
+        "cwe",
+        "unused",
+        "suspicious",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3431",
+      "name": "\"[ExpectedException]\" should not be used",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4524",
+      "name": "\"default\" clauses should be first or last",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1144",
+      "name": "Unused private types or members should be removed",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1264",
+      "name": "A \"while\" loop should be used instead of a \"for\" loop",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2114",
+      "name": "Collections should not be passed as arguments to their own methods",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2479",
+      "name": "Whitespace and control characters in string literals should be explicit",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3442",
+      "name": "\"abstract\" classes should not have \"public\" constructors",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3444",
+      "name": "Interfaces should not simply inherit from base interfaces with colliding members",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3445",
+      "name": "Exceptions should not be explicitly rethrown",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3447",
+      "name": "\"[Optional]\" should not be used on \"ref\" or \"out\" parameters",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2445",
+      "name": "Blocks should be synchronized on read-only fields",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "multi-threading"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3329",
+      "name": "Cipher Block Chaining IVs should be unpredictable",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "symbolic-execution"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3443",
+      "name": "Type should not be examined on \"System.Type\" instances",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3449",
+      "name": "Right operands of shift operators should be integers",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3655",
+      "name": "Empty nullable value should not be accessed",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "symbolic-execution"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3776",
+      "name": "Cognitive Complexity of methods should not be too high",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2325",
+      "name": "Methods and properties that don't access instance data should be static",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6800",
+      "name": "Component parameter type should match the route parameter type constraint",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "blazor"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2201",
+      "name": "Methods without side effects should not have their return values ignored",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "confusing",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2681",
+      "name": "Multiline blocks should be enclosed in curly braces",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1116",
+      "name": "Empty statements should be removed",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1117",
+      "name": "Local variables should not shadow class fields or properties",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1479",
+      "name": "\"switch\" statements with many \"case\" clauses should have only one statement",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6931",
+      "name": "ASP.NET controller actions should not have a route template starting with \"/\"",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "asp.net"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1121",
+      "name": "Assignments should not be made from within sub-expressions",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2692",
+      "name": "\"IndexOf\" checks should not be for positive numbers",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2699",
+      "name": "Tests should include assertions",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4635",
+      "name": "Start index should be used instead of calling Substring",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6932",
+      "name": "Use model binding instead of reading raw request data",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "asp.net"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6934",
+      "name": "A Route attribute should be added to the controller when a route template is specified at the action level",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "asp.net"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1006",
+      "name": "Method overrides should not change parameter defaults",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2219",
+      "name": "Runtime type checking should be simplified",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6930",
+      "name": "Backslash should be avoided in route templates",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "asp.net"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1481",
+      "name": "Unused local variables should be removed",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3237",
+      "name": "\"value\" contextual keyword should be used",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3427",
+      "name": "Method overloads with default parameter values should not overlap",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3236",
+      "name": "Caller information arguments should not be provided explicitly",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1172",
+      "name": "Unused method parameters should be removed",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2386",
+      "name": "Mutable fields should not be \"public static\"",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "unpredictable"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3249",
+      "name": "Classes directly extending \"object\" should not call \"base\" in \"GetHashCode\" or \"Equals\"",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S5659",
+      "name": "JWT should be signed and verified with strong cipher algorithms",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S5773",
+      "name": "Types allowed to be deserialized should be restricted",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "symbolic-execution"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1186",
+      "name": "Methods should not be empty",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3005",
+      "name": "\"ThreadStatic\" should not be used on non-static fields",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3244",
+      "name": "Anonymous delegates should not be used to unsubscribe from Events",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3247",
+      "name": "Duplicate casts should not be made",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4211",
+      "name": "Members should not have conflicting transparency annotations",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S5547",
+      "name": "Cipher algorithms should be robust",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2275",
+      "name": "Composite format strings should not lead to unexpected behavior at runtime",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3363",
+      "name": "Date and time should not be used as a type for primary keys",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2368",
+      "name": "Public methods should not have multidimensional array parameters",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4423",
+      "name": "Weak SSL/TLS protocols should not be used",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6964",
+      "name": "Value type property used as input in a controller action should be nullable, required or annotated with the JsonRequiredAttribute to avoid under-posting.",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "asp.net"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6965",
+      "name": "REST API actions should be annotated with an HTTP verb attribute",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "asp.net"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1155",
+      "name": "\"Any()\" should be used to test for emptiness",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2123",
+      "name": "Values should not be uselessly incremented",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3453",
+      "name": "Classes should not have only \"private\" constructors",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6967",
+      "name": "ModelState.IsValid should be called in controller actions",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "asp.net"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2365",
+      "name": "Properties should not make collection or array copies",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "api-design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2486",
+      "name": "Generic exceptions should not be ignored",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "cwe",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3451",
+      "name": "\"[DefaultValue]\" should not be used when \"[DefaultParameterValue]\" is meant",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6961",
+      "name": "API Controllers should derive from ControllerBase instead of Controller",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "asp.net"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4428",
+      "name": "\"PartCreationPolicyAttribute\" should be used with \"ExportAttribute\"",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "mef",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6608",
+      "name": "Prefer indexing instead of \"Enumerable\" methods on types implementing \"IList\"",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6609",
+      "name": "\"Min/Max\" properties of \"Set\" types should be used instead of the \"Enumerable\" extension methods",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6962",
+      "name": "You should pool HTTP connections with HttpClientFactory",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "asp.net"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6968",
+      "name": "Actions that return a value should be annotated with ProducesResponseTypeAttribute containing the return type",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "asp.net"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3217",
+      "name": "\"Explicit\" conversions of \"foreach\" loops should not be used",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3218",
+      "name": "Inner class members should not shadow outer class \"static\" or type members",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3459",
+      "name": "Unassigned members should be removed",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6607",
+      "name": "The collection should be filtered before sorting by using \"Where\" before \"OrderBy\"",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S927",
+      "name": "Parameter names should match base declaration and other partial definitions",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2259",
+      "name": "Null pointers should not be dereferenced",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "symbolic-execution",
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6612",
+      "name": "The lambda parameter should be used instead of capturing arguments in \"ConcurrentDictionary\" methods",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6613",
+      "name": "\"First\" and \"Last\" properties of \"LinkedList\" should be used instead of the \"First()\" and \"Last()\" extension methods",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1048",
+      "name": "Finalizers should not throw exceptions",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2252",
+      "name": "For-loop conditions should be true at least once",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3343",
+      "name": "Caller information parameters should come at the end of the parameter list",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "api-design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3346",
+      "name": "Expressions used in \"Debug.Assert\" should not produce side effects",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3464",
+      "name": "Type inheritance should not be recursive",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4433",
+      "name": "LDAP connections should be authenticated",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1163",
+      "name": "Exceptions should not be thrown in finally blocks",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2139",
+      "name": "Exceptions should be either logged or rethrown but not both",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "logging"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2251",
+      "name": "A \"for\" loop update clause should move the counter in the right direction",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6610",
+      "name": "\"StartsWith\" and \"EndsWith\" overloads that take a \"char\" should be used instead of the ones that take a \"string\"",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6617",
+      "name": "\"Contains\" should be used instead of \"Any\" for simple equality checks",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6618",
+      "name": "\"string.Create\" should be used instead of \"FormattableString\"",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1656",
+      "name": "Variables should not be self-assigned",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2755",
+      "name": "XML parsers should not be vulnerable to XXE attacks",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2995",
+      "name": "\"Object.ReferenceEquals\" should not be used for value types",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3600",
+      "name": "\"params\" should not be introduced on overrides",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2997",
+      "name": "\"IDisposables\" created in a \"using\" statement should not be returned",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3603",
+      "name": "Methods with \"Pure\" attribute should return a value",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3966",
+      "name": "Objects should not be disposed more than once",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "symbolic-execution",
+        "confusing",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1751",
+      "name": "Loops with at most one iteration should be refactored",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "bad-practice",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1871",
+      "name": "Two branches in a conditional structure should not have exactly the same implementation",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1994",
+      "name": "\"for\" loop increment clauses should modify the loops' counters",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1643",
+      "name": "Strings should not be concatenated using '+' in a loop",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1764",
+      "name": "Identical expressions should not be used on both sides of operators",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2970",
+      "name": "Assertions should be complete",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2971",
+      "name": "LINQ expressions should be simplified",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3949",
+      "name": "Calculations should not overflow",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "symbolic-execution",
+        "overflow"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1696",
+      "name": "NullReferenceException should not be caught",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "error-handling"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3871",
+      "name": "Exception types should be \"public\"",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "api-design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3875",
+      "name": "\"operator==\" should not be overloaded on reference types",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1215",
+      "name": "\"GC.Collect\" should not be called",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "unpredictable",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2306",
+      "name": "\"async\" and \"await\" should not be used as identifiers",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3993",
+      "name": "Custom attributes should be marked with \"System.AttributeUsageAttribute\"",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "api-design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3998",
+      "name": "Threads should not lock on objects with weak identity",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "multi-threading",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1104",
+      "name": "Fields should not have public accessibility",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1699",
+      "name": "Constructors should only call non-overridable methods",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2674",
+      "name": "The length returned from a stream read should be checked",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3878",
+      "name": "Arrays should not be created for params parameters",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3887",
+      "name": "Mutable, non-private fields should not be \"readonly\"",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3885",
+      "name": "\"Assembly.Load\" should be used",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unpredictable"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2551",
+      "name": "Shared resources should not be used for locking",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "multi-threading"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3881",
+      "name": "\"IDisposable\" should be implemented correctly",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2437",
+      "name": "Unnecessary bit operations should not be performed",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3889",
+      "name": "\"Thread.Resume\" and \"Thread.Suspend\" should not be used",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "multi-threading",
+        "unpredictable"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3610",
+      "name": "Nullable type comparison should not be redundant",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "redundant"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3972",
+      "name": "Conditionals should start on new lines",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3973",
+      "name": "A conditionally executed single line should be denoted by indentation",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3984",
+      "name": "Exceptions should not be created without being thrown",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "error-handling"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4830",
+      "name": "Server certificates should be verified during SSL/TLS connections",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy",
+        "ssl"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1206",
+      "name": "\"Equals(Object)\" and \"GetHashCode()\" should be overridden in pairs",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3626",
+      "name": "Jump statements should not be redundant",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "redundant",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1944",
+      "name": "Invalid casts should be avoided",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3869",
+      "name": "\"SafeHandle.DangerousGetHandle\" should not be called",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "leak",
+        "unpredictable"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1905",
+      "name": "Redundant casts should not be used",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "redundant",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1939",
+      "name": "Inheritance list should not be redundant",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S5034",
+      "name": "\"ValueTask\" should be consumed correctly",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "async-await"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6377",
+      "name": "XML signatures should be validated securely",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S7039",
+      "name": "Content Security Policies should be restrictive",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1854",
+      "name": "Unused assignments should be removed",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1862",
+      "name": "Related \"if/else if\" statements should not have the same condition",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "unused",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2701",
+      "name": "Literal boolean values should not be used in assertions",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3927",
+      "name": "Serialization event handlers should be implemented correctly",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3928",
+      "name": "Parameter names used into ArgumentException constructors should match an existing one",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3925",
+      "name": "\"ISerializable\" should be implemented correctly",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2953",
+      "name": "Methods named \"Dispose\" should implement \"IDisposable.Dispose\"",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2955",
+      "name": "Generic parameters not constrained to reference types should not be compared to \"null\"",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S127",
+      "name": "\"for\" loop stop conditions should be invariant",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2925",
+      "name": "\"Thread.Sleep\" should not be used in tests",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S7130",
+      "name": "First/Single should be used instead of FirstOrDefault/SingleOrDefault on collections that are known to be non-empty",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "symbolic-execution"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S7133",
+      "name": "Locks should be released within the same method",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "symbolic-execution"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1607",
+      "name": "Tests should not be ignored",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "bad-practice",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2930",
+      "name": "\"IDisposables\" should be disposed",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "denial-of-service"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S7131",
+      "name": "A write lock should not be released when a read lock has been acquired and vice versa",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "symbolic-execution"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2933",
+      "name": "Fields that are only assigned in the constructor should be \"readonly\"",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2934",
+      "name": "Property assignments should not be made for \"readonly\" fields not constrained to reference types",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3904",
+      "name": "Assemblies should have version information",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6667",
+      "name": "Logging in a catch clause should pass the caught exception as a parameter.",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "logging"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6668",
+      "name": "Logging arguments should be passed to the correct parameter",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "logging"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6422",
+      "name": "Calls to \"async\" methods should not be blocking in Azure Functions",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "async-await",
+        "azure"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6664",
+      "name": "The code block contains too many logging calls",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "logging"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S112",
+      "name": "General or reserved exceptions should never be thrown",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "error-handling"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6424",
+      "name": "Interfaces for durable entities should satisfy the restrictions",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design",
+        "azure"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4487",
+      "name": "Unread \"private\" fields should be removed",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2184",
+      "name": "Results of integer division should not be assigned to floating point variables",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "overflow"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2187",
+      "name": "Test classes should contain at least one test case",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "unused",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2183",
+      "name": "Integral numbers should not be shifted by zero or more than their number of bits-1",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6420",
+      "name": "Client instances should not be recreated on each Azure Function invocation",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design",
+        "bad-practice",
+        "azure"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S107",
+      "name": "Methods should not have too many parameters",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4019",
+      "name": "Base class methods should not be hidden",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6678",
+      "name": "Use PascalCase for named placeholders",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "logging"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3169",
+      "name": "Multiple \"OrderBy\" calls should not be used",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S5344",
+      "name": "Passwords should not be stored in plaintext or with a fast hashing algorithm",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6675",
+      "name": "\"Trace.WriteLineIf\" should not be used with \"TraceSwitch\" levels",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "logging",
+        "confusing",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3168",
+      "name": "\"async\" methods should not return \"void\"",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "multi-threading",
+        "async-await"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4015",
+      "name": "Inherited member visibility should not be decreased",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6674",
+      "name": "Log message template should be syntactically correct",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "logging"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6677",
+      "name": "Message template placeholders should be unique",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "logging"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2198",
+      "name": "Unnecessary mathematical comparisons should not be made",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6797",
+      "name": "Blazor query parameter type should be supported",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "blazor"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6798",
+      "name": "[JSInvokable] attribute should only be used on public methods",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "blazor"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6670",
+      "name": "\"Trace.Write\" and \"Trace.WriteLine\" should not be used",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "logging"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6672",
+      "name": "Generic logger injection should match enclosing type",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "logging",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6673",
+      "name": "Log message template placeholders should be in the right order",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "logging"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1199",
+      "name": "Nested code blocks should not be used",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3011",
+      "name": "Reflection should not be used to increase accessibility of classes, methods, or fields",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1075",
+      "name": "URIs should not be hardcoded",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4581",
+      "name": "\"new Guid()\" should not be used",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4586",
+      "name": "Non-async \"Task/Task<T>\" methods should not return null",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "async-await"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4220",
+      "name": "Events should have proper arguments",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "event",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1192",
+      "name": "String literals should not be duplicated",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4583",
+      "name": "Calls to delegate's method \"BeginInvoke\" should be paired with calls to \"EndInvoke\"",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2178",
+      "name": "Short-circuit logic should be used in boolean contexts",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3265",
+      "name": "Non-flags enums should not be used in bitwise operations",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S5445",
+      "name": "Insecure temporary file creation methods should not be used",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6419",
+      "name": "Azure Functions should be stateless",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice",
+        "azure"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2053",
+      "name": "Password hashing functions should use an unpredictable salt",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "symbolic-execution"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2290",
+      "name": "Field-like events should not be virtual",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3260",
+      "name": "Non-derived \"private\" classes and records should be \"sealed\"",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2291",
+      "name": "Overflow checking should not be disabled for \"Enumerable.Sum\"",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6588",
+      "name": "Use the \"UnixEpoch\" field instead of creating \"DateTime\" instances that point to the beginning of the Unix epoch",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6580",
+      "name": "Use a format provider when parsing date and time",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4052",
+      "name": "Types should not extend outdated base types",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4050",
+      "name": "Operators should be overloaded consistently",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6561",
+      "name": "Avoid using \"DateTime.Now\" for benchmarking or timing operations",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6562",
+      "name": "Always set the \"DateTimeKind\" when creating new \"DateTime\" instances",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "localisation",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4260",
+      "name": "\"ConstructorArgument\" parameters should exist in constructors",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "xaml",
+        "wpf"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4159",
+      "name": "Classes should implement their \"ExportAttribute\" interfaces",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "mef",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4277",
+      "name": "\"Shared\" parts should not be created with \"new\"",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "mef",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S6575",
+      "name": "Use \"TimeZoneInfo.FindSystemTimeZoneById\" without converting the timezones with \"TimezoneConverter\"",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4275",
+      "name": "Getters and setters should access the expected fields",
+      "lang": "cs",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2094",
+      "name": "Classes should not be empty",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3063",
+      "name": "\"StringBuilder\" data should be used",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3060",
+      "name": "\"is\" should not be used with \"this\"",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "api-design",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3903",
+      "name": "Types should be defined in named namespaces",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S110",
+      "name": "Inheritance tree of classes should not be too deep",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2344",
+      "name": "Enumeration type names should not have \"Flags\" or \"Enum\" suffixes",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2234",
+      "name": "Arguments should be passed in the same order as the method parameters",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3440",
+      "name": "Variables should not be checked against the values they're about to be assigned",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3897",
+      "name": "Classes that provide \"Equals(<T>)\" should implement \"IEquatable<T>\"",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "api-design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2688",
+      "name": "\"NaN\" should not be used in comparisons",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1118",
+      "name": "Utility classes should not have public constructors",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2326",
+      "name": "Unused type parameters should be removed",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2328",
+      "name": "\"GetHashCode\" should not reference mutable fields",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3415",
+      "name": "Assertion arguments should be passed in the correct order",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1125",
+      "name": "Boolean literals should not be redundant",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1123",
+      "name": "\"Obsolete\" attributes should include explanations",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "obsolete",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3358",
+      "name": "Ternary operators should not be nested",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3597",
+      "name": "\"ServiceContract\" and \"OperationContract\" attributes should be used together",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "api-design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3598",
+      "name": "One-way \"OperationContract\" methods should have \"void\" return type",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4200",
+      "name": "Native methods should be wrapped",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4201",
+      "name": "Null checks should not be combined with \"is\" operator checks",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "redundant"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3246",
+      "name": "Generic type parameters should be co/contravariant when possible",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "api-design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1066",
+      "name": "Mergeable \"if\" statements should be combined",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4210",
+      "name": "Windows Forms entry points should be marked with STAThread",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "winforms",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1185",
+      "name": "Overriding members should do more than simply call the same member in the base class",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "redundant",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3241",
+      "name": "Methods should not return values that are never used",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3458",
+      "name": "Empty \"case\" clauses that fall through to the \"default\" should be omitted",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "finding",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4545",
+      "name": "\"DebuggerDisplayAttribute\" strings should reference existing members",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4663",
+      "name": "Comments should not be empty",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1168",
+      "name": "Empty arrays and collections should be returned instead of null",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2376",
+      "name": "Write-only properties should not be used",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3220",
+      "name": "Method calls should not resolve ambiguously to overloads with \"params\"",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3450",
+      "name": "Parameters with \"[DefaultParameterValue]\" attributes should also be marked \"[Optional]\"",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3466",
+      "name": "Optional parameters should be passed to \"base\" calls",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2372",
+      "name": "Exceptions should not be thrown from property getters",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2743",
+      "name": "Static fields should not be used in generic types",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S818",
+      "name": "Literal suffixes should be upper case",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3963",
+      "name": "\"static\" fields should be initialized inline",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S907",
+      "name": "\"goto\" statement should not be used",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2737",
+      "name": "\"catch\" clauses should do more than rethrow",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "unused",
+        "finding",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2757",
+      "name": "Non-existent operators like \"=+\" should not be used",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2996",
+      "name": "\"ThreadStatic\" fields should not be initialized",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "multi-threading"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3604",
+      "name": "Member initializer values should not be redundant",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2857",
+      "name": "SQL keywords should be delimited by whitespace",
+      "lang": "cs",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1210",
+      "name": "\"Equals\" and the comparison operators should be overridden when implementing \"IComparable\"",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1450",
+      "name": "Private fields only used as local variables in methods should become local variables",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3400",
+      "name": "Methods should not return constants",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2436",
+      "name": "Types and methods should not have too many generic parameters",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1940",
+      "name": "Boolean checks should not be inverted",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2761",
+      "name": "Doubled prefix operators \"!!\" and \"~~\" should not be used",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3971",
+      "name": "\"GC.SuppressFinalize\" should not be called",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3981",
+      "name": "Collection sizes and array length comparisons should make sense",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4061",
+      "name": "\"params\" should be used instead of \"varargs\"",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4070",
+      "name": "Non-flags enums should not be marked with \"FlagsAttribute\"",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S125",
+      "name": "Sections of code should not be commented out",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3923",
+      "name": "All branches in a conditional structure should not have exactly the same implementation",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3926",
+      "name": "Deserialization methods should be provided for \"OptionalField\" members",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "serialization"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S1848",
+      "name": "Objects should not be created to be dropped immediately without being used",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3398",
+      "name": "\"private\" methods called only by inner classes should be moved to those classes",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3397",
+      "name": "\"base.Equals\" should not be used to check for reference equality in \"Equals\" if \"base\" is not \"object\"",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4136",
+      "name": "Method overloads should be grouped together",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2166",
+      "name": "Classes named like \"Exception\" should extend \"Exception\" or a subclass",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "convention",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3376",
+      "name": "Attribute, EventArgs, and Exception type names should end with the type being extended",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3010",
+      "name": "Static fields should not be updated in constructors",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3262",
+      "name": "\"params\" should be used on overrides",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3263",
+      "name": "Static fields should appear in the order they must be initialized",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3264",
+      "name": "Events should be invoked",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S2292",
+      "name": "Trivial properties should be auto-implemented",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3261",
+      "name": "Namespaces should not be empty",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4144",
+      "name": "Methods should not have identical implementations",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious",
+        "duplicate",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S3172",
+      "name": "Delegates should not be subtracted",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4035",
+      "name": "Classes implementing \"IEquatable<T>\" should be sealed",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4143",
+      "name": "Collection elements should not be replaced unconditionally",
+      "lang": "cs",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "csharpsquid:S4158",
+      "name": "Empty collections should not be accessed or iterated",
+      "lang": "cs",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "symbolic-execution"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    }
+  ]
+}

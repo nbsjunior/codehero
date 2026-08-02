@@ -1,0 +1,200 @@
+﻿{
+    "languages":  [
+                      {
+                          "key":  "abap",
+                          "name":  "ABAP"
+                      },
+                      {
+                          "key":  "ansible",
+                          "name":  "Ansible"
+                      },
+                      {
+                          "key":  "apex",
+                          "name":  "Apex"
+                      },
+                      {
+                          "key":  "azurepipelines",
+                          "name":  "Azure Pipelines"
+                      },
+                      {
+                          "key":  "azureresourcemanager",
+                          "name":  "Azure Resource Manager"
+                      },
+                      {
+                          "key":  "c",
+                          "name":  "C"
+                      },
+                      {
+                          "key":  "cs",
+                          "name":  "C#"
+                      },
+                      {
+                          "key":  "cpp",
+                          "name":  "C++"
+                      },
+                      {
+                          "key":  "cobol",
+                          "name":  "COBOL"
+                      },
+                      {
+                          "key":  "css",
+                          "name":  "CSS"
+                      },
+                      {
+                          "key":  "cloudformation",
+                          "name":  "CloudFormation"
+                      },
+                      {
+                          "key":  "dart",
+                          "name":  "Dart"
+                      },
+                      {
+                          "key":  "docker",
+                          "name":  "Docker"
+                      },
+                      {
+                          "key":  "flex",
+                          "name":  "Flex"
+                      },
+                      {
+                          "key":  "githubactions",
+                          "name":  "GitHub Actions"
+                      },
+                      {
+                          "key":  "go",
+                          "name":  "Go"
+                      },
+                      {
+                          "key":  "gosu",
+                          "name":  "Gosu"
+                      },
+                      {
+                          "key":  "groovy",
+                          "name":  "Groovy"
+                      },
+                      {
+                          "key":  "web",
+                          "name":  "HTML"
+                      },
+                      {
+                          "key":  "ipynb",
+                          "name":  "IPython Notebooks"
+                      },
+                      {
+                          "key":  "jcl",
+                          "name":  "JCL"
+                      },
+                      {
+                          "key":  "json",
+                          "name":  "JSON"
+                      },
+                      {
+                          "key":  "jsp",
+                          "name":  "JSP"
+                      },
+                      {
+                          "key":  "java",
+                          "name":  "Java"
+                      },
+                      {
+                          "key":  "js",
+                          "name":  "JavaScript"
+                      },
+                      {
+                          "key":  "kotlin",
+                          "name":  "Kotlin"
+                      },
+                      {
+                          "key":  "kubernetes",
+                          "name":  "Kubernetes"
+                      },
+                      {
+                          "key":  "objc",
+                          "name":  "Objective-C"
+                      },
+                      {
+                          "key":  "php",
+                          "name":  "PHP"
+                      },
+                      {
+                          "key":  "pli",
+                          "name":  "PL/I"
+                      },
+                      {
+                          "key":  "plsql",
+                          "name":  "PL/SQL"
+                      },
+                      {
+                          "key":  "postgres",
+                          "name":  "PostgreSQL"
+                      },
+                      {
+                          "key":  "powershell",
+                          "name":  "PowerShell"
+                      },
+                      {
+                          "key":  "py",
+                          "name":  "Python"
+                      },
+                      {
+                          "key":  "rpg",
+                          "name":  "RPG"
+                      },
+                      {
+                          "key":  "ruby",
+                          "name":  "Ruby"
+                      },
+                      {
+                          "key":  "rust",
+                          "name":  "Rust"
+                      },
+                      {
+                          "key":  "scala",
+                          "name":  "Scala"
+                      },
+                      {
+                          "key":  "secrets",
+                          "name":  "Secrets"
+                      },
+                      {
+                          "key":  "shell",
+                          "name":  "Shell"
+                      },
+                      {
+                          "key":  "swift",
+                          "name":  "Swift"
+                      },
+                      {
+                          "key":  "tsql",
+                          "name":  "T-SQL"
+                      },
+                      {
+                          "key":  "terraform",
+                          "name":  "Terraform"
+                      },
+                      {
+                          "key":  "text",
+                          "name":  "Text"
+                      },
+                      {
+                          "key":  "ts",
+                          "name":  "TypeScript"
+                      },
+                      {
+                          "key":  "vbnet",
+                          "name":  "VB.NET"
+                      },
+                      {
+                          "key":  "vb",
+                          "name":  "Vb"
+                      },
+                      {
+                          "key":  "xml",
+                          "name":  "XML"
+                      },
+                      {
+                          "key":  "yaml",
+                          "name":  "YAML"
+                      }
+                  ]
+}

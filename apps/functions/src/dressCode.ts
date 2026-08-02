@@ -66,8 +66,27 @@ export interface SubmitDressCodeInput {
  * Global exige platform admin; project exige membro da org (ou admin).
  */
 export const submitDressCode = onCall(
-  { secrets: [GEMINI_API_KEY], timeoutSeconds: 120 },
+  { secrets: [GEMINI_API_KEY], timeoutSeconds: 120, cors: true, invoker: "public", memory: "512MiB" },
   async (request) => {
+    try {
+      return await handleSubmitDressCode(request);
+    } catch (err) {
+      if (err instanceof HttpsError) throw err;
+      console.error("submitDressCode failed", err);
+      const msg = err instanceof Error ? err.message : String(err);
+      // Prefer failed-precondition so the client receives the message (INTERNAL is stripped).
+      throw new HttpsError(
+        "failed-precondition",
+        `Falha ao interpretar o dress code: ${msg.slice(0, 300)}`,
+      );
+    }
+  },
+);
+
+async function handleSubmitDressCode(request: {
+  auth?: { uid: string } | null;
+  data: SubmitDressCodeInput;
+}): Promise<Record<string, unknown>> {
     const uid = request.auth?.uid;
     if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
 
@@ -204,8 +223,7 @@ export const submitDressCode = onCall(
       rules: overlays,
       unsafeRulesRejected: unsafeCount,
     };
-  },
-);
+}
 
 /** Lista dress codes (global para admin; project para membro). */
 export const listDressCodes = onCall(async (request) => {

@@ -22,39 +22,49 @@ export interface PlatformUserRow {
 /**
  * Lists Auth users (paginated) with platform-admin flag. Only platform admins.
  */
-export const adminListUsers = onCall<{ pageToken?: string; pageSize?: number }>(async (request) => {
-  const uid = request.auth?.uid;
-  if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
-  await requirePlatformAdmin(uid);
+export const adminListUsers = onCall<{ pageToken?: string; pageSize?: number }>(
+  { cors: true, invoker: "public", memory: "512MiB" },
+  async (request) => {
+    try {
+      const uid = request.auth?.uid;
+      if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
+      await requirePlatformAdmin(uid);
 
-  const pageSize = Math.min(100, Math.max(1, Number(request.data?.pageSize ?? 50) || 50));
-  const pageToken = String(request.data?.pageToken ?? "").trim() || undefined;
+      const pageSize = Math.min(100, Math.max(1, Number(request.data?.pageSize ?? 50) || 50));
+      const pageToken = String(request.data?.pageToken ?? "").trim() || undefined;
 
-  const auth = getAuth();
-  const listed = await auth.listUsers(pageSize, pageToken);
-  const adminSnap = await db.collection("platformAdmins").get();
-  const adminUids = new Set(adminSnap.docs.map((d) => d.id));
+      const auth = getAuth();
+      const listed = await auth.listUsers(pageSize, pageToken);
+      const adminSnap = await db.collection("platformAdmins").get();
+      const adminUids = new Set(adminSnap.docs.map((d) => d.id));
 
-  const users: PlatformUserRow[] = listed.users.map((u) => ({
-    uid: u.uid,
-    email: u.email ?? null,
-    displayName: u.displayName ?? null,
-    disabled: !!u.disabled,
-    emailVerified: !!u.emailVerified,
-    createdAt: u.metadata.creationTime ? new Date(u.metadata.creationTime).toISOString() : null,
-    lastSignInAt: u.metadata.lastSignInTime
-      ? new Date(u.metadata.lastSignInTime).toISOString()
-      : null,
-    isPlatformAdmin: adminUids.has(u.uid),
-  }));
+      const users: PlatformUserRow[] = listed.users.map((u) => ({
+        uid: u.uid,
+        email: u.email ?? null,
+        displayName: u.displayName ?? null,
+        disabled: !!u.disabled,
+        emailVerified: !!u.emailVerified,
+        createdAt: u.metadata.creationTime ? new Date(u.metadata.creationTime).toISOString() : null,
+        lastSignInAt: u.metadata.lastSignInTime
+          ? new Date(u.metadata.lastSignInTime).toISOString()
+          : null,
+        isPlatformAdmin: adminUids.has(u.uid),
+      }));
 
-  users.sort((a, b) => (a.email ?? a.uid).localeCompare(b.email ?? b.uid));
+      users.sort((a, b) => (a.email ?? a.uid).localeCompare(b.email ?? b.uid));
 
-  return {
-    users,
-    pageToken: listed.pageToken ?? null,
-  };
-});
+      return {
+        users,
+        pageToken: listed.pageToken ?? null,
+      };
+    } catch (err) {
+      if (err instanceof HttpsError) throw err;
+      console.error("adminListUsers failed", err);
+      const msg = err instanceof Error ? err.message : String(err);
+      throw new HttpsError("internal", `Falha ao listar usuários: ${msg.slice(0, 300)}`);
+    }
+  },
+);
 
 /**
  * Grant or revoke platform admin. Cannot revoke yourself (avoids lock-out).
@@ -62,7 +72,7 @@ export const adminListUsers = onCall<{ pageToken?: string; pageSize?: number }>(
 export const adminSetPlatformAdmin = onCall<{
   targetUid: string;
   isAdmin: boolean;
-}>(async (request) => {
+}>({ cors: true, invoker: "public" }, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
   await requirePlatformAdmin(uid);
@@ -108,7 +118,7 @@ export const adminUpdateUser = onCall<{
   displayName?: string;
   email?: string;
   disabled?: boolean;
-}>(async (request) => {
+}>({ cors: true, invoker: "public" }, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
   await requirePlatformAdmin(uid);
@@ -167,7 +177,7 @@ export const adminResetUserPassword = onCall<{
   targetUid: string;
   newPassword?: string;
   generateResetLink?: boolean;
-}>(async (request) => {
+}>({ cors: true, invoker: "public" }, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
   await requirePlatformAdmin(uid);

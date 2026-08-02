@@ -3,6 +3,7 @@ import { FindingsTreeProvider, type FindingItem } from "./findingsView";
 import { DashboardPanel } from "./dashboardView";
 import { getConfig, resolveScannerInvocationSafe } from "./config";
 import { runScan, type ScanFinding, type ScanSummary } from "./scan";
+import { computeRepoHealth } from "./metrics";
 
 let collection: vscode.DiagnosticCollection;
 let statusBar: vscode.StatusBarItem;
@@ -191,13 +192,11 @@ function applyResults(summary: ScanSummary, opts: { singleFile: boolean; uri?: v
   }
 
   setStatusIdle(summary.findings.length);
-  const blockers = summary.bySeverity.BLOCKER ?? 0;
-  const criticals = summary.bySeverity.CRITICAL ?? 0;
   const rulesInfo = summary.rulesVersion
-    ? ` · regras ${summary.rulesSource ?? "server"} ${summary.rulesVersion.slice(0, 8)}`
+    ? ` · scan ${summary.rulesSource ?? "server"} ${summary.catalogStats?.liveCount ?? "?"} · catálogo ${summary.catalogStats?.catalogCount ?? "?"}`
     : "";
   void vscode.window.showInformationMessage(
-    `CodeHero: ${summary.findings.length} finding(s) · BLOCKER ${blockers} · CRITICAL ${criticals}${rulesInfo}`,
+    `CodeHero: ${summary.findings.length} finding(s) · Sec ${summary.health.securityRating} · Maint ${summary.health.maintainabilityRating} · Gate ${summary.health.qualityGateStatus}${rulesInfo}`,
   );
 }
 
@@ -304,6 +303,7 @@ O scanner embutido aplica regras **determinísticas** (padrão + AST + taint) �
 
 - **Painel CodeHero** (barra lateral): avaliação com contagem por severidade e lista de findings.
 - **Problems** (Ctrl+Shift+M): sublinhados no editor.
+- **Dashboard** (ícone de gráfico): anéis de **segurança** e **manutenibilidade**, débito técnico, compliance por regra.
 
 ## Configuração
 
@@ -330,5 +330,12 @@ Scan local no plugin **não depende** do portal — funciona offline com as regr
 }
 
 function emptySummary(): ScanSummary {
-  return { findings: [], bySeverity: {}, fileCountHint: 0, ruleCatalog: [] };
+  return {
+    findings: [],
+    bySeverity: {},
+    fileCountHint: 0,
+    linesOfCode: 1,
+    health: computeRepoHealth([], 1),
+    ruleCatalog: [],
+  };
 }

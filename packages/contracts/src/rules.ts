@@ -1,5 +1,7 @@
 import type { Severity, IssueType } from "./severity.ts";
 import type { SecurityCategory, TaintSinkKind, TaintSourceKind } from "./engineKinds.ts";
+import { SONAR_WAY_LIVE_RULES, SONAR_WAY_RULES } from "./sonarWayRules.ts";
+import { COBOL_CORE_RULES } from "./cobolRules.ts";
 
 // ---------------------------------------------------------------------------
 // Hero-IR — declarative rule format.
@@ -58,11 +60,22 @@ export interface HeroRule {
   ast?: AstRuleSpec;
   /** L2: source→sink taint (JS/TS deep engine). */
   taint?: TaintRuleSpec;
+  /** Original SonarQube rule key when imported from Sonar way. */
+  sonarKey?: string;
+  /**
+   * How this rule is executed:
+   * - core: hand-authored CodeHero rule
+   * - sonar-port: L0 port synthesized from Sonar way metadata
+   * - stub: catalog-only (no live detection; pattern never matches)
+   */
+  implementation?: "core" | "sonar-port" | "stub";
 }
 
 // The canonical starter rule set. In production this bundle is generated and
 // validated offline by hero-ruleforge; here it is hand-authored to bootstrap.
-export const RULES: HeroRule[] = [
+/** Hand-authored CodeHero core rules (always live in the scanner). */
+const _CORE_BASE: HeroRule[] = (
+  [
   {
     id: "HERO-SEC-0798-hardcoded-secret",
     name: "HardcodedSecret",
@@ -425,49 +438,9 @@ export const RULES: HeroRule[] = [
       regex: "(?i)new\\s+(SqlCommand|OleDbCommand|OdbcCommand)\\s*\\(\\s*(\\$?['\"].*(select|insert|update|delete).*['\"]\\s*\\+|\\$['\"])",
     },
   },
-  {
-    id: "HERO-SEC-0798-cobol-hardcoded-secret",
-    name: "CobolHardcodedSecret",
-    languages: ["cobol"],
-    severity: "BLOCKER",
-    type: "VULNERABILITY",
-    remediationEffortMin: 15,
-    cwe: ["CWE-798"],
-    owasp: ["A07:2021-Identification and Authentication Failures"],
-    message: "Credencial hardcoded em statement MOVE (padrão de atribuição COBOL).",
-    sddTemplateId: "sdd.secret.externalize",
-    category: "sensitive-data-exposure",
-    pattern: {
-      // COBOL usa "MOVE 'valor' TO campo", não "campo = 'valor'" — precisa de
-      // um padrão próprio; a regra genérica HERO-SEC-0798 não cobre esta
-      // sintaxe. Identificadores COBOL usam hífen (WS-DB-PASSWORD), por isso
-      // [\w-]* em vez de \w* antes da palavra-chave.
-      regex: "(?i)MOVE\\s+['\"][^'\"]{8,}['\"]\\s+TO\\s+[\\w-]*(PASSWORD|PWD|SECRET|APIKEY|DB-PASS)",
-    },
-  },
-  {
-    id: "HERO-SMELL-0goto-cobol",
-    name: "CobolGoTo",
-    languages: ["cobol"],
-    severity: "MAJOR",
-    type: "CODE_SMELL",
-    remediationEffortMin: 15,
-    cwe: [],
-    owasp: [],
-    message: "Uso de GO TO: fluxo de controle não estruturado, dificulta manutenção e migração.",
-    sddTemplateId: "sdd.smell.restructure-goto",
-    category: "code-smell",
-    pattern: {
-      regex: "(?i)\\bGO\\s+TO\\b",
-      unless: "(?i)GO\\s+TO\\.\\s*$", // "GO TO." isolado (fim de PROCEDURE DIVISION) é idiomático, não um salto real
-    },
-  },
 
-  // --- Cobertura ampliada: Java (JDBC), C#/VB.Net, SQL Server, COBOL -------
-  // A auditoria de cobertura (2026-07-27) encontrou apenas 1 regra específica
-  // por linguagem enterprise/legada além das 2 regras "any" — bem abaixo da
-  // profundidade de JS/TS. Estas regras fecham os gaps mais comuns de
-  // OWASP Top 10 / CWE para quem roda Java, C#, VB.Net, SQL Server e COBOL.
+  // --- Cobertura ampliada: Java (JDBC), C#/VB.Net, SQL Server ---------------
+  // Regras COBOL: ver cobolRules.ts (pacote IBM ZCodeScan / RAA / L0).
 
   {
     id: "HERO-SEC-0089-jdbc-sqli",
@@ -652,24 +625,25 @@ export const RULES: HeroRule[] = [
       unless: "(?i)(slf4j|logger|log4j|//\\s*allow-print)",
     },
   },
-  {
-    id: "HERO-SMELL-alter-cobol",
-    name: "CobolAlter",
-    languages: ["cobol"],
-    severity: "MAJOR",
-    type: "CODE_SMELL",
-    remediationEffortMin: 20,
-    cwe: [],
-    owasp: [],
-    message: "ALTER modifica o destino de um GO TO em tempo de execução — fluxo de controle imprevisível, evite.",
-    sddTemplateId: "sdd.smell.remove-alter-cobol",
-    category: "code-smell",
-    pattern: {
-      regex: "(?i)\\bALTER\\s+[\\w-]+\\s+TO\\s+(PROCEED\\s+TO\\s+)?[\\w-]+",
-    },
-  },
-];
+] as HeroRule[]
+).map((r) => ({ ...r, implementation: "core" as const }));
+
+/** Core hand-authored rules (JS/TS/Java/… + COBOL IBM-aligned pack). */
+export const CORE_RULES: HeroRule[] = [..._CORE_BASE, ...COBOL_CORE_RULES];
+
+/**
+ * Live detection set: core + Sonar way L0 ports (stubs excluded — catalog only).
+ * Used by scanner / getActiveRules matching.
+ */
+export const RULES: HeroRule[] = [...CORE_RULES, ...SONAR_WAY_LIVE_RULES];
+
+/**
+ * Full catalog for admin / MCP / docs: core + every Sonar way rule (incl. stubs).
+ */
+export const CATALOG_RULES: HeroRule[] = [...CORE_RULES, ...SONAR_WAY_RULES];
 
 export const RULES_BY_ID: Record<string, HeroRule> = Object.fromEntries(
-  RULES.map((r) => [r.id, r]),
+  CATALOG_RULES.map((r) => [r.id, r]),
 );
+
+export { SONAR_WAY_RULES, SONAR_WAY_LIVE_RULES };

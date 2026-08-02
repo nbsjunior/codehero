@@ -1,22 +1,15 @@
-# Extensão VS Code / Cursor — CodeHero
+# CodeHero VS Code / Cursor plugin
 
-Arquivo: `codehero-vscode.vsix`
+Arquivo: `codehero-vscode.vsix` (versão **0.2.4**)
 
 ## Instalação
 
-1. Baixe o `.vsix` pelo portal (Configurações → Plugin VS Code).
+1. Baixe o `.vsix` pelo portal (Instalação / aba Plugin VS Code).
 2. No VS Code / Cursor: **Extensions → … → Install from VSIX…**
-3. Abra as configurações da extensão e preencha:
-   - `codehero.serverUrl` — URL da API do portal (fornecida na tela do projeto)
-   - `codehero.token` — token de ingestão do repositório
-   - `codehero.orgId` / `codehero.projectId` / `codehero.repoId` — IDs do portal
+3. Abra a pasta do projeto → Activity Bar **CodeHero** → **Rodar scan**.
 
-## Comandos
+## Novidades 0.2.4
 
-- **CodeHero: Analyze Workspace** — análise local + envio do relatório para a API
-- **CodeHero: Show Last Report** — último resultado
-- **CodeHero: Open Portal** — abre o CodeHero no navegador
-
-## Observação
-
-O scanner embutido (`bundled/hero-scan.cjs`) roda com o Node do próprio editor. Não use `npx` nem comandos externos.
+- Dashboard com anéis de **segurança** e **manutenibilidade** (mesmas fórmulas SQALE do portal)
+- Medidor de **débito técnico** e distribuição por tipo de apontamento
+- Quality Gate local no resumo do scan

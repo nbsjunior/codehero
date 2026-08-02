@@ -56,7 +56,7 @@ export function enableScanCache(dir = ".codehero-cache"): void {
 export function analyzeSource(file: string, source: string, rules: HeroRule[] = RULES): Finding[] {
   const lang = languageForFile(file);
   if (!lang) return [];
-  const active = rules.filter((r) => ruleApplies(r, lang));
+  const active = rules.filter((r) => ruleApplies(r, lang) && r.implementation !== "stub");
   return runRulesAgainstSource(active, file, source, lang);
 }
 
