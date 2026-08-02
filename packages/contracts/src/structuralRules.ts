@@ -42,6 +42,9 @@ export const NODE_KINDS: Record<NodeKind, string[]> = {
     "invocation_expression", // C#
     "object_creation_expression", // C# `new X(...)`
     "new_expression", // JS `new X(...)`
+    "call_statement", // COBOL CALL / T-SQL EXEC
+    "perform_statement", // COBOL PERFORM target
+    "exec_sql_statement", // COBOL EXEC SQL (treated as call-like)
   ],
   catch: ["catch_clause", "except_clause"],
   function: [
@@ -55,6 +58,8 @@ export const NODE_KINDS: Record<NodeKind, string[]> = {
     "function_expression",
     "func_literal",
     "lambda",
+    "paragraph", // COBOL
+    "procedure_definition", // T-SQL CREATE PROC/FUNCTION
   ],
   if: ["if_statement", "elif_clause"],
   loop: [
@@ -65,6 +70,7 @@ export const NODE_KINDS: Record<NodeKind, string[]> = {
     "enhanced_for_statement",
     "while_statement",
     "do_statement",
+    "perform_until_statement", // COBOL PERFORM UNTIL/VARYING/TIMES
   ],
   try: ["try_statement"],
   string: [
@@ -134,6 +140,50 @@ export interface StructuralSpec {
   notInside?: NodeKind[];
   /** Regex sobre o texto INTEIRO do nó — escape para casos difíceis. */
   textMatches?: string;
+  /**
+   * Restrições que exigem TIPO, não forma. Só valem onde há modelo semântico
+   * (hoje TS/JS via compilador do TypeScript); nas demais linguagens o campo é
+   * ignorado ou silencia a regra, conforme `requireSemantic`.
+   */
+  semantic?: SemanticConstraint;
+}
+
+/**
+ * O que a árvore não sabe e o compilador sabe.
+ *
+ * Existe por um caso concreto e caro: `map.get(k)` e `repo.get(id)` são o mesmo
+ * nó de árvore. A regra de laço tentou separá-los por lista de nomes mantida na
+ * mão e deu 60 falsos positivos. O tipo do receptor separa os dois de graça.
+ */
+export interface SemanticConstraint {
+  /**
+   * Origem da declaração do que está sendo chamado.
+   *
+   * `stdlib` é o filtro que dispensa lista de nomes: Map, Set, Array, String e
+   * Promise são todos declarados em `lib.*.d.ts`. Excluí-los elimina a classe
+   * inteira de falso positivo "método de coleção", para qualquer método, sem
+   * manutenção.
+   */
+  calleeFrom?: Array<"stdlib" | "dependency" | "user" | "unknown">;
+  /**
+   * A chamada devolve Promise/Thenable.
+   *
+   * Em JS/TS I/O é quase sempre assíncrono, então este é um sinal de I/O que
+   * NÃO depende de o método se chamar `query` ou `fetch` — vale para qualquer
+   * nome, inclusive os que ainda não existem.
+   */
+  awaitable?: boolean;
+  /** Regex sobre o tipo do receptor (`Map<string, number>`, `Repo`…). */
+  receiverTypeMatches?: string;
+  /**
+   * Sem informação semântica (arquivo fora do Program, JS sem tipos, `any`),
+   * a regra dispara ou cala?
+   *
+   * `true` = cala. É o certo para regra que só é precisa COM tipo: preferir
+   * silêncio honesto a barulho. `false` (padrão) mantém o comportamento antigo
+   * para regras que já eram precisas sem tipo.
+   */
+  requireSemantic?: boolean;
 }
 
 /** Um nome de nó pertence a este tipo lógico? */

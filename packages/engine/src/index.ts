@@ -37,6 +37,9 @@ export type {
   DuplicationSummary,
 } from "./structural/duplication.ts";
 
-// Regras estruturais: avaliam a ÁRVORE, não o texto. Valem nas 6 linguagens.
+// Regras estruturais: avaliam a ÁRVORE, não o texto. WASM (6 langs) + legado COBOL/T-SQL.
 export { matchStructural } from "./structural/rules.ts";
-export type { StructuralMatch } from "./structural/rules.ts";
+export type { StructuralMatch, StructuralContext } from "./structural/rules.ts";
+
+export { buildSemanticIndex, EMPTY_SEMANTIC_INDEX } from "./semantic/types.ts";
+export type { SemanticIndex, CallFact, CallOrigin, SemanticOptions } from "./semantic/types.ts";

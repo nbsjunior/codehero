@@ -1,5 +1,11 @@
-import { isKind, type NodeKind, type StructuralSpec } from "@codehero/contracts";
+import {
+  isKind,
+  type NodeKind,
+  type SemanticConstraint,
+  type StructuralSpec,
+} from "@codehero/contracts";
 import type { ParsedFile, SyntaxNode } from "./parser.ts";
+import { EMPTY_SEMANTIC_INDEX, type SemanticIndex } from "../semantic/types.ts";
 
 // ---------------------------------------------------------------------------
 // Avaliador de regras estruturais.
@@ -206,6 +212,43 @@ function casaArgumento(args: SyntaxNode[], c: NonNullable<StructuralSpec["argume
   return idx === "any" ? candidatos.some(satisfaz) : candidatos.every(satisfaz);
 }
 
+/**
+ * A restrição semântica é satisfeita nesta posição?
+ *
+ * A regra do "sem informação" é explícita porque é onde se erra: um arquivo
+ * fora do Program não é um arquivo limpo, é um arquivo desconhecido. Tratar os
+ * dois igual foi o que fez a versão anterior gritar em JS sem tipos.
+ */
+function casaSemantica(
+  c: SemanticConstraint,
+  idx: SemanticIndex,
+  file: string,
+  linha: number,
+  coluna: number,
+): boolean {
+  const fato = idx.at(file, linha, coluna);
+  if (!fato) return c.requireSemantic !== true;
+
+  if (c.calleeFrom && !c.calleeFrom.includes(fato.origin)) return false;
+  if (c.awaitable !== undefined && fato.awaitable !== c.awaitable) return false;
+  if (c.receiverTypeMatches) {
+    if (!fato.receiverType) return c.requireSemantic !== true;
+    try {
+      if (!new RegExp(c.receiverTypeMatches).test(fato.receiverType)) return false;
+    } catch {
+      return false;
+    }
+  }
+  return true;
+}
+
+/** Contexto opcional: sem ele, regras com `semantic` degradam para a árvore. */
+export interface StructuralContext {
+  semantic: SemanticIndex;
+  /** Caminho como o scanner o reporta — a chave do índice. */
+  file: string;
+}
+
 export interface StructuralMatch {
   startLine: number;
   startColumn: number;
@@ -214,7 +257,11 @@ export interface StructuralMatch {
 }
 
 /** Todos os pontos de um arquivo que satisfazem a especificação. */
-export function matchStructural(parsed: ParsedFile, spec: StructuralSpec): StructuralMatch[] {
+export function matchStructural(
+  parsed: ParsedFile,
+  spec: StructuralSpec,
+  ctx?: StructuralContext,
+): StructuralMatch[] {
   // Árvore com erro dá forma incompleta: um match daí seria artefato.
   if (parsed.hasError) return [];
 
@@ -224,8 +271,8 @@ export function matchStructural(parsed: ParsedFile, spec: StructuralSpec): Struc
   let calleeRe: RegExp | null = null;
   let textoRe: RegExp | null = null;
   try {
-    calleeRe = spec.callee ? new RegExp(spec.callee) : null;
-    textoRe = spec.textMatches ? new RegExp(spec.textMatches) : null;
+    calleeRe = spec.callee ? compileRe(spec.callee) : null;
+    textoRe = spec.textMatches ? compileRe(spec.textMatches) : null;
   } catch {
     return []; // regex inválida na regra não pode derrubar o scan
   }
@@ -258,6 +305,18 @@ export function matchStructural(parsed: ParsedFile, spec: StructuralSpec): Struc
     if (spec.argument && !casaArgumento(argumentosDe(n), spec.argument)) continue;
 
     const linha = n.startPosition.row;
+    if (
+      spec.semantic &&
+      !casaSemantica(
+        spec.semantic,
+        ctx?.semantic ?? EMPTY_SEMANTIC_INDEX,
+        ctx?.file ?? "",
+        linha + 1,
+        n.startPosition.column + 1,
+      )
+    ) {
+      continue;
+    }
     out.push({
       startLine: linha + 1,
       startColumn: n.startPosition.column + 1,

@@ -640,7 +640,7 @@ export const CORE_RULES: HeroRule[] = [..._CORE_BASE, ...COBOL_CORE_RULES];
 export const STRUCTURAL_HERO_RULES: HeroRule[] = STRUCTURAL_RULES.map((r) => ({
   id: r.id,
   name: r.name,
-  languages: ["javascript", "typescript", "python", "java", "go", "csharp"] as RuleLanguage[],
+  languages: ["javascript", "typescript", "python", "java", "go", "csharp", "cobol", "tsql"] as RuleLanguage[],
   severity: r.severity,
   type: r.type,
   remediationEffortMin: r.remediationEffortMin,

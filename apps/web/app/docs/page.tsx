@@ -612,7 +612,9 @@ export default function DocsPage() {
               <p style={{ margin: "0.5rem 0 0" }}>
                 <strong>A — orquestração:</strong> traga analyzers fortes com <code>import-sarif</code>; o CodeHero
                 normaliza, aplica gate e política. <strong>B — depth nativo:</strong> L0 + AST/taint (JS/TS) +
-                tree-sitter estrutural; stubs viram backlog de implementação, não marketing.
+                tree-sitter (JS/TS/Python/Java/Go/C#) + parsers estruturais para <strong>COBOL/T-SQL</strong>; stubs
+                Sonar Way são backlog, não marketing. Onde o Sonar é forte (JS/TS moderno), o CodeHero orquestra; onde
+                ele deixa vazio (legado), o CodeHero aprofunda.
               </p>
             </div>
 

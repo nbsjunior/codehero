@@ -36,7 +36,7 @@ export interface StructuralSummary {
   duplication: DuplicationSummary;
   /** Arquivos que a gramática rejeitou — números seriam pela metade. */
   parseErrors: string[];
-  /** Analisáveis mas fora do alcance do tree-sitter (COBOL, T-SQL, DB2, VB.NET). */
+  /** Analisáveis mas fora do alcance estrutural (DB2 SQL dedicado, VB.NET). */
   skippedLanguages: number;
   totals: {
     functions: number;
