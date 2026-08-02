@@ -12,6 +12,8 @@ import WorkspaceWizard from "@/components/admin/WorkspaceWizard";
 import InstalacaoHome from "@/components/admin/InstalacaoHome";
 import UsersPanel from "@/components/admin/UsersPanel";
 import RulesCatalog from "@/components/admin/RulesCatalog";
+import McpIntegrationPanel from "@/components/admin/McpIntegrationPanel";
+import RelatorioPanel from "@/components/admin/RelatorioPanel";
 import EsteiraPanel from "@/components/admin/EsteiraPanel";
 import FindingsBrowser, { type FindingsBrowserItem } from "@/components/FindingsBrowser";
 import { dbClient } from "@/lib/firebase";
@@ -34,7 +36,6 @@ import {
   type AdminIssueRow,
   type AdminIssuesResult,
   type AdminProjectRow,
-  type AdminRepoFindingCount,
   type FeatureFlag,
   type IngestQueueCounts,
   type OrgQuotasView,
@@ -64,6 +65,7 @@ const SHARED_GROUPS: CockpitNavGroup[] = [
     items: [
       { id: "todos-projetos", label: "Todos os projetos" },
       { id: "regras", label: "Regras do motor" },
+      { id: "mcp-integracao", label: "Integração MCP" },
       { id: "workspace", label: "Workspace" },
       { id: "novo-workspace", label: "Novo workspace" },
     ],
@@ -116,13 +118,6 @@ const ratingColor: Record<string, string> = {
   D: "var(--rating-d)",
   E: "var(--rating-e)",
 };
-const severityColor: Record<string, string> = {
-  BLOCKER: "var(--rating-e)",
-  CRITICAL: "var(--rating-d)",
-  MAJOR: "var(--rating-c)",
-  MINOR: "var(--rating-b)",
-  INFO: "var(--rating-a)",
-};
 const sourceLabel: Record<string, string> = {
   "github-action": "GitHub Action",
   "auto-scan": "Checagem automática",
@@ -150,6 +145,7 @@ function AdminPanelInner() {
   const [nextOrgCursor, setNextOrgCursor] = useState<string | null>(null);
   const [loadingMoreOrgs, setLoadingMoreOrgs] = useState(false);
   const [platformSummary, setPlatformSummary] = useState<PlatformSummary | null>(null);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
 
   const [issues, setIssues] = useState<AdminIssuesResult | null>(null);
   const [issuesLoading, setIssuesLoading] = useState(true);
@@ -305,15 +301,21 @@ function AdminPanelInner() {
 
         setStatus("loading");
         if (admin) {
-          const [{ orgCount: oc, projects: rows, nextCursor }, summary] = await Promise.all([
+          const [{ orgCount: oc, projects: rows, nextCursor }, summaryResult] = await Promise.all([
             adminListAllProjects(),
-            adminGetPlatformSummary().catch(() => null),
+            adminGetPlatformSummary()
+              .then((s) => ({ summary: s, error: null as string | null }))
+              .catch((err) => ({
+                summary: null as PlatformSummary | null,
+                error: err instanceof Error ? err.message : "Falha ao carregar o resumo da plataforma.",
+              })),
           ]);
           if (cancelled) return;
           setOrgCount(oc);
           setProjects(rows);
           setNextOrgCursor(nextCursor);
-          setPlatformSummary(summary);
+          setPlatformSummary(summaryResult.summary);
+          setSummaryError(summaryResult.error);
           if (rows[0]) setQuotaOrgId((prev) => prev || rows[0].orgId);
         } else {
           if (wsOrg && wsProject) {
@@ -568,93 +570,19 @@ function AdminPanelInner() {
         )}
 
         {tab === "relatorio" && isPlatformAdmin && (
-          <>
-            <PageHeader
-              eyebrow="Visão"
-              title="Relatório"
-              description="Manutenibilidade da plataforma, principais causas e repositórios com mais/menos apontamentos"
-            />
-
-            <div style={{ display: "grid", gap: "1.5rem", gridTemplateColumns: "minmax(240px, 1fr) minmax(240px, 1fr)", marginBottom: "1.5rem" }}>
-              <DataSection title="Manutenibilidade" description="Distribuição do rating de manutenibilidade entre projetos">
-                {!platformSummary ? (
-                  <p className="hero-caption">Carregando…</p>
-                ) : (
-                  <RatingDistribution buckets={platformSummary.byMaintainabilityRating} />
-                )}
-              </DataSection>
-              <DataSection title="Segurança" description="Distribuição do rating de segurança entre projetos">
-                {!platformSummary ? (
-                  <p className="hero-caption">Carregando…</p>
-                ) : (
-                  <RatingDistribution buckets={platformSummary.bySecurityRating} />
-                )}
-              </DataSection>
-            </div>
-
-            <DataSection
-              title="Principais causas"
-              description="Regras que mais geram apontamentos abertos em toda a plataforma"
-            >
-              {issuesLoading ? (
-                <p className="hero-caption">Carregando…</p>
-              ) : !issues || issues.topCauses.length === 0 ? (
-                <p className="hero-caption">Nenhum apontamento aberto ainda.</p>
-              ) : (
-                <div style={{ overflowX: "auto" }}>
-                  <table className="hero-table">
-                    <thead>
-                      <tr>
-                        <th>Regra</th>
-                        <th>Severidade</th>
-                        <th>Ocorrências</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {issues.topCauses.map((c) => (
-                        <tr key={c.ruleId}>
-                          <td>
-                            <code style={{ fontSize: "0.8rem" }}>{c.ruleId}</code>
-                            <div className="hero-caption" style={{ marginTop: "0.15rem" }}>{c.message}</div>
-                          </td>
-                          <td>
-                            <span
-                              className="hero-badge"
-                              style={{ background: severityColor[c.severity] ?? "var(--muted)", color: "#fff" }}
-                            >
-                              {c.severity}
-                            </span>
-                          </td>
-                          <td>{c.count}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </DataSection>
-
-            <div style={{ display: "grid", gap: "1.5rem", gridTemplateColumns: "minmax(240px, 1fr) minmax(240px, 1fr)" }}>
-              <DataSection title="Mais apontamentos" description="Repositórios que mais precisam de atenção agora">
-                {issuesLoading ? (
-                  <p className="hero-caption">Carregando…</p>
-                ) : !issues || issues.mostFindings.length === 0 ? (
-                  <p className="hero-caption">Nenhum dado ainda.</p>
-                ) : (
-                  <RepoFindingList items={issues.mostFindings} tone="danger" />
-                )}
-              </DataSection>
-              <DataSection title="Menos apontamentos" description="Repositórios mais limpos da plataforma">
-                {issuesLoading ? (
-                  <p className="hero-caption">Carregando…</p>
-                ) : !issues || issues.leastFindings.length === 0 ? (
-                  <p className="hero-caption">Nenhum dado ainda.</p>
-                ) : (
-                  <RepoFindingList items={issues.leastFindings} tone="ok" />
-                )}
-              </DataSection>
-            </div>
-          </>
+          <RelatorioPanel
+            projects={projects}
+            platformSummary={platformSummary}
+            summaryError={summaryError}
+            onSummaryLoaded={(summary, error) => {
+              setPlatformSummary(summary);
+              setSummaryError(error);
+            }}
+            issues={issues}
+            issuesLoading={issuesLoading}
+            issuesError={issuesError}
+            onOpenWorkspace={navigateWorkspace}
+          />
         )}
 
         {tab === "todos-projetos" && (
@@ -825,6 +753,15 @@ function AdminPanelInner() {
 
         {tab === "regras" && <RulesCatalog />}
 
+        {tab === "mcp-integracao" && (
+          <McpIntegrationPanel
+            projects={projects}
+            initialOrgId={wsOrg}
+            initialProjectId={wsProject}
+            onOpenWorkspace={navigateWorkspace}
+          />
+        )}
+
         {tab === "novo-workspace" && isPlatformAdmin && (
           <WorkspaceWizard projects={projects} onOpenWorkspace={navigateWorkspace} />
         )}
@@ -970,108 +907,113 @@ function AdminPanelInner() {
           </>
         )}
 
-        {tab === "escala" && isPlatformAdmin && ops && (
+        {tab === "escala" && isPlatformAdmin && (
           <>
             <PageHeader eyebrow="Operações" title="Escala e filas" description="Expurgo, ingest assíncrono e correção de filas" />
             {opsError && <div className="hero-error">{opsError}</div>}
             {opsMsg && <Callout tone="ok">{opsMsg}</Callout>}
-            <div style={{ display: "grid", gap: "0.6rem", marginBottom: "1.25rem" }}>
-              {(
-                [
-                  ["purgeEnabled", "Expurgo de detalhe", ops.purgeEnabled],
-                  ["deferIssueWrites", "Ingest assíncrono", ops.deferIssueWrites],
-                  ["queueAutoRetry", "Correção auto das filas", ops.queueAutoRetry],
-                ] as const
-              ).map(([key, label, enabled]) => (
-                <div key={key} className="hero-panel-sm" style={{ padding: "0.75rem 1rem", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.75rem" }}>
-                  <strong>{label}</strong>
+            {!ops && !opsError && <p className="hero-caption">Carregando configurações…</p>}
+            {ops && (
+              <>
+                <div style={{ display: "grid", gap: "0.6rem", marginBottom: "1.25rem" }}>
+                  {(
+                    [
+                      ["purgeEnabled", "Expurgo de detalhe", ops.purgeEnabled],
+                      ["deferIssueWrites", "Ingest assíncrono", ops.deferIssueWrites],
+                      ["queueAutoRetry", "Correção auto das filas", ops.queueAutoRetry],
+                    ] as const
+                  ).map(([key, label, enabled]) => (
+                    <div key={key} className="hero-panel-sm" style={{ padding: "0.75rem 1rem", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.75rem" }}>
+                      <strong>{label}</strong>
+                      <button
+                        type="button"
+                        className="hero-btn"
+                        disabled={opsBusy}
+                        style={{ background: enabled ? "var(--rating-a)" : "var(--rating-e)", color: "#fff", border: 0, padding: "0.3rem 0.7rem", fontSize: "0.75rem" }}
+                        onClick={() => patchOps({ [key]: !enabled })}
+                      >
+                        {enabled ? "Ligado" : "Desligado"}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    void patchOps(
+                      {
+                        retentionDays: Number(retentionDraft),
+                        purgeIntervalDays: Number(intervalDraft),
+                        queueStuckMinutes: Number(stuckDraft),
+                      },
+                      "Periodicidade salva.",
+                    );
+                  }}
+                  style={{ display: "grid", gap: "0.75rem", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", alignItems: "end", marginBottom: "1rem" }}
+                >
+                  <label style={{ display: "grid", gap: "0.3rem" }}>
+                    <span className="hero-label">Retenção (dias)</span>
+                    <input className="hero-input" type="number" value={retentionDraft} onChange={(e) => setRetentionDraft(e.target.value)} />
+                  </label>
+                  <label style={{ display: "grid", gap: "0.3rem" }}>
+                    <span className="hero-label">Intervalo expurgo</span>
+                    <input className="hero-input" type="number" value={intervalDraft} onChange={(e) => setIntervalDraft(e.target.value)} />
+                  </label>
+                  <label style={{ display: "grid", gap: "0.3rem" }}>
+                    <span className="hero-label">Fila travada (min)</span>
+                    <input className="hero-input" type="number" value={stuckDraft} onChange={(e) => setStuckDraft(e.target.value)} />
+                  </label>
+                  <button type="submit" className="hero-btn hero-btn-accent" disabled={opsBusy}>
+                    Salvar
+                  </button>
+                </form>
+                {queue && (
+                  <p className="hero-caption">
+                    Fila: pending {queue.pending} · running {queue.running} · failed {queue.failed} · done {queue.done}
+                  </p>
+                )}
+                <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "0.75rem" }}>
                   <button
                     type="button"
                     className="hero-btn"
                     disabled={opsBusy}
-                    style={{ background: enabled ? "var(--rating-a)" : "var(--rating-e)", color: "#fff", border: 0, padding: "0.3rem 0.7rem", fontSize: "0.75rem" }}
-                    onClick={() => patchOps({ [key]: !enabled })}
+                    onClick={async () => {
+                      setOpsBusy(true);
+                      try {
+                        const res = await repairIngestQueues();
+                        setQueue(res.queue);
+                        setOpsMsg(`${res.requeued} job(s) reenfileirado(s).`);
+                      } catch (err) {
+                        setOpsError(err instanceof Error ? err.message : "Falha.");
+                      } finally {
+                        setOpsBusy(false);
+                      }
+                    }}
                   >
-                    {enabled ? "Ligado" : "Desligado"}
+                    Corrigir filas
+                  </button>
+                  <button
+                    type="button"
+                    className="hero-btn hero-btn-outline"
+                    disabled={opsBusy || !ops.purgeEnabled}
+                    onClick={async () => {
+                      if (!window.confirm("Rodar expurgo agora?")) return;
+                      setOpsBusy(true);
+                      try {
+                        const res = await runDetailPurgeNow();
+                        setOpsMsg(`Expurgo: ${res.analysesDeleted} analyses, ${res.issuesDeleted} issues.`);
+                      } catch (err) {
+                        setOpsError(err instanceof Error ? err.message : "Falha.");
+                      } finally {
+                        setOpsBusy(false);
+                      }
+                    }}
+                  >
+                    Expurgo agora
                   </button>
                 </div>
-              ))}
-            </div>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                void patchOps(
-                  {
-                    retentionDays: Number(retentionDraft),
-                    purgeIntervalDays: Number(intervalDraft),
-                    queueStuckMinutes: Number(stuckDraft),
-                  },
-                  "Periodicidade salva.",
-                );
-              }}
-              style={{ display: "grid", gap: "0.75rem", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", alignItems: "end", marginBottom: "1rem" }}
-            >
-              <label style={{ display: "grid", gap: "0.3rem" }}>
-                <span className="hero-label">Retenção (dias)</span>
-                <input className="hero-input" type="number" value={retentionDraft} onChange={(e) => setRetentionDraft(e.target.value)} />
-              </label>
-              <label style={{ display: "grid", gap: "0.3rem" }}>
-                <span className="hero-label">Intervalo expurgo</span>
-                <input className="hero-input" type="number" value={intervalDraft} onChange={(e) => setIntervalDraft(e.target.value)} />
-              </label>
-              <label style={{ display: "grid", gap: "0.3rem" }}>
-                <span className="hero-label">Fila travada (min)</span>
-                <input className="hero-input" type="number" value={stuckDraft} onChange={(e) => setStuckDraft(e.target.value)} />
-              </label>
-              <button type="submit" className="hero-btn hero-btn-accent" disabled={opsBusy}>
-                Salvar
-              </button>
-            </form>
-            {queue && (
-              <p className="hero-caption">
-                Fila: pending {queue.pending} · running {queue.running} · failed {queue.failed} · done {queue.done}
-              </p>
+              </>
             )}
-            <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "0.75rem" }}>
-              <button
-                type="button"
-                className="hero-btn"
-                disabled={opsBusy}
-                onClick={async () => {
-                  setOpsBusy(true);
-                  try {
-                    const res = await repairIngestQueues();
-                    setQueue(res.queue);
-                    setOpsMsg(`${res.requeued} job(s) reenfileirado(s).`);
-                  } catch (err) {
-                    setOpsError(err instanceof Error ? err.message : "Falha.");
-                  } finally {
-                    setOpsBusy(false);
-                  }
-                }}
-              >
-                Corrigir filas
-              </button>
-              <button
-                type="button"
-                className="hero-btn hero-btn-outline"
-                disabled={opsBusy || !ops.purgeEnabled}
-                onClick={async () => {
-                  if (!window.confirm("Rodar expurgo agora?")) return;
-                  setOpsBusy(true);
-                  try {
-                    const res = await runDetailPurgeNow();
-                    setOpsMsg(`Expurgo: ${res.analysesDeleted} analyses, ${res.issuesDeleted} issues.`);
-                  } catch (err) {
-                    setOpsError(err instanceof Error ? err.message : "Falha.");
-                  } finally {
-                    setOpsBusy(false);
-                  }
-                }}
-              >
-                Expurgo agora
-              </button>
-            </div>
           </>
         )}
 
@@ -1130,63 +1072,6 @@ function AdminPanelInner() {
         {tab === "usuarios" && isPlatformAdmin && <UsersPanel />}
       </AdminCockpitShell>
     </main>
-  );
-}
-
-function RatingDistribution({ buckets }: { buckets: Record<string, number> }) {
-  const order = ["A", "B", "C", "D", "E"];
-  const total = order.reduce((s, r) => s + (buckets[r] ?? 0), 0);
-  if (total === 0) return <p className="hero-caption">Sem dados ainda.</p>;
-  return (
-    <div style={{ display: "grid", gap: "0.5rem" }}>
-      {order.map((r) => {
-        const count = buckets[r] ?? 0;
-        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-        return (
-          <div key={r} style={{ display: "grid", gridTemplateColumns: "1.5rem 1fr 3rem", alignItems: "center", gap: "0.5rem" }}>
-            <span className="hero-rating" style={{ background: ratingColor[r], width: "1.5rem", height: "1.5rem", fontSize: "0.75rem" }}>
-              {r}
-            </span>
-            <div style={{ background: "color-mix(in srgb, var(--line) 12%, transparent)", borderRadius: 4, overflow: "hidden", height: 10 }}>
-              <div style={{ width: `${pct}%`, background: ratingColor[r], height: "100%" }} />
-            </div>
-            <span className="hero-caption" style={{ textAlign: "right" }}>
-              {count}
-            </span>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function RepoFindingList({ items, tone }: { items: AdminRepoFindingCount[]; tone: "danger" | "ok" }) {
-  return (
-    <div style={{ display: "grid", gap: "0.4rem" }}>
-      {items.map((it) => (
-        <div
-          key={it.repoId}
-          className="hero-panel-sm"
-          style={{ padding: "0.6rem 0.85rem", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}
-        >
-          <div>
-            <strong>{it.repoName}</strong>
-            <div className="hero-caption">
-              {it.projectName} · {it.orgName}
-            </div>
-          </div>
-          <span
-            className="hero-badge"
-            style={{
-              background: tone === "danger" ? "var(--rating-e)" : "var(--rating-a)",
-              color: "#fff",
-            }}
-          >
-            {it.count}
-          </span>
-        </div>
-      ))}
-    </div>
   );
 }
 

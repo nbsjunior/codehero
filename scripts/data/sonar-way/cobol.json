@@ -1,0 +1,1002 @@
+{
+  "fetchedAt": "2026-07-28T13:07:41.908Z",
+  "language": "cobol",
+  "heroLanguages": [
+    "cobol"
+  ],
+  "note": null,
+  "profileKey": "AWXIG-MAhxEPcY0_xD-k",
+  "profileName": "Sonar way",
+  "activeRuleCount": 74,
+  "rules": [
+    {
+      "key": "cobol:S2589",
+      "name": "Boolean expressions should not be gratuitous",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "suspicious",
+        "redundant"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1135",
+      "name": "Track uses of \"TODO\" tags",
+      "lang": "cobol",
+      "severity": "INFO",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1134",
+      "name": "Track uses of \"FIXME\" tags",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S2583",
+      "name": "Conditionally executed code should be reachable",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "unused",
+        "suspicious",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1871",
+      "name": "Two branches in a conditional structure should not have exactly the same implementation",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:COBOL.EvaluateStatementUsageCheck",
+      "name": "\"EVALUATE\" structures should end with \"WHEN OTHERS\" clauses",
+      "lang": "cobol",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1764",
+      "name": "Identical expressions should not be used on both sides of a binary operator",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S4507",
+      "name": "Debugging features should not be enabled in production",
+      "lang": "cobol",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "error-handling",
+        "debug",
+        "user-experience",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:SQL.SelectWithNoWhereClauseCheck",
+      "name": "SQL SELECT statements should always include a WHERE condition",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "former-hotspot",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:SQL.DynamicSqlCheck",
+      "name": "Dynamic SQL clauses should not be used",
+      "lang": "cobol",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S3482",
+      "name": "\"INSERT\" statements should not set the values of identity columns",
+      "lang": "cobol",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S3921",
+      "name": "Strings should only be moved to variables large enough to hold them without truncation",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1683",
+      "name": "Copybooks should not contain keywords relating to the nature or structure of a program",
+      "lang": "cobol",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1967",
+      "name": "Numbers should only be moved to variables large enough to hold them without truncation",
+      "lang": "cobol",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1725",
+      "name": "Open files should be closed explicitly",
+      "lang": "cobol",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1966",
+      "name": "Alphanumeric values should not be moved to numeric fields",
+      "lang": "cobol",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1686",
+      "name": "When calling a subprogram, the data item containing the name of the subprogram to be called should not be programmatically updated",
+      "lang": "cobol",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:COBOL.DataItemInitialValueCheck",
+      "name": "Data items should be initialized with data of the correct type",
+      "lang": "cobol",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S3671",
+      "name": "\"BINARY\" variables should be used to declare variable-length table sizes",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S4882",
+      "name": "\"OCCURS DEPENDING ON\" should be used with a minimum value",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:COBOL.MergeStatementUsageCheck",
+      "name": "\"MERGE\" should not be used",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:COBOL.ProgramNameCheck",
+      "name": "Program names should comply with a naming convention",
+      "lang": "cobol",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1138",
+      "name": "SQL EXISTS subqueries should not be used",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1656",
+      "name": "Variables should not be self-assigned",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:COBOL.IfStatementFormattingCheck",
+      "name": "Ending words should be aligned with what they close",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1302",
+      "name": "Cyclomatic Complexity of sections should not be too high",
+      "lang": "cobol",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1303",
+      "name": "Sections should not be empty",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1305",
+      "name": "Sections should be documented",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1306",
+      "name": "\"PERFORM\" calls should not be nested too deeply",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1631",
+      "name": "SQL statements should not join too many tables",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "brain-overload",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1110",
+      "name": "Redundant pairs of parentheses should be removed",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S3892",
+      "name": "\"COPY SUPPRESS\" should not be used",
+      "lang": "cobol",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:COBOL.SortStatementUsageCheck",
+      "name": "\"SORT\" should not be used",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1192",
+      "name": "String literals should not be duplicated",
+      "lang": "cobol",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1590",
+      "name": "\"DELETE\" and \"UPDATE\" statements should contain \"WHERE\" clauses",
+      "lang": "cobol",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:SQL.CursorClosedInsideLoopCheck",
+      "name": "Cursors should not be closed inside loops",
+      "lang": "cobol",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "pitfall",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:SQL.CursorOpenedInsideLoopCheck",
+      "name": "Cursors should not be opened inside loops",
+      "lang": "cobol",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "leak",
+        "performance",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:COBOL.LinkageSectionUsageCheck",
+      "name": "Data used in a \"LINKAGE\" should be defined in a COPYBOOK",
+      "lang": "cobol",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:COBOL.ConditionComplexityCheck",
+      "name": "Conditions should not use too many distinct data items",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1735",
+      "name": "Column names should be used in a SQL \"ORDER BY\" clause",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1739",
+      "name": "SQL \"LIKE\" clauses should not start with wildcard characters",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S3595",
+      "name": "Binary search should be used for large tables",
+      "lang": "cobol",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S3632",
+      "name": "Binary variables should be used for table subscript access",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S3633",
+      "name": "\"WHERE\" clause conditions should not be contradictory",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:COBOL.FileUnusedCheck",
+      "name": "Declared files should be used",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:COBOL.ParagraphComplexityCheck",
+      "name": "Cyclomatic Complexity of paragraphs should not be too high",
+      "lang": "cobol",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:COBOL.RecursivePerformCheck",
+      "name": "\"PERFORM\" calls should not be recursive",
+      "lang": "cobol",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unpredictable",
+        "bad-practice",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S4727",
+      "name": "Unused condition names should be removed",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:SQL.SelectStarUsageCheck",
+      "name": "Columns to be read with a \"SELECT\" statement should be clearly defined",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:SQL.SelectStatementsNestedCheck",
+      "name": "Nested SQL \"SELECT\" statements should not be used",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "brain-overload",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1069",
+      "name": "DDL statements should not be used",
+      "lang": "cobol",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1740",
+      "name": "Arithmetic expressions and scalar functions should not be used in \"WHERE\" conditions",
+      "lang": "cobol",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1862",
+      "name": "Conditions in related \"IF/ELSE IF\" statements and \"WHEN\" clauses in \"EVALUATE\" statements should not have the same condition",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "unused",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S3004",
+      "name": "SQL \"UPDATE\" statements should not change primary key values",
+      "lang": "cobol",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:COBOL.CopyInsideProcedureDivisionCheck",
+      "name": "Copybooks should be used to share data structures, not procedural logic",
+      "lang": "cobol",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1066",
+      "name": "Collapsible \"IF\" statements should be merged",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S3643",
+      "name": "\"LIKE\" clauses should not be used without wildcards",
+      "lang": "cobol",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S3923",
+      "name": "All branches in a conditional structure should not have exactly the same implementation",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:SQL.CursorDeclaredInsideLoopCheck",
+      "name": "Cursors should not be declared inside loops",
+      "lang": "cobol",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:COBOL.CommentedOutCodeCheck",
+      "name": "Sections of code should not be commented out",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S4054",
+      "name": "Queries that use \"FETCH FIRST\" should have an \"ORDER BY\"",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:COBOL.ExitProgramUsageCheck",
+      "name": "\"EXIT PROGRAM\" should be the last statement of a sequence",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S3618",
+      "name": "Inserts should include values for non-null columns",
+      "lang": "cobol",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S2527",
+      "name": "\"NULL\" should not be compared directly",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:COBOL.PerformThruParagraphOrderCheck",
+      "name": "The second procedure of a \"PERFORM THRU\" statement should be defined after the first procedure",
+      "lang": "cobol",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S3614",
+      "name": "Fetches should not select more columns than their cursors",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:COBOL.StopRunUsageCheck",
+      "name": "\"STOP RUN\" or \"GOBACK\" should be the last statement of a sequence",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1682",
+      "name": "\"OCCURS 1\" should not be used on data items",
+      "lang": "cobol",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1723",
+      "name": "Paragraphs should not be redefined",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S1969",
+      "name": "Section names should be unique within a program",
+      "lang": "cobol",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S3621",
+      "name": "Selects should include null indicators for nullable columns",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S3581",
+      "name": "Variables of different numeric formats should not be compared",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S3582",
+      "name": "Conditional variables should not be compared with literals",
+      "lang": "cobol",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "cobol:S3625",
+      "name": "Unused \"TABLE\" declarations should be removed",
+      "lang": "cobol",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    }
+  ]
+}

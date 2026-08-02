@@ -28,7 +28,10 @@
     "emulators": "firebase emulators:start",
     "dev:web": "npm run dev -w @codehero/web",
     "ruleforge:evaluate": "npm run evaluate -w @codehero/ruleforge",
-    "ruleforge:evolve-all": "node packages/ruleforge/src/cli.ts evolve-all"
+    "ruleforge:evolve-all": "node packages/ruleforge/src/cli.ts evolve-all",
+    "sonar:fetch": "node scripts/fetch-sonar-way.mjs",
+    "sonar:generate": "node scripts/generate-sonar-way-rules.mjs",
+    "sonar:compare": "node scripts/compare-sonar-way.mjs"
   },
   "devDependencies": {
     "typescript": "^5.7.2"

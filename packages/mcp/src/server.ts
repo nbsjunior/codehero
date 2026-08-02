@@ -9,16 +9,20 @@ import { spawnSync } from "node:child_process";
 // proxies the token-guarded hero-core HTTP endpoints and can run a local scan.
 //
 // Config via env:
-//   HERO_CORE_URL  base URL of the deployed functions (e.g.
-//                  https://us-central1-<proj>.cloudfunctions.net)
-//   HERO_TOKEN     per-project ingest token
-//   HERO_ORG_ID / HERO_PROJECT_ID  default target project
+//   HERO_CORE_URL  base URL of the public API (e.g. https://codehero.web.app/api)
+//   HERO_TOKEN     per-repo ingest token
+//   HERO_ORG_ID / HERO_PROJECT_ID / HERO_REPO_ID  default target
+//   HERO_SCANNER_CMD  local scanner binary for run_scan
 // ---------------------------------------------------------------------------
 
-const CORE_URL = process.env.HERO_CORE_URL ?? "http://127.0.0.1:5001/codehero-dev/us-central1";
+const CORE_URL = (process.env.HERO_CORE_URL ?? "http://127.0.0.1:5001/codehero-dev/us-central1").replace(
+  /\/$/,
+  "",
+);
 const TOKEN = process.env.HERO_TOKEN ?? "";
 const ORG_ID = process.env.HERO_ORG_ID ?? "";
 const PROJECT_ID = process.env.HERO_PROJECT_ID ?? "";
+const REPO_ID = process.env.HERO_REPO_ID ?? "";
 
 function authHeaders(): Record<string, string> {
   return { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" };
@@ -28,19 +32,29 @@ const server = new McpServer({ name: "hero-mcp", version: "0.1.0" });
 
 server.tool(
   "get_issues",
-  "Lista as issues abertas de um projeto CodeHero (opcionalmente filtrando por severidade e código novo).",
+  "Lista as issues abertas de um repositório CodeHero (opcionalmente filtrando por severidade e código novo).",
   {
     orgId: z.string().default(ORG_ID),
     projectId: z.string().default(PROJECT_ID),
+    repoId: z.string().default(REPO_ID),
     severity: z.enum(["BLOCKER", "CRITICAL", "MAJOR", "MINOR", "INFO"]).optional(),
     newCodeOnly: z.boolean().default(false),
+    limit: z.number().int().min(1).max(500).default(100),
   },
-  async ({ orgId, projectId, severity, newCodeOnly }) => {
+  async ({ orgId, projectId, repoId, severity, newCodeOnly, limit }) => {
+    if (!repoId) {
+      return {
+        content: [{ type: "text", text: "repoId é obrigatório (defina HERO_REPO_ID ou passe repoId)." }],
+        isError: true,
+      };
+    }
     const url = new URL(`${CORE_URL}/listIssues`);
     url.searchParams.set("orgId", orgId);
     url.searchParams.set("projectId", projectId);
+    url.searchParams.set("repoId", repoId);
     if (severity) url.searchParams.set("severity", severity);
     url.searchParams.set("newCodeOnly", String(newCodeOnly));
+    url.searchParams.set("limit", String(limit));
     const r = await fetch(url, { headers: authHeaders() });
     const body = await r.text();
     return { content: [{ type: "text", text: body }], isError: !r.ok };
@@ -53,13 +67,20 @@ server.tool(
   {
     orgId: z.string().default(ORG_ID),
     projectId: z.string().default(PROJECT_ID),
+    repoId: z.string().default(REPO_ID),
     fingerprint: z.string(),
   },
-  async ({ orgId, projectId, fingerprint }) => {
+  async ({ orgId, projectId, repoId, fingerprint }) => {
+    if (!repoId) {
+      return {
+        content: [{ type: "text", text: "repoId é obrigatório (defina HERO_REPO_ID ou passe repoId)." }],
+        isError: true,
+      };
+    }
     const r = await fetch(`${CORE_URL}/sddSpec`, {
       method: "POST",
       headers: authHeaders(),
-      body: JSON.stringify({ orgId, projectId, fingerprint }),
+      body: JSON.stringify({ orgId, projectId, repoId, fingerprint }),
     });
     const body = await r.text();
     return { content: [{ type: "text", text: body }], isError: !r.ok };
@@ -72,15 +93,22 @@ server.tool(
   {
     orgId: z.string().default(ORG_ID),
     projectId: z.string().default(PROJECT_ID),
+    repoId: z.string().default(REPO_ID),
     fingerprint: z.string(),
     specId: z.string().optional(),
     status: z.enum(["applied", "rejected", "failed"]),
   },
-  async ({ orgId, projectId, fingerprint, specId, status }) => {
+  async ({ orgId, projectId, repoId, fingerprint, specId, status }) => {
+    if (!repoId) {
+      return {
+        content: [{ type: "text", text: "repoId é obrigatório (defina HERO_REPO_ID ou passe repoId)." }],
+        isError: true,
+      };
+    }
     const r = await fetch(`${CORE_URL}/submitFixResult`, {
       method: "POST",
       headers: authHeaders(),
-      body: JSON.stringify({ orgId, projectId, fingerprint, specId, status }),
+      body: JSON.stringify({ orgId, projectId, repoId, fingerprint, specId, status }),
     });
     const body = await r.text();
     return { content: [{ type: "text", text: body }], isError: !r.ok };
@@ -155,7 +183,7 @@ server.tool(
     maxRules: z.number().int().min(1).max(200).default(80),
   },
   async ({ orgId, projectId, maxRules }) => {
-    const url = new URL(`${CORE_URL.replace(/\/$/, "")}/getActiveRules`);
+    const url = new URL(`${CORE_URL}/getActiveRules`);
     if (orgId) url.searchParams.set("orgId", orgId);
     if (projectId) url.searchParams.set("projectId", projectId);
     const r = await fetch(url, { headers: authHeaders() });
@@ -233,7 +261,7 @@ server.tool(
     ];
 
     if (wantRules) {
-      const url = new URL(`${CORE_URL.replace(/\/$/, "")}/getActiveRules`);
+      const url = new URL(`${CORE_URL}/getActiveRules`);
       if (orgId) url.searchParams.set("orgId", orgId);
       if (projectId) url.searchParams.set("projectId", projectId);
       const r = await fetch(url, { headers: authHeaders() });
@@ -276,15 +304,21 @@ server.tool(
     }
 
     if (wantIssues && orgId && projectId) {
-      const url = new URL(`${CORE_URL.replace(/\/$/, "")}/listIssues`);
-      url.searchParams.set("orgId", orgId);
-      url.searchParams.set("projectId", projectId);
-      url.searchParams.set("limit", "20");
-      const r = await fetch(url, { headers: authHeaders() });
-      const body = await r.text();
-      sections.push("## Apontamentos abertos (amostra)");
-      sections.push(r.ok ? body.slice(0, 6000) : `Falha listIssues: ${body.slice(0, 500)}`);
-      sections.push("");
+      const repoId = REPO_ID;
+      if (!repoId) {
+        sections.push("## Apontamentos abertos\nDefina HERO_REPO_ID para listar issues neste contexto.\n");
+      } else {
+        const url = new URL(`${CORE_URL}/listIssues`);
+        url.searchParams.set("orgId", orgId);
+        url.searchParams.set("projectId", projectId);
+        url.searchParams.set("repoId", repoId);
+        url.searchParams.set("limit", "20");
+        const r = await fetch(url, { headers: authHeaders() });
+        const body = await r.text();
+        sections.push("## Apontamentos abertos (amostra)");
+        sections.push(r.ok ? body.slice(0, 6000) : `Falha listIssues: ${body.slice(0, 500)}`);
+        sections.push("");
+      }
     }
 
     sections.push(

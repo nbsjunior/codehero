@@ -1,0 +1,8232 @@
+{
+  "fetchedAt": "2026-07-28T13:07:41.908Z",
+  "language": "java",
+  "heroLanguages": [
+    "java"
+  ],
+  "note": null,
+  "profileKey": "AVyxQJYrFpfr6sfa6FJs",
+  "profileName": "Sonar way",
+  "activeRuleCount": 611,
+  "rules": [
+    {
+      "key": "java:S2119",
+      "name": "\"Random\" objects should be reused",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S9068",
+      "name": "\"@ApplicationScoped\" should be preferred over \"@Singleton\" in Quarkus applications",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "testing",
+        "jee",
+        "injection"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javabugs:S2259",
+      "name": "A NULL object should not be accessed",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "symbolic-execution",
+        "cwe",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javabugs:S6416",
+      "name": "Calls to methods should not trigger an exception",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javabugs:S6466",
+      "name": "Accessing an array element should not trigger an ArrayIndexOutOfBoundsException",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javabugs:S3518",
+      "name": "Zero should not be a possible denominator",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "symbolic-execution",
+        "cwe",
+        "denial-of-service",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S9016",
+      "name": "Mock objects should not be created inline within \"thenReturn()\"",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "mockito"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2115",
+      "name": "A secure password should be used when connecting to a database",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "secret"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1110",
+      "name": "Redundant pairs of parentheses should be removed",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S9021",
+      "name": "\"@Configuration\" classes should not be final",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "spring",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2068",
+      "name": "Credentials should not be hard-coded",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "cert",
+        "secret",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6437",
+      "name": "Credentials should not be hard-coded",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "secret"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5673",
+      "name": "Spring components should use specialized annotations",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6418",
+      "name": "Secrets should not be hard-coded",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "cert",
+        "secret",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8989",
+      "name": "Methods with \"@Transactional\" should specify rollback behavior for checked exceptions",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "spring",
+        "transaction",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S9024",
+      "name": "\"@InjectMocks\" should be used instead of manually constructing test objects",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "junit",
+        "tests",
+        "mockito"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S9017",
+      "name": "Mockito stubbing chains should be complete",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "junit",
+        "tests",
+        "mockito"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S9015",
+      "name": "Mock fields should use \"@Mock\" annotation when \"MockitoExtension\" or \"MockitoJUnitRunner\" is active",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "junit",
+        "tests",
+        "mockito"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javabugs:S2190",
+      "name": "Recursion should not be infinite",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S117",
+      "name": "Local variable and method parameter names should comply with a naming convention",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8983",
+      "name": "Stateless session beans should not store mutable state in instance variables",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "ejb",
+        "jakarta",
+        "concurrency"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8975",
+      "name": "The return value of \"EntityManager.merge()\" should be used",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "jpa",
+        "hibernate",
+        "jakarta",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8908",
+      "name": "Methods annotated with \"@CacheResult\" should not return void",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "api-design",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8909",
+      "name": "\"CacheKeyGenerator\" implementations should be instantiable by the framework",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "quarkus",
+        "injection",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8912",
+      "name": "Custom CredentialsProvider implementations should be annotated with @Unremovable",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "credentials",
+        "quarkus",
+        "cdi"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8913",
+      "name": "REST Data with Panache resource interfaces should not have implementation classes",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "rest",
+        "quarkus",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8910",
+      "name": "Interfaces annotated with \"@Mapper\" should contain at least one \"@DaoFactory\" method",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "quarkus",
+        "api",
+        "orm"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1313",
+      "name": "IP addresses should not be hardcoded",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cert",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8948",
+      "name": "\"@OneToMany\" relationships should use \"mappedBy\" or \"@JoinColumn\"",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "jpa",
+        "hibernate",
+        "jakarta"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8954",
+      "name": "Bean Validation constraints should not be placed on static fields",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "jakarta",
+        "validation",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S7518",
+      "name": "Privileged prompts should not be vulnerable to injection attacks",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8947",
+      "name": "JPA entity classes and methods should not be final",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "jpa",
+        "hibernate",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5976",
+      "name": "Similar tests should be grouped in a single Parameterized test",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "bad-practice",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2206",
+      "name": "Do not mix field and getter persistence annotations",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "jakarta"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8924",
+      "name": "Mockito core methods should be statically imported",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "tests",
+        "mockito"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5542",
+      "name": "Encryption algorithms should be used with secure mode and padding scheme",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8911",
+      "name": "Methods annotated with \"@Startup\" should be non-static, non-producer, and parameter-free",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "lifecycle",
+        "quarkus",
+        "injection"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2654",
+      "name": "JEE applications should not use threads or synchronization",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "multi-threading",
+        "jee",
+        "jakarta"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6539",
+      "name": "Classes should not depend on an excessive number of classes (aka Monster Class)",
+      "lang": "java",
+      "severity": "INFO",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5852",
+      "name": "Regular expressions should not cause catastrophic backtracking",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "regex",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2143",
+      "name": "\"java.time\" classes should be used for dates and times",
+      "lang": "java",
+      "severity": "INFO",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java8",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3626",
+      "name": "Jump statements should not be redundant",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "redundant",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7186",
+      "name": "Methods returning \"Page\" or \"Slice\" must take \"Pageable\" as an input parameter",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6206",
+      "name": "Records should be used instead of ordinary classes when representing immutable data structure",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java16"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8786",
+      "name": "Regular expressions should not cause non-linear backtracking",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex",
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4502",
+      "name": "CSRF protections should not be disabled",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "spring",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4507",
+      "name": "Debugging features should not be enabled in production",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "spring",
+        "error-handling",
+        "cwe",
+        "debug",
+        "user-experience",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2245",
+      "name": "Pseudorandom number generators (PRNGs) should not be used in security contexts",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4790",
+      "name": "Weak hashing algorithms should not be used",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5332",
+      "name": "Clear-text protocols should not be used",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "android",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2077",
+      "name": "SQL queries should not be dynamically formatted",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "spring",
+        "cwe",
+        "bad-practice",
+        "cert",
+        "hibernate",
+        "former-hotspot",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4036",
+      "name": "OS commands should not rely on PATH resolution",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5247",
+      "name": "Auto-escaping in HTML template engines should not be disabled",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8714",
+      "name": "Dedicated exception assertions should be used instead of \"try-catch\" with \"fail()\"",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8715",
+      "name": "JUnit Jupiter tests should not use JUnit 4 assertions",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "junit",
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8745",
+      "name": "Test classes should not contain multiple lifecycle methods of the same type",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "junit",
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S5144",
+      "name": "Server-side requests should not be vulnerable to forging attacks",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2225",
+      "name": "\"toString()\" and \"clone()\" methods should not return null",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3551",
+      "name": "Overrides should match their parent class methods in synchronization",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "multi-threading",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5738",
+      "name": "\"@Deprecated\" code marked for removal should never be used",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "obsolete",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2111",
+      "name": "\"BigDecimal(double)\" should not be used",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1143",
+      "name": "Jump statements should not occur in \"finally\" blocks",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "error-handling",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2445",
+      "name": "Blocks should be synchronized on \"private final\" fields",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "multi-threading",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1113",
+      "name": "The \"Object.finalize()\" method should not be overridden",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unpredictable",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2446",
+      "name": "\"notifyAll()\" should be preferred over \"notify()\"",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "multi-threading",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1111",
+      "name": "The \"Object.finalize()\" method should not be called",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2201",
+      "name": "Return values from functions without side effects should not be ignored",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2442",
+      "name": "Synchronizing on a \"Lock\" object should be avoided",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "multi-threading",
+        "cert",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1117",
+      "name": "Local variables should not shadow class fields",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cert",
+        "suspicious",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2681",
+      "name": "Multiline blocks should be enclosed in curly braces",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1116",
+      "name": "Empty statements should be removed",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cert",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2447",
+      "name": "\"null\" should not be returned from a \"Boolean\" method",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "cert",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1121",
+      "name": "Assignments should not be made from within sub-expressions",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "cert",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4512",
+      "name": "JavaBean properties should not be populated from untrusted input",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "cert",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2386",
+      "name": "Mutable fields should not be \"public static\"",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "unpredictable",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1172",
+      "name": "Unused method parameters should be removed",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1174",
+      "name": "\"Object.finalize()\" should remain protected (versus public) when overriding",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2159",
+      "name": "Unnecessary equality checks should not be made",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cert",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2276",
+      "name": "\"wait(...)\" should be used instead of \"Thread.sleep(...)\" when a lock is held",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "performance",
+        "multi-threading",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1065",
+      "name": "Unused labels should be removed",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cert",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2274",
+      "name": "\"Object.wait(...)\" and \"Condition.await(...)\" should be called inside a \"while\" loop",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "multi-threading",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1182",
+      "name": "Classes that override \"clone\" should be \"Cloneable\" and call \"super.clone()\"",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "cwe",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2151",
+      "name": "\"runFinalizersOnExit\" should not be called",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1181",
+      "name": "Throwable and Error should not be caught",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "error-handling",
+        "bad-practice",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2390",
+      "name": "Classes should not access their own subclasses during class initialization",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3457",
+      "name": "Format strings should be used correctly",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cert",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4423",
+      "name": "Weak SSL/TLS protocols should not be used",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4426",
+      "name": "Cryptographic keys should be robust",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy",
+        "rules"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3330",
+      "name": "Cookies should have the \"HttpOnly\" flag",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1168",
+      "name": "Empty arrays and collections should be returned instead of null",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3346",
+      "name": "Expressions used in \"assert\" should not produce side effects",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1163",
+      "name": "Exceptions should not be thrown in finally blocks",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "cert",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5527",
+      "name": "Server hostnames should be verified during SSL/TLS connections",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy",
+        "ssl"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1659",
+      "name": "Multiple variables should not be declared on the same line",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2251",
+      "name": "A \"for\" loop update clause should move the counter in the right direction",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1656",
+      "name": "Variables should not be self-assigned",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1872",
+      "name": "Classes should not be compared by name",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1764",
+      "name": "Identical expressions should not be used on both sides of a binary operator",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2612",
+      "name": "File permissions should not be set to world-accessible values",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "cert",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2674",
+      "name": "The value returned from a stream read should be checked",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4973",
+      "name": "Strings and Boxed types should be compared using \"equals()\"",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2886",
+      "name": "Getters and setters should be synchronized in pairs",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "multi-threading",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4830",
+      "name": "Server certificates should be verified during SSL/TLS connections",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy",
+        "cert",
+        "ssl"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1206",
+      "name": "\"equals(Object obj)\" and \"hashCode()\" should be overridden in pairs",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6362",
+      "name": "JavaScript support should not be enabled in WebViews unless strictly necessary",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "android",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1862",
+      "name": "Related \"if/else if\" statements should not have the same condition",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "unused",
+        "cert",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1860",
+      "name": "Synchronization should not be done on instances of value-based classes",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "multi-threading",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1989",
+      "name": "Exceptions should not be thrown from servlet methods",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "error-handling",
+        "cwe",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S131",
+      "name": "\"switch\" statements should have \"default\" clauses",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S128",
+      "name": "Switch cases should end with an unconditional \"break\" statement",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "cert",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S112",
+      "name": "Generic exceptions should never be thrown",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "cwe",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3034",
+      "name": "Raw byte values should not be used in bitwise operations in combination with shifts",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2066",
+      "name": "\"Serializable\" inner classes of non-serializable outer classes should be \"static\"",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "serialization",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2184",
+      "name": "Math operands should be cast before assignment",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "overflow",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2061",
+      "name": "Custom serialization methods should have required signatures",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S106",
+      "name": "Standard outputs should not be used directly to log anything",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7409",
+      "name": "Native methods should not be exposed to untrusted WebView content",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "android",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4347",
+      "name": "Secure random number generators should not output predictable values",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "cert",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2168",
+      "name": "Double-checked locking should not be used",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "singleton",
+        "multi-threading",
+        "design",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3014",
+      "name": "\"ThreadGroup\" should not be used",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design",
+        "cert",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3011",
+      "name": "Reflection should not be used to increase accessibility of classes, methods, or fields",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1193",
+      "name": "Exception types should not be tested using \"instanceof\" in catch blocks",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "cert",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2178",
+      "name": "Short-circuit logic should be used in boolean contexts",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2175",
+      "name": "Inappropriate \"Collection\" calls should not be made",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5324",
+      "name": "Sensitive data should not be stored in Android external storage",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "android",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3077",
+      "name": "Non-primitive fields should not be \"volatile\"",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "multi-threading",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3078",
+      "name": "\"volatile\" variables should not be used with compound operators",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "multi-threading",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3064",
+      "name": "Assignment of lazy-initialized members should be the last step with double-checked locking",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "multi-threading",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5122",
+      "name": "Cross-Origin Resource Sharing (CORS) policy should be restricted to trusted origins",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "spring",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2092",
+      "name": "Cookies should have the \"secure\" flag",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "spring",
+        "cwe",
+        "privacy",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S899",
+      "name": "Return values should not be ignored when they contain the operation status code",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "error-handling",
+        "cwe",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2093",
+      "name": "Try-with-resources should be used",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java8",
+        "cert",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8688",
+      "name": "Time-based \".now()\" methods should specify a ZoneId or a Clock",
+      "lang": "java",
+      "severity": "INFO",
+      "type": "CODE_SMELL",
+      "tags": [
+        "datetime",
+        "java8",
+        "timezone",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8695",
+      "name": "Redundant time instantiation patterns should be simplified",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "datetime",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8700",
+      "name": "Time zone-aware types should be used to compute durations",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "datetime",
+        "java8",
+        "timezone",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8696",
+      "name": "Value-based classes should be compared using their value",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "datetime",
+        "java8",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8694",
+      "name": "\"Month\" and \"DayOfWeek\" enums should be used instead of numeric literals",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "datetime",
+        "java8",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3752",
+      "name": "HTTP routes should restrict allowed HTTP methods",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "spring",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8220",
+      "name": "Conversions between local and timezone-aware types should use explicit timezone handling",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "datetime",
+        "java8"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S6350",
+      "name": "System command arguments constructed from user input should be validated",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2583",
+      "name": "Conditionally executed code should be reachable",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "symbolic-execution",
+        "unused",
+        "cert",
+        "suspicious",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3329",
+      "name": "Cipher Block Chaining IVs should be unpredictable",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5547",
+      "name": "Cipher algorithms should be robust",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2637",
+      "name": "\"@NonNull\" values should not be set to null",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "symbolic-execution",
+        "cwe",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6363",
+      "name": "WebViews should not allow unrestricted file access",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "android",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6376",
+      "name": "XML parsers should not be vulnerable to Denial of Service attacks",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "symbolic-execution"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6288",
+      "name": "Android KeyStore keys should require user authentication",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "android",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6293",
+      "name": "Biometric authentication should be cryptographically bound",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "android",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6301",
+      "name": "Mobile database encryption keys should not be disclosed",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "android"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2189",
+      "name": "Loops should not be infinite",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "symbolic-execution",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6432",
+      "name": "Counter Mode initialization vectors should not be reused",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5322",
+      "name": "Android broadcast receivers should not be registered without a permission",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "android",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5320",
+      "name": "Intents should not be broadcast without receiver permissions",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "android",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2095",
+      "name": "Resources should be closed",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "symbolic-execution",
+        "leak",
+        "denial-of-service",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S3649",
+      "name": "Database queries should not be vulnerable to injection attacks",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "android",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4544",
+      "name": "Jackson deserialization should not use unsafe configuration",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2257",
+      "name": "Custom cryptographic algorithms should not be used",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4434",
+      "name": "Deserialization of Java objects from LDAP should be disabled",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5804",
+      "name": "Authentication mechanisms should not permit user enumeration.",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "spring",
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6263",
+      "name": "Long-term AWS access keys should not be used",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5693",
+      "name": "HTTP request content length should be limited",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5689",
+      "name": "Web application technologies should not disclose version information",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5443",
+      "name": "Temporary files should not be created in publicly writable directories",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7435",
+      "name": "Avoid using persistent unique identifiers",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "android",
+        "ios",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3706",
+      "name": "\"stream\" should not be used for Collection \"forEach\" calls",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2699",
+      "name": "Tests should include assertions",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "junit",
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2222",
+      "name": "Locks should be released on all paths",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "symbolic-execution",
+        "cwe",
+        "multi-threading"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2589",
+      "name": "Boolean expressions should not be gratuitous",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "symbolic-execution",
+        "cwe",
+        "suspicious",
+        "redundant"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3655",
+      "name": "Optional value should only be accessed after calling isPresent()",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "symbolic-execution",
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2689",
+      "name": "Files opened in append mode should not be used with \"ObjectOutputStream\"",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "serialization",
+        "symbolic-execution"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3958",
+      "name": "Intermediate Stream methods should not be left unused",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "symbolic-execution",
+        "java8"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4449",
+      "name": "Nullness of parameters should be guaranteed",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "symbolic-execution"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2755",
+      "name": "XML parsers should not be vulnerable to XXE attacks",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "symbolic-execution"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3824",
+      "name": "\"Map.get\" and value test should be replaced with single method call",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "symbolic-execution",
+        "java8"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6377",
+      "name": "XML signatures should be validated securely",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "symbolic-execution"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6373",
+      "name": "XML parsers should not allow inclusion of arbitrary files",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "symbolic-execution"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javaarchitecture:S8487",
+      "name": "Relationships should align with the interface design of the intended architecture",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-deviation",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javaarchitecture:S8483",
+      "name": "Architecture directive to rename a component should be applied",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-directive",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javaarchitecture:S8484",
+      "name": "Architecture directive to move a component should be applied",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-directive",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8469",
+      "name": "Prefer \"IO.readln(String prompt)\" rather than \"IO.print(Object obj)\" or \"IO.println(Object obj)\" followed by \"IO.readln()\"",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java25"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8465",
+      "name": "ScopedValue instances should be assigned to a stable reference",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "java25"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8491",
+      "name": "Dangling Javadoc comments should be removed",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "javadoc",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5838",
+      "name": "AssertJ assertions should be simplified to the corresponding dedicated assertion",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "assertj"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6856",
+      "name": "Path template variables should be properly bound to method parameters",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6207",
+      "name": "Redundant constructors/methods should be avoided in records",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java16"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S5135",
+      "name": "Deserialization should not be vulnerable to injection attacks",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S6547",
+      "name": "Environment variables should not be defined from untrusted input",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "sans-top25-insecure"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S6549",
+      "name": "Accessing files should not lead to filesystem oracle attacks",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S7610",
+      "name": "Sensitive information should not be logged in production builds",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S5131",
+      "name": "Endpoints should not be vulnerable to reflected cross-site scripting (XSS) attacks",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S5334",
+      "name": "Dynamic code execution should not be vulnerable to injection attacks",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S6384",
+      "name": "Components should not be vulnerable to intent redirection",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "android"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S2078",
+      "name": "LDAP queries should not be vulnerable to injection attacks",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S2083",
+      "name": "I/O function calls should not be vulnerable to path injection attacks",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S2631",
+      "name": "Regular expressions should not be vulnerable to Denial of Service attacks",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "denial-of-service"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S5146",
+      "name": "HTTP request redirections should not be open to forging attacks",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S5496",
+      "name": "Server-side templates should not be vulnerable to injection attacks",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "python3",
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S5883",
+      "name": "OS commands should not be vulnerable to argument injection attacks",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S6287",
+      "name": "Applications should not create session cookies from untrusted input",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S2076",
+      "name": "OS commands should not be vulnerable to command injection attacks",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S5145",
+      "name": "Logging should not be vulnerable to injection attacks",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S5147",
+      "name": "NoSQL operations should not be vulnerable to injection attacks",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S6399",
+      "name": "XML operations should not be vulnerable to injection attacks",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S7606",
+      "name": "WebViews should not be vulnerable to cross-app scripting attacks",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S6173",
+      "name": "Reflection should not be vulnerable to injection attacks",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S6390",
+      "name": "Thread suspensions should not be vulnerable to Denial of Service attacks",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "denial-of-service"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S6398",
+      "name": "JSON operations should not be vulnerable to injection attacks",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S7044",
+      "name": "Server-side requests should not be vulnerable to traversing attacks",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S2091",
+      "name": "XPath expressions should not be vulnerable to injection attacks",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javasecurity:S6096",
+      "name": "Extracting archives should not lead to zip slip vulnerabilities",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4684",
+      "name": "Database Operations should not be vulnerable to mass assignment",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "spring",
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8446",
+      "name": "Only one \"main\" method should be defined in a class",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java25"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8447",
+      "name": "Subclass fields should be initialized before calls to \"super()\" or \"this()\"",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "java25"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3436",
+      "name": "Value-based classes should not be used for locking",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "multi-threading",
+        "java8",
+        "lock-in"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1134",
+      "name": "Track uses of \"FIXME\" tags",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1135",
+      "name": "Track uses of \"TODO\" tags",
+      "lang": "java",
+      "severity": "INFO",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2226",
+      "name": "Servlets should not have mutable instance fields",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "multi-threading",
+        "struts",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1130",
+      "name": "Exceptions in \"throws\" clauses should not be superfluous",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "unused",
+        "redundant",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2109",
+      "name": "Reflection should not be used to check non-runtime annotations",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2229",
+      "name": "Methods should not call same-class methods with incompatible \"@Transactional\" values",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5973",
+      "name": "Tests should be stable",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "unpredictable",
+        "design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6829",
+      "name": "\"@Autowired\" should be used when multiple constructors are provided",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2116",
+      "name": "\"hashCode\" and \"toString\" should not be called on array instances",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2236",
+      "name": "Methods \"wait(...)\", \"notify()\" and \"notifyAll()\" should not be called on Thread instances",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "multi-threading"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2479",
+      "name": "Whitespace and control characters in literals should be explicit",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6832",
+      "name": "Non-singleton Spring beans should not be injected into singleton beans",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6833",
+      "name": "\"@Controller\" should be replaced with \"@RestController\"",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2235",
+      "name": "\"IllegalMonitorStateException\" should not be caught",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "multi-threading"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1144",
+      "name": "Unused \"private\" methods should be removed",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2112",
+      "name": "\"URL.hashCode\" and \"URL.equals\" should be avoided",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2232",
+      "name": "\"ResultSet.isLast()\" should not be used",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "pitfall",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5860",
+      "name": "Names of regular expressions named groups should be used",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1264",
+      "name": "A \"while\" loop should be used instead of a \"for\" loop",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2110",
+      "name": "Invalid \"Date\" values should not be used",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2230",
+      "name": "Methods with Spring proxying annotations should be public",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6830",
+      "name": "Bean names should adhere to the naming conventions",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6831",
+      "name": "\"@Qualifier\" should not be used on \"@Bean\" methods",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2118",
+      "name": "\"writeObject\" argument must implement \"Serializable\"",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "serialization"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6837",
+      "name": "Superfluous \"@ResponseBody\" annotations should be removed",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6838",
+      "name": "\"@Bean\" methods for Singleton should not be invoked in \"@Configuration\" when proxyBeanMethods is false",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1598",
+      "name": "Package declaration should match source file directory",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2204",
+      "name": "\".equals()\" should not be used to test the values of \"Atomic\" classes",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "multi-threading"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3776",
+      "name": "Cognitive Complexity of methods should not be too high",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5831",
+      "name": "AssertJ configuration should be applied",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "tests",
+        "assertj"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1596",
+      "name": "\"Collections.EMPTY_LIST\", \"EMPTY_MAP\", and \"EMPTY_SET\" should not be used",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "obsolete",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5833",
+      "name": "AssertJ methods setting the assertion context should come before an assertion",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "tests",
+        "assertj"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2200",
+      "name": "\"compareTo\" results should not be checked for specific values",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "unpredictable"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2440",
+      "name": "Classes with only \"static\" methods should not be instantiated",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2441",
+      "name": "Non-serializable objects should not be stored in \"javax.servlet.http.HttpSession\" instances",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6809",
+      "name": "Methods with Spring proxy should not be called via \"this\"",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3415",
+      "name": "Assertion arguments should be passed in the correct order",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "junit",
+        "tests",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6804",
+      "name": "\"@Value\" annotation should inject property or SpEL expression",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6806",
+      "name": "Model attributes should follow the Java identifier naming convention",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4635",
+      "name": "String offset-based methods should be preferred for finding substrings from offsets",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5843",
+      "name": "Regular expressions should not be too complicated",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6810",
+      "name": "Async methods should return void or Future",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1124",
+      "name": "Modifiers should be declared in the correct order",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2696",
+      "name": "Instance methods should not write to \"static\" fields",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "multi-threading"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5845",
+      "name": "Assertions comparing incompatible types should not be made",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6813",
+      "name": "Field dependency injection should be avoided",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2695",
+      "name": "\"PreparedStatement\" and \"ResultSet\" methods should be called with valid indices",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5841",
+      "name": "AssertJ assertions \"allMatch\" and \"doesNotContain\" should also test for emptiness",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "tests",
+        "assertj"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5960",
+      "name": "Assertions should not be used in production code",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1481",
+      "name": "Unused local variables should be removed",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused",
+        "java22"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5967",
+      "name": "Tests method should not be annotated with competing annotations",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6814",
+      "name": "Optional REST parameters should have an object type",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6816",
+      "name": "Nullable injected fields and parameters should provide a default value",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6817",
+      "name": "Use of the \"@Async\" annotation on methods declared within a \"@Configuration\" class in Spring Boot",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6818",
+      "name": "\"@Autowired\" should only be used on a single constructor",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5413",
+      "name": "'List.remove()' should not be used in ascending 'for' loops",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5776",
+      "name": "Exception testing via JUnit ExpectedException rule should not be mixed with other assertions",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "junit",
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5777",
+      "name": "Exception testing via JUnit @Test annotation should be avoided",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "junit",
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5778",
+      "name": "Only one method invocation is expected when testing runtime exceptions",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "junit",
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5779",
+      "name": "Assertion methods should not be used within the try block of a try-catch catching an Error",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "junit",
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6862",
+      "name": "Beans in \"@Configuration\" class should have different names",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6863",
+      "name": "Set appropriate Status Codes on HTTP responses",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "spring",
+        "best-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1175",
+      "name": "The signature of \"finalize()\" should match that of \"Object.finalize()\"",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2142",
+      "name": "\"InterruptedException\" and \"ThreadDeath\" should not be ignored",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "error-handling",
+        "multi-threading"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5411",
+      "name": "Avoid using boxed \"Boolean\" types directly in boolean expressions",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5659",
+      "name": "JWT should be signed and verified with strong cipher algorithms",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1171",
+      "name": "Only static class initializers should be used",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2157",
+      "name": "\"Cloneables\" should implement \"clone\"",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "api-design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6876",
+      "name": "Reverse iteration should utilize reversed view",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java21"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6877",
+      "name": "Reverse view should be used instead of reverse copy in read-only cases",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java21"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6878",
+      "name": "Use record pattern instead of explicit field access",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java21"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1068",
+      "name": "Unused \"private\" fields should be removed",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5663",
+      "name": "Simple string literal should be used for single line strings",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java14"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1186",
+      "name": "Methods should not be empty",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5301",
+      "name": "\"ActiveMQConnectionFactory\" should not be vulnerable to malicious code deserialization",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5665",
+      "name": "Escape sequences should not be used in text blocks",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java14"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5786",
+      "name": "JUnit5 test classes and methods should have default package visibility",
+      "lang": "java",
+      "severity": "INFO",
+      "type": "CODE_SMELL",
+      "tags": [
+        "junit",
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2154",
+      "name": "Dissimilar primitive wrappers should not be used with the ternary operator without explicit casting",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2272",
+      "name": "\"Iterator.next()\" methods should throw \"NoSuchElementException\"",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "error-handling",
+        "unpredictable"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2273",
+      "name": "\"Object.wait()\", \"Object.notify()\" and \"Object.notifyAll()\" should only be called from synchronized code",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "multi-threading"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5664",
+      "name": "Whitespace for text block indent should be consistent",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java14"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2127",
+      "name": "\"Double.longBitsToDouble\" should take \"long\" as argument",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5876",
+      "name": "A new session should be created during user authentication",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "spring",
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2121",
+      "name": "String operations with predictable outcomes should be avoided",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2122",
+      "name": "\"ScheduledThreadPoolExecutor\" should not have 0 core threads",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2129",
+      "name": "Constructors should not be used to instantiate \"String\", \"BigInteger\", \"BigDecimal\" and primitive-wrapper classes",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4425",
+      "name": "\"Integer.toHexString\" should not be used to build hexadecimal strings",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1150",
+      "name": "\"Enumeration\" should not be implemented",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "obsolete"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6857",
+      "name": "SpEL expression should have a valid syntax",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2254",
+      "name": "\"HttpServletRequest.getRequestedSessionId()\" should not be used",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1165",
+      "name": "Exception classes should have final fields",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2134",
+      "name": "Classes extending java.lang.Thread should provide a specific \"run\" behavior",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "multi-threading",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2252",
+      "name": "Loop conditions should be true at least once",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4433",
+      "name": "LDAP connections should be authenticated",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2864",
+      "name": "\"entrySet()\" should be iterated when both the key and value are needed",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2638",
+      "name": "Method overrides should not change contracts",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2639",
+      "name": "Inappropriate regular expressions should not be used",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4925",
+      "name": "\"Class.forName()\" should not load JDBC 4.0+ drivers",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "obsolete"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7190",
+      "name": "Methods annotated with \"@BeforeTransaction\" or \"@AfterTransaction\" must respect the contract",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "spring",
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1751",
+      "name": "Loops with at most one iteration should be refactored",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "bad-practice",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1871",
+      "name": "Two branches in a conditional structure should not have exactly the same implementation",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7177",
+      "name": "Use appropriate @DirtiesContext modes",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "spring",
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7178",
+      "name": "Injecting data into static fields is not supported by Spring",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1640",
+      "name": "Maps with keys that are enum values should use the EnumMap implementation",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1643",
+      "name": "Strings should not be concatenated using '+' in a loop",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2970",
+      "name": "Assertions should be complete",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "assertj",
+        "mockito"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2975",
+      "name": "\"clone\" should not be overridden",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7179",
+      "name": "@Cacheable and @CachePut should not be combined",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2786",
+      "name": "Nested \"enum\"s should not be declared static",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "redundant"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5810",
+      "name": "JUnit5 test classes and methods should not be silently ignored",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "junit",
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7180",
+      "name": "\"@Cache*\" annotations should only be applied on concrete classes",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7183",
+      "name": "@InitBinder methods should have void return type",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7184",
+      "name": "\"@Scheduled\" annotation should only be applied to no-arg methods",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1214",
+      "name": "Interfaces should not solely consist of constants",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4602",
+      "name": "\"@SpringBootApplication\" and \"@ComponentScan\" should not be used in the default package",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6901",
+      "name": "\"setDaemon\", \"setPriority\" and \"getThreadGroup\" should not be invoked on virtual threads",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "java21"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1452",
+      "name": "Generic wildcard types should not be used in return types",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3751",
+      "name": "\"@RequestMapping\" methods should not be \"private\"",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4601",
+      "name": "\"HttpSecurity\" URL patterns should be correctly ordered",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6906",
+      "name": "Virtual threads should not run tasks that include synchronized code",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "multi-threading",
+        "java21"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1217",
+      "name": "\"Thread.run()\" should not be called directly",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "multi-threading",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6905",
+      "name": "SQL queries should retrieve only necessary fields",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "sustainability",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6909",
+      "name": "Constant parameters in a \"PreparedStatement\" should not be set more than once",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "sustainability",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1215",
+      "name": "Execution of the Garbage Collector should be triggered only by the JVM",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unpredictable",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2676",
+      "name": "\"Math.abs\" and negation should not be used on numbers that could be \"MIN_VALUE\"",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2677",
+      "name": "\"read\" and \"readLine\" return values should be used",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2789",
+      "name": "\"null\" should not be used with \"Optional\"",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "java8"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3400",
+      "name": "Methods should not return constants",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1220",
+      "name": "The default unnamed package should not be used",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2675",
+      "name": "\"readObject\" should not be \"synchronized\"",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4738",
+      "name": "Java features should be preferred to Guava",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java9",
+        "java8"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6912",
+      "name": "Use batch Processing in JDBC",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "sustainability",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6913",
+      "name": "\"Math.clamp\" should be used with correct ranges",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "java21"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6915",
+      "name": "\"String.indexOf\" should be used with correct ranges",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "java21"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1319",
+      "name": "Declarations should use Java collection interfaces such as \"List\" rather than specific implementation classes such as \"LinkedList\"",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2885",
+      "name": "Non-thread-safe fields should not be static",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "multi-threading"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5826",
+      "name": "Methods setUp() and tearDown() should be correctly annotated starting with JUnit4",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "junit",
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6916",
+      "name": "Use when instead of a single if inside a pattern match body",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java21"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1317",
+      "name": "\"StringBuilder\" and \"StringBuffer\" should not be instantiated with a character",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3864",
+      "name": "\"Stream.peek\" should be used with caution",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java8",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1201",
+      "name": "\"equals\" method overrides should accept \"Object\" parameters",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4719",
+      "name": "\"StandardCharsets\" constants should be preferred",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java7",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5808",
+      "name": "Authorizations should be based on strong decisions",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5803",
+      "name": "Class members annotated with \"@VisibleForTesting\" should not be accessed from production code",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7477",
+      "name": "Class name should be omitted when unchanged by class transform",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java24"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8445",
+      "name": "Module imports should come first and imports should be grouped by kind",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "java25"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7478",
+      "name": "\"transformClass\" method should be used instead of \"build\" when transforming a class",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java24"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7474",
+      "name": "Markdown, HTML and Javadoc tags should be consistent",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "javadoc",
+        "java23"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7475",
+      "name": "Types of unused record components should be removed from pattern matching",
+      "lang": "java",
+      "severity": "INFO",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused",
+        "java22"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7479",
+      "name": "\"ClassBuilder.withMethodBody\" should be preferred to \"ClassBuilder.withMethod\"",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java24"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1948",
+      "name": "Fields in a \"Serializable\" class should either be transient or serializable",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "serialization",
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7476",
+      "name": "Comments should start with the appropriate number of slashes",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "javadoc",
+        "java23"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8444",
+      "name": "Excessive logic before super() should not bloat constructor",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java25"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6126",
+      "name": "String multiline concatenation should be replaced with Text Blocks",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java15"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6246",
+      "name": "Lambdas should not invoke other lambdas synchronously",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6396",
+      "name": "Superfluous curly brace quantifiers should be avoided",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7481",
+      "name": "Gatherer.ofSequential() should be used to build sequential gathers",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java24"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7482",
+      "name": "Don't provide an initializer for a stateless stream gatherer",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java24"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8450",
+      "name": "Prefer \"IO.readln()\" over \"BufferedReader\" boilerplate",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java25"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1905",
+      "name": "Redundant casts should not be used",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "redundant",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6241",
+      "name": "Region should be set explicitly when creating a new \"AwsClient\"",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "startup-time",
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6242",
+      "name": "Credentials Provider should be set explicitly when creating a new \"AwsClient\"",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "startup-time",
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6244",
+      "name": "Consumer Builders should be used",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6243",
+      "name": "Reusable resources should be initialized at construction time of Lambda functions",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6485",
+      "name": "Hash-based collections with known capacity should be initialized with the proper related static method.",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7466",
+      "name": "Unnamed variable declarations should use the \"var\" identifier",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java22"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5164",
+      "name": "\"ThreadLocal\" variables should be cleaned up when no longer used",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "leak",
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7467",
+      "name": "Unused exception parameter should use the unnamed variable pattern",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java22"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8432",
+      "name": "\"ScopedValue.where\" results should not be ignored",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java25"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8433",
+      "name": "Validation logic should be placed in constructor prologue when possible",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java25",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1612",
+      "name": "Lambdas should be replaced with method references",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java8"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7158",
+      "name": "\"String.isEmpty()\" should be used to test for emptiness",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1854",
+      "name": "Unused assignments should be removed",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "cert",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6068",
+      "name": "Call to Mockito method \"verify\", \"when\" or \"given\" should be simplified",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "mockito",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2718",
+      "name": "\"DateUtils.truncate\" from Apache Commons Lang library should not be used",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "java8"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1710",
+      "name": "Annotation repetitions should not be wrapped",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java8"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2924",
+      "name": "JUnit rules should be used",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "junit",
+        "tests",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2925",
+      "name": "\"Thread.sleep\" should not be used in tests",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S127",
+      "name": "\"for\" loop stop conditions should be invariant",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1604",
+      "name": "Anonymous inner classes containing only one method should become lambdas",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java8"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1607",
+      "name": "JUnit4 @Ignored and JUnit5 @Disabled annotations should be used to disable tests and should provide a rationale",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "junit",
+        "tests",
+        "bad-practice",
+        "confusing",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1849",
+      "name": "\"Iterator.hasNext()\" should not call \"Iterator.next()\"",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1602",
+      "name": "Lambdas containing only one statement should not nest this statement in a block",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java8"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1844",
+      "name": "\"Object.wait\" should not be called on objects that implement \"java.util.concurrent.locks.Condition\"",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S135",
+      "name": "Loops should not contain more than a single \"break\" or \"continue\" statement",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S110",
+      "name": "Inheritance tree of classes should not be too deep",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3033",
+      "name": "\".isEmpty\" should be used to test for the emptiness of StringBuffers/Builders",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2065",
+      "name": "Fields in non-serializable classes should not be \"transient\"",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "serialization",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2185",
+      "name": "Do not perform unnecessary mathematical operations",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2187",
+      "name": "TestCases should contain tests",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "junit",
+        "tests",
+        "unused",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2062",
+      "name": "\"readResolve\" methods should be inheritable",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S107",
+      "name": "Methods should not have too many parameters",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2060",
+      "name": "\"Externalizable\" classes should have no-arguments constructors",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5344",
+      "name": "Passwords should not be stored in plaintext or with a fast hashing algorithm",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "spring",
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3042",
+      "name": "\"writeObject\" should not be the only \"synchronized\" code in a class",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S115",
+      "name": "Constant names should comply with a naming convention",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S116",
+      "name": "Field names should comply with a naming convention",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5679",
+      "name": "OpenSAML2 should be configured to prevent authentication bypass",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6889",
+      "name": "Proper Sensor Resource Management",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "leak",
+        "android",
+        "sustainability"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1199",
+      "name": "Nested code blocks should not be used",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4348",
+      "name": "\"iterator\" should not return \"this\"",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2167",
+      "name": "\"compareTo\" should not return \"Integer.MIN_VALUE\"",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1075",
+      "name": "URIs should not be hardcoded",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "android",
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3012",
+      "name": "Arrays and lists should not be copied using loops",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1195",
+      "name": "Array designators \"[]\" should be located after the type in method signatures",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6880",
+      "name": "Use switch instead of if-else chain to compare a variable against multiple cases",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java21"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2160",
+      "name": "Subclasses that add fields to classes that override \"equals\" should also override \"equals\"",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6881",
+      "name": "Virtual threads should be used for tasks that include heavy blocking operations",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "multi-threading",
+        "java21"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1191",
+      "name": "Classes from \"sun.*\" packages should not be used",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "lock-in",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1190",
+      "name": "Future keywords should not be used as names",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "obsolete",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3024",
+      "name": "Arguments to \"append\" should not be concatenated",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2177",
+      "name": "Child class methods named for parent class methods should be overrides",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5445",
+      "name": "Insecure temporary file creation methods should not be used",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2055",
+      "name": "The non-serializable super class of a \"Serializable\" class should have a no-argument constructor",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "serialization"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2176",
+      "name": "Class names should not shadow interfaces or superclasses",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7629",
+      "name": "When a defaultFinisher is passed to a Gatherer factory, use the overload that does not take a finisher",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java24"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2053",
+      "name": "Password hashing functions should use an unpredictable salt",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3020",
+      "name": "\"Collection.toArray()\" should be passed an array of the proper type",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6104",
+      "name": "Map \"computeIfAbsent()\" and \"computeIfPresent()\" should not be used to add \"null\" values.",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6353",
+      "name": "Regular expression quantifiers and character classes should be used concisely",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6355",
+      "name": "Deprecated annotations should include explanations",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java9"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5261",
+      "name": "\"else\" statements should be clearly matched with an \"if\"",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6205",
+      "name": "Switch arrow labels should not use redundant keywords",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java14"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6208",
+      "name": "Comma-separated labels should be used in Switch with colon case",
+      "lang": "java",
+      "severity": "INFO",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java14"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6201",
+      "name": "Pattern Matching for \"instanceof\" operator should be used instead of simple \"instanceof\" + cast",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java16"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6203",
+      "name": "Text blocks should not be used in complex expressions",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6209",
+      "name": "Members ignored during record serialization should not be used",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "java16"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3051",
+      "name": "\"main\" should have the right signature",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6217",
+      "name": "Permitted types of a sealed class should be omitted if they are declared in the same file",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java17"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6216",
+      "name": "Reflection should not be used to increase accessibility of records' fields",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "java16"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6219",
+      "name": "'serialVersionUID' field should not be set to '0L' in records",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java16"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6218",
+      "name": "Equals method should be overridden in records containing array fields",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "java16"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6213",
+      "name": "Restricted Identifiers should not be used as Identifiers",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4034",
+      "name": "\"Stream\" call chains should be simplified when possible",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4276",
+      "name": "Functional Interfaces should be as specialised as possible",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5361",
+      "name": "\"String#replace\" should be preferred to \"String#replaceAll\"",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex",
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2097",
+      "name": "\"equals(Object obj)\" should test the argument's type",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4275",
+      "name": "Getters and setters should access the expected fields",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6331",
+      "name": "Regular expressions should not contain empty groups",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javaarchitecture:S8464",
+      "name": "Intended architecture components should be implemented",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-deviation",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1128",
+      "name": "Unnecessary imports should be removed",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javaarchitecture:S7789",
+      "name": "Classes should be located according to the intended architecture",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-deviation",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javaarchitecture:S7788",
+      "name": "Relationships should align with the intended architecture",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-deviation",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "javaarchitecture:S8134",
+      "name": "Forbidden relationships should be removed to solve tangles as directed by the project's architect",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-directive",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1118",
+      "name": "Utility classes should not have public constructors",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S8346",
+      "name": "Increment and decrement operators (++/--) should not be used with floating point variables",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4030",
+      "name": "Collection contents should be used",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "unused",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3516",
+      "name": "Methods returns should not be invariant",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "symbolic-execution"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3063",
+      "name": "\"StringBuilder\" data should be used",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4682",
+      "name": "\"@CheckForNull\" or \"@Nullable\" should not be used on primitive types",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3753",
+      "name": "\"@Controller\" classes that use \"@SessionAttributes\" must call \"setComplete\" on their \"SessionStatus\" objects",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1133",
+      "name": "Deprecated code should be removed",
+      "lang": "java",
+      "severity": "INFO",
+      "type": "CODE_SMELL",
+      "tags": [
+        "obsolete"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S7185",
+      "name": "@EventListener methods should have one parameter at most",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4524",
+      "name": "\"default\" clauses should be last",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5853",
+      "name": "Consecutive AssertJ \"assertThat\" statements should be chained",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "assertj"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5854",
+      "name": "Regexes containing characters subject to normalization should use the CANON_EQ flag",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5855",
+      "name": "Regex alternatives should not be redundant",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5856",
+      "name": "Regular expressions should be syntactically valid",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5850",
+      "name": "Alternatives in regular expressions should be grouped when used with anchors",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5857",
+      "name": "Character classes should be preferred over reluctant quantifiers in regular expressions",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2114",
+      "name": "Collections should not be passed as arguments to their own methods",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2234",
+      "name": "Parameters should be passed in the correct order",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5866",
+      "name": "Case insensitive Unicode regular expressions should enable the \"UNICODE_CASE\" flag",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1141",
+      "name": "Try-catch blocks should not be nested",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5863",
+      "name": "Assertions should not compare an object to itself",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5868",
+      "name": "Unicode Grapheme Clusters should be avoided inside regex character classes",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5869",
+      "name": "Character classes in regular expressions should not contain the same character twice",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1119",
+      "name": "Labels should not be used",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2209",
+      "name": "\"static\" members should be accessed statically",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1125",
+      "name": "Boolean literals should not be redundant",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1126",
+      "name": "Return of boolean expressions should not be wrapped into an \"if-then-else\" statement",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1479",
+      "name": "\"switch\" statements should not have too many \"case\" clauses",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1488",
+      "name": "Local variables should not be declared and then immediately returned or thrown",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2326",
+      "name": "Unused type parameters should be removed",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3416",
+      "name": "Loggers should be named for their enclosing classes",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "logging",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5842",
+      "name": "Repeated patterns in regular expressions should not match the empty string",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5958",
+      "name": "AssertJ \"assertThatThrownBy\" should not be used alone",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "assertj"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1123",
+      "name": "Deprecated elements should have both the annotation and the Javadoc tag",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "obsolete",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2692",
+      "name": "\"indexOf\" checks should not be for positive numbers",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3305",
+      "name": "Factory method injection should be used in \"@Configuration\" classes",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "spring",
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5846",
+      "name": "Empty lines should not be tested with regex MULTILINE flag",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5961",
+      "name": "Test methods should not contain too many assertions",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5969",
+      "name": "Mocking all non-private methods of a class should be avoided",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "mockito"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2388",
+      "name": "Inner class calls to super class methods should be unambiguous",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3358",
+      "name": "Ternary operators should not be nested",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4517",
+      "name": "InputSteam.read() implementation should not return a signed byte",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2147",
+      "name": "Catches should be combined",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2387",
+      "name": "Child class fields should not shadow parent class fields",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3599",
+      "name": "Double Brace Initialization should not be used",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "leak"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4201",
+      "name": "Null checks should not be used with \"instanceof\"",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "redundant"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2140",
+      "name": "Methods of \"Random\" that return floating point values should not be used in random integer generation",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1170",
+      "name": "Public constants and fields initialized at declaration should be \"static final\" rather than merely \"final\"",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5669",
+      "name": "Vararg method arguments should not be confusing",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1066",
+      "name": "Mergeable \"if\" statements should be combined",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2153",
+      "name": "Unnecessary boxing and unboxing should be avoided",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5783",
+      "name": "Only one method invocation is expected when testing checked exceptions",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "junit",
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1185",
+      "name": "Overriding methods should do more than simply call the same method in the super class",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "redundant",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2275",
+      "name": "Printf-style format strings should not lead to unexpected behavior at runtime",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "cert"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4454",
+      "name": "\"equals\" method parameters should not be marked \"@Nonnull\"",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5785",
+      "name": "JUnit assertTrue/assertFalse should be simplified to the corresponding dedicated assertion",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "junit",
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1157",
+      "name": "Case insensitive string comparisons should be made without intermediate upper or lower casing",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1158",
+      "name": "Primitive wrappers should not be instantiated only for \"toString\" or \"compareTo\" calls",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3577",
+      "name": "Test classes should comply with a naming convention",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5996",
+      "name": "Regex boundaries should not be used in a way that can never be matched",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5998",
+      "name": "Regular expressions should not overflow the stack",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1153",
+      "name": "\"String.valueOf()\" should not be appended to a \"String\"",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1155",
+      "name": "\"Collection.isEmpty()\" should be used to test for emptiness",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2123",
+      "name": "Values should not be uselessly incremented",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5993",
+      "name": "Constructors of an \"abstract\" class should not be declared \"public\"",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5994",
+      "name": "Regex patterns following a possessive quantifier should not always fail",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2133",
+      "name": "Objects should not be created only to invoke \"getClass\"",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2139",
+      "name": "Exceptions should be either logged or rethrown but not both",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "logging"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1161",
+      "name": "\"@Override\" should be used on overriding and implementing methods",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2130",
+      "name": "Parsing should be used to convert \"Strings\" to primitives",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2629",
+      "name": "\"Preconditions\" and logging arguments should not require evaluation",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3959",
+      "name": "Consumed Stream pipelines should not be reused",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "symbolic-execution",
+        "java8"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4929",
+      "name": "\"read(byte[],int,int)\" should be overridden",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1301",
+      "name": "\"switch\" statements should have at least 3 \"case\" clauses",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1994",
+      "name": "\"for\" loop increment clauses should modify the loops' counters",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2757",
+      "name": "Non-existent operators like \"=+\" should not be used",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2737",
+      "name": "\"catch\" clauses should do more than rethrow",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "unused",
+        "finding",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1210",
+      "name": "\"equals(Object obj)\" should be overridden along with the \"compareTo(T obj)\" method",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3631",
+      "name": "\"Arrays.stream\" should be used for primitive arrays",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1450",
+      "name": "Private fields only used as local variables in methods should become local variables",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1219",
+      "name": "\"switch\" statements should not contain non-case labels",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4968",
+      "name": "The upper bound of type variables and wildcards should not be \"final\"",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1223",
+      "name": "Non-constructor methods should not have the same name as the enclosing class",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3878",
+      "name": "Arrays should not be created for varargs parameters",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1221",
+      "name": "Methods should not be named \"tostring\", \"hashcode\" or \"equal\"",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4970",
+      "name": "Derived exceptions should not hide their parents' catch blocks",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2437",
+      "name": "Unnecessary bit operations should not be performed",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2438",
+      "name": "\"Thread\" should not be used where a \"Runnable\" argument is expected",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "multi-threading",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4977",
+      "name": "Type parameters should not shadow other type parameters",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1226",
+      "name": "Method parameters, caught exceptions and foreach variables' initial values should not be ignored",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2761",
+      "name": "Unary prefix operators should not be repeated",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3972",
+      "name": "Conditionals should start on new lines",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3973",
+      "name": "A conditionally executed single line should be denoted by indentation",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3985",
+      "name": "Unused \"private\" classes should be removed",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5917",
+      "name": "DateTimeFormatters should not use mismatched year and week numbers",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3984",
+      "name": "Exceptions should not be created without being thrown",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "error-handling"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3986",
+      "name": "Week Year (\"YYYY\") should not be used for date formatting",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3981",
+      "name": "Collection sizes and array length comparisons should make sense",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4838",
+      "name": "An iteration on a Collection should be performed on the type handled by the Collection",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1940",
+      "name": "Boolean checks should not be inverted",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4087",
+      "name": "\"close()\" calls should not be redundant",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "redundant"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6262",
+      "name": "AWS region should not be set with a hardcoded String",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1700",
+      "name": "A field should not duplicate the name of its containing class",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6035",
+      "name": "Single-character alternations in regular expressions should be replaced with character classes",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6395",
+      "name": "Non-capturing groups without quantifier should not be used",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6397",
+      "name": "Character classes in regular expressions should not contain only one character",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4065",
+      "name": "\"ThreadLocal.withInitial\" should be preferred",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java8"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6001",
+      "name": "Back references in regular expressions should only refer to capturing groups that are matched before the reference",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6002",
+      "name": "Regex lookahead assertions should not be contradictory",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6019",
+      "name": "Reluctant quantifiers in regular expressions should be followed by an expression that can't match the empty string",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1858",
+      "name": "\"toString()\" should never be called on a String object",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "finding",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1611",
+      "name": "Parentheses should be removed from a single lambda parameter when its type is inferred",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java8"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3923",
+      "name": "All branches in a conditional structure should not have exactly the same implementation",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6070",
+      "name": "The regex escape sequence \\cX should only be used with characters in the @-_ range",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S125",
+      "name": "Sections of code should not be commented out",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1845",
+      "name": "Methods and field names should not be the same or differ only by capitalization",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2188",
+      "name": "JUnit test cases should call super methods",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "junit",
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3038",
+      "name": "Abstract methods should not be redundant",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3039",
+      "name": "Indexes to passed to \"String\" operations should be within the string's bounds",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3398",
+      "name": "\"private\" methods called only by inner classes should be moved to those classes",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4488",
+      "name": "Composed \"@RequestMapping\" variants should be preferred",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "spring"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2186",
+      "name": "JUnit assertions should not be used in \"run\" methods",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "junit",
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2183",
+      "name": "Ints and longs should not be shifted by zero or more than their number of bits-1",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S108",
+      "name": "Nested blocks of code should not be left empty",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S120",
+      "name": "Package names should comply with a naming convention",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3046",
+      "name": "\"wait\" should not be called when multiple locks are held",
+      "lang": "java",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "multi-threading",
+        "deadlock"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S114",
+      "name": "Interface names should comply with a naming convention",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S119",
+      "name": "Type parameter names should comply with a naming convention",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4349",
+      "name": "\"write(byte[],int,int)\" should be overridden",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2166",
+      "name": "Classes named like \"Exception\" should extend \"Exception\" or a subclass",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "error-handling",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6885",
+      "name": "Use built-in \"Math.clamp\" methods",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java21"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1197",
+      "name": "Array designators \"[]\" should be on the type, not the variable",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3010",
+      "name": "Static fields should not be updated in constructors",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3252",
+      "name": "\"static\" base class members should not be accessed via derived types",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S1192",
+      "name": "String literals should not be duplicated",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5790",
+      "name": "JUnit5 inner test classes should be annotated with @Nested",
+      "lang": "java",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "junit",
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S100",
+      "name": "Method names should comply with a naming convention",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S101",
+      "name": "Class names should comply with a naming convention",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S5329",
+      "name": "Collection constructors should not be used as java.util.function.Function",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4351",
+      "name": "\"compareTo\" should not be overloaded",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4042",
+      "name": "\"java.nio.Files#delete\" should be preferred",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "api-design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4165",
+      "name": "Assignments should not be redundant",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "symbolic-execution",
+        "redundant"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6103",
+      "name": "AssertJ assertions with \"Consumer\" arguments should contain assertion inside consumers",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4144",
+      "name": "Methods should not have identical implementations",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "duplicate",
+        "confusing",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6202",
+      "name": "Operator \"instanceof\" should be used instead of \"A.class.isInstance()\"",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6326",
+      "name": "Regular expressions should not contain multiple spaces",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4143",
+      "name": "Map values should not be replaced unconditionally",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S6204",
+      "name": "\"Stream.toList()\" method should be used instead of \"collectors\" when unmodifiable list needed",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "java16"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3065",
+      "name": "Min and max used in combination should not always return the same value",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "symbolic-execution"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S3066",
+      "name": "\"enum\" fields should not be publicly mutable",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4032",
+      "name": "Packages containing only \"package-info.java\" should be removed",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S2094",
+      "name": "Classes should not be empty",
+      "lang": "java",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "java:S4274",
+      "name": "Asserts should not be used to check the parameters of a public method",
+      "lang": "java",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    }
+  ]
+}

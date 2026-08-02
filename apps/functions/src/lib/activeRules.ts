@@ -1,5 +1,12 @@
 import { createHash } from "node:crypto";
-import { RULES, matchPattern, isUnsafeRegex, type HeroRule } from "@codehero/contracts";
+import {
+  RULES,
+  CORE_RULES,
+  CATALOG_RULES,
+  matchPattern,
+  isUnsafeRegex,
+  type HeroRule,
+} from "@codehero/contracts";
 import { db } from "./firebase.ts";
 
 export interface ActiveRulesPayload {
@@ -7,12 +14,39 @@ export interface ActiveRulesPayload {
   generatedAt: string;
   canonicalCount: number;
   overlayCount: number;
+  /** Live rules used for scanning (core + Sonar L0 ports). */
+  liveCount: number;
+  /** Full catalog size including Sonar stubs (informational). */
+  catalogHint: string;
   scope: { orgId: string | null; projectId: string | null };
   rules: HeroRule[];
 }
 
+export interface CatalogRuleEntry {
+  id: string;
+  name: string;
+  severity: string;
+  type: string;
+  implementation: "core" | "sonar-port" | "stub" | "overlay" | null;
+  sonarKey: string | null;
+  /** True when this rule is included in IDE/CLI live scans. */
+  scannable: boolean;
+}
+
+export interface RulesCatalogPayload {
+  version: string;
+  generatedAt: string;
+  scope: { orgId: string | null; projectId: string | null };
+  scanRuleCount: number;
+  catalogCount: number;
+  liveCount: number;
+  stubCount: number;
+  overlayCount: number;
+  rules: CatalogRuleEntry[];
+}
+
 /**
- * Canonical package RULES + active platform/project dress overlays.
+ * Canonical package RULES (core + Sonar live ports) + active dress overlays.
  * Overlay regexes that fail to compile are skipped (same as preview).
  */
 export async function loadActiveRules(orgId?: string, projectId?: string): Promise<ActiveRulesPayload> {
@@ -21,9 +55,49 @@ export async function loadActiveRules(orgId?: string, projectId?: string): Promi
   return {
     version: rulesVersion(rules),
     generatedAt: new Date().toISOString(),
-    canonicalCount: RULES.length,
+    canonicalCount: CORE_RULES.length,
     overlayCount: overlays.length,
+    liveCount: rules.length,
+    catalogHint: "Use GET /getRulesCatalog for the full informational catalog (incl. Sonar stubs).",
     scope: { orgId: orgId ?? null, projectId: projectId ?? null },
+    rules,
+  };
+}
+
+/**
+ * Full informational catalog for IDE compliance UI: core + all Sonar way
+ * (live + stubs) + dress overlays. Patterns omitted — metadata only.
+ */
+export async function loadRulesCatalog(orgId?: string, projectId?: string): Promise<RulesCatalogPayload> {
+  const overlays = await loadOverlayRules(orgId, projectId);
+  const scanRules = mergeRules(RULES, overlays);
+  const catalog = mergeRules(CATALOG_RULES, overlays);
+  const scannableIds = new Set(scanRules.map((r) => r.id));
+
+  const rules: CatalogRuleEntry[] = catalog.map((r) => {
+    const impl =
+      r.implementation ??
+      (overlays.some((o) => o.id === r.id) ? ("overlay" as const) : ("core" as const));
+    return {
+      id: r.id,
+      name: r.name,
+      severity: r.severity,
+      type: r.type,
+      implementation: impl,
+      sonarKey: r.sonarKey ?? null,
+      scannable: scannableIds.has(r.id) && impl !== "stub",
+    };
+  });
+
+  return {
+    version: rulesVersion(catalog),
+    generatedAt: new Date().toISOString(),
+    scope: { orgId: orgId ?? null, projectId: projectId ?? null },
+    scanRuleCount: scanRules.length,
+    catalogCount: catalog.length,
+    liveCount: rules.filter((r) => r.scannable).length,
+    stubCount: rules.filter((r) => r.implementation === "stub").length,
+    overlayCount: overlays.length,
     rules,
   };
 }

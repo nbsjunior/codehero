@@ -597,6 +597,15 @@ export default function DocsPage() {
               Índices A–E não são “notas de vibe”: são funções do que o scanner determinístico encontra. O mix GenAI +
               determinístico melhora esses índices de formas complementares:
             </p>
+            <div className="cr-docs-callout">
+              <strong>O que o scanner conta hoje</strong>
+              <p style={{ margin: "0.5rem 0 0" }}>
+                Só as regras <strong>L0 (CORE)</strong> — TypeScript/JavaScript, Python, Java e COBOL — entram no
+                contador ao vivo e nos índices A–E. O restante do catálogo (referência Sonar Way e overlays ainda sem
+                motor) aparece como <em>stub</em>: metadados e política, sem findings. Gate e ratings refletem o L0
+                real; stubs não inventam violações.
+              </p>
+            </div>
 
             <div className="cr-docs-compare">
               <div>
@@ -704,8 +713,8 @@ export default function DocsPage() {
               <div className="cr-docs-module-card">
                 <strong>2. IDE (shift left)</strong>
                 <span>
-                  Plugin VS Code/Cursor: varre o workspace, painel Avaliação, Problems, gráficos de compliance /
-                  non-compliance.
+                  Plugin VS Code/Cursor: varre o workspace, painel Avaliação, Problems, gráficos de
+                  manutenibilidade / segurança / compliance.
                 </span>
               </div>
               <div className="cr-docs-module-card">
@@ -849,8 +858,9 @@ export default function DocsPage() {
               <li>
                 <strong>Leia o resultado</strong>
                 <p>
-                  Painel <em>Avaliação</em>: lista de findings (compliance / non-compliance). Também sobe para{" "}
-                  <em>Problems</em> com severidade. Status bar mostra o andamento.
+                  Painel <em>Avaliação</em>: lista de findings. Dashboard (ícone de gráfico): anéis de{" "}
+                  <strong>segurança</strong> e <strong>manutenibilidade</strong>, débito técnico e compliance.
+                  Também sobe para <em>Problems</em>. Status bar mostra o andamento.
                 </p>
               </li>
               <li>
@@ -949,6 +959,14 @@ export default function DocsPage() {
             <h3>Ferramentas expostas</h3>
             <ul>
               <li>
+                <code>get_generation_context</code> — recebe uma <em>entrada</em> em linguagem natural (ex.:
+                “buscar regras de avaliação CodeHero e aplicar no contexto”) e devolve um bloco pronto para
+                injetar no prompt de geração
+              </li>
+              <li>
+                <code>get_active_rules</code> — catálogo ativo (core + dress code / overlays do projeto)
+              </li>
+              <li>
                 <code>get_issues</code> — lista findings do projeto
               </li>
               <li>
@@ -961,15 +979,24 @@ export default function DocsPage() {
                 <code>submit_fix_result</code> — reporta o resultado da correção
               </li>
               <li>
-                <code>apply_sdd_workflow</code> — roteiro completo verified-fix
+                <code>apply_sdd_workflow</code> — roteiro completo verified-fix (inclui pedir contexto de
+                geração antes de criar código novo)
               </li>
             </ul>
+
+            <h3>Contexto de geração (admin)</h3>
+            <p>
+              Em <strong>Painel → Projetos → Integração MCP</strong> você escolhe o projeto, define a{" "}
+              <em>entrada</em> (preset ou texto livre) e copia: regra do agente (<code>AGENTS.md</code> / Cursor
+              rules), prompt para o chat e <code>mcp.json</code>. O fluxo típico: o agente chama{" "}
+              <code>get_generation_context</code> → aplica as regras no contexto → só então gera ou edita código.
+            </p>
 
             <h3>Passo a passo</h3>
             <ol className="cr-docs-steps">
               <li>
-                <strong>Aba MCP na página do projeto</strong>
-                <p>Copie o bloco JSON já preenchido (URL, token, org, project).</p>
+                <strong>Integração MCP no admin</strong> (ou aba MCP do workspace)
+                <p>Defina a entrada de contexto e copie o JSON já preenchido (URL, token, org, project).</p>
               </li>
               <li>
                 <strong>Cole na IDE de IA</strong>
@@ -978,7 +1005,7 @@ export default function DocsPage() {
                     <strong>Claude Desktop</strong> — <code>claude_desktop_config.json</code>
                   </li>
                   <li>
-                    <strong>Cursor</strong> — MCP settings / <code>mcp.json</code>
+                    <strong>Cursor</strong> — MCP settings / <code>mcp.json</code> + regra do agente
                   </li>
                   <li>
                     <strong>GitHub Copilot</strong> — configuração MCP do agente (ver exemplos em{" "}
@@ -989,8 +1016,8 @@ export default function DocsPage() {
               <li>
                 <strong>Peça ao agente</strong>
                 <p>
-                  Ex.: “Liste as issues CRITICAL do projeto e aplique o SDD da primeira; rode o scan de novo e
-                  confirme.”
+                  Ex.: “Chame get_generation_context com as regras CodeHero e aplique no contexto; depois liste
+                  issues CRITICAL, aplique o SDD da primeira, rode o scan e confirme.”
                 </p>
               </li>
             </ol>

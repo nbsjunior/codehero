@@ -3,6 +3,7 @@ import { isAbsolute, join, normalize } from "node:path";
 import { writeFileSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import type { ScannerInvocation } from "./config";
+import { computeRepoHealth, type RepoHealth } from "./metrics";
 
 export interface ScanFinding {
   ruleId: string;
@@ -16,6 +17,7 @@ export interface ScanFinding {
   snippet: string;
   fingerprint?: string;
   issueType?: string;
+  remediationEffortMin?: number;
   sddTemplateId?: string;
   risk?: string;
   howToFix?: string;
@@ -28,18 +30,35 @@ export interface RuleCatalogEntry {
   name: string;
   severity: string;
   type: string;
+  /** core | sonar-port | stub | overlay */
+  implementation?: string | null;
+  sonarKey?: string | null;
+  /** Included in the live IDE/CLI matcher. */
+  scannable?: boolean;
+}
+
+export interface CatalogStats {
+  catalogCount: number;
+  liveCount: number;
+  stubCount: number;
+  scanRuleCount: number;
+  overlayCount: number;
 }
 
 export interface ScanSummary {
   findings: ScanFinding[];
   bySeverity: Record<string, number>;
   fileCountHint: number;
+  linesOfCode: number;
+  health: RepoHealth;
   rulesVersion?: string;
   rulesSource?: string;
-  /** Full active rule catalog fetched alongside the scan — lets the
-   *  dashboard show which rules are COMPLIANT (zero findings), not just
-   *  which findings exist. Empty when rules came from the bundled offline
-   *  fallback (no catalog metadata attached to that path yet). */
+  catalogVersion?: string;
+  catalogStats?: CatalogStats;
+  /**
+   * Full informational catalog (live + stubs). Compliance ring uses
+   * scannable entries only; stubs are listed as catalog-only.
+   */
   ruleCatalog: RuleCatalogEntry[];
 }
 
@@ -63,6 +82,7 @@ interface SarifResult {
     severity?: string;
     snippet?: string;
     issueType?: string;
+    remediationEffortMin?: number;
     sddTemplateId?: string;
     risk?: string;
     reason?: string;
@@ -87,13 +107,17 @@ export async function runScan(opts: {
   projectId?: string;
 }): Promise<ScanSummary> {
   const inv = opts.invocation;
-  const rulesMeta = await fetchRulesForScan({
+  const auth = {
     serverUrl: opts.serverUrl,
     token: opts.token,
     orgId: opts.orgId,
     projectId: opts.projectId,
-    cwd: opts.cwd,
-  });
+  };
+
+  const [rulesMeta, catalogMeta] = await Promise.all([
+    fetchLiveRulesForScan({ ...auth, cwd: opts.cwd }),
+    fetchInformationalCatalog(auth),
+  ]);
 
   const args = [...inv.argsPrefix, opts.target, "--sarif"];
   if (rulesMeta.file) args.push("--rules-file", rulesMeta.file);
@@ -101,7 +125,9 @@ export async function runScan(opts: {
   if (opts.enableCache) args.push("--cache");
 
   const stdout = await execCapture(inv.bin, args, opts.cwd, inv.shell);
-  const sarif = JSON.parse(stdout) as { runs?: Array<{ results?: SarifResult[] }> };
+  const sarif = JSON.parse(stdout) as {
+    runs?: Array<{ results?: SarifResult[]; properties?: { linesOfCode?: number } }>;
+  };
   const cwd = opts.cwd ?? process.cwd();
   const minIdx = SEV_ORDER.indexOf(opts.minSeverity ?? "INFO");
 
@@ -126,6 +152,10 @@ export async function runScan(opts: {
       snippet: result.properties?.snippet ?? loc?.region?.snippet?.text ?? "",
       fingerprint: result.partialFingerprints?.["heroHash/v1"],
       issueType: result.properties?.issueType,
+      remediationEffortMin:
+        typeof result.properties?.remediationEffortMin === "number"
+          ? result.properties.remediationEffortMin
+          : undefined,
       sddTemplateId: result.properties?.sddTemplateId,
       risk: result.properties?.risk,
       howToFix: result.properties?.howToFix,
@@ -139,23 +169,52 @@ export async function runScan(opts: {
   const bySeverity: Record<string, number> = {};
   for (const f of findings) bySeverity[f.severity] = (bySeverity[f.severity] ?? 0) + 1;
 
+  const uniqueFiles = new Set(findings.map((f) => f.absolutePath)).size;
+  const linesOfCode = Math.max(
+    1,
+    Number(sarif.runs?.[0]?.properties?.linesOfCode) || uniqueFiles || 1,
+  );
+  const health = computeRepoHealth(findings, linesOfCode);
+
+  // Prefer full catalog for the dashboard; fall back to live-only metadata.
+  const ruleCatalog =
+    catalogMeta.rules.length > 0
+      ? catalogMeta.rules
+      : rulesMeta.ruleCatalog.map((r) => ({ ...r, scannable: true, implementation: null }));
+
   return {
     findings,
     bySeverity,
-    fileCountHint: findings.length,
+    fileCountHint: uniqueFiles || findings.length,
+    linesOfCode,
+    health,
     rulesVersion: rulesMeta.version,
     rulesSource: rulesMeta.source,
-    ruleCatalog: rulesMeta.ruleCatalog,
+    catalogVersion: catalogMeta.version || rulesMeta.version,
+    catalogStats: catalogMeta.stats ?? {
+      catalogCount: ruleCatalog.length,
+      liveCount: ruleCatalog.filter((r) => r.scannable !== false).length,
+      stubCount: ruleCatalog.filter((r) => r.implementation === "stub").length,
+      scanRuleCount: rulesMeta.liveCount,
+      overlayCount: 0,
+    },
+    ruleCatalog,
   };
 }
 
-async function fetchRulesForScan(opts: {
+async function fetchLiveRulesForScan(opts: {
   serverUrl?: string;
   token?: string;
   orgId?: string;
   projectId?: string;
   cwd?: string;
-}): Promise<{ file: string; version: string; source: string; ruleCatalog: RuleCatalogEntry[] }> {
+}): Promise<{
+  file: string;
+  version: string;
+  source: string;
+  liveCount: number;
+  ruleCatalog: RuleCatalogEntry[];
+}> {
   const server = (opts.serverUrl || DEFAULT_SERVER).replace(/\/$/, "");
   const url = new URL(`${server}/getActiveRules`);
   if (opts.orgId && opts.projectId) {
@@ -165,27 +224,107 @@ async function fetchRulesForScan(opts: {
   const headers: Record<string, string> = { Accept: "application/json" };
   if (opts.token) headers.Authorization = `Bearer ${opts.token}`;
 
-  let body: { version?: string; rules?: Array<{ id: string; name: string; severity: string; type: string }> };
+  let body: {
+    version?: string;
+    liveCount?: number;
+    rules?: Array<{ id: string; name: string; severity: string; type: string; implementation?: string }>;
+  };
   try {
     const res = await fetch(url.toString(), { headers });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     body = (await res.json()) as typeof body;
   } catch (err) {
-    // Offline / first-run: scan with rules baked into the VSIX. No catalog
-    // metadata available for the compliance dashboard on this path.
-    console.error("CodeHero rules fetch failed; using bundled scanner rules", err);
-    return { file: "", version: "bundled", source: "bundled", ruleCatalog: [] };
+    console.error("CodeHero live rules fetch failed; using bundled scanner rules", err);
+    return { file: "", version: "bundled", source: "bundled", liveCount: 0, ruleCatalog: [] };
   }
   if (!Array.isArray(body.rules) || body.rules.length === 0) {
-    return { file: "", version: "bundled", source: "bundled", ruleCatalog: [] };
+    return { file: "", version: "bundled", source: "bundled", liveCount: 0, ruleCatalog: [] };
   }
 
   const dir = join(opts.cwd ?? tmpdir(), ".codehero-cache");
   mkdirSync(dir, { recursive: true });
   const file = join(dir, "active-rules.json");
   writeFileSync(file, JSON.stringify(body));
-  const ruleCatalog = body.rules.map((r) => ({ id: r.id, name: r.name, severity: r.severity, type: r.type }));
-  return { file, version: body.version ?? "unknown", source: "server", ruleCatalog };
+  const ruleCatalog = body.rules.map((r) => ({
+    id: r.id,
+    name: r.name,
+    severity: r.severity,
+    type: r.type,
+    implementation: r.implementation ?? null,
+    scannable: true,
+  }));
+  return {
+    file,
+    version: body.version ?? "unknown",
+    source: "server",
+    liveCount: body.liveCount ?? body.rules.length,
+    ruleCatalog,
+  };
+}
+
+async function fetchInformationalCatalog(opts: {
+  serverUrl?: string;
+  token?: string;
+  orgId?: string;
+  projectId?: string;
+}): Promise<{
+  version: string;
+  rules: RuleCatalogEntry[];
+  stats?: CatalogStats;
+}> {
+  const server = (opts.serverUrl || DEFAULT_SERVER).replace(/\/$/, "");
+  const url = new URL(`${server}/getRulesCatalog`);
+  if (opts.orgId && opts.projectId) {
+    url.searchParams.set("orgId", opts.orgId);
+    url.searchParams.set("projectId", opts.projectId);
+  }
+  const headers: Record<string, string> = { Accept: "application/json" };
+  if (opts.token) headers.Authorization = `Bearer ${opts.token}`;
+
+  try {
+    const res = await fetch(url.toString(), { headers });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const body = (await res.json()) as {
+      version?: string;
+      catalogCount?: number;
+      liveCount?: number;
+      stubCount?: number;
+      scanRuleCount?: number;
+      overlayCount?: number;
+      rules?: Array<{
+        id: string;
+        name: string;
+        severity: string;
+        type: string;
+        implementation?: string | null;
+        sonarKey?: string | null;
+        scannable?: boolean;
+      }>;
+    };
+    const rules = (body.rules ?? []).map((r) => ({
+      id: r.id,
+      name: r.name,
+      severity: r.severity,
+      type: r.type,
+      implementation: r.implementation ?? null,
+      sonarKey: r.sonarKey ?? null,
+      scannable: r.scannable !== false && r.implementation !== "stub",
+    }));
+    return {
+      version: body.version ?? "",
+      rules,
+      stats: {
+        catalogCount: body.catalogCount ?? rules.length,
+        liveCount: body.liveCount ?? rules.filter((r) => r.scannable).length,
+        stubCount: body.stubCount ?? rules.filter((r) => r.implementation === "stub").length,
+        scanRuleCount: body.scanRuleCount ?? body.liveCount ?? 0,
+        overlayCount: body.overlayCount ?? 0,
+      },
+    };
+  } catch (err) {
+    console.error("CodeHero catalog fetch failed; compliance UI will use live rules only", err);
+    return { version: "", rules: [] };
+  }
 }
 
 function levelToSeverity(level?: string): string {

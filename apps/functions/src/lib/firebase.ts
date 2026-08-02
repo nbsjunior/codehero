@@ -21,6 +21,9 @@ export const db: Firestore =
     ? getFirestore(FIRESTORE_DATABASE_ID)
     : getFirestore();
 
+// Dress-code / Genkit drafts often leave optional fields as `undefined`.
+db.settings({ ignoreUndefinedProperties: true });
+
 export const storage = getStorage();
 
 export function projectRef(orgId: string, projectId: string) {

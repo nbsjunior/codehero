@@ -1,0 +1,126 @@
+{
+  "generatedAt": "2026-07-29T03:33:41.674Z",
+  "source": "https://next.sonarqube.com/sonarqube/api",
+  "fetchedAt": "2026-07-28T13:07:41.908Z",
+  "stats": {
+    "total": 2668,
+    "live": 431,
+    "stub": 2237,
+    "byLang": {
+      "js": {
+        "total": 470,
+        "live": 78,
+        "stub": 392
+      },
+      "ts": {
+        "total": 483,
+        "live": 77,
+        "stub": 406
+      },
+      "py": {
+        "total": 466,
+        "live": 84,
+        "stub": 382
+      },
+      "java": {
+        "total": 611,
+        "live": 104,
+        "stub": 507
+      },
+      "cs": {
+        "total": 373,
+        "live": 63,
+        "stub": 310
+      },
+      "cobol": {
+        "total": 74,
+        "live": 5,
+        "stub": 69
+      },
+      "tsql": {
+        "total": 59,
+        "live": 9,
+        "stub": 50
+      },
+      "plsql": {
+        "total": 132,
+        "live": 11,
+        "stub": 121
+      }
+    },
+    "byTemplate": {
+      "waitfor-delay": 9,
+      "hardcoded-secret": 29,
+      "assert-statement": 13,
+      "sql-injection": 4,
+      "ssrf": 3,
+      "eval-code-injection": 13,
+      "os-command": 16,
+      "path-traversal": 13,
+      "hardcoded-ip": 6,
+      "regex-backtrack": 59,
+      "weak-cipher": 11,
+      "todo-fixme": 16,
+      "unsafe-code-csharp": 3,
+      "csrf": 5,
+      "debug-log": 7,
+      "unused-import": 3,
+      "unused-var": 7,
+      "csp-restrictive": 3,
+      "jwt-weak": 5,
+      "tls-verify": 14,
+      "crypto-keys-robust": 4,
+      "insecure-random": 5,
+      "httponly-cookie": 5,
+      "weak-hash": 7,
+      "delete-array": 2,
+      "xxe": 5,
+      "file-permission-world": 5,
+      "eqeqeq": 1,
+      "grant-all": 6,
+      "http-cleartext": 5,
+      "xss": 9,
+      "version-disclosure": 3,
+      "clear-temp-files": 9,
+      "prototype-pollution": 4,
+      "disabled-autoescape": 4,
+      "cors-star": 7,
+      "cookie-secure": 5,
+      "mass-assignment": 3,
+      "open-redirect": 2,
+      "regex-dos": 5,
+      "session-fixation": 5,
+      "ldap-injection": 8,
+      "nosql-injection": 5,
+      "stack-trace-disclosure": 4,
+      "xpath-injection": 7,
+      "ts-non-null": 1,
+      "naive-datetime": 3,
+      "http-method-restrict": 2,
+      "mutable-default": 1,
+      "deserialization": 11,
+      "cbc-iv": 4,
+      "python-subprocess-shell": 1,
+      "bare-except": 1,
+      "print-statement-py": 2,
+      "object-finalize": 4,
+      "equals-hashcode": 4,
+      "switch-default": 1,
+      "double-checked-locking": 2,
+      "android-intent": 5,
+      "resource-close": 2,
+      "xml-injection": 2,
+      "reflection-injection": 3,
+      "spring-expression": 2,
+      "thread-run": 1,
+      "hardcoded-uri": 2,
+      "instanceof": 1,
+      "serial-version-uid": 1,
+      "python-assert": 1,
+      "disabled-validation": 1,
+      "null-deref": 2,
+      "goto-cobol": 5,
+      "exec-immediate-sql": 2
+    }
+  }
+}

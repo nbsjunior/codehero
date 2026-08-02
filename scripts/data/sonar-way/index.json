@@ -1,0 +1,86 @@
+{
+  "fetchedAt": "2026-07-28T13:07:41.908Z",
+  "source": "https://next.sonarqube.com/sonarqube/api",
+  "languages": {
+    "js": {
+      "available": true,
+      "hero": [
+        "javascript"
+      ],
+      "note": null,
+      "profileKey": "AVyxQJgMFpfr6sfa6FMh",
+      "ruleCount": 470,
+      "file": "js.json"
+    },
+    "ts": {
+      "available": true,
+      "hero": [
+        "typescript"
+      ],
+      "note": null,
+      "profileKey": "AV1gnN4ytVGzJ3NclDBO",
+      "ruleCount": 483,
+      "file": "ts.json"
+    },
+    "py": {
+      "available": true,
+      "hero": [
+        "python"
+      ],
+      "note": null,
+      "profileKey": "AWWt7R0VQwUgk31erFg1",
+      "ruleCount": 466,
+      "file": "py.json"
+    },
+    "java": {
+      "available": true,
+      "hero": [
+        "java"
+      ],
+      "note": null,
+      "profileKey": "AVyxQJYrFpfr6sfa6FJs",
+      "ruleCount": 611,
+      "file": "java.json"
+    },
+    "cs": {
+      "available": true,
+      "hero": [
+        "csharp"
+      ],
+      "note": null,
+      "profileKey": "AVyxQJFtFpfr6sfa6FAY",
+      "ruleCount": 373,
+      "file": "cs.json"
+    },
+    "cobol": {
+      "available": true,
+      "hero": [
+        "cobol"
+      ],
+      "note": null,
+      "profileKey": "AWXIG-MAhxEPcY0_xD-k",
+      "ruleCount": 74,
+      "file": "cobol.json"
+    },
+    "tsql": {
+      "available": true,
+      "hero": [
+        "tsql"
+      ],
+      "note": null,
+      "profileKey": "AWWt7R2tQwUgk31erFiI",
+      "ruleCount": 59,
+      "file": "tsql.json"
+    },
+    "plsql": {
+      "available": true,
+      "hero": [
+        "db2sql"
+      ],
+      "note": "No public DB2 Sonar way; plsql used as SQL dialect proxy",
+      "profileKey": "AWWt7R55QwUgk31erFkt",
+      "ruleCount": 132,
+      "file": "plsql.json"
+    }
+  }
+}

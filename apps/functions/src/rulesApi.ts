@@ -1,17 +1,13 @@
 import { onRequest, onCall, HttpsError } from "firebase-functions/v2/https";
 import { getAuth } from "firebase-admin/auth";
 import { projectRef, db } from "./lib/firebase.ts";
-import { loadActiveRules } from "./lib/activeRules.ts";
+import { loadActiveRules, loadRulesCatalog } from "./lib/activeRules.ts";
 
 /**
  * GET /getActiveRules?orgId=&projectId=
  *
- * Auth:
- * - No auth → canonical RULES only (always the package deployed with Functions).
- * - Bearer ingestToken + orgId/projectId → canonical + platform + project overlays.
- * - Bearer Firebase ID token → same overlays if platform admin or org member.
- *
- * Caching: ETag = version hash; send If-None-Match for 304.
+ * Returns LIVE scan rules only (core + Sonar L0 ports + overlays).
+ * For the full informational catalog (incl. Sonar stubs), use GET /getRulesCatalog.
  */
 export const getActiveRules = onRequest({ cors: true }, async (req, res) => {
   if (req.method !== "GET" && req.method !== "HEAD") {
@@ -43,6 +39,56 @@ export const getActiveRules = onRequest({ cors: true }, async (req, res) => {
   const etag = `"${payload.version}"`;
   res.setHeader("ETag", etag);
   res.setHeader("Cache-Control", "private, max-age=60");
+
+  const inm = req.headers["if-none-match"];
+  if (inm && inm.replace(/W\//, "") === etag) {
+    res.status(304).end();
+    return;
+  }
+
+  if (req.method === "HEAD") {
+    res.status(200).end();
+    return;
+  }
+  res.status(200).json(payload);
+});
+
+/**
+ * GET /getRulesCatalog?orgId=&projectId=
+ *
+ * Full informational catalog (core + Sonar way live + stubs + overlays).
+ * Metadata only — no regex patterns. Same auth model as getActiveRules.
+ */
+export const getRulesCatalog = onRequest({ cors: true, memory: "512MiB" }, async (req, res) => {
+  if (req.method !== "GET" && req.method !== "HEAD") {
+    res.status(405).json({ error: "method_not_allowed" });
+    return;
+  }
+
+  const orgId = String(req.query.orgId ?? "").trim() || undefined;
+  const projectId = String(req.query.projectId ?? "").trim() || undefined;
+  const authHeader = req.headers.authorization;
+
+  let includeOverlays = false;
+  if (orgId && projectId && authHeader) {
+    const allowed = await authorizeRulesAccess(orgId, projectId, authHeader);
+    if (!allowed.ok) {
+      res.status(allowed.status).json({ error: allowed.error });
+      return;
+    }
+    includeOverlays = true;
+  } else if (authHeader && (orgId || projectId)) {
+    res.status(400).json({ error: "orgId and projectId are required together" });
+    return;
+  }
+
+  const payload = await loadRulesCatalog(
+    includeOverlays ? orgId : undefined,
+    includeOverlays ? projectId : undefined,
+  );
+  const etag = `"cat-${payload.version}"`;
+  res.setHeader("ETag", etag);
+  res.setHeader("Cache-Control", "private, max-age=120");
 
   const inm = req.headers["if-none-match"];
   if (inm && inm.replace(/W\//, "") === etag) {
@@ -91,9 +137,6 @@ async function authorizeRulesAccess(
   const pSnap = await projectRef(orgId, projectId).get();
   if (!pSnap.exists) return { ok: false, status: 404, error: "project_not_found" };
 
-  // Each repo in the project has its own ingestToken (independent CI
-  // pipelines); proving access to ANY one of them is enough to read the
-  // project's shared dress-code overlays — this endpoint isn't repo-scoped.
   const repoMatch = await pSnap.ref.collection("repos").where("ingestToken", "==", token).limit(1).get();
   if (!repoMatch.empty) return { ok: true };
 

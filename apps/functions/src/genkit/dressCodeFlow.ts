@@ -28,7 +28,21 @@ const DraftRuleSchema = z.object({
     .optional()
     .describe("regex de exclusão (falsos positivos conhecidos)"),
   languages: z
-    .array(z.enum(["javascript", "typescript", "python", "any"]))
+    .array(
+      z.enum([
+        "javascript",
+        "typescript",
+        "python",
+        "java",
+        "go",
+        "csharp",
+        "vbnet",
+        "cobol",
+        "tsql",
+        "db2sql",
+        "any",
+      ]),
+    )
     .min(1)
     .describe("linguagens alvo"),
 });

@@ -1,0 +1,1702 @@
+{
+  "fetchedAt": "2026-07-28T13:07:41.908Z",
+  "language": "plsql",
+  "heroLanguages": [
+    "db2sql"
+  ],
+  "note": "No public DB2 Sonar way; plsql used as SQL dialect proxy",
+  "profileKey": "AWWt7R55QwUgk31erFkt",
+  "profileName": "Sonar way",
+  "activeRuleCount": 132,
+  "rules": [
+    {
+      "key": "plsql:S1110",
+      "name": "Unnecessary parentheses should be removed",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "readability",
+        "redundant"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1764",
+      "name": "Identical expressions should not be used on both sides of a binary operator",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1523",
+      "name": "Dynamic code execution should not use user-controlled data",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S4790",
+      "name": "Weak hashing algorithms should not be used",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1134",
+      "name": "Track uses of \"FIXME\" tags",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1135",
+      "name": "Track uses of \"TODO\" tags",
+      "lang": "plsql",
+      "severity": "INFO",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1145",
+      "name": "\"IF\" statement conditions should not evaluate unconditionally to \"TRUE\" or to \"FALSE\"",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1871",
+      "name": "Two branches in a conditional structure should not have exactly the same implementation",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:PlSql.FunctionAndProcedureExcessiveParameters",
+      "name": "Functions and procedures should not have too many parameters",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1117",
+      "name": "Variables should not be shadowed",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:MaskedExceptionCheck",
+      "name": "Exceptions should not be ignored",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "error-handling",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1481",
+      "name": "Unused local variables should be removed",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1854",
+      "name": "Unused assignments should be removed",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S5547",
+      "name": "Cipher algorithms should be robust",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S3921",
+      "name": "Strings should only be moved to variables or columns which are large enough to hold them",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:NamingVariablesCheck",
+      "name": "Variables should comply with a naming convention",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S131",
+      "name": "\"CASE\" statements should end with \"ELSE\" clauses",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:CustomExceptionInitCheck",
+      "name": "\"EXCEPTION_INIT -20,NNN\" calls should be centralized",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:DeadCodeCheck",
+      "name": "All code should be reachable",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1751",
+      "name": "Loops with at most one iteration should be refactored",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "bad-practice",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:VariableRedeclaration",
+      "name": "Variables should be declared only once in a scope",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:AvoidFetchBulkCollectIntoWithoutLimitCheck",
+      "name": "\"FETCH ... BULK COLLECT INTO\" should not be used without a \"LIMIT\" clause",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:FloatWithScaleUsageCheck",
+      "name": "Scale should not be specified for float types",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:NotNullDeclarationWithoutInitializationCheck",
+      "name": "\"NOT NULL\" variables should be initialized",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:LoopMissingSemicolonCheck",
+      "name": "\"END LOOP\" should be followed by a semicolon",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:OverridePredefinedExceptionCheck",
+      "name": "Predefined exceptions should not be overridden",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:SizeConstraintMissingCheck",
+      "name": "Size should be specified for string variables",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:InvalidConstrainCheck",
+      "name": "Constraints should not be applied to types that cannot be constrained",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:LabelStartEndMatchLoopCheck",
+      "name": "Loop start and end labels should match",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:LabelStartEndMatchBlockCheck",
+      "name": "Block start and end labels should match",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:BadRaiseApplicationErrorUsageCheck",
+      "name": "\"RAISE_APPLICATION_ERROR\" should only be used with error codes from -20,000 to -20,999",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "error-handling"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:NcharByteLengthUsageCheck",
+      "name": "\"NCHAR\" and \"NVARCHAR2\" size should not be specified in bytes",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:QuotedIdentifiersCheck",
+      "name": "Quoted identifiers should not be used",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:ImproperConstraintUsageCheck",
+      "name": "Improper constraint forms should not be used",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:AnchoredTypeConstrainCheck",
+      "name": "Anchored types should not be constrained",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:ConstantDeclarationWithoutInitializationCheck",
+      "name": "Constant declarations should contain initialization assignments",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:PlSql.FunctionAndProcedureNaming",
+      "name": "Function and procedure names should comply with a naming convention",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S3830",
+      "name": "\"COMMIT\" should not be used inside a loop",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:VariableNotNullUsageCheck",
+      "name": "Variables should be nullable",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S4801",
+      "name": "\"SELECT\" statements used as argument of \"EXISTS\" statements should be selective",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1138",
+      "name": "SQL EXISTS subqueries should not be used",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1656",
+      "name": "Variables and columns should not be self-assigned",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:UseNativeSqlJoinsInsteadOfEmbeddedCursorLoopsCheck",
+      "name": "Native SQL joins should be used",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:LoopHardcodedBoundsCheck",
+      "name": "\"FOR\" loop end conditions should not be hard-coded",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:LoopUseExitWhenCheck",
+      "name": "\"EXIT WHEN\" should be used rather than \"IF ... THEN EXIT; END IF;\"",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:NamingRecordField",
+      "name": "Record fields should comply with a naming convention",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1940",
+      "name": "Boolean checks should not be inverted",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:DecodeFunctionUsageCheck",
+      "name": "\"CASE\" should be used rather than \"DECODE\"",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "obsolete"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:ForLoopUsageCheck",
+      "name": "Collections should not be iterated in \"FOR\" loops",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:InItemsCountCheck",
+      "name": "Large item lists should not be used with \"IN\" clauses",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:NamingTypesCheck",
+      "name": "Types should follow a naming convention",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:NestedIf",
+      "name": "\"IF\" statements should not be nested too deeply",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:OrderByColumnNumberCheck",
+      "name": "Column names should be used in a SQL \"ORDER BY\" clause",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:ProcedureWithoutParametersCheck",
+      "name": "Procedures should have parameters",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:FunctionOutParametersCheck",
+      "name": "\"FUNCTIONS\" should not have \"OUT\" parameters",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:NaturalJoinUsageCheck",
+      "name": "\"NATURAL JOIN\" queries should not be used",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:PositionalAndNamedArgumentMixCheck",
+      "name": "Positional and named arguments should not be mixed in invocations",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:LiteralsNonPrintableCharactersCheck",
+      "name": "Whitespace and control characters in string literals should be explicit",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:NamingObjectAttribute",
+      "name": "Object attributes should comply with a naming convention",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:PipelinedFunctionsWithoutPipeRow",
+      "name": "Pipelined functions should have at least one \"PIPE ROW\" statement and not return an expression (PLS-00633)",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S3651",
+      "name": "Individual \"WHERE\" clause conditions should not be unconditionally true or false",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:SingleLineCommentsSyntaxCheck",
+      "name": "Single line comments should start with \"--\"",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:PlSql.Goto",
+      "name": "\"GOTO\" statements should not be used",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:BlockMissingSemicolonCheck",
+      "name": "Block labels should appear on the same lines as \"END\"",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:BlockUnlabeledEndCheck",
+      "name": "\"END\" statements of labeled blocks should be labeled",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:MlslabelDatatypeUsageCheck",
+      "name": "\"MLSLABEL\" should not be used",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "obsolete"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:BackwardsGoto",
+      "name": "GOTO should not be used to jump backwards",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1479",
+      "name": "\"CASE\" structures should not have too many \"WHEN\" clauses",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:LoopAvoidSimpleLoopCheck",
+      "name": "\"LOOP ... END LOOP;\" constructs should be avoided",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:NameReusedInInnerScope",
+      "name": "Labels should not be reused in inner scopes",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:NestedCommentsCheck",
+      "name": "Comments should not be nested",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1126",
+      "name": "Return of boolean expressions should not be wrapped into an \"if-then-else\" statement",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1192",
+      "name": "String literals should not be duplicated",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S4062",
+      "name": "\"ROWNUM\" should not be used at the same query level as \"ORDER BY\"",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:CompoundTriggerDefinesSingleTrigger",
+      "name": "Compound triggers should define at least two triggers",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:Notfound",
+      "name": "\"cursor%NOTFOUND\" should be used instead of \"NOT cursor%FOUND\"",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S2737",
+      "name": "\"EXCEPTION WHEN ... THEN\" clauses should do more than \"RAISE\"",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "unused",
+        "finding",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S5047",
+      "name": "\"TO_NUMBER\" should be used with a format model",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:CharVarchar",
+      "name": "\"VARCHAR2\" and \"NVARCHAR2\" should be used",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:SelectStarCheck",
+      "name": "Columns to be read with a \"SELECT\" statement should be clearly defined",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:FullOuterJoinCheck",
+      "name": "\"FULL OUTER JOINS\" should be used with caution",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:InitializeWithNullCheck",
+      "name": "Variables should not be initialized with \"NULL\"",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S4196",
+      "name": "Output parameters should be assigned",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:DeleteOrUpdateWithoutWhereCheck",
+      "name": "\"DELETE\" and \"UPDATE\" statements should contain \"WHERE\" clauses",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S3633",
+      "name": "\"WHERE\" clause conditions should not be contradictory",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1739",
+      "name": "\"LIKE\" clauses should not start with wildcard characters",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:GotoInLoopCheck",
+      "name": "\"GOTO\" should not be used within loops",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:JoinConditionNumberCheck",
+      "name": "SQL statements should not join too many tables",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "brain-overload",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:NamingExceptionsCheck",
+      "name": "Exceptions should follow a naming convention",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:UseAsForColumnAliasesCheck",
+      "name": "Column aliases should be defined using \"AS\"",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:UseForallStatementCheck",
+      "name": "\"FORALL\" should be used",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:PlSql.PackageNaming",
+      "name": "Package names should comply with a naming convention",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:ReturnInProcedureCheck",
+      "name": "Procedures should not contain \"RETURN\" statements",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1172",
+      "name": "Unused procedure and function parameters should be removed",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1862",
+      "name": "Related \"IF/ELSIF\" statements and \"WHEN\" clauses in a \"CASE\" should not have the same condition",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "unused",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:UnusedLabel",
+      "name": "Unused labels should be removed",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:CrossJoinUsageCheck",
+      "name": "\"CROSS JOIN\" queries should not be used",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:NamingCursorsCheck",
+      "name": "Cursors should follow a naming convention",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S1066",
+      "name": "Mergeable \"if\" statements should be combined",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S3641",
+      "name": "Nullable subqueries should not be used in \"NOT IN\" conditions",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S3643",
+      "name": "\"LIKE\" clauses should not be used without wildcards",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S3923",
+      "name": "All branches in a conditional structure should not have exactly the same implementation",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:StandaloneProcAndFuncCheck",
+      "name": "Procedures and functions should be encapsulated in packages",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:UseFetchBulkCollectIntoCheck",
+      "name": "\"FETCH ... BULK COLLECT INTO\" should be used",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:ExecuteImmediateTrapExceptionsCheck",
+      "name": "Blocks containing \"EXECUTE IMMEDIATE\" should trap all exceptions",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:LongCheck",
+      "name": "Deprecated LONG and LONG RAW datatypes should no longer be used",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "obsolete"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:NullComparison",
+      "name": "\"NULL\" should not be compared directly",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:PreferExecuteImmediateToDbmsSqlCheck",
+      "name": "\"EXECUTE IMMEDIATE\" should be used instead of DBMS_SQL procedure calls",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S5141",
+      "name": "SQL \"JOIN\" conditions should involve all joined tables",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:TriggerOfConditionsCheck",
+      "name": "DML events clauses should not include multiple \"OF\" clauses",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:LoopUnlabeledExitCheck",
+      "name": "In labeled loops \"EXIT\" should exit the label",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:NamingCursorParametersCheck",
+      "name": "Cursor parameters should follow a naming convention",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:OrderByExplicitAscCheck",
+      "name": "An \"ORDER BY\" direction should be specified explicitly",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:ResultCacheHintUsage",
+      "name": "The \"result_cache\" hint should be avoided",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S2761",
+      "name": "Unary prefix operators should not be repeated",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:TriggerCommitRollbackCheck",
+      "name": "\"COMMIT\" and \"ROLLBACK\" should not be called from non-autonomous transaction triggers",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S3618",
+      "name": "Inserts should include values for non-null columns",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:ForallStatementShouldUseSaveExceptionsClause",
+      "name": "\"FORALL\" statements should use the \"SAVE EXCEPTIONS\" clause",
+      "lang": "plsql",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:FormatErrorStackAndBacktraceUsedAlongside",
+      "name": "\"DBMS_UTILITY.FORMAT_ERROR_STACK\" and \"FORMAT_ERROR_BACKTRACE\" should be used together",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-reporting"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:NamingConstantsCheck",
+      "name": "Constant names should comply with a naming convention",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:OracleJoinOperatorUsageCheck",
+      "name": "Oracle's join operator (+) should not be used",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "lock-in",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:PlSql.CreateFunctionAndCreateProcedureDocumented",
+      "name": "Procedures and functions should be documented",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:ReturnInInitializationSectionCheck",
+      "name": "\"PACKAGE BODY\" initialization sections should not contain \"RETURN\" statements",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:CreateOrReplaceCheck",
+      "name": "\"CREATE OR REPLACE\" should be used instead of \"CREATE\"",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:FunctionLastStatementReturnCheck",
+      "name": "Functions should end with \"RETURN\" statements",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S125",
+      "name": "Sections of code should not be commented out",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:VarcharUsageCheck",
+      "name": "\"VARCHAR2\" should be used",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "lock-in"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:WeakRefCursorCheck",
+      "name": "Weak \"REF CURSOR\" types should not be used",
+      "lang": "plsql",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:ExitInLoop",
+      "name": "\"EXIT\" should not be used in loops",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:S3626",
+      "name": "Jump statements should not be redundant",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "redundant",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:BooleanLiteralComparisonCheck",
+      "name": "Boolean literals should not be redundant",
+      "lang": "plsql",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "plsql:LoopUnlabeledEndCheck",
+      "name": "\"END\" statements of labeled loops should be labeled",
+      "lang": "plsql",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    }
+  ]
+}

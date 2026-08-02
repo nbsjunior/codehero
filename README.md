@@ -24,7 +24,7 @@ CodeHero recusa essa troca. A resposta arquitetural é separar os dois problemas
 |---|---|---|
 | **Origem das regras** | Curadas pelo vendor, lançadas em releases | Curadas + **evoluídas por busca evolutiva determinística** contra um corpus rotulado — cada promoção é auditável e reproduzível |
 | **Correção de issues** | Aponta o problema; quick fixes limitados e sem prova | Gera um **SDD Spec** com localização, contexto e critérios de aceite — o agente aplica e o scanner **confirma** que a issue sumiu |
-| **Integração com IA/agentes** | Add-on comercial fechado | **Nativo em MCP** — qualquer agente compatível consome issues, SDD, scan e resultado do fix |
+| **Integração com IA/agentes** | Add-on comercial fechado | **Nativo em MCP** — regras ativas no contexto de geração, issues, SDD, scan e resultado do fix |
 | **Custo de manter a IA** | N/A ou por token/arquivo | Validar uma regra nova custa **milissegundos de CPU** contra o corpus — o custo não cresce com o volume analisado |
 | **Aprendizado com uso real** | Feedback vira ticket para o vendor | Telemetria de produção alimenta o próximo ciclo de evolução — o ciclo é parte do produto |
 | **Operação da plataforma** | Cluster próprio (DB, search, etc.) | Cloud serverless — sem cluster próprio para o cliente manter |

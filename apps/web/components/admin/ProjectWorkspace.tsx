@@ -513,6 +513,7 @@ export default function ProjectWorkspace({
         HERO_ORG_ID: orgId,
         HERO_PROJECT_ID: projectId,
         HERO_REPO_ID: selectedRepo.repoId,
+        HERO_SCANNER_CMD: "node <caminho-do-repo>/packages/scanner/dist/index.js",
       }
     : null;
   const mcpServerCommand = "node";
@@ -524,7 +525,25 @@ export default function ProjectWorkspace({
   const cursorMcpConfig = claudeMcpConfig;
   const copilotMcpConfig = mcpEnv
     ? JSON.stringify(
-        { servers: { codehero: { type: "stdio", command: mcpServerCommand, args: mcpServerArgs, env: mcpEnv } } },
+        {
+          servers: {
+            codehero: {
+              type: "stdio",
+              command: mcpServerCommand,
+              args: mcpServerArgs,
+              tools: [
+                "get_generation_context",
+                "get_active_rules",
+                "get_issues",
+                "get_sdd_spec",
+                "run_scan",
+                "submit_fix_result",
+                "apply_sdd_workflow",
+              ],
+              env: mcpEnv,
+            },
+          },
+        },
         null,
         2,
       )
@@ -668,7 +687,7 @@ export default function ProjectWorkspace({
               GitHub Action
             </button>
             <button type="button" className={`hero-tab${tab === "mcp" ? " is-active" : ""}`} onClick={() => setTab("mcp")}>
-              MCP (Claude)
+              MCP integração
             </button>
           </div>
           <p className="hero-caption" style={{ margin: "-1.25rem 0 1rem" }}>
@@ -1047,8 +1066,35 @@ export default function ProjectWorkspace({
                 MCP — conectar seu agente de IA
               </h2>
               <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1.5rem" }}>
-                get_issues · get_sdd_spec · run_scan · submit_fix_result · mesmo servidor, três clientes
+                get_generation_context · get_active_rules · get_issues · get_sdd_spec · run_scan · submit_fix_result
               </p>
+
+              <div
+                style={{
+                  marginBottom: "1.5rem",
+                  padding: "1rem 1.1rem",
+                  border: "1px solid var(--border)",
+                  borderRadius: 8,
+                  background: "var(--surface-2, transparent)",
+                }}
+              >
+                <h3 style={{ margin: "0 0 0.4rem", fontSize: "0.95rem" }}>Entrada de contexto de geração</h3>
+                <p className="hero-caption" style={{ marginTop: 0, marginBottom: "0.65rem" }}>
+                  Peça ao agente para chamar <code>get_generation_context</code> com esta entrada antes de gerar
+                  código — ele busca as regras CodeHero e injeta no contexto. Configuração completa em{" "}
+                  <strong>Projetos → Integração MCP</strong>.
+                </p>
+                <div className="hero-copyrow">
+                  <pre className="hero-code" style={{ maxHeight: 100 }}>
+                    {`Use o MCP CodeHero. Chame get_generation_context com entry:
+"Buscar as regras de avaliação de código (CodeHero) e aplicar no contexto que está sendo gerado"
+Aplique o retorno no contexto e só então gere/edite o código.`}
+                  </pre>
+                  <CopyButton
+                    text={`Use o MCP CodeHero. Chame get_generation_context com entry:\n"Buscar as regras de avaliação de código (CodeHero) e aplicar no contexto que está sendo gerado"\nAplique o retorno no contexto e só então gere/edite o código.`}
+                  />
+                </div>
+              </div>
 
               <div className="hero-step">
                 <span className="hero-step-num">1</span>

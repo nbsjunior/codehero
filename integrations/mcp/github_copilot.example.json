@@ -1,11 +1,13 @@
 {
-  "description": "GitHub Copilot coding agent — same CodeHero MCP server as Claude (stdio).",
+  "description": "GitHub Copilot coding agent — CodeHero MCP (stdio).",
   "mcpServers": {
     "codehero": {
       "type": "stdio",
-      "command": "npx",
-      "args": ["hero-mcp"],
+      "command": "node",
+      "args": ["./packages/mcp/dist/server.js"],
       "tools": [
+        "get_generation_context",
+        "get_active_rules",
         "get_issues",
         "get_sdd_spec",
         "run_scan",
@@ -13,14 +15,17 @@
         "apply_sdd_workflow"
       ],
       "env": {
-        "HERO_CORE_URL": "${HERO_CORE_URL}",
-        "HERO_TOKEN": "${HERO_TOKEN}",
-        "HERO_ORG_ID": "${HERO_ORG_ID}",
-        "HERO_PROJECT_ID": "${HERO_PROJECT_ID}"
+        "HERO_CORE_URL": "https://codehero.web.app/api",
+        "HERO_TOKEN": "<ingest-token>",
+        "HERO_ORG_ID": "<orgId>",
+        "HERO_PROJECT_ID": "<projectId>",
+        "HERO_REPO_ID": "<repoId>",
+        "HERO_SCANNER_CMD": "node ./packages/scanner/dist/index.js"
       }
     }
   },
   "agentInstructions": [
+    "Before generating or editing code, call get_generation_context with entry describing CodeHero evaluation rules.",
     "1. Call get_issues to list open findings.",
     "2. For each finding to fix, call get_sdd_spec(fingerprint).",
     "3. Apply a unified_diff that satisfies the SDD acceptanceCriteria.",

@@ -1,21 +1,47 @@
        IDENTIFICATION DIVISION.
        PROGRAM-ID. CUSTLOOKUP.
+      * TODO: modernizar este programa batch
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+      * SOURCE-COMPUTER. IBM-Z WITH DEBUGGING MODE.
        DATA DIVISION.
        WORKING-STORAGE SECTION.
+       77  WS-TEMP-FLAG            PIC X.
        01  WS-DB-PASSWORD          PIC X(20).
        01  WS-CUSTOMER-ID          PIC 9(6).
+       01  WS-TABLE.
+           05  WS-ENTRY OCCURS 1   PIC X(10).
+       01  WS-BUFFER REDEFINES WS-TABLE PIC X(10).
+       01  WS-PROG-NAME            PIC X(8).
        PROCEDURE DIVISION.
        MAIN-PARA.
            MOVE 'PROD_DB2_PASSWORD_2024' TO WS-DB-PASSWORD
-           PERFORM LOOKUP-CUSTOMER
+           ACCEPT WS-TEMP-FLAG FROM CONSOLE
+           DISPLAY 'STARTING LOOKUP' UPON CONSOLE
+           PERFORM LOOKUP-CUSTOMER THRU LOOKUP-EXIT
+           IF WS-CUSTOMER-ID = ZERO
+               NEXT SENTENCE
+           END-IF
            IF WS-CUSTOMER-ID = ZERO
                GO TO ERROR-PARA
            END-IF
+           ALTER ERROR-PARA TO PROCEED TO DONE-PARA
+           CALL WS-PROG-NAME
            STOP RUN.
        LOOKUP-CUSTOMER.
            EXEC SQL
-               SELECT CUST_ID INTO :WS-CUSTOMER-ID
-               FROM CUSTOMERS WHERE CUST_ID = :WS-CUSTOMER-ID
+               SELECT * FROM CUSTOMERS
+                WHERE CUST_NAME LIKE '%SMITH%'
            END-EXEC.
+           EXEC SQL
+               DELETE FROM CUSTOMERS
+           END-EXEC.
+           STRING WS-DB-PASSWORD DELIMITED BY SIZE
+               INTO WS-PROG-NAME
+           END-STRING.
+       LOOKUP-EXIT.
+           EXIT.
        ERROR-PARA.
            DISPLAY 'CUSTOMER NOT FOUND'.
+       DONE-PARA.
+           GOBACK.

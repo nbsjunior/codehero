@@ -1,0 +1,6452 @@
+{
+  "fetchedAt": "2026-07-28T13:07:41.908Z",
+  "language": "py",
+  "heroLanguages": [
+    "python"
+  ],
+  "note": null,
+  "profileKey": "AWWt7R0VQwUgk31erFg1",
+  "profileName": "Sonar way",
+  "activeRuleCount": 466,
+  "rules": [
+    {
+      "key": "python:S9074",
+      "name": "Pytest marks and usefixtures should not be applied uselessly",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "pytest"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S9076",
+      "name": "Deprecated pytest.yield_fixture should be replaced with pytest.fixture",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "pytest"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S9073",
+      "name": "Composite assertions should be split",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "pytest"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8978",
+      "name": "Pydantic models with dataclass fields should set \"revalidate_instances\" to \"always\"",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "pydantic",
+        "validation",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8411",
+      "name": "FastAPI path parameters should be declared in route handlers or dependencies",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "fastapi",
+        "api",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8997",
+      "name": "Tests should use the \"monkeypatch\" fixture for temporary modifications",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pytest",
+        "testing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8993",
+      "name": "Test functions should declare fixture dependencies as parameters instead of using \"request.getfixturevalue\" with string literals",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pytest",
+        "testing",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8994",
+      "name": "Pytest fixtures should contain at most one yield statement",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "tests",
+        "pytest",
+        "resource-leak",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S9000",
+      "name": "\"pytest.raises\" should be used as a context manager",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "tests",
+        "pytest"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8999",
+      "name": "\"pytest_plugins\" should be defined in conftest.py files",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "test",
+        "pytest",
+        "confusing",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8998",
+      "name": "Parametrize decorators should not have empty parameter lists",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "tests",
+        "pytest",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonbugs:S2259",
+      "name": "Attributes should not be accessed on \"None\" values",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonbugs:S2589",
+      "name": "Boolean expressions should not be gratuitous",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "suspicious",
+        "redundant"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonbugs:S5633",
+      "name": "Dictionary unpacking should only be done with \"mapping\" objects",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonbugs:S6899",
+      "name": "datetime.datetime objects should not be compared with datetime.date objects",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonbugs:S6417",
+      "name": "Collections should not be modified while they are iterated",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonbugs:S6466",
+      "name": "Accessing sequence elements should not trigger an IndexError",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonbugs:S6465",
+      "name": "Unpacking should be done with the same number of elements of the iterable.",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonbugs:S6886",
+      "name": "offset-naive datetime.time and datetime.datetime objects should not be compared with offset-aware ones",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonbugs:S2583",
+      "name": "Conditionally executed code should be reachable",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "unused",
+        "suspicious",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonbugs:S3518",
+      "name": "Zero should not be a possible denominator",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "denial-of-service"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonbugs:S6464",
+      "name": "Non-existent dictionary keys should not be accessed",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S9001",
+      "name": "Expected test failures should provide a reason",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "pytest"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8992",
+      "name": "Pytest fixtures should not combine \"autouse\" with \"params\"",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "pytest",
+        "confusing",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8953",
+      "name": "Pydantic models should enable either alias or name validation",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "pydantic",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1110",
+      "name": "Unnecessary parentheses should be removed",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "readability",
+        "redundant"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2115",
+      "name": "A secure password should be used when connecting to a database",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "secret"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5779",
+      "name": "Assertions should not be made within the try block of a try-except catching AssertionError",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "tests",
+        "pytest",
+        "unittest",
+        "assertpy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5778",
+      "name": "Only one method invocation is expected when testing runtime exceptions",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "pytest",
+        "unittest"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1313",
+      "name": "IP addresses should not be hardcoded",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8966",
+      "name": "pydantic-core serialization calls should provide fallback handlers",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "serialization",
+        "pydantic",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8963",
+      "name": "Pydantic models should not use multiple inheritance with conflicting configurations",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pydantic",
+        "confusing",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2068",
+      "name": "Credentials should not be hard-coded",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "secret",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6781",
+      "name": "JWT secret keys should not be disclosed",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "secret"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6437",
+      "name": "Credentials should not be hard-coded",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "secret"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8974",
+      "name": "\"json_schema_input_type\" should not be used with \"mode='after'\" field validators",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "pydantic",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8971",
+      "name": "\"SkipValidation\" should not be combined with validation constraints",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "pydantic",
+        "type-hint",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6418",
+      "name": "Secrets should not be hard-coded",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "secret",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5863",
+      "name": "Assertions should not be given twice the same argument",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8973",
+      "name": "Double leading underscores should not be used for private attributes in Pydantic models",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "pydantic",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S3415",
+      "name": "Assertion arguments should be passed in the correct order",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S8702",
+      "name": "Agentic workflows should not be vulnerable to SQL injection attacks",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S8703",
+      "name": "Agentic workflows should not be vulnerable to server-side request forgery",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S8704",
+      "name": "Agentic workflows should not be vulnerable to code injection attacks",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S8705",
+      "name": "Agentic workflows should not be vulnerable to argument injection attacks",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S8701",
+      "name": "Agentic workflows should not be vulnerable to command injection attacks",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S7518",
+      "name": "Privileged prompts should not be vulnerable to injection attacks",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S8706",
+      "name": "Agentic workflows should not be vulnerable to connection string injection",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S8707",
+      "name": "Agentic workflows should not be vulnerable to path injection attacks",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5976",
+      "name": "Similar tests should be grouped in a single Parameterized test",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "bad-practice",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5852",
+      "name": "Regular expressions should not cause catastrophic backtracking",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "regex",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5958",
+      "name": "Tests should check which exception is thrown",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5542",
+      "name": "Encryption algorithms should be used with secure mode and padding scheme",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8900",
+      "name": "Deprecated Beautiful Soup methods should be replaced with their modern equivalents",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "pythonic",
+        "deprecated"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8903",
+      "name": "HTML elements should be created with \"new_tag()\" instead of inserting raw HTML strings",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "html",
+        "api",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8904",
+      "name": "BeautifulSoup elements should be checked for None before accessing",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "web",
+        "beautifulsoup",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8905",
+      "name": "BeautifulSoup parser should be explicitly specified",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unpredictable",
+        "html",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1764",
+      "name": "Identical expressions should not be used on both sides of a binary operator",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8786",
+      "name": "Regular expressions should not cause non-linear backtracking",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex",
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8906",
+      "name": "CSS selectors should be used when selecting elements with multiple required classes",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "css",
+        "confusing",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S4502",
+      "name": "CSRF protections should not be disabled",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "django",
+        "flask",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S4507",
+      "name": "Debugging features should not be enabled in production",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "error-handling",
+        "debug",
+        "user-experience",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2245",
+      "name": "Pseudorandom number generators (PRNGs) should not be used in security contexts",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S3330",
+      "name": "Cookies should have the \"HttpOnly\" flag",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "fastapi",
+        "django",
+        "privacy",
+        "flask",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S4790",
+      "name": "Weak hashing algorithms should not be used",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6249",
+      "name": "S3 buckets should enforce HTTPS-only access",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6252",
+      "name": "Amazon S3 buckets should have versioning enabled",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6281",
+      "name": "Amazon S3 bucket public access should be fully blocked",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6304",
+      "name": "IAM policies should not grant access to all account resources",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5332",
+      "name": "Clear-text protocols should not be used",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2077",
+      "name": "SQL queries should not be dynamically formatted",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "bad-practice",
+        "sql",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6327",
+      "name": "Amazon SNS topics should be encrypted at rest",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6329",
+      "name": "Public network access to cloud resources should be disabled",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5247",
+      "name": "Auto-escaping in HTML template engines should not be disabled",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "django",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8714",
+      "name": "Dedicated exception assertions should be used instead of \"try-except\" with \"fail()\"",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S5144",
+      "name": "Server-side requests should not be vulnerable to forging attacks",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8392",
+      "name": "Web servers should not bind to all network interfaces",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "fastapi",
+        "least-privilege",
+        "uvicorn",
+        "flask",
+        "network",
+        "deployment"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8397",
+      "name": "FastAPI applications should be passed as import strings when using reload, debug, or workers",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "fastapi",
+        "uvicorn",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S3752",
+      "name": "HTTP routes should restrict allowed HTTP methods",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "django",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8508",
+      "name": "Mutable default values should not be used with \"dict.fromkeys()\" or \"ContextVar()\"",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "concurrency",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6333",
+      "name": "AWS API Gateway should require authentication",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5122",
+      "name": "Cross-Origin Resource Sharing (CORS) policy should be restricted to trusted origins",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "django",
+        "flask",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7698",
+      "name": "AI agent code execution should be sandboxed",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7693",
+      "name": "AI agents should be protected with guardrails",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6985",
+      "name": "Models should not be loaded with \"torch.load\" without restricting deserialization",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "machine-learning",
+        "pytorch",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2257",
+      "name": "Custom cryptographic algorithms should not be used",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "bad-practice",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S4426",
+      "name": "Cryptographic key generation should be based on strong parameters",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2612",
+      "name": "File permissions should not be set to world-accessible values",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6265",
+      "name": "S3 buckets should not grant access to all users or authenticated users",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6275",
+      "name": "EBS volumes should be encrypted",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6270",
+      "name": "AWS resource-based policies should not grant public access",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8572",
+      "name": "\"logging.exception()\" should be used instead of \"logging.error()\" in exception handlers",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "exception",
+        "logging"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6303",
+      "name": "Amazon RDS resources should be encrypted at rest",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6302",
+      "name": "Policies should not grant all privileges",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "gcp",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6308",
+      "name": "OpenSearch domains should have encryption at rest enabled",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6319",
+      "name": "SageMaker notebook instances should be encrypted at rest",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5443",
+      "name": "Temporary files should not be created in publicly writable directories",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8409",
+      "name": "FastAPI routes should not specify redundant \"response_model\" parameters",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "fastapi",
+        "api",
+        "redundant"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6463",
+      "name": "Security groups should not allow unrestricted outbound traffic",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8410",
+      "name": "FastAPI dependencies should use \"Annotated\" type hints",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "fastapi",
+        "type-hint"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8505",
+      "name": "\"@singledispatch\" and \"@singledispatchmethod\" should not be confused",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "confusing",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8500",
+      "name": "Comparison methods should be defined completely",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "comparison",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8502",
+      "name": "\"set.update()\" should be used instead of a for-loop with \"add()\"",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pythonic",
+        "performance",
+        "idiom"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8509",
+      "name": "Classes should not inherit from the same base class multiple times",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8515",
+      "name": "TypeVars should not be both covariant and contravariant",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "type",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8516",
+      "name": "Group iterators from \"itertools.groupby\" should not be reused",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "confusing",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8518",
+      "name": "\"enumerate()\" values should be unpacked instead of using index lookups",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "readability",
+        "pythonic",
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8511",
+      "name": "Multiple inheritance should not create Method Resolution Order (MRO) conflicts",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "design",
+        "inheritance",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8512",
+      "name": "Class fields should not be defined multiple times",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing",
+        "dead-code",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8513",
+      "name": "\"startswith\" and \"endswith\" calls should use tuples instead of multiple \"or\" operators",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "pythonic"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8514",
+      "name": "Dataclass attributes should use type annotations",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6330",
+      "name": "SQS queues should be encrypted",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6332",
+      "name": "Amazon EFS file systems should be encrypted",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8510",
+      "name": "Loop variables should not be reused in nested loops",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2092",
+      "name": "Cookies should have the \"secure\" flag",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "fastapi",
+        "django",
+        "privacy",
+        "flask",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S6350",
+      "name": "System command arguments constructed from user input should be validated",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S3649",
+      "name": "Database queries should not be vulnerable to injection attacks",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "sql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8685",
+      "name": "Mutable or stateful values should not be used as default values in dataclass attributes",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "dataclass",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8492",
+      "name": "\"set.discard()\" should be used instead of checking membership before removal",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "pythonic",
+        "idiom"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8503",
+      "name": "Membership tests should not use empty collections",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "suspicious",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8493",
+      "name": "\"StopIteration\" should not be raised inside generators",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "python3",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8507",
+      "name": "TypeVar, ParamSpec, and NewType names should match their assigned variable names",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "readability",
+        "type-hint"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8519",
+      "name": "\"list(...)[0]\" should not be used to get the first element",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pythonic",
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8490",
+      "name": "Enum classes should not be decorated with \"@dataclass\"",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "enum",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8520",
+      "name": "\"sum()\" should not be used with an empty list to concatenate lists",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8494",
+      "name": "Attributes should only be assigned if they are declared in \"__slots__\"",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "slots",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8495",
+      "name": "Functions should return tuples of consistent length",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "type-system",
+        "api-design",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6863",
+      "name": "Flask error handlers should set HTTP status code",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "best-practice",
+        "flask"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8521",
+      "name": "Dictionary membership tests should not explicitly call \".keys()\"",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pythonic",
+        "idiom"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8504",
+      "name": "Property methods should have a return statement",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8517",
+      "name": "\"sorted()\" should not be used with indexing to find minimum or maximum values",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pythonic",
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonarchitecture:S8484",
+      "name": "Architecture directive to move a component should be applied",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-directive",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonarchitecture:S8487",
+      "name": "Relationships should align with the interface design of the intended architecture",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-deviation",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonarchitecture:S8483",
+      "name": "Architecture directive to rename a component should be applied",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-directive",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7713",
+      "name": "Tensor operations should rely on automatic broadcasting instead of manual expansion",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "pytorch"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7616",
+      "name": "Numerically stable PyTorch functions should be used instead of their unstable equivalents",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "machine-learning",
+        "numerical-stability",
+        "pytorch"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7675",
+      "name": "Tensor copying should use recommended methods",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "performance",
+        "deprecated",
+        "pytorch"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7710",
+      "name": "Use \"torch.empty()\" instead of list comprehensions for empty tensor initialization",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "readability",
+        "performance",
+        "pytorch"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7191",
+      "name": "\"withColumns\" method should be preferred over \"withColumn\" when multiple columns are specified",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pyspark",
+        "data-science"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7192",
+      "name": "The \"how\" parameter should be specified when joining two PySpark DataFrames",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pyspark",
+        "data-science"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7193",
+      "name": "PySpark DataFrame toPandas function should be avoided",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pyspark",
+        "data-science"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S8486",
+      "name": "Django middleware should call super().__init__() with appropriate parameters",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "django",
+        "initialization",
+        "middleware"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7695",
+      "name": "\"super()\" calls should not be used in TorchScript methods",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "torchscript",
+        "pytorch",
+        "deployment"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S8443",
+      "name": "Django Command classes should inherit from BaseCommand",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "django",
+        "command"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7195",
+      "name": "PySpark lit(None) should be used when populating empty columns",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pyspark",
+        "data-science"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7470",
+      "name": "PySpark's \"RDD.groupByKey\", when used in conjunction with \"RDD.mapValues\" with a commutative and associative operation, should be replaced by \"RDD.reduceByKey\"",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pyspark",
+        "data-science"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7471",
+      "name": "\"master\" and \"appName\" should be set when constructing PySpark \"SparkContext\"s and \"SparkSession\"s",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pyspark",
+        "data-science"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7196",
+      "name": "Complex logic provided to PySpark \"withColumn\", \"filter\" and \"when\"  methods should be refactored into separate expressions",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pyspark",
+        "data-science"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S8440",
+      "name": "Querysets should use \"select_related()\" or \"prefetch_related()\" to avoid N+1 queries",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "database",
+        "django",
+        "performance",
+        "orm"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7702",
+      "name": "Specify \"start_dim\" when using \"torch.flatten\" to preserve batch dimension",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pytorch"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S8438",
+      "name": "Django view functions should declare URL parameters explicitly",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "django"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S8439",
+      "name": "Django view functions should include all URL parameters in their signature",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "django",
+        "url-routing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7703",
+      "name": "Method calls should use parentheses when saving PyTorch model state",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "pytorch"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7704",
+      "name": "PyTorch module classes should not be instantiated inline in forward methods",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "machine-learning",
+        "pytorch"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S8434",
+      "name": "Time-dependent expressions should not be used in class attributes",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "django",
+        "timing",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S8435",
+      "name": "Sensitive data should not be passed in URL query parameters",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "django",
+        "owasp",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7468",
+      "name": "PySpark \"dropDuplicates\" subset argument should not be provided with an empty list",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pyspark",
+        "data-science"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7469",
+      "name": "PySpark's \"DataFrame\" column names should be unique",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pyspark",
+        "data-science"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S8437",
+      "name": "Class-Based Views should override \"get_context_data\" correctly",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "django",
+        "framework"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7706",
+      "name": "Use PyTorch Lightning's built-in checkpointing instead of manual checkpoint saving",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "lightning",
+        "pytorch"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7708",
+      "name": "Tensors should not be concatenated incrementally in loops",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "machine-learning",
+        "performance",
+        "pytorch"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7181",
+      "name": "PySpark Window functions should always specify a frame",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pyspark",
+        "data-science"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7182",
+      "name": "The \"subset\" argument should be provided when using PySpark DataFrame \"dropDuplicates\" method",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pyspark",
+        "data-science"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7187",
+      "name": "PySpark Pandas DataFrame columns should not use a reserved name",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pyspark",
+        "data-science"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonenterprise:S7189",
+      "name": "PySpark DataFrames used multiple times should be cached or persisted",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pyspark",
+        "data-science"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6984",
+      "name": "Einops pattern should be valid",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "convention",
+        "scientific-computing",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8396",
+      "name": "Optional Pydantic fields should have explicit default values",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pydantic",
+        "type-hint",
+        "validation"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S6547",
+      "name": "Environment variables should not be defined from untrusted input",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "sans-top25-insecure"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S6549",
+      "name": "Accessing files should not lead to filesystem oracle attacks",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S5135",
+      "name": "Deserialization should not be vulnerable to injection attacks",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S5334",
+      "name": "Dynamic code execution should not be vulnerable to injection attacks",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S5131",
+      "name": "Endpoints should not be vulnerable to reflected cross-site scripting (XSS) attacks",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S5496",
+      "name": "Server-side templates should not be vulnerable to injection attacks",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "python3",
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S2083",
+      "name": "I/O function calls should not be vulnerable to path injection attacks",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S6287",
+      "name": "Applications should not create session cookies from untrusted input",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S2631",
+      "name": "Regular expressions should not be vulnerable to Denial of Service attacks",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "denial-of-service"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S6680",
+      "name": "Loop boundaries should not be vulnerable to injection attacks",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S2078",
+      "name": "LDAP queries should not be vulnerable to injection attacks",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S5146",
+      "name": "HTTP request redirections should not be open to forging attacks",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S5145",
+      "name": "Logging should not be vulnerable to injection attacks",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S2076",
+      "name": "OS commands should not be vulnerable to command injection attacks",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S5147",
+      "name": "NoSQL operations should not be vulnerable to injection attacks",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S6639",
+      "name": "Memory allocations should not be vulnerable to Denial of Service attacks",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S6776",
+      "name": "Stack traces should not be disclosed",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S6839",
+      "name": "HTTP response headers should not be vulnerable to response splitting attacks",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S7044",
+      "name": "Server-side requests should not be vulnerable to traversing attacks",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S2091",
+      "name": "XPath expressions should not be vulnerable to injection attacks",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonsecurity:S6096",
+      "name": "Extracting archives should not lead to zip slip vulnerabilities",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonarchitecture:S8464",
+      "name": "Intended architecture components should be implemented",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-deviation",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1134",
+      "name": "Track uses of \"FIXME\" tags",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1135",
+      "name": "Track uses of \"TODO\" tags",
+      "lang": "py",
+      "severity": "INFO",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6262",
+      "name": "AWS region should not be set with a hardcoded String",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6709",
+      "name": "Results that depend on random number generation should be reproducible",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "scientific-computing",
+        "numpy",
+        "data-science"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5864",
+      "name": "Type checks shouldn't be confusing",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "typing",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6711",
+      "name": "numpy.random.Generator should be preferred to numpy.random.RandomState",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "data-science",
+        "numpy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6714",
+      "name": "Passing a list to np.array should be preferred over passing a generator",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "data-science",
+        "numpy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1144",
+      "name": "Unused class-private methods should be removed",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5860",
+      "name": "Names of regular expressions named groups should be used",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7488",
+      "name": "Use non-blocking sleep functions in asynchronous code",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "async",
+        "trio",
+        "asyncio",
+        "anyio"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7489",
+      "name": "Async functions should not contain synchronous OS calls",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "async",
+        "trio",
+        "asyncio",
+        "anyio"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1143",
+      "name": "Break, continue and return statements should not occur in \"finally\" blocks",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "error-handling",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S3329",
+      "name": "Cipher Block Chaining IVs should be unpredictable",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5747",
+      "name": "Bare \"raise\" statements should only be used in \"except\" blocks",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "unpredictable",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6396",
+      "name": "Superfluous curly brace quantifiers should be avoided",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7484",
+      "name": "Events should be used instead of `sleep` in asynchronous loops",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "async",
+        "trio",
+        "asyncio",
+        "anyio"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:ExecStatementUsage",
+      "name": "The \"exec\" statement should not be used",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "python3",
+        "obsolete"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S3776",
+      "name": "Cognitive Complexity of functions should not be too high",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7483",
+      "name": "Asynchronous functions should not accept timeout parameters",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "async",
+        "trio",
+        "asyncio",
+        "anyio"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7486",
+      "name": "Long sleep durations should use sleep_forever() instead of arbitrary intervals",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "async",
+        "trio",
+        "asyncio",
+        "anyio"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7487",
+      "name": "Async functions should not contain synchronous subprocess calls",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "async",
+        "trio",
+        "asyncio",
+        "anyio"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2201",
+      "name": "Return values from functions without side effects should not be ignored",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "confusing",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5712",
+      "name": "Some special methods should return \"NotImplemented\" instead of raising \"NotImplementedError\"",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5713",
+      "name": "A subclass should not be in the same \"except\" statement as a parent class",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "bad-practice",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5719",
+      "name": "Instance and class methods should have at least one positional parameter",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "python3",
+        "syntax"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6246",
+      "name": "Lambdas should not invoke other lambdas synchronously",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6928",
+      "name": "Python side effects should not be used inside a \"tf.function\"",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "machine-learning",
+        "tensorflow"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2208",
+      "name": "Wildcard imports should not be used",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5714",
+      "name": "Boolean expressions of exceptions should not be used in \"except\" statements",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "error-handling",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5717",
+      "name": "Function parameters' default values should not be modified or assigned",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6925",
+      "name": "The \"validate_indices\" argument should not be set for \"tf.gather\" function call",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "machine-learning",
+        "tensorflow"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6929",
+      "name": "The reduction axis/dimension should be specified when using reduction operations",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "machine-learning",
+        "tensorflow",
+        "scientific-computing",
+        "pytorch"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:InequalityUsage",
+      "name": "\"<>\" should not be used to test inequality",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "obsolete"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1244",
+      "name": "Floating point numbers should not be tested for equality",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "pytorch",
+        "suspicious",
+        "data-science",
+        "numpy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5722",
+      "name": "Special methods should have an expected number of parameters",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "design",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5724",
+      "name": "Property getter, setter and deleter methods should have the expected number of parameters",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "design",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5843",
+      "name": "Regular expressions should not be too complicated",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5845",
+      "name": "Assertions comparing incompatible types should not be made",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "tests",
+        "typing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6243",
+      "name": "Reusable resources should be initialized at construction time of Lambda functions",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1481",
+      "name": "Unused local variables should be removed",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5607",
+      "name": "Operators should be used on compatible types",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "typing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5720",
+      "name": "\"self\" should be the first argument to instance methods",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "suspicious",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5727",
+      "name": "Comparison to None should not be constant",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6377",
+      "name": "XML signatures should be validated securely",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5655",
+      "name": "Arguments given to functions should be of an expected type",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "typing",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5899",
+      "name": "Test methods should be discoverable",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "unused",
+        "unittest"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6741",
+      "name": "The \"pandas.DataFrame.to_numpy()\" method should be preferred to the \"pandas.DataFrame.values\" attribute",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pandas",
+        "data-science",
+        "numpy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6982",
+      "name": "\"model.eval()\" or \"model.train()\" should be called after loading the state of a PyTorch model",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "machine-learning",
+        "pytorch"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2823",
+      "name": "Only strings should be listed in \"__all__\"",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "python3"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6742",
+      "name": "pandas.pipe method should be preferred over long chains of instructions",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pandas",
+        "data-science"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6983",
+      "name": "The \"num_workers\" parameter should be specified for \"torch.utils.data.DataLoader\"",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "machine-learning",
+        "pytorch"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1854",
+      "name": "Unused assignments should be removed",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2159",
+      "name": "Unnecessary equality checks should not be made",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2710",
+      "name": "The first argument to class methods should follow the naming convention",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "confusing",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5547",
+      "name": "Cipher algorithms should be robust",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5659",
+      "name": "JWT should be signed and verified",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5890",
+      "name": "Values assigned to variables should match their type annotations",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "typing",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1186",
+      "name": "Functions and methods should not be empty",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2275",
+      "name": "String formatting should not lead to runtime errors",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2836",
+      "name": "Loops without \"break\" should not have \"else\" clauses",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5549",
+      "name": "Function arguments should be passed only once",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "syntax"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2711",
+      "name": "\"yield\" and \"return\" should not be used outside functions",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "syntax",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7608",
+      "name": "S3 operations should verify bucket ownership using ExpectedBucketOwner parameter",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "s3",
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S3457",
+      "name": "String formatting should be used correctly",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S3699",
+      "name": "The output of functions that don't return anything should not be used",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "python3"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5780",
+      "name": "Expressions creating dictionaries should not have duplicate keys",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5781",
+      "name": "Expressions creating sets should not have duplicate values",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7609",
+      "name": "AWS CloudWatch metrics namespace should not begin with `AWS/`",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8371",
+      "name": "HTTP headers should be accessed safely to avoid KeyError exceptions",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "error-handling",
+        "flask"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8375",
+      "name": "Flask \"preprocess_request()\" return values should be handled",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "flask"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S4423",
+      "name": "Weak SSL/TLS protocols should not be used",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5754",
+      "name": "\"SystemExit\" should be re-raised",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "bad-practice",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5756",
+      "name": "Calls should not be made to non-callable values",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "typing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6725",
+      "name": "Equality checks should not be made against \"numpy.nan\"",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "numpy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5632",
+      "name": "Raised Exceptions must derive from BaseException",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "error-handling",
+        "python3"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7499",
+      "name": "Async functions should not contain synchronous HTTP client calls",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "async",
+        "trio",
+        "asyncio",
+        "anyio",
+        "http"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7931",
+      "name": "\"NotImplemented\" should not be used in boolean contexts",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "python3.14"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1716",
+      "name": "\"break\" and \"continue\" should not be used outside a loop",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6727",
+      "name": "The abs_tol parameter should be provided when using math.isclose to compare values to 0",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "scientific-computing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6729",
+      "name": "np.nonzero should be preferred over np.where when only the condition parameter is set",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "numpy",
+        "data-science"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6969",
+      "name": "\"memory\" parameter should be specified for Scikit-Learn Pipeline",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "machine-learning",
+        "scikit-learn"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7490",
+      "name": "Cancellation scopes should contain checkpoints",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "async",
+        "trio",
+        "asyncio",
+        "anyio"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7491",
+      "name": "Checkpoints should be used instead of sleep(0)",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "async",
+        "trio",
+        "anyio"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7492",
+      "name": "List comprehensions should not be used with \"any()\" or \"all()\"",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7493",
+      "name": "Async functions should not contain synchronous file operations",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "async",
+        "trio",
+        "asyncio",
+        "anyio"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7496",
+      "name": "Creation of collections with literals or comprehensions should not be wrapped in type constructors",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7497",
+      "name": "Cancellation exceptions should be re-raised after cleanup",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "async",
+        "trio",
+        "asyncio",
+        "anyio"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7498",
+      "name": "Literal syntax should be preferred when creating empty collections or dictionaries with keyword arguments",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5644",
+      "name": "Item operations should be done on objects supporting them",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "python3",
+        "typing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5886",
+      "name": "Function return types should be consistent with their type hint",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "typing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6734",
+      "name": "inplace=True should not be used when modifying a Pandas DataFrame",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pandas",
+        "data-science"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6978",
+      "name": "Subclasses of \"torch.nn.Module\" should call the initializer",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "machine-learning",
+        "pytorch"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7494",
+      "name": "Comprehensions should be used instead of constructors around generator expressions",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7943",
+      "name": "Template and str should not be concatenated directly",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "python3.14"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7945",
+      "name": "Template string processing should use structural pattern matching",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1045",
+      "name": "All \"except\" blocks should be able to catch exceptions",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6730",
+      "name": "Deprecated NumPy aliases of built-in types should not be used",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "numpy",
+        "data-science"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6735",
+      "name": "When using pandas.merge or pandas.join, the parameters on, how and validate should be provided",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pandas",
+        "data-science"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6971",
+      "name": "Transformers should not be accessed directly when a Scikit-Learn Pipeline uses caching",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "machine-learning",
+        "scikit-learn"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6972",
+      "name": "Nested estimator parameters modification in a Pipeline should refer to valid parameters",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "machine-learning",
+        "scikit-learn"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6973",
+      "name": "Important hyperparameters should be specified for machine learning libraries' estimators and optimizers",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "machine-learning",
+        "scikit-learn",
+        "pytorch"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S4433",
+      "name": "LDAP connections should be authenticated",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7942",
+      "name": "Template strings should be processed before use",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "python3.14"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6974",
+      "name": "Subclasses of Scikit-Learn's \"BaseEstimator\" should not set attributes ending with \"_\" in the \"__init__\" method",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "machine-learning",
+        "scikit-learn"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5642",
+      "name": "\"in\" and \"not in\" operators should be used on objects supporting them",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "python3",
+        "design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5527",
+      "name": "Server hostnames should be verified during SSL/TLS connections",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy",
+        "ssl"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6979",
+      "name": "\"torch.tensor\" should be used instead of \"torch.autograd.Variable\"",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "machine-learning",
+        "pytorch"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S935",
+      "name": "Functions and methods should only return expected values",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "typing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S930",
+      "name": "The number and name of arguments passed to a function should match its parameters",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6546",
+      "name": "Union type expressions should be preferred over \"typing.Union\" in type hints",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "typing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7514",
+      "name": "Control flow statements should not be used inside TaskGroup or Nursery blocks",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "async",
+        "trio",
+        "asyncio",
+        "anyio"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7515",
+      "name": "\"async with\" should be used for asynchronous resource management",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "async"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7516",
+      "name": "\"sorted\" should not be wrapped directly inside \"set\"",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7510",
+      "name": "The \"sorted\" function call should not be passed to the \"reversed\" function as an argument",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7517",
+      "name": "Iteration over a dictionary key value pairs should be done with the items() method call",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7511",
+      "name": "Passing a reversed iterable to \"set()\", \"sorted()\", or \"reversed()\" should be avoided",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6663",
+      "name": "Sequence indexes must have an __index__ method",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7632",
+      "name": "Issue suppression comment should have the correct format",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6785",
+      "name": "GraphQL queries should not be vulnerable to Denial of Service attacks",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "denial-of-service",
+        "graphql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7512",
+      "name": "Using \".items()\" to iterate over a dictionary should be avoided if possible.",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S112",
+      "name": "\"Exception\" and \"BaseException\" should not be raised",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "error-handling"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6786",
+      "name": "GraphQL introspection should be disabled in production",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "graphql"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S4487",
+      "name": "Unread \"private\" attributes should be removed",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "cwe",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7513",
+      "name": "TaskGroup/Nursery should not be used for a single start call",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "async",
+        "trio",
+        "asyncio",
+        "anyio"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7519",
+      "name": "Populating a dictionary with a constant value should be done with dict.fromkeys() method call",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6660",
+      "name": "\"isinstance()\" should be preferred to direct type comparisons",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "typing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S905",
+      "name": "Non-empty statements should change control flow or have at least one side-effect",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6662",
+      "name": "Set members and dictionary keys should be hashable",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S107",
+      "name": "Functions, methods and lambdas should not have too many parameters",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6799",
+      "name": "\"f-strings\" should not be nested too deeply",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1542",
+      "name": "Function names should comply with a naming convention",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "pep"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6559",
+      "name": "Fields of a Django ModelForm should be defined explicitly",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "django"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6317",
+      "name": "AWS IAM policies should limit the scope of permissions given",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6795",
+      "name": "Generic type statements should not use \"TypeVars\"",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "typing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5344",
+      "name": "Passwords should not be stored in plaintext or with a fast hashing algorithm",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "spring",
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6796",
+      "name": "Generic functions should be defined using the type parameter syntax",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "typing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2638",
+      "name": "Method overrides should not change contracts",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2755",
+      "name": "XML parsers should not be vulnerable to XXE attacks",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2876",
+      "name": "\"__iter__\" should return an iterator",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "python3",
+        "pep"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5905",
+      "name": "Assert should not be called on a tuple literal",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "tests"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5906",
+      "name": "The most specific \"unittest\" assertion should be used",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "unittest"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S116",
+      "name": "Field names should comply with a naming convention",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S117",
+      "name": "Local variable and function parameter names should comply with a naming convention",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5799",
+      "name": "Implicit string and byte concatenations should not be confusing",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6552",
+      "name": "The '@receiver' (Django) and '@route' (Flask) decorators should be the outermost decorators",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "django",
+        "flask",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6792",
+      "name": "Generic classes should be defined using the type parameter syntax",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "typing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6794",
+      "name": "Type aliases should be declared with a \"type\" statement",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "typing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6887",
+      "name": "\"pytz.timezone\" should not be passed to the \"datetime.datetime\" constructor",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "datetime"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1871",
+      "name": "Two branches in a conditional structure should not have exactly the same implementation",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5795",
+      "name": "Identity comparisons should not be used with cached types",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6883",
+      "name": "The 12-hour format should be used with the AM/PM marker, otherwise the 24-hour format should be used",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "datetime"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7613",
+      "name": "AWS Lambda handlers should return only JSON serializable values",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7614",
+      "name": "AWS Lambda handlers must not be an async function",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5797",
+      "name": "Constants should not be used as conditions",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5796",
+      "name": "New objects should not be created only to check their identity",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1515",
+      "name": "Functions and lambdas should not reference variables defined in enclosing loops",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7617",
+      "name": "Reserved environment variable names should not be overridden in Lambda functions",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7618",
+      "name": "Network calls in AWS Lambda functions shouldn't be made without explicit timeout parameters",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1192",
+      "name": "String literals should not be duplicated",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7619",
+      "name": "\"botocore.exceptions.ClientError\" should be explicitly caught and handled",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6882",
+      "name": "Constructor attributes of date and time objects should be in the range of possible values",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "datetime"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8389",
+      "name": "FastAPI file upload endpoints should use \"Form()\" with Pydantic validators instead of \"Body()\" or \"Depends()\"",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "pydantic",
+        "file-upload",
+        "fastapi"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7503",
+      "name": "Async functions should use async features",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "async"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8385",
+      "name": "\"send_file\" should specify \"mimetype\" or \"download_name\" when used with file-like objects",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "web",
+        "flask"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1763",
+      "name": "All code should be reachable",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "cwe",
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7504",
+      "name": "When iterating over an iterable object, using \"list()\" should be avoided",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7625",
+      "name": "Long-term AWS access keys should not be used directly in code",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6659",
+      "name": "'startswith' or 'endswith' methods should be used instead of string slicing in condition expressions",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "pep"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7505",
+      "name": "Generators and comprehensions should be preferred over the usage of \"map\" and \"lambda\" when creating collection",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6779",
+      "name": "Flask secret keys should not be disclosed",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "flask"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7506",
+      "name": "Dictionary comprehension should not use a static key",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6894",
+      "name": "Dates should be formatted correctly when using \"pandas.to_datetime\" with \"dayfirst\" or \"yearfirst\" arguments",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pandas",
+        "datetime"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5685",
+      "name": "Walrus operator should not make code confusing",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice",
+        "pep",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7620",
+      "name": "AWS Lambda handlers should clean up temporary files in /tmp directory",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "lambda",
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7500",
+      "name": "Comprehensions only used to copy should be replaced with the respective constructor calls",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7621",
+      "name": "AWS waiters should be used instead of custom polling loops",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5445",
+      "name": "Insecure temporary file creation methods should not be used",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S101",
+      "name": "Class names should comply with a naming convention",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7501",
+      "name": "Async functions should not contain input() calls",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "async",
+        "trio",
+        "asyncio",
+        "anyio"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7622",
+      "name": "boto3 operations that support pagination should be performed using paginators or manual pagination handling",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7502",
+      "name": "Asyncio tasks should be saved to prevent premature garbage collection",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "async",
+        "asyncio",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7507",
+      "name": "\"defaultdict\" should not be initialized with \"default_factory\" as a keyword argument",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S7508",
+      "name": "Redundant collection functions should be avoided",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2734",
+      "name": "\"__init__\" should not return a value",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "convention",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6890",
+      "name": "\"zoneinfo\" should be preferred to \"pytz\" when using Python 3.9 and later",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "datetime"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2053",
+      "name": "Password hashing functions should use an unpredictable salt",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8405",
+      "name": "TestClient requests should use \"content\" parameter for bytes or text",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "httpx",
+        "fastapi",
+        "tests",
+        "starlette"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6900",
+      "name": "Numpy weekmask should have a valid value",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "datetime",
+        "numpy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8401",
+      "name": "Child routers should be included before parent router registration",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "router",
+        "fastapi",
+        "api"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6468",
+      "name": "ExceptionGroup and BaseExceptionGroup should not be caught with except*",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "error-handling",
+        "python3"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6908",
+      "name": "\"tensorflow.function\" should not be recursive",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "machine-learning",
+        "tensorflow"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6903",
+      "name": "Using timezone-aware \"datetime\" objects should be preferred over using \"datetime.datetime.utcnow\" and \"datetime.datetime.utcfromtimestamp\"",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "datetime",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8400",
+      "name": "Endpoints returning 204 status should have an empty response body",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "fastapi",
+        "http",
+        "api"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S3403",
+      "name": "Identity operators should not be used with dissimilar types",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "typing",
+        "confusing",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6911",
+      "name": "\"tf.function\" should not depend on global or free Python variables",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "machine-learning",
+        "tensorflow"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8412",
+      "name": "Generic route decorators should not be used",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "readability",
+        "fastapi"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8413",
+      "name": "Router prefixes should be defined during \"APIRouter\" initialization",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "fastapi",
+        "readability"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8414",
+      "name": "CORSMiddleware should be added last in the middleware chain",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "fastapi",
+        "cors",
+        "configuration",
+        "middleware"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8415",
+      "name": "HTTPException responses should be documented in endpoint metadata",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "fastapi",
+        "openapi",
+        "documentation"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5708",
+      "name": "Caught Exceptions must derive from BaseException",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "error-handling",
+        "design",
+        "pep"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6918",
+      "name": "\"tf.Variable\" objects should be singletons when created inside of a \"tf.function\"",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "machine-learning",
+        "tensorflow"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5828",
+      "name": "The \"open\" builtin function should be called with a valid mode",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "python3",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5707",
+      "name": "Exceptions' \"__cause__\" should be either an Exception or None",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "error-handling",
+        "design",
+        "pep"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5709",
+      "name": "Custom Exception classes should inherit from \"Exception\" or one of its subclasses",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6919",
+      "name": "The \"input_shape\" parameter should not be specified for \"tf.keras.Model\" subclasses",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "machine-learning",
+        "tensorflow"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5704",
+      "name": "Bare \"raise\" statements should not be used in \"finally\" blocks",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "unpredictable",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5706",
+      "name": "Special method \"__exit__\" should not re-raise the provided exception",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6353",
+      "name": "Regular expression quantifiers and character classes should be used concisely",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6328",
+      "name": "Replacement strings should reference existing regular expression groups",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5918",
+      "name": "Tests should be skipped explicitly",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "bad-practice"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5915",
+      "name": "Assertions should not be made at the end of blocks expecting an exception",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "tests",
+        "unused",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5914",
+      "name": "Assertions should not fail or succeed unconditionally",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "suspicious",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6321",
+      "name": "Administration services access should be restricted to specific IP addresses",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "aws"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S3985",
+      "name": "Unused private nested classes should be removed",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S4830",
+      "name": "Server certificates should be verified during SSL/TLS connections",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "VULNERABILITY",
+      "tags": [
+        "cwe",
+        "privacy",
+        "ssl"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S3862",
+      "name": "Iterable unpacking, \"for-in\" loops and \"yield from\" should use an Iterable object",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "defign",
+        "typing",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S3984",
+      "name": "Exceptions should not be created without being raised",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "error-handling"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2772",
+      "name": "\"pass\" should not be used needlessly",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5807",
+      "name": "Only defined names should be listed in \"__all__\"",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "design"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5806",
+      "name": "Builtins should not be shadowed by local variables",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "bad-practice",
+        "confusing",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S3626",
+      "name": "Jump statements should not be redundant",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "redundant",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6331",
+      "name": "Regular expressions should not contain empty groups",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6965",
+      "name": "REST API actions should be annotated with an HTTP verb attribute",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "flask"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonarchitecture:S7789",
+      "name": "Files should be located according to the intended architecture",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-deviation",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonarchitecture:S7788",
+      "name": "Relationships should align with the intended architecture",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-deviation",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "pythonarchitecture:S8134",
+      "name": "Forbidden relationships should be removed to solve tangles as directed by the project's architect",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "architecture-directive",
+        "architecture"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8374",
+      "name": "Flask class-based view decorators should be applied using the \"decorators\" attribute",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "decorator",
+        "flask"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S8370",
+      "name": "Query parameters should not be used in Flask POST requests",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "flask"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1172",
+      "name": "Unused function parameters should be removed",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:BackticksUsage",
+      "name": "Backticks should not be used",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "python3"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5850",
+      "name": "Alternatives in regular expressions should be grouped when used with anchors",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5855",
+      "name": "Regex alternatives should not be redundant",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5857",
+      "name": "Character classes should be preferred over reluctant quantifiers in regular expressions",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1940",
+      "name": "Boolean checks should not be inverted",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:PreIncrementDecrement",
+      "name": "Increment and decrement operators should not be used",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1700",
+      "name": "A field should not duplicate the name of its containing class",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "brain-overload"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5868",
+      "name": "Unicode Grapheme Clusters should be avoided inside regex character classes",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5869",
+      "name": "Character classes in regular expressions should not contain the same character twice",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6395",
+      "name": "Non-capturing groups without quantifier should not be used",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6035",
+      "name": "Single-character alternations in regular expressions should be replaced with character classes",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6397",
+      "name": "Character classes in regular expressions should not contain only one character",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6001",
+      "name": "Back references in regular expressions should only refer to capturing groups that are matched before the reference",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6002",
+      "name": "Regex lookahead assertions should not be contradictory",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5603",
+      "name": "Unused scope-limited definitions should be removed",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5842",
+      "name": "Repeated patterns in regular expressions should not match the empty string",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6019",
+      "name": "Reluctant quantifiers in regular expressions should be followed by an expression that can't match the empty string",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1862",
+      "name": "Related \"if/else if\" statements should not have the same condition",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "unused",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S3358",
+      "name": "Conditional expressions should not be nested",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1066",
+      "name": "Mergeable \"if\" statements should be combined",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S3923",
+      "name": "All branches in a conditional structure should not have exactly the same implementation",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "convention",
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5994",
+      "name": "Regex patterns following a possessive quantifier should not always fail",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5996",
+      "name": "Regex boundaries should not be used in a way that can never be matched",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S125",
+      "name": "Sections of code should not be commented out",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "unused"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1607",
+      "name": "A reason should be provided when skipping a test",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "tests",
+        "bad-practice",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1845",
+      "name": "Methods and field names should not differ only by capitalization",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S108",
+      "name": "Nested blocks of code should not be left empty",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1656",
+      "name": "Variables should not be self-assigned",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "convention",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6553",
+      "name": "'null=True' should not be used on string-based fields in Django models",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "django"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6556",
+      "name": "\"locals()\" should not be passed to a Django \"render()\" function",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "django"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2757",
+      "name": "Non-existent operators like \"=+\" should not be used",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "convention",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:PrintStatementUsage",
+      "name": "The \"print\" statement should not be used",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "python3",
+        "obsolete"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1751",
+      "name": "Loops with at most one iteration should be refactored",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "bad-practice",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2190",
+      "name": "Recursion should not be infinite",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S100",
+      "name": "Method names should comply with a naming convention",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "convention"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2737",
+      "name": "\"except\" clauses should do more than raise the same issue",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "error-handling",
+        "unused",
+        "finding",
+        "clumsy"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S3827",
+      "name": "Variables, classes and functions should be defined before being used",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "BUG",
+      "tags": [
+        "python3",
+        "pitfall"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6537",
+      "name": "Octal escape sequences should not be used in regular expressions",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S3516",
+      "name": "Functions returns should not be invariant",
+      "lang": "py",
+      "severity": "BLOCKER",
+      "type": "CODE_SMELL",
+      "tags": [
+        "design",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S1226",
+      "name": "Function parameters initial values should not be ignored",
+      "lang": "py",
+      "severity": "MINOR",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S4144",
+      "name": "Functions and methods should not have identical implementations",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "suspicious",
+        "duplicate",
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6323",
+      "name": "Alternation in regular expressions should not contain empty alternatives",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6326",
+      "name": "Regular expressions should not contain multiple spaces",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S2761",
+      "name": "Doubled prefix operators \"not\" and \"~\" should not be used",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "CODE_SMELL",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S4143",
+      "name": "Collection content should not be replaced unconditionally",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "suspicious"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S6560",
+      "name": "The \"safe\" flag should be set to \"False\" when serializing non-dictionary objects in Django JSON-encoded responses.",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "django"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S3981",
+      "name": "Collection sizes and array length comparisons should make sense",
+      "lang": "py",
+      "severity": "MAJOR",
+      "type": "BUG",
+      "tags": [
+        "confusing"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    },
+    {
+      "key": "python:S5361",
+      "name": "`str.replace` should be preferred to `re.sub`",
+      "lang": "py",
+      "severity": "CRITICAL",
+      "type": "CODE_SMELL",
+      "tags": [
+        "regex",
+        "performance"
+      ],
+      "cwe": [],
+      "owasp": [],
+      "htmlDesc": ""
+    }
+  ]
+}

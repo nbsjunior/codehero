@@ -172,29 +172,14 @@ export default function AuthGate({ children }: { children: ReactNode }) {
         </button>
 
         <nav id="cr-nav-menu" className={`cr-nav-links${navOpen ? " is-open" : ""}`}>
-          <a href="#poderes" onClick={() => setNavOpen(false)}>
-            Poderes
-          </a>
-          <a href="#missao" onClick={() => setNavOpen(false)}>
-            Missão
-          </a>
-          <a href="#modelos" onClick={() => setNavOpen(false)}>
-            Modelos
-          </a>
           <a href="#como" onClick={() => setNavOpen(false)}>
             Como funciona
           </a>
           <a href="/docs/" onClick={() => setNavOpen(false)}>
             Docs
           </a>
-          <a href="https://produtech.web.app" target="_blank" rel="noreferrer" onClick={() => setNavOpen(false)}>
-            Estimativa Build
-          </a>
           <button type="button" className="cr-btn cr-btn-ghost" onClick={() => goAuth("login")}>
             Entrar
-          </button>
-          <button type="button" className="cr-btn cr-btn-primary" onClick={() => goAuth("signup")}>
-            Começar grátis
           </button>
         </nav>
       </header>
@@ -414,52 +399,52 @@ export default function AuthGate({ children }: { children: ReactNode }) {
           <div className="cr-section-head">
             <h2>Onde a IA entra — e onde não entra</h2>
             <p>
-              Cada função da esteira usa o modelo que o trabalho justifica. Nenhum deles lê o seu
-              código.
+              Inteligência artificial fortalece as regras da plataforma. Seu código permanece
+              privado — e a análise, sob o seu controle.
             </p>
           </div>
 
           <div className="cr-models">
             <article className="cr-model">
-              <span className="cr-model__role">Evolução de regra</span>
-              <strong className="cr-model__name">Gemini 2.5 Flash</strong>
+              <span className="cr-model__role">Padrão sempre atualizado</span>
+              <strong className="cr-model__name">Evolução contínua</strong>
               <p>
-                Muta padrões existentes em lote, todo dia. Volume alto e valor unitário baixo — cada
-                mutação é medida no corpus antes de virar qualquer coisa, então o modelo mais barato
-                basta.
+                As regras da plataforma melhoram todos os dias, sem custo extra para o time e sem
+                risco de “inventar” proteção no ar — cada melhoria é validada antes de valer.
               </p>
             </article>
             <article className="cr-model">
-              <span className="cr-model__role">Regra nova e dress code</span>
-              <strong className="cr-model__name">Claude Sonnet 5</strong>
+              <span className="cr-model__role">Sua política vira proteção</span>
+              <strong className="cr-model__name">Regras sob medida</strong>
               <p>
-                Transforma CVE recente e política escrita em português numa regra determinística.
-                É onde a qualidade do raciocínio realmente paga.
+                Transformamos ameaças recentes e políticas escritas em português em regras claras
+                que o time consegue aplicar — menos interpretação, mais conformidade.
               </p>
             </article>
             <article className="cr-model">
-              <span className="cr-model__role">Triagem de falso positivo</span>
-              <strong className="cr-model__name">Claude Haiku 4.5</strong>
+              <span className="cr-model__role">Menos ruído, mais foco</span>
+              <strong className="cr-model__name">Triagem inteligente</strong>
               <p>
-                Julgamento curto sobre um trecho e seu entorno, em grande quantidade. Rápido e
-                barato, que é exatamente o perfil da tarefa.
+                Filtramos alertas pouco relevantes para o time concentrar esforço no que realmente
+                importa — produtividade com sinal limpo.
               </p>
             </article>
             <article className="cr-model">
-              <span className="cr-model__role">Correção assistida</span>
-              <strong className="cr-model__name">Claude Sonnet 5</strong>
+              <span className="cr-model__role">Do achado à correção</span>
+              <strong className="cr-model__name">Correção assistida</strong>
               <p>
-                Converte a ficha do apontamento em patch aplicável. Roda sob demanda, nunca em lote.
+                Quando há um apontamento, sugerimos a correção pronta para aplicar — sob demanda,
+                com precisão, sem expor o repositório a um modelo em lote.
               </p>
             </article>
           </div>
 
           <p className="cr-compare-note">
-            <strong>O scan em si nunca usa IA.</strong> Os modelos acima trabalham offline, sobre o
-            catálogo de regras — nunca sobre o seu repositório. Quem analisa o seu código é sempre o
-            motor determinístico, e é por isso que o mesmo commit produz o mesmo resultado no CI, no
-            editor e na prévia. Toda regra proposta por um modelo só entra em produção depois de
-            provar precisão contra um corpus rotulado e passar por aprovação humana.
+            <strong>A análise do seu código não passa por IA.</strong> A inteligência artificial
+            trabalha só no aprimoramento das regras da plataforma — nunca no seu repositório. O
+            resultado é previsível: o mesmo commit gera o mesmo parecer no CI, no editor e na
+            prévia. Nenhuma regra proposta entra em produção sem evidência de qualidade e aprovação
+            humana.
           </p>
         </section>
 

@@ -99,19 +99,62 @@ export const adminGetPlatformSummary = onCall({ memory: "512MiB", timeoutSeconds
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
   await requirePlatformAdmin(uid);
 
-  const [orgCountSnap, projectCountSnap, repoAggSnap, buckets] = await Promise.all([
-    db.collection("orgs").count().get(),
-    db.collectionGroup("projects").count().get(),
-    db
-      .collectionGroup("repos")
-      .aggregate({
-        count: AggregateField.count(),
-        debtMinutes: AggregateField.sum("debtMinutes"),
-        openIssues: AggregateField.sum("openIssues"),
-      })
-      .get(),
-    getPlatformSummaryBuckets(),
-  ]);
+  const emptyBuckets = {
+    byQualityGate: {} as Record<string, number>,
+    bySecurityRating: {} as Record<string, number>,
+    byMaintainabilityRating: {} as Record<string, number>,
+  };
+
+  let orgCount = 0;
+  let projectCount = 0;
+  let repoCount = 0;
+  let debtMinutes = 0;
+  let openIssues = 0;
+  let buckets = emptyBuckets;
+
+  try {
+    const [orgCountSnap, projectCountSnap, repoAggSnap, bucketSnap] = await Promise.all([
+      db.collection("orgs").count().get(),
+      db.collectionGroup("projects").count().get(),
+      db
+        .collectionGroup("repos")
+        .aggregate({
+          count: AggregateField.count(),
+          debtMinutes: AggregateField.sum("debtMinutes"),
+          openIssues: AggregateField.sum("openIssues"),
+        })
+        .get(),
+      getPlatformSummaryBuckets(),
+    ]);
+    orgCount = orgCountSnap.data().count;
+    projectCount = projectCountSnap.data().count;
+    repoCount = repoAggSnap.data().count;
+    debtMinutes = repoAggSnap.data().debtMinutes ?? 0;
+    openIssues = repoAggSnap.data().openIssues ?? 0;
+    buckets = bucketSnap;
+  } catch (err) {
+    console.error("adminGetPlatformSummary aggregation failed", err);
+    // Fall back to counting orgs only — client will fill rating bars from loaded projects.
+    try {
+      const orgSnap = await db.collection("orgs").count().get();
+      orgCount = orgSnap.data().count;
+    } catch {
+      /* ignore */
+    }
+  }
+
+  // If incremental rating buckets are empty, derive from project docs (paginated sample).
+  if (
+    Object.values(buckets.bySecurityRating).every((n) => !n) &&
+    Object.values(buckets.byMaintainabilityRating).every((n) => !n)
+  ) {
+    try {
+      const derived = await deriveRatingBucketsFromProjects();
+      buckets = { ...buckets, ...derived };
+    } catch (err) {
+      console.error("deriveRatingBucketsFromProjects failed", err);
+    }
+  }
 
   const ratingOrder = ["E", "D", "C", "B", "A"];
   const worstSecurityRating =
@@ -121,11 +164,11 @@ export const adminGetPlatformSummary = onCall({ memory: "512MiB", timeoutSeconds
   const failingGates = buckets.byQualityGate.FAILED ?? 0;
 
   return {
-    orgCount: orgCountSnap.data().count,
-    projectCount: projectCountSnap.data().count,
-    repoCount: repoAggSnap.data().count,
-    debtMinutes: repoAggSnap.data().debtMinutes ?? 0,
-    openIssues: repoAggSnap.data().openIssues ?? 0,
+    orgCount,
+    projectCount,
+    repoCount,
+    debtMinutes,
+    openIssues,
     failingGates,
     worstSecurityRating,
     worstMaintainabilityRating,
@@ -134,6 +177,32 @@ export const adminGetPlatformSummary = onCall({ memory: "512MiB", timeoutSeconds
     byQualityGate: buckets.byQualityGate,
   };
 });
+
+async function deriveRatingBucketsFromProjects(): Promise<{
+  bySecurityRating: Record<string, number>;
+  byMaintainabilityRating: Record<string, number>;
+  byQualityGate: Record<string, number>;
+}> {
+  const bySecurityRating: Record<string, number> = {};
+  const byMaintainabilityRating: Record<string, number> = {};
+  const byQualityGate: Record<string, number> = {};
+  const orgsSnap = await db.collection("orgs").limit(100).get();
+  await Promise.all(
+    orgsSnap.docs.map(async (orgDoc) => {
+      const projectsSnap = await orgDoc.ref.collection("projects").get();
+      for (const p of projectsSnap.docs) {
+        const data = p.data();
+        const sec = String(data.securityRating ?? "A");
+        const maint = String(data.maintainabilityRating ?? "A");
+        const gate = String(data.qualityGateStatus ?? "PASSED");
+        bySecurityRating[sec] = (bySecurityRating[sec] ?? 0) + 1;
+        byMaintainabilityRating[maint] = (byMaintainabilityRating[maint] ?? 0) + 1;
+        byQualityGate[gate] = (byQualityGate[gate] ?? 0) + 1;
+      }
+    }),
+  );
+  return { bySecurityRating, byMaintainabilityRating, byQualityGate };
+}
 
 /** Lets the web app show/hide the "Admin" nav entry without a Firestore read. */
 export const checkPlatformAdmin = onCall(async (request) => {
@@ -196,13 +265,29 @@ export const adminListAllIssues = onCall({ memory: "1GiB", timeoutSeconds: 540 }
 
   type RuleAgg = { ruleId: string; message: string; severity: string; count: number };
   const byRuleId = new Map<string, RuleAgg>();
-  type RepoAgg = { repoId: string; repoName: string; projectName: string; orgName: string; count: number };
+  type RepoAgg = {
+    repoId: string;
+    repoName: string;
+    projectId: string;
+    projectName: string;
+    orgId: string;
+    orgName: string;
+    count: number;
+  };
   // Seed every known repo at 0 so repos with no open issues correctly show
   // up as "least findings" (rather than being absent from the ranking).
   const byRepoId = new Map<string, RepoAgg>(
     repos.map((r) => [
       r.ref.id,
-      { repoId: r.ref.id, repoName: r.repoName, projectName: r.projectName, orgName: r.orgName, count: 0 },
+      {
+        repoId: r.ref.id,
+        repoName: r.repoName,
+        projectId: r.projectId,
+        projectName: r.projectName,
+        orgId: r.orgId,
+        orgName: r.orgName,
+        count: 0,
+      },
     ]),
   );
 

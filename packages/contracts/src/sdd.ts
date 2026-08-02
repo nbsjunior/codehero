@@ -224,4 +224,25 @@ export const SDD_TEMPLATES: Record<string, SddTemplate> = {
       "Manter estilo/indentação fixa de colunas do arquivo COBOL.",
     ],
   },
+  "sdd.generic.secure-fix": {
+    id: "sdd.generic.secure-fix",
+    strategy: "secure_fix",
+    guidance:
+      "Corrija a vulnerabilidade apontada seguindo a orientação da regra Sonar Way correspondente. Prefira APIs seguras da plataforma, valide entradas e evite padrões inseguros equivalentes.",
+    constraints: ["Preservar comportamento funcional legítimo.", "Não enfraquecer outros controles de segurança."],
+  },
+  "sdd.generic.bugfix": {
+    id: "sdd.generic.bugfix",
+    strategy: "bug_fix",
+    guidance:
+      "Corrija o bug apontado pela regra: elimine a condição de erro, trate edge cases e mantenha testes cobrindo o comportamento esperado.",
+    constraints: ["Preservar a API pública e contratos existentes."],
+  },
+  "sdd.generic.smell": {
+    id: "sdd.generic.smell",
+    strategy: "smell_refactor",
+    guidance:
+      "Refatore o trecho para eliminar o code smell (clareza, manutenibilidade ou higiene). Prefira a forma idiomática da linguagem.",
+    constraints: ["Não alterar comportamento observável sem necessidade."],
+  },
 };

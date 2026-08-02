@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import type { ScanFinding, ScanSummary } from "./scan";
+import { computeRepoHealth } from "./metrics";
 
 class DetailItem extends vscode.TreeItem {
   constructor(label: string, detail: string, icon: string) {
@@ -60,14 +61,24 @@ export class FindingsTreeProvider implements vscode.TreeDataProvider<vscode.Tree
   private readonly _onDidChange = new vscode.EventEmitter<vscode.TreeItem | undefined>();
   readonly onDidChangeTreeData = this._onDidChange.event;
 
-  private summary: ScanSummary = { findings: [], bySeverity: {}, fileCountHint: 0, ruleCatalog: [] };
+  private summary: ScanSummary = {
+    findings: [],
+    bySeverity: {},
+    fileCountHint: 0,
+    linesOfCode: 1,
+    health: computeRepoHealth([], 1),
+    ruleCatalog: [],
+  };
   private roots: vscode.TreeItem[] = [new SummaryItem("Nenhum scan ainda", "Clique em ↻ Rodar scan")];
 
   setFindings(findings: ScanFinding[], summary: ScanSummary): void {
     this.summary = summary;
     if (findings.length === 0) {
       this.roots = [
-        new SummaryItem("Nenhum apontamento", "QG limpo — nenhuma violação nas regras ativas"),
+        new SummaryItem(
+          "Nenhum apontamento",
+          `Sec ${summary.health.securityRating} · Maint ${summary.health.maintainabilityRating} · Gate ${summary.health.qualityGateStatus}`,
+        ),
       ];
     } else {
       const order = ["BLOCKER", "CRITICAL", "MAJOR", "MINOR", "INFO"];
@@ -77,10 +88,10 @@ export class FindingsTreeProvider implements vscode.TreeDataProvider<vscode.Tree
         if (list.length) groups.push(new SeverityGroup(sev, list));
       }
       const header = new SummaryItem(
-        `Avaliação: ${findings.length} apontamento(s)`,
-        Object.entries(summary.bySeverity)
+        `Avaliação: ${findings.length} · Sec ${summary.health.securityRating} · Maint ${summary.health.maintainabilityRating}`,
+        `Gate ${summary.health.qualityGateStatus} · ${Object.entries(summary.bySeverity)
           .map(([k, v]) => `${k} ${v}`)
-          .join(" · "),
+          .join(" · ")}`,
       );
       this.roots = [header, ...groups];
     }
