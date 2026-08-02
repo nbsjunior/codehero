@@ -248,6 +248,19 @@ function printPretty(
         ` (máx ${t.maxCyclomatic}) | cognitiva média ${t.avgCognitive}` +
         ` | aninhamento máx ${t.maxNesting} | comentários ${t.commentDensity}%\n`,
     );
+    if (structural.ruleFindings.length > 0) {
+      const porRegra = new Map<string, number>();
+      for (const f of structural.ruleFindings)
+        porRegra.set(f.rule.id, (porRegra.get(f.rule.id) ?? 0) + 1);
+      process.stdout.write(
+        `Regras estruturais (avaliam a arvore): ${structural.ruleFindings.length} apontamento(s)
+`,
+      );
+      for (const [id, n] of [...porRegra].sort((a, b) => b[1] - a[1])) {
+        process.stdout.write(`  ${String(n).padStart(4)}  ${id}
+`);
+      }
+    }
     const d = structural.duplication;
     process.stdout.write(
       `Duplicação: ${d.percent}% (${d.duplicatedLines} de ${d.totalLines} linhas)` +

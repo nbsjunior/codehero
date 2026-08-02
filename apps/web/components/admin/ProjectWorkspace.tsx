@@ -81,6 +81,12 @@ interface RepoIssue {
   referenceExample?: { before: string; after: string } | null;
   cwe?: string[];
   feedback?: IssueFeedbackEntry[];
+  findingSource?: "native" | "imported" | null;
+  tool?: string | null;
+  originalRuleId?: string | null;
+  engine?: string | null;
+  isDependency?: boolean;
+  isNewCode?: boolean;
 }
 
 const ratingColor: Record<string, string> = {
@@ -287,6 +293,12 @@ export default function ProjectWorkspace({
         referenceExample: issue.referenceExample,
         cwe: issue.cwe,
         feedbackVerdict: issue.feedback?.[issue.feedback.length - 1]?.verdict ?? null,
+        findingSource: issue.findingSource ?? null,
+        tool: issue.tool ?? null,
+        originalRuleId: issue.originalRuleId ?? null,
+        engine: issue.engine ?? null,
+        isDependency: issue.isDependency === true,
+        isNewCode: issue.isNewCode === true,
       })),
     [issues],
   );

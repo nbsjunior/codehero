@@ -5,6 +5,25 @@ import { execSync } from "node:child_process";
 
 const SEVERITY_ORDER = ["BLOCKER", "CRITICAL", "MAJOR", "MINOR", "INFO"];
 
+/** Normalize paths so git diff names match SARIF uris (posix, no file://). */
+function normPath(p) {
+  return String(p || "")
+    .replace(/^file:\/\/\/?/i, "")
+    .replace(/\\/g, "/")
+    .replace(/^\.\//, "")
+    .replace(/\/+/g, "/");
+}
+
+function pathMatchesChanged(uri, changedSet) {
+  const u = normPath(uri);
+  if (!u) return false;
+  if (changedSet.has(u)) return true;
+  for (const c of changedSet) {
+    if (u === c || u.endsWith("/" + c) || c.endsWith("/" + u)) return true;
+  }
+  return false;
+}
+
 /**
  * One Markdown report per run, one section per finding, built straight from
  * the SARIF `properties` the scanner already computed (risk/reason/how to
@@ -71,10 +90,13 @@ let newCodeFingerprints = [];
 try {
   const base = process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : "HEAD~1";
   const changed = new Set(
-    execSync(`git diff --name-only ${base}...HEAD`, { encoding: "utf8" }).split("\n").filter(Boolean),
+    execSync(`git diff --name-only ${base}...HEAD`, { encoding: "utf8" })
+      .split("\n")
+      .filter(Boolean)
+      .map(normPath),
   );
   newCodeFingerprints = (sarif.runs?.[0]?.results ?? [])
-    .filter((r) => changed.has(r.locations?.[0]?.physicalLocation?.artifactLocation?.uri))
+    .filter((r) => pathMatchesChanged(r.locations?.[0]?.physicalLocation?.artifactLocation?.uri, changed))
     .map((r) => r.partialFingerprints?.["heroHash/v1"])
     .filter(Boolean);
 } catch {

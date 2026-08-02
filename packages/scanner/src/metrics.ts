@@ -1,4 +1,6 @@
+import { STRUCTURAL_RULES, type StructuralRule } from "@codehero/contracts";
 import {
+  matchStructural,
   candidatesFor,
   findDuplicates,
   summarizeDuplication,
@@ -29,6 +31,8 @@ export interface StructuralSummary {
   /** Métricas por arquivo, só das linguagens com gramática madura. */
   files: FileMetrics[];
   findings: StructuralFinding[];
+  /** Apontamentos das regras que avaliam a ARVORE (nao a linha). */
+  ruleFindings: StructuralRuleFinding[];
   duplication: DuplicationSummary;
   /** Arquivos que a gramática rejeitou — números seriam pela metade. */
   parseErrors: string[];
@@ -46,6 +50,15 @@ export interface StructuralSummary {
   };
 }
 
+export interface StructuralRuleFinding {
+  rule: StructuralRule;
+  file: string;
+  startLine: number;
+  startColumn: number;
+  endColumn: number;
+  snippet: string;
+}
+
 export async function collectStructural(
   files: Array<{ path: string; source: string }>,
   thresholds: StructuralThresholds = DEFAULT_STRUCTURAL_THRESHOLDS,
@@ -53,6 +66,7 @@ export async function collectStructural(
   const out: FileMetrics[] = [];
   const findings: StructuralFinding[] = [];
   const dupCandidatos: DuplicateCandidate[] = [];
+  const ruleFindings: StructuralRuleFinding[] = [];
   const parseErrors: string[] = [];
   let skippedLanguages = 0;
 
@@ -71,6 +85,13 @@ export async function collectStructural(
     if (m.parseError) parseErrors.push(f.path);
     findings.push(...structuralFindings(m, thresholds));
     dupCandidatos.push(...candidatesFor(f.path, parsed));
+
+    // Regras estruturais: mesmo parse, sem custo extra de parsing.
+    for (const rule of STRUCTURAL_RULES) {
+      for (const hit of matchStructural(parsed, rule.spec)) {
+        ruleFindings.push({ rule, file: m.file, ...hit });
+      }
+    }
   }
 
   const todasFuncoes = out.flatMap((m) => m.functions);
@@ -87,6 +108,7 @@ export async function collectStructural(
   return {
     files: out,
     findings,
+    ruleFindings,
     duplication,
     parseErrors,
     skippedLanguages,

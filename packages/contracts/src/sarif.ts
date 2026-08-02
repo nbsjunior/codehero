@@ -65,6 +65,8 @@ export interface SarifResult {
     originalRuleId?: string;
     /** Vulnerabilidade de dependência (SCA), não de código autoral. */
     isDependency?: boolean;
+    /** Motor nativo: L0 pattern, Babel AST/taint, ou tree-sitter structural. */
+    engine?: "pattern" | "ast" | "taint" | "structural";
   };
 }
 

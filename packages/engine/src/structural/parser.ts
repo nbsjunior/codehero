@@ -60,13 +60,28 @@ export function structuralLanguageFor(file: string): StructuralLanguage | null {
   return EXT_TO_LANG[file.slice(dot).toLowerCase()] ?? null;
 }
 
-/** Nó mínimo que as métricas consomem — evita acoplar ao tipo do runtime. */
+/**
+ * Superfície do nó que o motor consome. Deliberadamente menor que a do
+ * runtime, para não acoplar o engine ao web-tree-sitter — mas grande o
+ * bastante para regra ESTRUTURAL, que precisa de:
+ *   - `text`             ler o nome do callee, o conteúdo de um literal
+ *   - `childForFieldName` navegar por campo nomeado (function, arguments,
+ *                        condition, body) em vez de por índice, que varia
+ *                        entre gramáticas
+ *   - `namedChild`       pular pontuação (vírgula, parêntese)
+ *   - `parent`           checar contexto ("está dentro de um laço?")
+ */
 export interface SyntaxNode {
   type: string;
+  text: string;
   startPosition: { row: number; column: number };
   endPosition: { row: number; column: number };
   childCount: number;
+  namedChildCount: number;
+  parent: SyntaxNode | null;
   child(i: number): SyntaxNode | null;
+  namedChild(i: number): SyntaxNode | null;
+  childForFieldName(field: string): SyntaxNode | null;
   hasError(): boolean;
 }
 

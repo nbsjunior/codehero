@@ -27,7 +27,7 @@ export interface CatalogRuleEntry {
   name: string;
   severity: string;
   type: string;
-  implementation: "core" | "sonar-port" | "stub" | "overlay" | null;
+  implementation: "core" | "sonar-port" | "structural" | "stub" | "overlay" | null;
   sonarKey: string | null;
   /** True when this rule is included in IDE/CLI live scans. */
   scannable: boolean;
