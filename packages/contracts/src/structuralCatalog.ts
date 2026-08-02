@@ -142,6 +142,41 @@ export const STRUCTURAL_RULES: StructuralRule[] = [
       "Depende de o nó estar sob um ancestral do tipo laço, possivelmente dezenas de linhas acima. É informação de árvore, não de linha.",
   },
   {
+    id: "HERO-ST-0400-io-assincrono-em-laco",
+    name: "IoAssincronoEmLaco",
+    message:
+      "Operação assíncrona dentro de laço: uma ida e volta por item da coleção (padrão N+1). Agrupe numa chamada só ou use Promise.all.",
+    severity: "MAJOR",
+    type: "CODE_SMELL",
+    remediationEffortMin: 30,
+    cwe: ["CWE-400"],
+    owasp: [],
+    sddTemplateId: "sdd.smell.batch-io",
+    category: "code-smell",
+    // Esta regra NAO tem lista de nomes, e e o ponto dela.
+    //
+    // A regra irma (0489) precisa enumerar `query|fetch|readFile|...` porque so
+    // enxerga forma. Aqui o criterio e o TIPO: a chamada devolve Promise e nao
+    // foi declarada na biblioteca padrao. Isso vale para qualquer metodo, de
+    // qualquer biblioteca, inclusive os que ainda nao existem — nenhuma lista
+    // para manter e nenhum nome novo escapando.
+    //
+    // `requireSemantic` faz a regra CALAR onde nao ha tipo (JS puro, arquivo
+    // fora do Program). Silencio honesto vale mais que palpite: sem tipo, esta
+    // regra e exatamente a que deu 103 achados e ~60 falsos positivos.
+    spec: {
+      match: "call",
+      inside: ["loop"],
+      semantic: {
+        awaitable: true,
+        calleeFrom: ["user", "dependency"],
+        requireSemantic: true,
+      },
+    },
+    whyNotRegex:
+      "Depende de saber que a chamada devolve Promise e de onde o metodo foi declarado. Nenhuma das duas coisas esta no texto nem na forma da arvore: so o verificador de tipos sabe.",
+  },
+  {
     id: "HERO-ST-0561-funcao-vazia",
     name: "FuncaoVazia",
     message: "Função sem corpo: ou é código morto, ou é uma implementação esquecida.",

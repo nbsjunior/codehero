@@ -9,6 +9,8 @@ import {
   structuralFindings,
   structuralLanguageFor,
   DEFAULT_STRUCTURAL_THRESHOLDS,
+  EMPTY_SEMANTIC_INDEX,
+  type SemanticIndex,
   type FileMetrics,
   type StructuralFinding,
   type DuplicateCandidate,
@@ -62,6 +64,9 @@ export interface StructuralRuleFinding {
 export async function collectStructural(
   files: Array<{ path: string; source: string }>,
   thresholds: StructuralThresholds = DEFAULT_STRUCTURAL_THRESHOLDS,
+  // Sem índice as regras com `semantic` degradam sozinhas: as que exigem tipo
+  // calam, as demais seguem pela árvore. Nenhum `if` aqui.
+  semantic: SemanticIndex = EMPTY_SEMANTIC_INDEX,
 ): Promise<StructuralSummary> {
   const out: FileMetrics[] = [];
   const findings: StructuralFinding[] = [];
@@ -88,7 +93,7 @@ export async function collectStructural(
 
     // Regras estruturais: mesmo parse, sem custo extra de parsing.
     for (const rule of STRUCTURAL_RULES) {
-      for (const hit of matchStructural(parsed, rule.spec)) {
+      for (const hit of matchStructural(parsed, rule.spec, { semantic, file: m.file })) {
         ruleFindings.push({ rule, file: m.file, ...hit });
       }
     }
