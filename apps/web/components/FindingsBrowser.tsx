@@ -37,6 +37,13 @@ export type FindingsBrowserItem = {
   /** Extra meta shown in the list (repo, origem, …) */
   meta?: string;
   feedbackVerdict?: IssueFeedbackVerdict | null;
+  /** native CodeHero vs imported third-party analyzer */
+  findingSource?: "native" | "imported" | null;
+  tool?: string | null;
+  originalRuleId?: string | null;
+  engine?: string | null;
+  isDependency?: boolean;
+  isNewCode?: boolean;
 };
 
 function verdictLabel(v: IssueFeedbackVerdict | null | undefined): string | null {
@@ -51,6 +58,23 @@ function verdictLabel(v: IssueFeedbackVerdict | null | undefined): string | null
 function fileBasename(path: string): string {
   const parts = path.replace(/\\/g, "/").split("/");
   return parts[parts.length - 1] || path;
+}
+
+/** Procedência legível: CodeHero engine vs analyzer importado. */
+export function provenanceLabel(item: FindingsBrowserItem): string | null {
+  if (item.meta) return item.meta;
+  const bits: string[] = [];
+  if (item.findingSource === "imported") {
+    bits.push(item.tool ? `via ${item.tool}` : "importado");
+    if (item.originalRuleId) bits.push(item.originalRuleId);
+    if (item.isDependency) bits.push("dependência");
+  } else if (item.engine) {
+    bits.push(item.engine);
+  } else if (item.tool) {
+    bits.push(item.tool);
+  }
+  if (item.isNewCode) bits.push("código novo");
+  return bits.length ? bits.join(" · ") : null;
 }
 
 function resolveFicha(item: FindingsBrowserItem) {
@@ -245,6 +269,7 @@ export default function FindingsBrowser({
         <ul className="findings-list" role="list">
           {filtered.map((item, idx) => {
             const verdict = verdictLabel(item.feedbackVerdict);
+            const provenance = provenanceLabel(item);
             return (
               <li key={item.id}>
                 <button
@@ -262,7 +287,7 @@ export default function FindingsBrowser({
                         {fileBasename(item.file)}
                         {item.line != null ? `:${item.line}` : ""}
                       </span>
-                      {item.meta ? <span className="findings-row__meta">{item.meta}</span> : null}
+                      {provenance ? <span className="findings-row__meta">{provenance}</span> : null}
                     </span>
                   </span>
                   {verdict ? (

@@ -36,3 +36,7 @@ export type {
   DuplicateGroup,
   DuplicationSummary,
 } from "./structural/duplication.ts";
+
+// Regras estruturais: avaliam a ÁRVORE, não o texto. Valem nas 6 linguagens.
+export { matchStructural } from "./structural/rules.ts";
+export type { StructuralMatch } from "./structural/rules.ts";

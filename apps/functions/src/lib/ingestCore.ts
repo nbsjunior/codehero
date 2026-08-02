@@ -85,6 +85,7 @@ export function computeAnalysisSummary(
   duplicationPercent?: number | null,
 ): PersistAnalysisResult["summary"] {
   const newSet = new Set(newCodeFingerprints ?? []);
+  const scopeToNewCode = newSet.size > 0;
   const bySeverity: Record<Severity, number> = { BLOCKER: 0, CRITICAL: 0, MAJOR: 0, MINOR: 0, INFO: 0 };
   const codeSmellEfforts: number[] = [];
   const vulnSeverities: Severity[] = [];
@@ -93,14 +94,22 @@ export function computeAnalysisSummary(
   for (const r of results) {
     const sev = (r.properties?.severity as Severity) ?? "INFO";
     const issueType = r.properties?.issueType ?? "CODE_SMELL";
-    const fp = r.partialFingerprints?.["heroHash/v1"] ?? `${r.ruleId}:${r.locations?.[0]?.physicalLocation?.region?.startLine}`;
+    const fp =
+      r.partialFingerprints?.["heroHash/v1"] ??
+      `${r.ruleId}:${r.locations?.[0]?.physicalLocation?.region?.startLine}`;
+    const isNew = newSet.has(fp);
+
     if (SEVERITIES.includes(sev)) bySeverity[sev] += 1;
+    if (sev === "BLOCKER" && isNew) newBlockerIssues += 1;
+
+    // Gate ratings: when CI sent fingerprints, score only new-code issues.
+    if (scopeToNewCode && !isNew) continue;
     if (issueType === "CODE_SMELL") codeSmellEfforts.push(r.properties?.remediationEffortMin ?? 0);
     if (issueType === "VULNERABILITY" && SEVERITIES.includes(sev)) vulnSeverities.push(sev);
-    if (sev === "BLOCKER" && newSet.has(fp)) newBlockerIssues += 1;
   }
 
   const debtMin = technicalDebtMinutes(codeSmellEfforts);
+  // Debt ratio still uses full LOC (new-code LOC is not always available).
   const debtRatio = technicalDebtRatio(debtMin, linesOfCode);
   const maintRating = maintainabilityRating(debtRatio);
   const securityRating = ratingFromWorstSeverity(vulnSeverities);
@@ -168,6 +177,12 @@ export async function upsertIssuesFromResults(input: {
         constraints: r.properties?.constraints ?? [],
         referenceExample: r.properties?.referenceExample ?? null,
         cwe: r.properties?.cwe ?? [],
+        // Provenance: BYO analyzers (imported) vs native CodeHero engines.
+        findingSource: r.properties?.source === "imported" ? "imported" : "native",
+        tool: r.properties?.tool ?? null,
+        originalRuleId: r.properties?.originalRuleId ?? null,
+        isDependency: r.properties?.isDependency === true,
+        engine: r.properties?.engine ?? null,
         status: "open",
         isNewCode: newSet.has(fp),
         branch: input.branch,

@@ -8,8 +8,10 @@ import {
   type SarifLog,
   type SarifReportingDescriptor,
   type SarifResult,
+  type StructuralRule,
 } from "@codehero/contracts";
 import type { CoverageReport } from "@codehero/contracts";
+import { createHash } from "node:crypto";
 import type { Finding } from "./engine.ts";
 
 /** Resumo estrutural que o scanner produz com --metrics (ver metrics.ts). */
@@ -38,6 +40,15 @@ export interface StructuralForSarif {
       blocks: Array<{ file: string; startLine: number; endLine: number }>;
     }>;
   };
+  /** Apontamentos HERO-ST-* (tree-sitter) — entram como results, não só no console. */
+  ruleFindings?: Array<{
+    rule: StructuralRule;
+    file: string;
+    startLine: number;
+    startColumn: number;
+    endColumn: number;
+    snippet: string;
+  }>;
 }
 
 /** Achado vindo de outra ferramenta, já normalizado (ver importSarif.ts). */
@@ -56,6 +67,11 @@ export interface ImportedForSarif {
   cwe: string[];
   isDependency: boolean;
   helpUri?: string;
+}
+
+function heroFingerprint(ruleId: string, file: string, snippet: string): string {
+  const normalized = snippet.trim().replace(/\s+/g, " ");
+  return createHash("sha256").update(`${ruleId}::${file}::${normalized}`).digest("hex").slice(0, 16);
 }
 
 export function buildSarif(
@@ -136,6 +152,86 @@ export function buildSarif(
         constraints: ficha.constraints,
         referenceExample: ficha.referenceExample,
         cwe: ficha.cwe,
+        tool: TOOL_NAME,
+        engine: f.engine ?? "pattern",
+      },
+    });
+  }
+
+  // Tree-sitter structural hits (HERO-ST-*): same run, engine=structural.
+  for (const sf of structural?.ruleFindings ?? []) {
+    const rule = sf.rule;
+    const fileUri = sf.file.replace(/\\/g, "/");
+    const fp = heroFingerprint(rule.id, fileUri, sf.snippet);
+    const ficha = buildFindingFicha({
+      ruleId: rule.id,
+      ruleName: rule.name,
+      message: rule.message,
+      severity: rule.severity,
+      issueType: rule.type,
+      sddTemplateId: rule.sddTemplateId,
+      cwe: rule.cwe,
+      owasp: rule.owasp,
+      remediationEffortMin: rule.remediationEffortMin,
+      file: fileUri,
+      line: sf.startLine,
+      snippet: sf.snippet,
+    });
+
+    if (!seenRules.has(rule.id)) {
+      const helpText = formatFindingFichaHelp(ficha);
+      seenRules.set(rule.id, {
+        id: rule.id,
+        name: rule.name,
+        shortDescription: { text: rule.message },
+        fullDescription: { text: ficha.reason },
+        help: { text: helpText, markdown: helpText },
+        defaultConfiguration: { level: severityToSarifLevel(rule.severity) },
+        properties: {
+          cwe: rule.cwe,
+          owasp: rule.owasp,
+          tags: [rule.type, "structural", ...rule.cwe],
+          risk: ficha.risk,
+          howToFix: ficha.howToFix,
+          strategy: ficha.strategy,
+        },
+      });
+    }
+
+    results.push({
+      ruleId: rule.id,
+      level: severityToSarifLevel(rule.severity),
+      message: { text: rule.message },
+      locations: [
+        {
+          physicalLocation: {
+            artifactLocation: { uri: fileUri },
+            region: {
+              startLine: sf.startLine,
+              startColumn: sf.startColumn,
+              endLine: sf.startLine,
+              endColumn: sf.endColumn,
+              snippet: { text: sf.snippet },
+            },
+          },
+        },
+      ],
+      partialFingerprints: { [HERO_FINGERPRINT_ALGO]: fp },
+      properties: {
+        severity: rule.severity,
+        issueType: rule.type,
+        remediationEffortMin: rule.remediationEffortMin,
+        sddTemplateId: rule.sddTemplateId,
+        snippet: sf.snippet,
+        risk: ficha.risk,
+        reason: ficha.reason,
+        howToFix: ficha.howToFix,
+        strategy: ficha.strategy,
+        constraints: ficha.constraints,
+        referenceExample: ficha.referenceExample,
+        cwe: ficha.cwe,
+        tool: TOOL_NAME,
+        engine: "structural",
       },
     });
   }

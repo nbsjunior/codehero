@@ -44,6 +44,8 @@ function catalogById(id: string): HeroRule | undefined {
 export function resolveCatalogRuleId(ruleId: string, langHint?: string): string {
   const raw = String(ruleId ?? "").trim();
   if (!raw) return raw;
+  // BYO / imported findings keep their EXT:<tool>:<id> identity.
+  if (raw.startsWith("EXT:")) return raw;
   if (RULES_BY_ID[raw] || catalogById(raw)) return raw;
 
   const byKey = sonarKeyIndex().get(raw);

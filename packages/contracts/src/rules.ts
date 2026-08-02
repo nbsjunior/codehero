@@ -2,6 +2,7 @@ import type { Severity, IssueType } from "./severity.ts";
 import type { SecurityCategory, TaintSinkKind, TaintSourceKind } from "./engineKinds.ts";
 import { SONAR_WAY_LIVE_RULES, getSonarWayRules } from "./sonarWayRules.ts";
 import { COBOL_CORE_RULES } from "./cobolRules.ts";
+import { STRUCTURAL_RULES } from "./structuralCatalog.ts";
 
 // ---------------------------------------------------------------------------
 // Hero-IR — declarative rule format.
@@ -64,11 +65,12 @@ export interface HeroRule {
   sonarKey?: string;
   /**
    * How this rule is executed:
-   * - core: hand-authored CodeHero rule
+   * - core: hand-authored CodeHero L0 rule
    * - sonar-port: L0 port synthesized from Sonar way metadata
+   * - structural: tree-sitter / AST structural matcher (HERO-ST-*)
    * - stub: catalog-only (no live detection; pattern never matches)
    */
-  implementation?: "core" | "sonar-port" | "stub";
+  implementation?: "core" | "sonar-port" | "structural" | "stub";
 }
 
 // The canonical starter rule set. In production this bundle is generated and
@@ -632,16 +634,39 @@ const _CORE_BASE: HeroRule[] = (
 export const CORE_RULES: HeroRule[] = [..._CORE_BASE, ...COBOL_CORE_RULES];
 
 /**
+ * Tree-sitter structural rules as HeroRule rows (catalog / ficha / SARIF).
+ * Not in L0 RULES — they run only under `--metrics` via the structural engine.
+ */
+export const STRUCTURAL_HERO_RULES: HeroRule[] = STRUCTURAL_RULES.map((r) => ({
+  id: r.id,
+  name: r.name,
+  languages: ["javascript", "typescript", "python", "java", "go", "csharp"] as RuleLanguage[],
+  severity: r.severity,
+  type: r.type,
+  remediationEffortMin: r.remediationEffortMin,
+  cwe: r.cwe,
+  owasp: r.owasp,
+  message: r.message,
+  sddTemplateId: r.sddTemplateId,
+  category: r.category,
+  // Never matches in L0; structural engine owns detection.
+  pattern: { regex: "(?!)" },
+  implementation: "structural" as const,
+}));
+
+/**
  * Live detection set: core + Sonar way L0 ports (stubs excluded — catalog only).
- * Used by scanner / getActiveRules matching.
+ * Used by scanner / getActiveRules matching. Structural rules are separate.
  */
 export const RULES: HeroRule[] = [...CORE_RULES, ...SONAR_WAY_LIVE_RULES];
 
 let _catalogRules: HeroRule[] | null = null;
 
-/** Full catalog for admin / MCP / docs: core + every Sonar way rule (incl. stubs). */
+/** Full catalog for admin / MCP / docs: core + structural + every Sonar way rule (incl. stubs). */
 export function getCatalogRules(): HeroRule[] {
-  if (!_catalogRules) _catalogRules = [...CORE_RULES, ...getSonarWayRules()];
+  if (!_catalogRules) {
+    _catalogRules = [...CORE_RULES, ...STRUCTURAL_HERO_RULES, ...getSonarWayRules()];
+  }
   return _catalogRules;
 }
 
@@ -666,8 +691,10 @@ export const CATALOG_RULES: HeroRule[] = new Proxy([] as HeroRule[], {
   },
 });
 
-/** Live + core lookup (always available; stubs resolved via getCatalogRules). */
-export const RULES_BY_ID: Record<string, HeroRule> = Object.fromEntries(RULES.map((r) => [r.id, r]));
+/** Live + core + structural lookup (stubs resolved via getCatalogRules). */
+export const RULES_BY_ID: Record<string, HeroRule> = Object.fromEntries(
+  [...RULES, ...STRUCTURAL_HERO_RULES].map((r) => [r.id, r]),
+);
 
 export function lookupRule(id: string): HeroRule | undefined {
   return RULES_BY_ID[id] ?? getCatalogRules().find((r) => r.id === id);

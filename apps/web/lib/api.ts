@@ -752,7 +752,7 @@ export interface MotorRuleRow {
   patternRegex: string | null;
   source: MotorRuleSource;
   sourceLabel: string;
-  implementation?: "core" | "sonar-port" | "stub" | "overlay" | null;
+  implementation?: "core" | "sonar-port" | "structural" | "stub" | "overlay" | null;
   sonarKey?: string | null;
   canDelete: boolean;
   orgId: string | null;

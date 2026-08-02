@@ -19,7 +19,7 @@ const severityTone: Record<string, string> = {
   INFO: "var(--rating-a)",
 };
 
-type SourceFilter = "all" | "core" | "sonar" | "sonar-live" | "sonar-stub" | "custom";
+type SourceFilter = "all" | "core" | "structural" | "sonar" | "sonar-live" | "sonar-stub" | "custom";
 
 export default function RulesCatalog() {
   const [groups, setGroups] = useState<MotorRuleGroup[]>([]);
@@ -60,7 +60,9 @@ export default function RulesCatalog() {
       .map((g) => {
         const rules = g.rules.filter((r) => {
           const isSonar = r.id.startsWith("SONAR-") || !!r.sonarKey;
-          if (sourceFilter === "core" && (r.source !== "core" || isSonar)) return false;
+          if (sourceFilter === "core" && (r.source !== "core" || isSonar || r.implementation === "structural"))
+            return false;
+          if (sourceFilter === "structural" && r.implementation !== "structural") return false;
           if (sourceFilter === "sonar" && !isSonar) return false;
           if (sourceFilter === "sonar-live" && r.implementation !== "sonar-port") return false;
           if (sourceFilter === "sonar-stub" && r.implementation !== "stub") return false;
@@ -131,7 +133,7 @@ export default function RulesCatalog() {
       <PageHeader
         eyebrow="Projetos"
         title="Regras do motor"
-        description="Catálogo completo: core CodeHero + 2.668 regras Sonar way (detectores L0 + stubs de catálogo) + dress code. Stubs recebem findings via ingestão SARIF Sonar."
+        description="Catálogo: core + estrutural (HERO-ST) + Sonar way (L0 live + stubs) + dress code. Stubs iluminam via SARIF importado; estrutural entra no scan com --metrics."
       />
 
       {totals && (
@@ -190,6 +192,7 @@ export default function RulesCatalog() {
             [
               ["all", "Todas"],
               ["core", "Só core"],
+              ["structural", "Estrutural (AST)"],
               ["sonar", "Sonar way"],
               ["sonar-live", "Sonar L0"],
               ["sonar-stub", "Sonar catálogo"],

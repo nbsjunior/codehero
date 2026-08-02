@@ -600,10 +600,19 @@ export default function DocsPage() {
             <div className="cr-docs-callout">
               <strong>O que o scanner conta hoje</strong>
               <p style={{ margin: "0.5rem 0 0" }}>
-                Só as regras <strong>L0 (CORE)</strong> — TypeScript/JavaScript, Python, Java e COBOL — entram no
-                contador ao vivo e nos índices A–E. O restante do catálogo (referência Sonar Way e overlays ainda sem
-                motor) aparece como <em>stub</em>: metadados e política, sem findings. Gate e ratings refletem o L0
-                real; stubs não inventam violações.
+                Contam no gate e nos índices: regras <strong>L0 (CORE)</strong>, ports Sonar live, regras{" "}
+                <strong>estruturais</strong> (HERO-ST-*, tree-sitter com <code>--metrics</code>) e achados{" "}
+                <strong>importados</strong> via SARIF (CodeQL, Semgrep, Trivy…). Stubs do catálogo Sonar Way são
+                metadados/política — não inventam findings. Procedência (<em>tool</em> / <em>engine</em>) fica no
+                apontamento.
+              </p>
+            </div>
+            <div className="cr-docs-callout">
+              <strong>Estratégia A + B</strong>
+              <p style={{ margin: "0.5rem 0 0" }}>
+                <strong>A — orquestração:</strong> traga analyzers fortes com <code>import-sarif</code>; o CodeHero
+                normaliza, aplica gate e política. <strong>B — depth nativo:</strong> L0 + AST/taint (JS/TS) +
+                tree-sitter estrutural; stubs viram backlog de implementação, não marketing.
               </p>
             </div>
 
