@@ -36,6 +36,10 @@ const DECISAO = new Set([
   "expression_switch_statement",
   "type_switch_statement",
   "communication_case",
+  "evaluate_statement", // COBOL
+  "when_clause", // COBOL EVALUATE WHEN
+  "perform_until_statement", // COBOL loop PERFORM
+  "goto_statement", // COBOL GO TO — each is a path edge
 ]);
 
 /** Operadores booleanos: cada um adiciona um caminho. */
@@ -57,6 +61,8 @@ const ANINHA = new Set([
   "try_statement",
   "catch_clause",
   "except_clause",
+  "evaluate_statement",
+  "perform_until_statement",
 ]);
 
 /** Declarações de função/método por gramática. */
@@ -73,6 +79,8 @@ const FUNCOES = new Set([
   "generator_function_declaration",
   "func_literal",
   "lambda",
+  "paragraph", // COBOL
+  "procedure_definition", // T-SQL
 ]);
 
 const PARAMETROS = new Set([
@@ -108,10 +116,12 @@ export interface FileMetrics {
 }
 
 function nodeName(n: SyntaxNode): string | null {
+  const named = n.childForFieldName("name");
+  if (named?.text) return named.text;
   for (let i = 0; i < n.childCount; i++) {
     const c = n.child(i);
     if (c && (c.type === "identifier" || c.type === "property_identifier" || c.type === "field_identifier")) {
-      return null; // sem acesso ao texto na interface mínima; nome é opcional
+      return c.text || null;
     }
   }
   return null;

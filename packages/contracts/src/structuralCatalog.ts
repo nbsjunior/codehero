@@ -156,6 +156,46 @@ export const STRUCTURAL_RULES: StructuralRule[] = [
     whyNotRegex:
       "Mesmo problema do catch vazio: o corpo se estende por várias linhas e a regex só vê uma de cada vez.",
   },
+  {
+    id: "HERO-ST-cobol-dynamic-call",
+    name: "CallDinamicoCobol",
+    message:
+      "CALL com nome de programa em variável: o alvo só se resolve em runtime e foge a análise estática simples.",
+    severity: "MAJOR",
+    type: "CODE_SMELL",
+    remediationEffortMin: 20,
+    cwe: ["CWE-829"],
+    owasp: [],
+    sddTemplateId: "sdd.smell.remove-dead-code",
+    category: "code-smell",
+    spec: {
+      match: "call",
+      textMatches: "^CALL\\b",
+      argument: { index: 0, is: "non-literal" },
+    },
+    whyNotRegex:
+      "CALL 'PROG' e CALL WS-PROG-NAME são a mesma forma textual na linha; só o tipo do nó (literal vs identificador) separa o caso seguro do dinâmico.",
+  },
+  {
+    id: "HERO-ST-tsql-exec-dynamic",
+    name: "ExecSqlDinamico",
+    message:
+      "EXEC/EXECUTE com SQL montado ou variável: risco clássico de SQL Injection em T-SQL.",
+    severity: "CRITICAL",
+    type: "VULNERABILITY",
+    remediationEffortMin: 30,
+    cwe: ["CWE-89"],
+    owasp: ["A03:2021-Injection"],
+    sddTemplateId: "sdd.sqli.parametrize",
+    category: "string-injection",
+    spec: {
+      match: "call",
+      callee: "^(EXEC|sp_executesql)$",
+      argument: { index: "any", is: "assembled" },
+    },
+    whyNotRegex:
+      "EXEC(@sql) e EXEC(N'SELECT 1') compartilham o token EXEC; a árvore distingue identificador/montagem de literal constante.",
+  },
 ];
 
 export const STRUCTURAL_RULES_BY_ID: Record<string, StructuralRule> = Object.fromEntries(

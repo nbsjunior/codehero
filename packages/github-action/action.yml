@@ -40,10 +40,10 @@ inputs:
   metrics:
     description: >
       Calcula complexidade ciclomática, cognitiva, aninhamento, tamanho de
-      função e densidade de comentários via tree-sitter. Custa alguns segundos
-      no scan; ligado por padrão porque no CI isso não pesa. Cobre JS, TS,
-      Python, Java, Go e C# — COBOL, T-SQL, DB2 e VB.Net não têm gramática
-      madura disponível e são ignorados por este passo.
+      função e densidade de comentários via tree-sitter (JS/TS/Python/Java/Go/C#)
+      e parsers estruturais leves para COBOL/T-SQL. Custa alguns segundos no
+      scan; ligado por padrão porque no CI isso não pesa. DB2 SQL dedicado e
+      VB.Net ainda ficam de fora deste passo.
     required: false
     default: "true"
   import-sarif:
