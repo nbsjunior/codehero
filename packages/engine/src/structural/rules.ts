@@ -256,6 +256,12 @@ export interface StructuralMatch {
   snippet: string;
 }
 
+/** JS RegExp does not accept `(?i)` inline; map it to the `i` flag. */
+function compileRe(src: string): RegExp {
+  if (src.startsWith("(?i)")) return new RegExp(src.slice(4), "i");
+  return new RegExp(src);
+}
+
 /** Todos os pontos de um arquivo que satisfazem a especificação. */
 export function matchStructural(
   parsed: ParsedFile,
