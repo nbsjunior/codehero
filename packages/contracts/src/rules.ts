@@ -1,6 +1,6 @@
 import type { Severity, IssueType } from "./severity.ts";
 import type { SecurityCategory, TaintSinkKind, TaintSourceKind } from "./engineKinds.ts";
-import { SONAR_WAY_LIVE_RULES, SONAR_WAY_RULES } from "./sonarWayRules.ts";
+import { SONAR_WAY_LIVE_RULES, getSonarWayRules } from "./sonarWayRules.ts";
 import { COBOL_CORE_RULES } from "./cobolRules.ts";
 
 // ---------------------------------------------------------------------------
@@ -637,13 +637,41 @@ export const CORE_RULES: HeroRule[] = [..._CORE_BASE, ...COBOL_CORE_RULES];
  */
 export const RULES: HeroRule[] = [...CORE_RULES, ...SONAR_WAY_LIVE_RULES];
 
+let _catalogRules: HeroRule[] | null = null;
+
+/** Full catalog for admin / MCP / docs: core + every Sonar way rule (incl. stubs). */
+export function getCatalogRules(): HeroRule[] {
+  if (!_catalogRules) _catalogRules = [...CORE_RULES, ...getSonarWayRules()];
+  return _catalogRules;
+}
+
 /**
- * Full catalog for admin / MCP / docs: core + every Sonar way rule (incl. stubs).
+ * Sync catalog access (forces lazy load of full Sonar way JSON on first touch).
+ * Prefer getCatalogRules() in new code.
  */
-export const CATALOG_RULES: HeroRule[] = [...CORE_RULES, ...SONAR_WAY_RULES];
+export const CATALOG_RULES: HeroRule[] = new Proxy([] as HeroRule[], {
+  get(_target, prop, receiver) {
+    const rules = getCatalogRules();
+    const value = Reflect.get(rules, prop, receiver);
+    return typeof value === "function" ? value.bind(rules) : value;
+  },
+  ownKeys() {
+    return Reflect.ownKeys(getCatalogRules());
+  },
+  getOwnPropertyDescriptor(_target, prop) {
+    return Reflect.getOwnPropertyDescriptor(getCatalogRules(), prop);
+  },
+  has(_target, prop) {
+    return Reflect.has(getCatalogRules(), prop);
+  },
+});
 
-export const RULES_BY_ID: Record<string, HeroRule> = Object.fromEntries(
-  CATALOG_RULES.map((r) => [r.id, r]),
-);
+/** Live + core lookup (always available; stubs resolved via getCatalogRules). */
+export const RULES_BY_ID: Record<string, HeroRule> = Object.fromEntries(RULES.map((r) => [r.id, r]));
 
-export { SONAR_WAY_RULES, SONAR_WAY_LIVE_RULES };
+export function lookupRule(id: string): HeroRule | undefined {
+  return RULES_BY_ID[id] ?? getCatalogRules().find((r) => r.id === id);
+}
+
+export { SONAR_WAY_LIVE_RULES, getSonarWayRules };
+export { SONAR_WAY_RULES } from "./sonarWayRules.ts";
