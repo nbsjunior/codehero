@@ -12,7 +12,8 @@ export * from "./lintKnowledgeBase.ts";
 export * from "./coverage.ts";
 export * from "./structuralRules.ts";
 export * from "./structuralCatalog.ts";
-export * from "./sonarCatalog.ts";
+export * from "./sonarWayLive.ts";
+// Full Sonar catalog + SARIF normalize: import `@codehero/contracts/catalog` (Node).
 
 export const TOOL_NAME = "CodeHero";
 export const TOOL_VERSION = "0.1.0";

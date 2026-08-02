@@ -2,11 +2,11 @@ import { createHash } from "node:crypto";
 import {
   RULES,
   CORE_RULES,
-  CATALOG_RULES,
   matchPattern,
   isUnsafeRegex,
   type HeroRule,
 } from "@codehero/contracts";
+import { getFullCatalogRules } from "@codehero/contracts/catalog";
 import { db } from "./firebase.ts";
 
 export interface ActiveRulesPayload {
@@ -71,7 +71,7 @@ export async function loadActiveRules(orgId?: string, projectId?: string): Promi
 export async function loadRulesCatalog(orgId?: string, projectId?: string): Promise<RulesCatalogPayload> {
   const overlays = await loadOverlayRules(orgId, projectId);
   const scanRules = mergeRules(RULES, overlays);
-  const catalog = mergeRules(CATALOG_RULES, overlays);
+  const catalog = mergeRules(getFullCatalogRules(), overlays);
   const scannableIds = new Set(scanRules.map((r) => r.id));
 
   const rules: CatalogRuleEntry[] = catalog.map((r) => {

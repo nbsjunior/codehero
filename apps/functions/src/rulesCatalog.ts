@@ -1,11 +1,11 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import {
-  CATALOG_RULES,
   computeLintCoverage,
   type HeroRule,
   type IssueType,
   type RuleLanguage,
 } from "@codehero/contracts";
+import { getFullCatalogRules } from "@codehero/contracts/catalog";
 import { db } from "./lib/firebase.ts";
 
 const GROUP_ORDER: IssueType[] = ["VULNERABILITY", "SECURITY_HOTSPOT", "BUG", "CODE_SMELL"];
@@ -143,7 +143,7 @@ export const listMotorRules = onCall(async (request) => {
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
 
   const admin = await isPlatformAdmin(uid);
-  const rows: MotorRuleRow[] = CATALOG_RULES.map((r) => toRow(r, { source: "core", canDelete: false }));
+  const rows: MotorRuleRow[] = getFullCatalogRules().map((r) => toRow(r, { source: "core", canDelete: false }));
 
   try {
     const globalSnap = await db.collection("platformDressRules").limit(500).get();
