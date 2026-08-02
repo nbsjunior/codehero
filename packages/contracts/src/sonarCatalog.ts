@@ -1,5 +1,5 @@
-import { RULES_BY_ID, getCatalogRules, type HeroRule } from "./rules.ts";
-import { getSonarWayRules } from "./sonarWayRules.ts";
+import { RULES_BY_ID, type HeroRule } from "./rules.ts";
+import { getSonarWayRules } from "./sonarWayFull.ts";
 import type { SarifResult } from "./sarif.ts";
 
 /** sonarKey → catalog rule id (SONAR-js-S2068, …). Built on first catalog touch. */
@@ -33,7 +33,7 @@ const REPO_LANG_HINT: Record<string, string> = {
 
 function catalogById(id: string): HeroRule | undefined {
   if (RULES_BY_ID[id]) return RULES_BY_ID[id];
-  return getCatalogRules().find((r) => r.id === id);
+  return getSonarWayRules().find((r) => r.id === id);
 }
 
 /**
@@ -51,7 +51,6 @@ export function resolveCatalogRuleId(ruleId: string, langHint?: string): string 
   const byKey = sonarKeyIndex().get(raw);
   if (byKey) return byKey.id;
 
-  // javascript:S2068 → try SONAR-js-S2068
   const colon = raw.lastIndexOf(":");
   if (colon > 0) {
     const repo = raw.slice(0, colon);
@@ -61,7 +60,6 @@ export function resolveCatalogRuleId(ruleId: string, langHint?: string): string 
       const guess = `SONAR-${lang}-${short}`;
       if (catalogById(guess)) return guess;
     }
-    // scan index by short key suffix
     for (const [k, rule] of sonarKeyIndex()) {
       if (k.endsWith(`:${short}`) || k.endsWith(`:${raw.slice(colon + 1)}`)) return rule.id;
     }

@@ -2,7 +2,7 @@ import { onDocumentCreated } from "firebase-functions/v2/firestore";
 import { logger } from "firebase-functions";
 import { FieldValue } from "firebase-admin/firestore";
 import type { SarifLog } from "@codehero/contracts";
-import { normalizeSarifResultsToCatalog } from "@codehero/contracts";
+import { normalizeSarifResultsToCatalog } from "@codehero/contracts/catalog";
 import { db, storage, STORAGE_BUCKET_NAME, FIRESTORE_DATABASE_ID, repoRef } from "./lib/firebase.ts";
 import { upsertIssuesFromResults } from "./lib/ingestCore.ts";
 

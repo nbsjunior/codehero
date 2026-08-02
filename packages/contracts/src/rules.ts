@@ -1,6 +1,6 @@
 import type { Severity, IssueType } from "./severity.ts";
 import type { SecurityCategory, TaintSinkKind, TaintSourceKind } from "./engineKinds.ts";
-import { SONAR_WAY_LIVE_RULES, getSonarWayRules } from "./sonarWayRules.ts";
+import { SONAR_WAY_LIVE_RULES } from "./sonarWayLive.ts";
 import { COBOL_CORE_RULES } from "./cobolRules.ts";
 import { STRUCTURAL_RULES } from "./structuralCatalog.ts";
 
@@ -662,10 +662,13 @@ export const RULES: HeroRule[] = [...CORE_RULES, ...SONAR_WAY_LIVE_RULES];
 
 let _catalogRules: HeroRule[] | null = null;
 
-/** Full catalog for admin / MCP / docs: core + structural + every Sonar way rule (incl. stubs). */
+/**
+ * Browser-safe catalog: core + structural + Sonar L0 live (no stubs).
+ * Full Sonar way (incl. stubs) → `@codehero/contracts/catalog` `getFullCatalogRules()`.
+ */
 export function getCatalogRules(): HeroRule[] {
   if (!_catalogRules) {
-    _catalogRules = [...CORE_RULES, ...STRUCTURAL_HERO_RULES, ...getSonarWayRules()];
+    _catalogRules = [...CORE_RULES, ...STRUCTURAL_HERO_RULES, ...SONAR_WAY_LIVE_RULES];
   }
   return _catalogRules;
 }
@@ -700,5 +703,4 @@ export function lookupRule(id: string): HeroRule | undefined {
   return RULES_BY_ID[id] ?? getCatalogRules().find((r) => r.id === id);
 }
 
-export { SONAR_WAY_LIVE_RULES, getSonarWayRules };
-export { SONAR_WAY_RULES } from "./sonarWayRules.ts";
+export { SONAR_WAY_LIVE_RULES };
