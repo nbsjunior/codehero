@@ -98,7 +98,7 @@ const TEMPLATES = [
   {
     id: "weak-hash",
     re: /weak (hash|crypt)|\bmd5\b|\bsha-?1\b|broken cryptograph/i,
-    regex: "(?i)(md5|sha1|SHA1|MD5|DES|RC4)\\s*(\\(|Managed|Crypto)",
+    regex: "(?i)\\b(md5|sha1|SHA1|MD5|DES|RC4)\\b\\s*(\\(|Managed|Crypto)",
     effort: 30,
   },
   {
@@ -343,13 +343,13 @@ const TEMPLATES = [
     // haystack inclui as tags do Sonar, toda regra marcada `design` herdava
     // um detector de criptografia fraca. Foram 75 mapeamentos errados.
     re: /cipher algorithm|encryption algorithm|weak cipher|\bDES\b|\bRC4\b|\bBlowfish\b/i,
-    regex: "(?i)(DES|DESede|RC2|RC4|Blowfish|AES/ECB)",
+    regex: "(?i)\\b(DES|DESede|RC2|RC4|Blowfish|AES/ECB)\\b",
     effort: 30,
   },
   {
     id: "cbc-iv",
     re: /cipher block chaining|ivs? should be unpredictable|initialization vector/i,
-    regex: "(?i)(Aes|AES|Cipher)\\w*.*(IV|Iv|iv)|CreateEncryptor\\(\\s*\\)",
+    regex: "(?i)\\b(Aes|AES|Cipher)\\w*.*\\b(IV|Iv|iv)\\b|CreateEncryptor\\(\\s*\\)",
     effort: 25,
   },
   {
@@ -866,6 +866,65 @@ function categoryFor(type, tags) {
   return type === "VULNERABILITY" || type === "SECURITY_HOTSPOT"
     ? "security-misconfiguration"
     : "code-smell";
+}
+
+
+// ---------------------------------------------------------------------------
+// Trava: acronimo curto SEM ancora a esquerda e o modo de falha mais caro
+// deste gerador. `(?i)(DES|RC4|...)` casa dentro de "Insecure Design", de
+// "ZCodeScan" e de "includes(" — foram 650 achados falsos num repo de 26 mil
+// linhas, metade de tudo que o scanner reportou, em duas regras CRITICAL.
+//
+// A versao anterior desta trava conferia as regexes de SELECAO de template.
+// Errado: quem vai para producao e a regex EMITIDA.
+//
+// Ancora a ESQUERDA e o que importa. `(md5|DES)\s*\(` tem sufixo e ainda
+// assim casou `includes(`, porque nada segurava o inicio. Prefixo literal
+// (`console\.`), `` ou lookbehind seguram; inicio da regex e `.*` nao.
+// ---------------------------------------------------------------------------
+const ACRONIMO_CURTO = /^[A-Za-z][A-Za-z0-9]{0,3}$/;
+
+function detectorTemPerigoDeSubstring(regex) {
+  const corpo = regex.replace(/^\(\?i\)/, "");
+  const desloc = regex.length - corpo.length;
+  for (const grupo of regex.matchAll(/\(([^()]*\|[^()]*)\)/g)) {
+    const curtas = grupo[1]
+      .split("|")
+      .map((a) => a.replace(/\b/g, ""))
+      .filter((a) => ACRONIMO_CURTO.test(a));
+    if (curtas.length === 0) continue;
+    if (grupo[1].includes("\b")) continue;
+
+    const i = grupo.index;
+    const antes = regex.slice(0, i);
+    const noInicio = i === desloc;
+    const aposCoringa = /(\.\*|\.\+)$/.test(antes);
+    if (!noInicio && !aposCoringa) continue; // ha prefixo literal ancorando
+
+    return (
+      `alternativa curta [${curtas.join(", ")}] sem ancora a esquerda` +
+      (noInicio ? " (grupo abre a regex)" : " (precedido de .*)")
+    );
+  }
+  return null;
+}
+
+function assertDetectoresSaoEspecificos(templates) {
+  const erros = [];
+  for (const t of templates) {
+    if (!t.regex) continue;
+    const problema = detectorTemPerigoDeSubstring(t.regex);
+    if (problema) erros.push(`  ${t.id ?? t.name ?? "(sem id)"}: ${problema}
+    regex: ${t.regex}`);
+  }
+  if (erros.length) {
+    throw new Error(
+      `Geracao abortada: ${erros.length} detector(es) casariam substring dentro de palavra:
+` +
+        erros.join("
+"),
+    );
+  }
 }
 
 async function main() {
