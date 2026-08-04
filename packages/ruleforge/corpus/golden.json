@@ -398,5 +398,40 @@
     "expected": "no_match",
     "code": "const parts = pattern.exec(input);",
     "note": "RegExp.prototype.exec"
+  },
+  {
+    "id": "cobol-value-secret-01",
+    "ruleId": "HERO-SEC-0798-cobol-value-secret",
+    "expected": "match",
+    "profile": "cobol",
+    "code": "           05  CLI-SENHA     PIC X(08) VALUE 'admin123'."
+  },
+  {
+    "id": "cobol-value-secret-02",
+    "ruleId": "HERO-SEC-0798-cobol-value-secret",
+    "expected": "match",
+    "profile": "cobol",
+    "code": "           05  WS-API-KEY    PIC X(32) VALUE \"sk_live_9f8a7b6c\"."
+  },
+  {
+    "id": "cobol-value-secret-03",
+    "ruleId": "HERO-SEC-0798-cobol-value-secret",
+    "expected": "no_match",
+    "profile": "cobol",
+    "code": "           05  WS-SENHA      PIC X(08) VALUE SPACES."
+  },
+  {
+    "id": "cobol-value-secret-04",
+    "ruleId": "HERO-SEC-0798-cobol-value-secret",
+    "expected": "no_match",
+    "profile": "cobol",
+    "code": "           05  CLI-NOME      PIC X(30) VALUE 'JOAO DA SILVA'."
+  },
+  {
+    "id": "cobol-value-secret-05",
+    "ruleId": "HERO-SEC-0798-cobol-value-secret",
+    "expected": "no_match",
+    "profile": "cobol",
+    "code": "           05  WS-SENHA      PIC X(08) VALUE 'xxxxxxxx'."
   }
 ]
