@@ -1,4 +1,5 @@
 import { BuiltNode, endPos, posAt } from "./builtNode.ts";
+import { parseDataDivision } from "./cobolData.ts";
 
 /**
  * Lightweight COBOL structural parser (PROCEDURE DIVISION focused).
@@ -30,10 +31,18 @@ export function parseCobolSource(source: string): BuiltNode {
   const lines = rawLines.map(stripArea);
   const root = new BuiltNode("program", source, { row: 0, column: 0 }, endPos(lines, lines.length - 1));
 
+  // DATA DIVISION primeiro: metade da análise COBOL é sobre o que o programa
+  // DECLARA (campo morto, REDEFINES, e o PIC da host variable que diz se o
+  // SELECT INTO trunca). Um copybook puro não tem PROCEDURE DIVISION nenhuma e
+  // ainda assim precisa render árvore.
+  const dataDiv = parseDataDivision(lines);
+  if (dataDiv) root.add(dataDiv, "data");
+
   let procStart = lines.findIndex((l) => PROC_DIV.test(l));
   if (procStart < 0) {
-    // No PROCEDURE DIVISION — still expose data division as empty program.
-    root.markError();
+    // Sem PROCEDURE DIVISION: é copybook ou programa só de dados. Só marcamos
+    // erro quando NÃO há nem dados — aí o arquivo realmente não parseou.
+    if (!dataDiv) root.markError();
     return root;
   }
 
