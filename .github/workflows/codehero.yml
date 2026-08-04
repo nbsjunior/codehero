@@ -1,5 +1,4 @@
 name: CodeHero Analysis
-
 on:
   pull_request:
   push:
@@ -10,40 +9,18 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      security-events: write # publica SARIF na aba Security
+      security-events: write
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # necessário para o diff de "new code"
+        with: { fetch-depth: 0 }
 
-      - name: Configurar Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-
-      - name: Instalar dependências do monorepo
-        run: npm ci
-
-      # A action usa packages/scanner/dist quando existe e só cai no
-      # `npx @codehero/scanner` fora do monorepo. Sem este build o dist não
-      # existe no runner e o scan era pulado silenciosamente.
-      # cpg-joern e fp-ranker entram porque o scanner passou a IMPORTA-LOS.
-      # Sem eles o `tsc` do scanner falha com TS2307 no runner e passa batido
-      # localmente, onde `npm run build` da raiz constroi o monorepo inteiro.
-      - name: Build do scanner
-        run: >-
-          npm run build:contracts && npm run build:engine &&
-          npm run build:cpg && npm run build:fp-ranker &&
-          npm run build:scanner
-
-      - name: CodeHero Scan
-        uses: ./packages/github-action
+      - uses: nbsjunior/codehero/packages/github-action@main
         with:
           server-url: ${{ vars.HERO_CORE_URL }}
           token: ${{ secrets.HERO_TOKEN }}
-          org-id: ${{ vars.HERO_ORG_ID }}
-          project-id: ${{ vars.HERO_PROJECT_ID }}
-          repo-id: ${{ vars.HERO_REPO_ID }}
+          org-id: "YOUR_ORG_ID"
+          project-id: "YOUR_PROJECT_ID"
+          repo-id: "YOUR_REPO_ID"
           path: "."
           fail-on: CRITICAL
