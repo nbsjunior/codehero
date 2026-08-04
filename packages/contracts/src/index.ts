@@ -10,6 +10,7 @@ export * from "./githubAction.ts";
 export * from "./findingFicha.ts";
 export * from "./lintKnowledgeBase.ts";
 export * from "./coverage.ts";
+export * from "./lexicalMask.ts";
 export * from "./structuralRules.ts";
 export * from "./structuralCatalog.ts";
 export * from "./sonarWayLive.ts";

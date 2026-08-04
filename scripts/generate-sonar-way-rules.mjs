@@ -463,7 +463,7 @@ const TEMPLATES = [
   {
     id: "regex-backtrack",
     re: /regular expressions? should|catastrophic backtracking|regex.*timeout/i,
-    regex: "(?i)new\\s+RegExp\\s*\\(|Pattern\\.compile\\s*\\(|Regex\\s*\\(",
+    regex: "(?i)new\\s+RegExp\\s*\\(|Pattern\\.compile\\s*\\(|(?<![.\\w])Regex\\s*\\(",
     effort: 15,
   },
   {

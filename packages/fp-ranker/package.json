@@ -14,11 +14,15 @@
   "bin": {
     "hero-fp-ranker": "./dist/cli.js"
   },
-  "files": ["dist", "models"],
+  "files": [
+    "dist",
+    "models"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "train": "node dist/cli.js train",
     "eval": "node dist/cli.js eval",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "test": "node test/ranker.mjs"
   }
 }

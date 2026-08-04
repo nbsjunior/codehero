@@ -15,7 +15,7 @@ export function evaluateRule(pattern: HeroRule["pattern"], cases: CorpusCase[]):
   const failures: EvalResult["failures"] = [];
 
   for (const c of cases) {
-    const matched = matchPattern(pattern, c.code).length > 0;
+    const matched = matchPattern(pattern, c.code, { profile: c.profile ?? "clike" }).length > 0;
     const expectMatch = c.expected === "match";
 
     if (matched && expectMatch) truePositive++;

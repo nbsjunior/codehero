@@ -50,6 +50,12 @@ export const STRUCTURAL_RULES: StructuralRule[] = [
       // positivos e zero verdadeiros no próprio repo — e é CRITICAL.
       calleeUnqualified: true,
       argument: { index: 0, is: "non-literal" },
+      // O `eval` perigoso e o GLOBAL da linguagem, declarado em `lib.*.d.ts`.
+      // Uma funcao do proprio projeto chamada `exec()` — comum em runner de
+      // teste e em wrapper de CLI — nao e execucao dinamica de codigo.
+      // `unknown` fica na lista porque em Python e JS sem tipos nao ha fato, e
+      // calar ali seria perder o caso real que motivou a regra.
+      semantic: { calleeFrom: ["stdlib", "unknown"] },
     },
     whyNotRegex:
       "A regex vê `eval(` e dispara igual para `eval(\"const\")` e `eval(entrada)`. A diferença está no TIPO do nó do argumento, não no texto.",

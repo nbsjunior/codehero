@@ -152,6 +152,10 @@ export function buildSarif(
         constraints: ficha.constraints,
         referenceExample: ficha.referenceExample,
         cwe: ficha.cwe,
+        // Regras absorvidas por terem o MESMO detector aqui. Ficam registradas
+        // para quem precisa do rastro de conformidade — o relatorio mostra uma
+        // linha em vez de N iguais, sem perder a lista.
+        ...(f.alsoRuleIds?.length ? { alsoRuleIds: f.alsoRuleIds } : {}),
         tool: TOOL_NAME,
         engine: f.engine ?? "pattern",
       },
