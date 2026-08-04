@@ -28,8 +28,14 @@ jobs:
       # A action usa packages/scanner/dist quando existe e só cai no
       # `npx @codehero/scanner` fora do monorepo. Sem este build o dist não
       # existe no runner e o scan era pulado silenciosamente.
+      # cpg-joern e fp-ranker entram porque o scanner passou a IMPORTA-LOS.
+      # Sem eles o `tsc` do scanner falha com TS2307 no runner e passa batido
+      # localmente, onde `npm run build` da raiz constroi o monorepo inteiro.
       - name: Build do scanner
-        run: npm run build:contracts && npm run build:engine && npm run build:scanner
+        run: >-
+          npm run build:contracts && npm run build:engine &&
+          npm run build:cpg && npm run build:fp-ranker &&
+          npm run build:scanner
 
       - name: CodeHero Scan
         uses: ./packages/github-action
