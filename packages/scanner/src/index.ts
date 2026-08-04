@@ -17,7 +17,8 @@ import { collectFiles } from "./walk.ts";
 import { loadIgnoreFile, makeIgnoreMatcher, IGNORE_FILE } from "./ignore.ts";
 import { parseCoverageFile } from "./coverage.ts";
 import { collectStructural, type StructuralSummary } from "./metrics.ts";
-import { buildSemanticIndex, EMPTY_SEMANTIC_INDEX } from "@codehero/engine";
+import { buildCopybookIndex } from "./copybooks.ts";
+import { buildSemanticIndex, EMPTY_SEMANTIC_INDEX, expandCopybooks } from "@codehero/engine";
 import { importSarifFiles, type ImportSummary } from "./importSarif.ts";
 import { buildSarif } from "./sarif.ts";
 import { loadRulesFile, resolveActiveRules } from "./fetchRules.ts";
@@ -40,6 +41,7 @@ interface CliOptions {
   coverage: string[];
   metrics: boolean;
   semantic: boolean;
+  copybooks: string[];
   importSarif: string[];
   /** Opt-in CPG via Joern (JVM/Docker). */
   joern: boolean;
@@ -62,6 +64,7 @@ function parseArgs(argv: string[]): CliOptions {
     coverage: [],
     metrics: false,
     semantic: false,
+    copybooks: [],
     importSarif: [],
     joern: false,
   };
@@ -75,6 +78,10 @@ function parseArgs(argv: string[]): CliOptions {
     else if (a === "--metrics") opts.metrics = true;
     else if (a === "--semantic") { opts.semantic = true; opts.metrics = true; }
     else if (a === "--joern") opts.joern = true;
+    else if (a === "--copybook") {
+      const v = argv[++i];
+      if (v) opts.copybooks.push(v);
+    }
     else if (a === "--import") {
       const v = argv[++i];
       if (v) opts.importSarif.push(v);
@@ -118,6 +125,13 @@ async function main(): Promise<void> {
   // necessidade seria desperdício num scan de 20 mil arquivos.
   const paraMetricas: Array<{ path: string; source: string }> = [];
 
+  // Copybook: sem expandir, o analisador ve `COPY CLIENTE.` e mais nada. Ele
+  // nao esta analisando o programa, esta analisando um pedaco — e nao sabe qual
+  // pedaco falta. Qualquer numero tirado dai (campo nao usado, tipo de host
+  // variable) seria ficcao.
+  const copybooks = buildCopybookIndex(opts.copybooks);
+  const copyStats = { arquivos: 0, resolvidos: 0, ausentes: new Set<string>(), linhas: 0, ciclos: 0 };
+
   for (const file of files) {
     let source: string;
     try {
@@ -127,8 +141,36 @@ async function main(): Promise<void> {
     }
     linesOfCode += source.length ? source.split("\n").length : 0;
     const rel = relative(cwd, file) || file;
+
+    if (/\.(cbl|cob|cpy)$/i.test(file)) {
+      const exp = expandCopybooks(source, { file: rel, resolver: copybooks });
+      copyStats.arquivos++;
+      copyStats.resolvidos += exp.resolved.length;
+      for (const m of exp.missing) copyStats.ausentes.add(m);
+      copyStats.linhas += exp.expandedLines;
+      copyStats.ciclos += exp.cycles.length;
+
+      for (const f of analyzeSource(rel, exp.source, rules)) {
+        // Remapeia para a origem: sem isto o achado apontaria para a linha
+        // DESLOCADA, e "campo na linha 380" num programa de 200 linhas destroi
+        // a confianca no relatorio inteiro.
+        const o = exp.origins[f.startLine - 1];
+        findings.push(o ? { ...f, file: o.file, startLine: o.line } : f);
+      }
+      if (opts.metrics) paraMetricas.push({ path: rel, source: exp.source });
+      continue;
+    }
+
     for (const f of analyzeSource(rel, source, rules)) findings.push(f);
     if (opts.metrics) paraMetricas.push({ path: rel, source });
+  }
+
+  if (copyStats.arquivos > 0 && copyStats.ausentes.size > 0) {
+    process.stderr.write(
+      `CodeHero: ${copyStats.ausentes.size} copybook(s) nao encontrado(s) — a analise esta INCOMPLETA: ` +
+        `${[...copyStats.ausentes].slice(0, 8).join(", ")}${copyStats.ausentes.size > 8 ? "..." : ""}\n` +
+        `  Informe o diretorio com --copybook <dir>\n`,
+    );
   }
 
   // Camada semântica: resolve TIPO, não forma. Custa segundos (monta o Program
@@ -252,6 +294,7 @@ async function main(): Promise<void> {
       structural,
       imported,
       semantic.stats,
+      copyStats,
     );
     if (opts.out) writeFileSync(opts.out, JSON.stringify(sarif, null, 2));
   }
@@ -328,6 +371,7 @@ function printPretty(
   structural: StructuralSummary | null = null,
   imported: ImportSummary | null = null,
   semanticStats: { files: number; calls: number; ms: number } | null = null,
+  copyStats: { arquivos: number; resolvidos: number; ausentes: Set<string>; linhas: number; ciclos: number } | null = null,
 ): void {
   const bySev = new Map<Severity, number>();
   for (const f of findings) bySev.set(f.rule.severity, (bySev.get(f.rule.severity) ?? 0) + 1);
@@ -353,6 +397,17 @@ function printPretty(
     .map(([s, n]) => `${s}: ${n}`)
     .join("  ");
   if (summary) process.stdout.write(summary + "\n");
+  if (copyStats && copyStats.arquivos > 0) {
+    const cobertura =
+      copyStats.resolvidos + copyStats.ausentes.size > 0
+        ? Math.round((copyStats.resolvidos / (copyStats.resolvidos + copyStats.ausentes.size)) * 100)
+        : 100;
+    process.stdout.write(
+      `Copybooks: ${copyStats.resolvidos} resolvido(s), ${copyStats.ausentes.size} ausente(s)` +
+        ` (${cobertura}% de cobertura) | ${copyStats.linhas} linha(s) trazida(s)` +
+        (copyStats.ciclos > 0 ? ` | ${copyStats.ciclos} ciclo(s)` : "") + "\n",
+    );
+  }
   process.stdout.write(`Débito técnico (code smells): ${formatDebt(debtMin)}\n`);
   if (coverage) {
     const branch = coverage.branches ? ` · branch ${coveragePercent(coverage.branches)}%` : "";

@@ -12,6 +12,10 @@ export { runForwardWorklist } from "./dataflow.ts";
 // aninhamento, tamanho de função e nº de parâmetros.
 export { parseStructural, structuralLanguageFor } from "./structural/parser.ts";
 export type { StructuralLanguage, ParsedFile } from "./structural/parser.ts";
+export { parseCobolSource } from "./structural/cobolParse.ts";
+export { expandCopybooks, origemDaLinha } from "./structural/copybook.ts";
+export type { CopybookResolver, ExpandResult, LineOrigin, ExpandOptions } from "./structural/copybook.ts";
+export { parseTsqlSource } from "./structural/tsqlParse.ts";
 export {
   computeFileMetrics,
   structuralFindings,

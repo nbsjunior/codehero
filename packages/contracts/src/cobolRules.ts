@@ -19,6 +19,36 @@ export const COBOL_CORE_RULES: HeroRule[] = (
   [
     // --- Security / credentials -------------------------------------------------
     {
+      id: "HERO-SEC-0798-cobol-value-secret",
+      name: "CobolValueSecret",
+      languages: ["cobol"],
+      severity: "BLOCKER",
+      type: "VULNERABILITY",
+      remediationEffortMin: 20,
+      cwe: ["CWE-798"],
+      owasp: ["A07:2021-Identification and Authentication Failures"],
+      message:
+        "Credencial embutida em cláusula VALUE da DATA DIVISION: o valor vai no load module e quem tem o binário tem a senha.",
+      sddTemplateId: "sdd.secret.externalize",
+      category: "sensitive-data-exposure",
+      // A regra irmã (0798-cobol-hardcoded-secret) só vê `MOVE 'x' TO WS-SENHA`,
+      // que é atribuição em PROCEDURE DIVISION. Segredo em COBOL costuma estar
+      // na DECLARAÇÃO — `05 WS-SENHA PIC X(8) VALUE 'admin123'` — e quase
+      // sempre dentro de copybook compartilhado por dezenas de programas.
+      //
+      // Só passou a ser detectável quando a expansão de copybook entrou: antes
+      // o analisador via a linha `COPY CLIENTE.` e nada do que havia dentro.
+      pattern: {
+        scope: "any",
+        regex:
+          "(?i)\\b[\\w-]*(PASSWORD|PASSWD|SENHA|PWD|SECRET|APIKEY|API-KEY|TOKEN|CREDENTIAL|PASSPHRASE)[\\w-]*\\s+PIC\\s+[^.]*?\\bVALUE\\s+['\"][^'\"]{4,}['\"]",
+        // Valor de preenchimento não é segredo: SPACES, ZEROS, ALL '*' e
+        // marcadores óbvios de exemplo saem antes de virar BLOCKER.
+        unless:
+          "(?i)\\bVALUE\\s+(SPACES?|ZEROS?|ZEROES|LOW-VALUES?|HIGH-VALUES?|ALL\\b)|['\"](x{4,}|\\*{4,}|EXEMPLO|EXAMPLE|DUMMY|CHANGEME|TROCAR)['\"]",
+      },
+    },
+    {
       id: "HERO-SEC-0798-cobol-hardcoded-secret",
       name: "CobolHardcodedSecret",
       languages: ["cobol"],
