@@ -24,6 +24,7 @@ import { buildSarif } from "./sarif.ts";
 import { loadRulesFile, resolveActiveRules } from "./fetchRules.ts";
 import { runJoernScan } from "@codehero/cpg-joern";
 import { scoreFinding, DEFAULT_MODEL } from "@codehero/fp-ranker";
+import { collectExternalSarifs } from "./externalTools.ts";
 
 interface CliOptions {
   paths: string[];
@@ -45,6 +46,10 @@ interface CliOptions {
   importSarif: string[];
   /** Opt-in CPG via Joern (JVM/Docker). */
   joern: boolean;
+  withOxlint: boolean;
+  withSemgrep: boolean;
+  withSca: boolean;
+  scaTool: "trivy" | "osv";
 }
 
 function parseArgs(argv: string[]): CliOptions {
@@ -67,6 +72,10 @@ function parseArgs(argv: string[]): CliOptions {
     copybooks: [],
     importSarif: [],
     joern: false,
+    withOxlint: false,
+    withSemgrep: false,
+    withSca: false,
+    scaTool: "trivy",
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -78,6 +87,13 @@ function parseArgs(argv: string[]): CliOptions {
     else if (a === "--metrics") opts.metrics = true;
     else if (a === "--semantic") { opts.semantic = true; opts.metrics = true; }
     else if (a === "--joern") opts.joern = true;
+    else if (a === "--with-oxlint") opts.withOxlint = true;
+    else if (a === "--with-semgrep") opts.withSemgrep = true;
+    else if (a === "--with-sca") opts.withSca = true;
+    else if (a === "--sca-tool") {
+      const v = (argv[++i] ?? "trivy").toLowerCase();
+      opts.scaTool = v === "osv" ? "osv" : "trivy";
+    }
     else if (a === "--copybook") {
       const v = argv[++i];
       if (v) opts.copybooks.push(v);
@@ -131,6 +147,7 @@ async function main(): Promise<void> {
   // variable) seria ficcao.
   const copybooks = buildCopybookIndex(opts.copybooks);
   const copyStats = { arquivos: 0, resolvidos: 0, ausentes: new Set<string>(), linhas: 0, ciclos: 0 };
+  const origensPorArquivo = new Map<string, Array<{ file: string; line: number; depth: number }>>();
 
   for (const file of files) {
     let source: string;
@@ -157,7 +174,16 @@ async function main(): Promise<void> {
         const o = exp.origins[f.startLine - 1];
         findings.push(o ? { ...f, file: o.file, startLine: o.line } : f);
       }
-      if (opts.metrics) paraMetricas.push({ path: rel, source: exp.source });
+      if (opts.metrics) {
+        paraMetricas.push({ path: rel, source: exp.source });
+        // O mapa precisa sobreviver ate DEPOIS das metricas: as analises COBOL
+        // rodam sobre o fonte EXPANDIDO, e sem remapear elas apontariam para a
+        // linha deslocada — mesmo defeito que o mapa existe para evitar.
+        // Chave normalizada: `computeFileMetrics` troca `\` por `/`, e no
+        // Windows o caminho relativo vem com `\` — sem normalizar dos dois
+        // lados a busca nunca casa e o remapeamento vira no-op silencioso.
+        origensPorArquivo.set(rel.split("\\").join("/"), exp.origins);
+      }
       continue;
     }
 
@@ -193,6 +219,19 @@ async function main(): Promise<void> {
     ? await collectStructural(paraMetricas, undefined, semantic)
     : null;
 
+  // Remapeia os achados que sairam do fonte EXPANDIDO para o arquivo de origem.
+  // Sem isto, "campo morto na linha 9" aponta para o meio do programa quando o
+  // campo esta na linha 4 de um copybook.
+  if (structural) {
+    const remapear = <T extends { file: string; startLine: number }>(f: T): T => {
+      const origens = origensPorArquivo.get(f.file.split("\\").join("/"));
+      const o = origens?.[f.startLine - 1];
+      return o ? { ...f, file: o.file, startLine: o.line } : f;
+    };
+    structural.cobolFindings = structural.cobolFindings.map(remapear);
+    structural.ruleFindings = structural.ruleFindings.map(remapear);
+  }
+
   // Cobertura é INGERIDA, não calculada: cada caminho é um relatório que o
   // test runner já produziu. Vários são aceitos (monorepo com um por pacote).
   const coverageReports = opts.coverage
@@ -208,8 +247,28 @@ async function main(): Promise<void> {
 
   // Terceiros: CodeQL/Semgrep cobrem fluxo entre arquivos que o L0 nao alcanca;
   // osv-scanner/trivy cobrem dependencia, eixo que analise de codigo nao ve.
+  // Presence Pack: --with-oxlint / --with-semgrep / --with-sca (soft-fail).
   // --joern (opt-in): CPG interprocedural via Joern → mesmo caminho --import.
   const importPaths = [...opts.importSarif];
+  if (opts.withOxlint || opts.withSemgrep || opts.withSca) {
+    const ext = collectExternalSarifs({
+      oxlint: opts.withOxlint,
+      semgrep: opts.withSemgrep,
+      sca: opts.withSca,
+      scaTool: opts.scaTool,
+      cwd,
+    });
+    for (const log of ext.logs) {
+      if (log.ok) {
+        process.stderr.write(`CodeHero: ${log.tool} → ${log.sarifPath}\n`);
+      } else {
+        process.stderr.write(
+          `CodeHero: ${log.tool} indisponível — ${log.hint ?? log.stderr ?? "falha"}\n`,
+        );
+      }
+    }
+    importPaths.push(...ext.paths);
+  }
   if (opts.joern) {
     const root = opts.paths[0] ?? ".";
     const jr = runJoernScan({ sourceRoot: root });
@@ -428,6 +487,22 @@ function printPretty(
         `Camada semantica: ${semanticStats.calls} chamada(s) com tipo resolvido` +
           ` em ${semanticStats.files} arquivo(s) (${(semanticStats.ms / 1000).toFixed(1)}s)\n`,
       );
+    }
+    if (structural.cobolFindings.length > 0) {
+      const porAnalise = new Map<string, number>();
+      for (const f of structural.cobolFindings)
+        porAnalise.set(f.analysis.id, (porAnalise.get(f.analysis.id) ?? 0) + 1);
+      process.stdout.write(
+        `Analises COBOL (arvore inteira do programa): ${structural.cobolFindings.length} apontamento(s)` + "\n",
+      );
+      for (const [id, n] of [...porAnalise].sort((a, b) => b[1] - a[1])) {
+        process.stdout.write(`  ${String(n).padStart(4)}  ${id}` + "\n");
+      }
+      for (const f of structural.cobolFindings.slice(0, 10)) {
+        process.stdout.write(
+          `        ${f.file}:${f.startLine}  ${f.detail}` + "\n",
+        );
+      }
     }
     if (structural.ruleFindings.length > 0) {
       const porRegra = new Map<string, number>();

@@ -1,6 +1,8 @@
-import { STRUCTURAL_RULES, type StructuralRule } from "@codehero/contracts";
+import { STRUCTURAL_RULES, COBOL_ANALYSES, type StructuralRule, type CobolAnalysis } from "@codehero/contracts";
 import {
   matchStructural,
+  sqlcodeNaoChecado,
+  camposMortos,
   candidatesFor,
   findDuplicates,
   summarizeDuplication,
@@ -35,6 +37,8 @@ export interface StructuralSummary {
   findings: StructuralFinding[];
   /** Apontamentos das regras que avaliam a ARVORE (nao a linha). */
   ruleFindings: StructuralRuleFinding[];
+  /** Apontamentos das analises COBOL (SQLCODE, dado morto). */
+  cobolFindings: CobolFinding[];
   duplication: DuplicationSummary;
   /** Arquivos que a gramática rejeitou — números seriam pela metade. */
   parseErrors: string[];
@@ -50,6 +54,16 @@ export interface StructuralSummary {
     maxNesting: number;
     commentDensity: number;
   };
+}
+
+/** Achado de analise COBOL algoritmica (ver cobolAnalyses.ts). */
+export interface CobolFinding {
+  analysis: CobolAnalysis;
+  file: string;
+  startLine: number;
+  /** Campo/verbo envolvido — o relatorio precisa dizer QUAL. */
+  detail: string;
+  snippet: string;
 }
 
 export interface StructuralRuleFinding {
@@ -72,6 +86,7 @@ export async function collectStructural(
   const findings: StructuralFinding[] = [];
   const dupCandidatos: DuplicateCandidate[] = [];
   const ruleFindings: StructuralRuleFinding[] = [];
+  const cobolFindings: CobolFinding[] = [];
   const parseErrors: string[] = [];
   let skippedLanguages = 0;
 
@@ -97,6 +112,30 @@ export async function collectStructural(
         ruleFindings.push({ rule, file: m.file, ...hit });
       }
     }
+
+    // Análises COBOL algorítmicas: percorrem a árvore INTEIRA do programa e
+    // não cabem numa spec declarativa (ver cobolAnalyses.ts). Só rodam em
+    // COBOL, então não custam nada nas outras linguagens.
+    if (parsed.language === "cobol") {
+      for (const c of sqlcodeNaoChecado(parsed.root as never)) {
+        cobolFindings.push({
+          analysis: COBOL_ANALYSES["HERO-CBL-0252-sqlcode-nao-checado"]!,
+          file: m.file,
+          startLine: c.linha + 1,
+          detail: `${c.verbo}${c.paragrafo ? ` em ${c.paragrafo}` : ""}`,
+          snippet: c.trecho,
+        });
+      }
+      for (const d of camposMortos(parsed.root as never)) {
+        cobolFindings.push({
+          analysis: COBOL_ANALYSES["HERO-CBL-1164-dado-morto"]!,
+          file: m.file,
+          startLine: d.linha + 1,
+          detail: `${d.nome}${d.picture ? ` PIC ${d.picture}` : ""}`,
+          snippet: `${String(d.nivel).padStart(2, "0")}  ${d.nome}`,
+        });
+      }
+    }
   }
 
   const todasFuncoes = out.flatMap((m) => m.functions);
@@ -114,6 +153,7 @@ export async function collectStructural(
     files: out,
     findings,
     ruleFindings,
+    cobolFindings,
     duplication,
     parseErrors,
     skippedLanguages,
