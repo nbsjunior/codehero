@@ -17,6 +17,8 @@ export { expandCopybooks, origemDaLinha } from "./structural/copybook.ts";
 export { parseDataDivision, camposDeclarados, tamanhoDoPic } from "./structural/cobolData.ts";
 export type { CampoDeclarado } from "./structural/cobolData.ts";
 export { camposMortos } from "./structural/cobolDeadData.ts";
+export { sqlcodeNaoChecado } from "./structural/cobolSqlcode.ts";
+export type { SqlcodeNaoChecado } from "./structural/cobolSqlcode.ts";
 export type { CampoMorto } from "./structural/cobolDeadData.ts";
 export type { CopybookResolver, ExpandResult, LineOrigin, ExpandOptions } from "./structural/copybook.ts";
 export { parseTsqlSource } from "./structural/tsqlParse.ts";
