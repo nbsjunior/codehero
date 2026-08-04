@@ -88,6 +88,33 @@ const sync = matchStructural(parsed, irma.spec);
 console.log(`  regra irma (sem semantica) -> ${sync.length} achado(s)`);
 check(sync.length === 0, `nenhum I/O sincrono nesta fixture, vieram ${sync.length}`);
 
+
+console.log("\n=== eval global vs funcao do projeto chamada exec ===");
+// A regra CRITICAL de code injection mira o `eval` GLOBAL. Uma funcao do
+// proprio projeto chamada `exec()` (runner de teste, wrapper de CLI) nao e
+// execucao dinamica — e so o tipo separa as duas, o texto e identico.
+const FONTE2 = `export function exec(cmd: string) { return cmd; }
+export function usa(x: string) {
+  exec(x);
+  return eval(x);
+}
+`;
+const arq2 = DIR + "/evalvs.ts";
+writeFileSync(arq2, FONTE2);
+const rel2 = arq2.replace(/^\.\//, "");
+const idx2 = await buildSemanticIndex([arq2], { cwd: process.cwd() });
+const parsed2 = await parseStructural(arq2, FONTE2);
+const specEval = STRUCTURAL_RULES_BY_ID["HERO-ST-0095-eval-non-literal"].spec;
+const hits2 = matchStructural(parsed2, specEval, { semantic: idx2, file: rel2 });
+console.log(`  achados -> ${hits2.length}: ${hits2.map((h) => h.snippet).join(", ")}`);
+check(hits2.length === 1, `so o eval global conta, vieram ${hits2.length}`);
+check(hits2[0]?.snippet.includes("eval"), "o achado tem de ser o eval global");
+
+// Sem tipo (origin unknown) a regra NAO pode calar: e o caso do Python.
+const semTipo2 = matchStructural(parsed2, specEval);
+console.log(`  sem indice -> ${semTipo2.length} (os dois, por precaucao)`);
+check(semTipo2.length === 2, `sem tipo mantem os dois, vieram ${semTipo2.length}`);
+
 console.log("\n=== degradação sem typescript / arquivo não coberto ===");
 const vazio = await buildSemanticIndex([], { cwd: process.cwd() });
 check(vazio.at("x.ts", 1, 1) === null, "índice vazio devolve null, não lança");

@@ -1,18 +1,71 @@
 {
-  "version": "seed-priors-v1",
+  "version": "seed-priors-v2",
   "algorithm": "gbm-stumps-v1",
-  "learningRate": 0.2,
+  "learningRate": 1,
   "baseScore": 0.4,
   "trainedAt": "2026-08-02T00:00:00.000Z",
   "trainSize": 0,
-  "notes": "Prior stumps — replace via hero-fp-ranker train",
+  "notes": "Prior stumps (nao ajustados) em escala final; learningRate=1 de proposito. Treinar: hero-fp-ranker train",
   "stumps": [
-    { "feature": "isTestFile", "threshold": 0.5, "left": 0.15, "right": -0.9 },
-    { "feature": "isDistPath", "threshold": 0.5, "left": 0.1, "right": -1.2 },
-    { "feature": "isGenerated", "threshold": 0.5, "left": 0.1, "right": -0.8 },
-    { "feature": "ruleRepoFpRate", "threshold": 0.4, "left": 0.2, "right": -0.7 },
-    { "feature": "severityRank", "threshold": 0.6, "left": -0.1, "right": 0.35 },
-    { "feature": "isImported", "threshold": 0.5, "left": 0.05, "right": 0.15 },
-    { "feature": "taintPathLenNorm", "threshold": 0.25, "left": -0.05, "right": 0.25 }
+    {
+      "feature": "isTestFile",
+      "threshold": 0.5,
+      "left": 0.15,
+      "right": -0.9
+    },
+    {
+      "feature": "isDistPath",
+      "threshold": 0.5,
+      "left": 0.1,
+      "right": -1.2
+    },
+    {
+      "feature": "isGenerated",
+      "threshold": 0.5,
+      "left": 0.1,
+      "right": -0.8
+    },
+    {
+      "feature": "ruleRepoFpRate",
+      "threshold": 0.4,
+      "left": 0.2,
+      "right": -0.7
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.6,
+      "left": -0.1,
+      "right": 0.35
+    },
+    {
+      "feature": "isImported",
+      "threshold": 0.5,
+      "left": 0.05,
+      "right": 0.15
+    },
+    {
+      "feature": "taintPathLenNorm",
+      "threshold": 0.25,
+      "left": -0.05,
+      "right": 0.25
+    },
+    {
+      "feature": "cognitiveNorm",
+      "threshold": 0.25,
+      "left": -0.15,
+      "right": 0.2
+    },
+    {
+      "feature": "nestingNorm",
+      "threshold": 0.4,
+      "left": -0.05,
+      "right": 0.15
+    },
+    {
+      "feature": "fileChurnNorm",
+      "threshold": 0.1,
+      "left": -0.2,
+      "right": 0.2
+    }
   ]
 }

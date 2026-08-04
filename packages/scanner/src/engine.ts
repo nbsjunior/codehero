@@ -12,6 +12,8 @@ export interface Finding {
   fingerprint: string;
   engine?: "pattern" | "ast" | "taint";
   taintPath?: string[];
+  /** Regras que compartilhavam o mesmo detector nesta posicao (ver dedupe). */
+  alsoRuleIds?: string[];
 }
 
 const EXT_TO_LANG: Record<string, RuleLanguage> = {
@@ -87,6 +89,7 @@ export function runRulesAgainstSource(
         fingerprint: fingerprint(rule.id, f.file, f.snippet),
         engine: f.engine,
         taintPath: f.taintPath,
+        alsoRuleIds: f.alsoRuleIds,
       });
     }
     return out;

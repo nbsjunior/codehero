@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { readFileSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { relative } from "node:path";
 import {
   RULES,
@@ -194,15 +195,35 @@ async function main(): Promise<void> {
   const sarif = buildSarif(findings, coverage, linesOfCode, structural, imported?.findings);
 
   // Assertividade (ranqueador FP): anota properties no SARIF — determinístico.
+  //
+  // O modelo tem 12 atributos e o scanner informava 6: complexidade e churn
+  // ficavam sempre em zero, então metade dos stumps era constante. Os de
+  // complexidade saem das métricas estruturais (quando --metrics), o churn sai
+  // do git numa passada só.
+  const churn = fileChurn(cwd);
+  const metricasPorArquivo = new Map(
+    (structural?.files ?? []).map((m) => [m.file.replace(/\\/g, "/"), m]),
+  );
+
   for (const run of sarif.runs ?? []) {
     for (const r of run.results ?? []) {
       const file = r.locations?.[0]?.physicalLocation?.artifactLocation?.uri ?? "";
+      const linha = r.locations?.[0]?.physicalLocation?.region?.startLine ?? 0;
+      const fm = metricasPorArquivo.get(file);
+      // A função que CONTÉM o achado descreve melhor o entorno que a média do
+      // arquivo: um achado numa função trivial dentro de um arquivo complexo
+      // não herda a complexidade do vizinho.
+      const fn = fm?.functions.find((f) => linha >= f.startLine && linha <= f.endLine);
       const score = scoreFinding(DEFAULT_MODEL, {
         ruleId: r.ruleId,
         file,
         severity: r.properties?.severity,
         engine: r.properties?.engine ?? null,
         findingSource: r.properties?.source === "imported" ? "imported" : "native",
+        cyclomatic: fn?.cyclomatic,
+        cognitive: fn?.cognitive,
+        nesting: fn?.maxNesting,
+        fileChurn: churn.get(file),
         taintPathLength: Array.isArray((r.properties as { taintPath?: string[] } | undefined)?.taintPath)
           ? ((r.properties as { taintPath: string[] }).taintPath.length)
           : undefined,
@@ -245,6 +266,37 @@ async function main(): Promise<void> {
     ].reduce((acc, sev) => Math.max(acc, SEV_ORDER.indexOf(sev)), -1);
     if (worst >= threshold) process.exitCode = 1;
   }
+}
+
+/**
+ * Commits que tocaram cada arquivo no ultimo ano.
+ *
+ * Arquivo que muda toda semana concentra achado real; arquivo parado ha anos
+ * que dispara uma regra nova costuma ser falso positivo. E o unico atributo do
+ * ranqueador que nao esta no codigo — esta na historia dele.
+ *
+ * Uma chamada de git para o repo inteiro, nao uma por arquivo. Se nao houver
+ * git (tarball, container sem .git), devolve vazio e o atributo fica em zero —
+ * degradar e melhor que falhar o scan por causa de metrica auxiliar.
+ */
+function fileChurn(cwd: string): Map<string, number> {
+  const out = new Map<string, number>();
+  try {
+    const r = spawnSync("git", ["log", "--since=1.year", "--name-only", "--pretty=format:"], {
+      cwd,
+      encoding: "utf8",
+      maxBuffer: 64 * 1024 * 1024,
+    });
+    if (r.status !== 0 || !r.stdout) return out;
+    for (const linha of r.stdout.split(/\r?\n/)) {
+      const f = linha.trim();
+      if (!f) continue;
+      out.set(f, (out.get(f) ?? 0) + 1);
+    }
+  } catch {
+    /* sem git: segue sem o atributo */
+  }
+  return out;
 }
 
 async function loadRules(opts: CliOptions): Promise<{ rules: HeroRule[]; meta: string }> {

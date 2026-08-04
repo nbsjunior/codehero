@@ -1,4 +1,5 @@
 import type { HeroRule } from "./rules.ts";
+import { buildLexicalMask, sourceForScope, type LexicalMask } from "./lexicalMask.ts";
 
 // ---------------------------------------------------------------------------
 // Shared deterministic pattern matcher. This is the SINGLE source of truth
@@ -56,20 +57,50 @@ export function isUnsafeRegex(source: string): boolean {
   return false;
 }
 
-/** Apply a rule's pattern (regex + optional `unless` guard) to source text. */
-export function matchPattern(pattern: HeroRule["pattern"], source: string): PatternMatch[] {
+export interface MatchOptions {
+  /**
+   * Máscara já calculada. O scanner monta UMA por arquivo e reusa nas 493
+   * regras; calcular por regra seria 493 varreduras do mesmo texto.
+   */
+  mask?: LexicalMask;
+  /** Perfil léxico quando a máscara não vem pronta (ver lexicalProfileFor). */
+  profile?: string;
+}
+
+/**
+ * Apply a rule's pattern (regex + optional `unless` guard) to source text.
+ *
+ * A regex casa sobre o texto MASCARADO conforme `pattern.scope`, mas o snippet
+ * vem da linha ORIGINAL: quem lê o relatório precisa ver o código como ele é,
+ * não com os comentários apagados.
+ */
+export function matchPattern(
+  pattern: HeroRule["pattern"],
+  source: string,
+  opts: MatchOptions = {},
+): PatternMatch[] {
   const re = compilePattern(pattern.regex, pattern.flags ?? "");
   const unless = pattern.unless ? compilePattern(pattern.unless, "") : null;
-  const lines = source.split(/\r?\n/);
+
+  // Construir aqui quando não vier pronta mantém scanner e ruleforge com a
+  // MESMA semântica — que é a razão de este módulo existir.
+  const mask = opts.mask ?? buildLexicalMask(source, opts.profile ?? "clike");
+  const alvo = sourceForScope(pattern.scope, source, mask);
+
+  const linhasAlvo = alvo.split(/\r?\n/);
+  const linhasCruas = source.split(/\r?\n/);
   const matches: PatternMatch[] = [];
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i] ?? "";
-    const m = re.exec(line);
+  for (let i = 0; i < linhasAlvo.length; i++) {
+    const linha = linhasAlvo[i] ?? "";
+    const m = re.exec(linha);
     if (!m) continue;
-    if (unless && unless.test(line)) continue;
+    // `unless` também olha o texto mascarado: um "eslint-disable" escrito
+    // dentro de uma string não deveria poder desligar uma regra.
+    if (unless && unless.test(linha)) continue;
     const col = (m.index ?? 0) + 1;
-    matches.push({ line: i + 1, column: col, endColumn: col + m[0].length, snippet: line.trim() });
+    const crua = linhasCruas[i] ?? linha;
+    matches.push({ line: i + 1, column: col, endColumn: col + m[0].length, snippet: crua.trim() });
   }
   return matches;
 }

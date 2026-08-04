@@ -32,6 +32,7 @@ export const COBOL_CORE_RULES: HeroRule[] = (
       category: "sensitive-data-exposure",
       // ibmRef: UnprotectedAuthCredentialRule
       pattern: {
+        scope: "any",
         regex:
           "(?i)MOVE\\s+['\"][^'\"]{8,}['\"]\\s+TO\\s+[\\w-]*(PASSWORD|PWD|SECRET|APIKEY|DB-PASS|TOKEN|CREDENTIAL)",
       },
@@ -84,6 +85,7 @@ export const COBOL_CORE_RULES: HeroRule[] = (
       category: "string-injection",
       // ibmRef: SqlWhereRule
       pattern: {
+        scope: "any",
         regex: "(?i)\\b(DELETE\\s+FROM|UPDATE)\\s+[\\w.\"`]+(?![^\\n]*\\bWHERE\\b)",
         unless: "(?i)\\bWHERE\\b",
       },
@@ -119,6 +121,7 @@ export const COBOL_CORE_RULES: HeroRule[] = (
       category: "code-smell",
       // ibmRef: SqlNoLeadingWildcardLikeRule
       pattern: {
+        scope: "any",
         regex: "(?i)\\bLIKE\\s+['\"]%",
       },
     },
@@ -241,6 +244,7 @@ export const COBOL_CORE_RULES: HeroRule[] = (
       category: "code-smell",
       // ibmRef: EntryRule
       pattern: {
+        scope: "any",
         regex: "(?i)^\\s{6,}ENTRY\\s+['\"]?[\\w-]+",
       },
     },
@@ -258,6 +262,7 @@ export const COBOL_CORE_RULES: HeroRule[] = (
       category: "code-smell",
       // ibmRef: CancelRule
       pattern: {
+        scope: "any",
         regex: "(?i)\\bCANCEL\\s+['\"]?[\\w-]+",
       },
     },
@@ -467,6 +472,7 @@ export const COBOL_CORE_RULES: HeroRule[] = (
       category: "code-smell",
       // ibmRef: TrackTodoRule / TrackFixMeRule
       pattern: {
+        scope: "comments",
         regex: "(?i)\\*(.*\\b(TODO|FIXME|HACK|XXX)\\b)",
       },
     },
@@ -536,6 +542,7 @@ export const COBOL_CORE_RULES: HeroRule[] = (
       category: "security-misconfiguration",
       // ibmRef: StaticCallNameRule (inverso: flag dinâmico)
       pattern: {
+        scope: "any",
         regex: "(?i)\\bCALL\\s+[\\w-]+(?![\\w-]*\\s*['\"])",
         unless: "(?i)\\bCALL\\s+['\"]",
       },

@@ -94,7 +94,8 @@
     "id": "eval-02",
     "ruleId": "HERO-SEC-0095-code-injection-eval",
     "expected": "match",
-    "code": "exec(user_input)"
+    "code": "exec(user_input)",
+    "profile": "sql"
   },
   {
     "id": "eval-03",
@@ -139,7 +140,8 @@
     "id": "todo-01",
     "ruleId": "HERO-SMELL-0546-todo-marker",
     "expected": "match",
-    "code": "# TODO: add pagination"
+    "code": "# TODO: add pagination",
+    "profile": "python"
   },
   {
     "id": "todo-02",
@@ -165,7 +167,8 @@
     "ruleId": "HERO-SEC-0089-dynamic-sql-tsql",
     "expected": "no_match",
     "code": "EXEC sp_executesql N'SELECT * FROM Customers WHERE Name = @Name', N'@Name NVARCHAR(100)', @Name = @CustomerName;",
-    "note": "sp_executesql parametrizado, sem concatenação"
+    "note": "sp_executesql parametrizado, sem concatenação",
+    "profile": "sql"
   },
   {
     "id": "csharp-01",
@@ -184,14 +187,16 @@
     "id": "cobol-secret-01",
     "ruleId": "HERO-SEC-0798-cobol-hardcoded-secret",
     "expected": "match",
-    "code": "MOVE 'PROD_DB2_PASSWORD_2024' TO WS-DB-PASSWORD"
+    "code": "MOVE 'PROD_DB2_PASSWORD_2024' TO WS-DB-PASSWORD",
+    "profile": "cobol"
   },
   {
     "id": "cobol-secret-02",
     "ruleId": "HERO-SEC-0798-cobol-hardcoded-secret",
     "expected": "no_match",
     "code": "MOVE 'JOHN SMITH SILVA' TO WS-CUSTOMER-NAME",
-    "note": "campo não relacionado a credencial"
+    "note": "campo não relacionado a credencial",
+    "profile": "cobol"
   },
   {
     "id": "cobol-goto-01",
@@ -230,7 +235,8 @@
     "id": "cmd-01",
     "ruleId": "HERO-SEC-0078-os-command",
     "expected": "match",
-    "code": "exec(userCmd)"
+    "code": "exec(userCmd)",
+    "profile": "sql"
   },
   {
     "id": "cmd-02",
@@ -344,7 +350,8 @@
     "id": "os-02",
     "ruleId": "HERO-SEC-0078-os-command",
     "expected": "match",
-    "code": "exec(req.query.cmd);"
+    "code": "exec(req.query.cmd);",
+    "profile": "sql"
   },
   {
     "id": "os-03",

@@ -1,5 +1,6 @@
 import type { Severity, IssueType } from "./severity.ts";
 import type { SecurityCategory, TaintSinkKind, TaintSourceKind } from "./engineKinds.ts";
+import type { PatternScope } from "./lexicalMask.ts";
 import { SONAR_WAY_LIVE_RULES } from "./sonarWayLive.ts";
 import { COBOL_CORE_RULES } from "./cobolRules.ts";
 import { STRUCTURAL_RULES } from "./structuralCatalog.ts";
@@ -56,6 +57,19 @@ export interface HeroRule {
     regex: string;
     flags?: string;
     unless?: string;
+    /**
+     * Onde a regra pode casar. Padrão `code`: comentário e conteúdo de string
+     * ficam invisíveis.
+     *
+     * Medido no repo antes disto existir: de 542 apontamentos, 304 caíam
+     * dentro de literal de string e 49 dentro de comentário — 65% do total,
+     * incluindo regras disparando no comentário que as descreve.
+     *
+     * `comments` e `strings` são para as regras que dependem justamente do
+     * contexto que as outras precisam ignorar (rastrear TODO, achar segredo
+     * embutido). Sem esses dois modos a máscara mataria as regras certas.
+     */
+    scope?: PatternScope;
   };
   /** L1: structural AST check (JS/TS deep engine). */
   ast?: AstRuleSpec;
@@ -95,6 +109,7 @@ const _CORE_BASE: HeroRule[] = (
     // Mutações aplicadas: widen-unless-fixture-words, widen-charclass-specials.
     // Ver packages/ruleforge/corpus/golden.json (casos secret-02, secret-05).
     pattern: {
+      scope: "any",
       regex: "(?i)(api[_-]?key|secret|passwd|password|token|aws_secret_access_key)\\s*[:=]\\s*['\"][A-Za-z0-9_\\-/+!@#$%^&*]{12,}['\"]",
       unless: "(?i)(process\\.env|os\\.environ|getenv|import\\.meta\\.env|example|placeholder|xxxx|<.*>)|(dummy|sample|fake|mock)",
     },
@@ -114,6 +129,7 @@ const _CORE_BASE: HeroRule[] = (
     // Pattern cobre concatenação clássica e template literals JS (`...${...}`).
     // Fluxos cross-statement são cobertos pelo engine L2 (taint) em JS/TS.
     pattern: {
+      scope: "any",
       regex:
         "(?i)(execute|executemany|query|raw)\\s*\\(\\s*(`[^`]*\\$\\{|f['\"].*(select|insert|update|delete|drop).*\\{|['\"].*(select|insert|update|delete|drop).*['\"]\\s*(\\+|%|\\.format))",
     },
@@ -139,6 +155,7 @@ const _CORE_BASE: HeroRule[] = (
     // seed=42) em 2026-07-26: F1 0.67 -> 1.00 no corpus golden, sem regressões.
     // Mutação aplicada: add-hashlib-new-alt. Ver corpus caso hash-02.
     pattern: {
+      scope: "any",
       regex: "(?i)(md5|sha1)\\s*\\(|hashlib\\.(md5|sha1)|createHash\\(\\s*['\"](md5|sha1)['\"]|hashlib\\.new\\(\\s*['\"](md5|sha1)['\"]",
     },
   },
@@ -232,6 +249,7 @@ const _CORE_BASE: HeroRule[] = (
     sddTemplateId: "sdd.ssrf.allowlist",
     category: "ssrf",
     pattern: {
+      scope: "any",
       regex: "(?i)fetch\\s*\\(\\s*[`$].*\\$\\{",
     },
     taint: {
@@ -273,6 +291,7 @@ const _CORE_BASE: HeroRule[] = (
     sddTemplateId: "sdd.redirect.allowlist",
     category: "broken-access-control",
     pattern: {
+      scope: "any",
       regex: "(?i)\\.redirect\\s*\\(\\s*[`$].*\\$\\{",
     },
     taint: {
@@ -329,6 +348,7 @@ const _CORE_BASE: HeroRule[] = (
     sddTemplateId: "sdd.tls.enable-verify",
     category: "authentication-failures",
     pattern: {
+      scope: "any",
       regex: "(?i)NODE_TLS_REJECT_UNAUTHORIZED\\s*=\\s*['\"]?0['\"]?",
     },
   },
@@ -361,6 +381,7 @@ const _CORE_BASE: HeroRule[] = (
     sddTemplateId: "sdd.supply.verify-checksum",
     category: "supply-chain",
     pattern: {
+      scope: "any",
       regex: "(?i)(curl|wget).{0,80}\\|\\s*(ba)?sh",
     },
   },
@@ -394,6 +415,7 @@ const _CORE_BASE: HeroRule[] = (
     sddTemplateId: "sdd.smell.resolve-todo",
     category: "code-smell",
     pattern: {
+      scope: "comments",
       regex: "(?i)(//|#|/\\*)\\s*(todo|fixme|hack|xxx)\\b",
     },
   },
@@ -421,6 +443,7 @@ const _CORE_BASE: HeroRule[] = (
     // concatenação de fato ocorre. sp_executesql com parâmetros tipados
     // (forma segura) não contém "+" após a string, então não dispara.
     pattern: {
+      scope: "any",
       regex: "(?i)(set\\s+@\\w+\\s*=|exec(ute)?\\s*\\()\\s*n?['\"].*(select|insert|update|delete).*['\"]\\s*\\+",
     },
   },
@@ -437,6 +460,7 @@ const _CORE_BASE: HeroRule[] = (
     sddTemplateId: "sdd.sqli.parametrize",
     category: "string-injection",
     pattern: {
+      scope: "any",
       regex: "(?i)new\\s+(SqlCommand|OleDbCommand|OdbcCommand)\\s*\\(\\s*(\\$?['\"].*(select|insert|update|delete).*['\"]\\s*\\+|\\$['\"])",
     },
   },
@@ -457,6 +481,7 @@ const _CORE_BASE: HeroRule[] = (
     sddTemplateId: "sdd.sqli.parametrize",
     category: "string-injection",
     pattern: {
+      scope: "any",
       regex: "(?i)\\.(executeQuery|executeUpdate|execute)\\s*\\(\\s*\"[^\"]*(select|insert|update|delete)[^\"]*\"\\s*\\+",
     },
   },

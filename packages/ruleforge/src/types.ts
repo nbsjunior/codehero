@@ -6,6 +6,15 @@ export interface CorpusCase {
   code: string;
   expected: "match" | "no_match";
   note?: string;
+  /**
+   * Perfil léxico do trecho (`clike`, `python`, `sql`, `cobol`, `vbnet`).
+   *
+   * Passou a importar quando o motor ganhou máscara de comentário/string: um
+   * `# TODO` só é comentário sob o perfil do Python. Sem isto o corpus avalia
+   * todo caso como C-like e reprova regra que funciona em produção — onde o
+   * scanner conhece a extensão do arquivo.
+   */
+  profile?: string;
 }
 
 export interface EvalFailure {
