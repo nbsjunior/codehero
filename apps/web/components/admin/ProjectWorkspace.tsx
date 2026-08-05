@@ -504,11 +504,12 @@ export default function ProjectWorkspace({
         });
         setOfflineMsg(`Famílias AST aplicadas: ${res.updated} issue(s) · ${res.functions} funções no relatório.`);
       } else if (raw.findings?.length) {
+        const findings = raw.findings;
         const res = await applyOfflineTriage({
           orgId,
           projectId,
           repoId: selectedRepo.repoId,
-          triage: raw,
+          triage: { generatedAt: raw.generatedAt, findings },
         });
         setOfflineMsg(`Triagem aplicada: ${res.updated} issue(s) atualizado(s), ${res.skipped} ignorado(s).`);
       } else {
