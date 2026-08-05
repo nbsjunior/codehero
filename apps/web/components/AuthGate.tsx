@@ -276,6 +276,91 @@ export default function AuthGate({ children }: { children: ReactNode }) {
           </div>
         </section>
 
+        {/*
+          Secao de mainframe: e o unico recorte em que "melhor que o mercado" e
+          afirmacao verificavel, e ate agora nao aparecia em lugar nenhum da
+          pagina. Todo numero aqui sai do catalogo — 41 das 46 regras COBOL sao
+          proprias, contra 6 das 110 de Java.
+        */}
+        <section id="mainframe" className="cr-section cr-section-alt">
+          <div className="cr-section-head">
+            <h2>Mainframe: onde o CodeHero vai mais fundo</h2>
+            <p>
+              COBOL e DB2 não são um add-on aqui. São o recorte em que a análise faz o que
+              nenhuma ferramenta do mercado faz — e sem edição paga.
+            </p>
+          </div>
+          <div className="cr-feature-grid">
+            <article className="cr-feature">
+              <h3>Copybook expandido antes de analisar</h3>
+              <p>
+                Sem expandir <code>COPY</code>, o analisador vê uma linha e não o programa — e não
+                sabe qual pedaço está faltando. O CodeHero resolve o copybook e ainda preserva a
+                origem: o apontamento aponta para <code>CLIENTE.cpy:4</code>, não para uma linha
+                deslocada do programa.
+              </p>
+            </article>
+            <article className="cr-feature">
+              <h3>SQLCODE não verificado após EXEC SQL</h3>
+              <p>
+                O DB2 devolve +100 quando não acha linha e não interrompe nada: o programa segue
+                com a variável intacta e grava. A verificação quase nunca está inline — está num
+                parágrafo comum. O CodeHero <strong>segue o PERFORM</strong> para conferir se
+                aquele parágrafo realmente olha o SQLCODE.
+              </p>
+            </article>
+            <article className="cr-feature">
+              <h3>Dado morto que atravessa o copybook</h3>
+              <p>
+                Campo declarado e nunca referenciado ocupa espaço no registro e se propaga por
+                dezenas de programas via copybook compartilhado. Encontrar exige cruzar a DATA
+                DIVISION com a PROCEDURE DIVISION inteira — não é padrão de texto.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        {/*
+          Orquestracao: a posicao honesta em Java e Node. Competir por contagem
+          de regras com ESLint e SonarQube e perder por aritmetica; a diferenca
+          esta em juntar tudo num gate so, sem eco.
+        */}
+        <section id="orquestracao" className="cr-section">
+          <div className="cr-section-head">
+            <h2>Um gate, todos os motores</h2>
+            <p>
+              Em Java e Node já existem analisadores livres e maduros. O CodeHero não tenta
+              substituí-los — ele os reúne num resultado só.
+            </p>
+          </div>
+          <div className="cr-feature-grid">
+            <article className="cr-feature">
+              <h3>Roda o que já é padrão no seu ecossistema</h3>
+              <p>
+                ESLint e oxlint em Node; PMD e SpotBugs em Java; Semgrep, Trivy e osv-scanner para
+                dependência. Qualquer SARIF também entra — CodeQL inclusive. Ferramenta ausente
+                não quebra o scan: ela informa como instalar e o resto segue.
+              </p>
+            </article>
+            <article className="cr-feature">
+              <h3>Sem contar o mesmo problema duas vezes</h3>
+              <p>
+                Quando duas ferramentas apontam a mesma linha, o relatório mostra uma entrada e
+                registra as outras — nada se perde, e o número que você lê é o número de
+                problemas, não de opiniões sobre eles.
+              </p>
+            </article>
+            <article className="cr-feature">
+              <h3>Procedência em cada apontamento</h3>
+              <p>
+                Todo achado de terceiro carrega de quem é a afirmação e qual regra original a
+                gerou. Você sabe o que veio do CodeHero, o que veio do ESLint e o que veio do
+                CodeQL — sem misturar responsabilidade.
+              </p>
+            </article>
+          </div>
+        </section>
+
         <section id="missao" className="cr-section cr-section-alt">
           <div className="cr-section-head">
             <h2>Diferente do mercado</h2>
