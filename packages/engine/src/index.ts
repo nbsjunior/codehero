@@ -11,12 +11,17 @@ export { runForwardWorklist } from "./dataflow.ts";
 // Métricas estruturais (tree-sitter WASM): ciclomática, cognitiva,
 // aninhamento, tamanho de função e nº de parâmetros.
 export { parseStructural, structuralLanguageFor } from "./structural/parser.ts";
-export type { StructuralLanguage, ParsedFile } from "./structural/parser.ts";
+export type { StructuralLanguage, ParsedFile, SyntaxNode } from "./structural/parser.ts";
+export { walk } from "./structural/parser.ts";
 export { parseCobolSource } from "./structural/cobolParse.ts";
 export { expandCopybooks, origemDaLinha } from "./structural/copybook.ts";
 export { parseDataDivision, camposDeclarados, tamanhoDoPic } from "./structural/cobolData.ts";
 export type { CampoDeclarado } from "./structural/cobolData.ts";
 export { camposMortos } from "./structural/cobolDeadData.ts";
+export { extractPathContexts, vectorize, vectorizeFile } from "./structural/pathContexts.ts";
+export type { PathContext, FunctionVector } from "./structural/pathContexts.ts";
+export { kmeans, detectarAnomalias, paresSimilares } from "./structural/clustering.ts";
+export type { Cluster, ClusterResult, Anomalia, ParSimilar } from "./structural/clustering.ts";
 export { sqlcodeNaoChecado } from "./structural/cobolSqlcode.ts";
 export type { SqlcodeNaoChecado } from "./structural/cobolSqlcode.ts";
 export type { CampoMorto } from "./structural/cobolDeadData.ts";
