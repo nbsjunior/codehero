@@ -13,6 +13,7 @@ import {
 import { httpsCallable, type FunctionsError } from "firebase/functions";
 import { auth, functions } from "@/lib/firebase";
 import { useAuth } from "@/lib/useAuth";
+import LearningLoopStory from "@/components/LearningLoopStory";
 
 type Mode = "login" | "signup" | "forgot";
 
@@ -172,6 +173,9 @@ export default function AuthGate({ children }: { children: ReactNode }) {
         </button>
 
         <nav id="cr-nav-menu" className={`cr-nav-links${navOpen ? " is-open" : ""}`}>
+          <a href="#esteira-regras" onClick={() => setNavOpen(false)}>
+            Esteira de regras
+          </a>
           <a href="#como" onClick={() => setNavOpen(false)}>
             Como funciona
           </a>
@@ -355,6 +359,20 @@ export default function AuthGate({ children }: { children: ReactNode }) {
                   <td>Não</td>
                 </tr>
                 <tr>
+                  <th scope="row">Copybook COBOL expandido</th>
+                  <td className="cr-compare-highlight">Sim — com a origem do achado preservada</td>
+                  <td>Só na edição paga</td>
+                  <td>Não</td>
+                  <td>Não</td>
+                </tr>
+                <tr>
+                  <th scope="row">SQLCODE não verificado (COBOL + DB2)</th>
+                  <td className="cr-compare-highlight">Sim — segue o PERFORM entre parágrafos</td>
+                  <td>Não</td>
+                  <td>Não</td>
+                  <td>Não</td>
+                </tr>
+                <tr>
                   <th scope="row">Apontamento pronto para autofix</th>
                   <td className="cr-compare-highlight">Risco, motivo e correção no próprio SARIF</td>
                   <td>Só o achado</td>
@@ -423,10 +441,11 @@ export default function AuthGate({ children }: { children: ReactNode }) {
             </article>
             <article className="cr-model">
               <span className="cr-model__role">Menos ruído, mais foco</span>
-              <strong className="cr-model__name">Triagem inteligente</strong>
+              <strong className="cr-model__name">Assertividade calculada</strong>
               <p>
-                Filtramos alertas pouco relevantes para o time concentrar esforço no que realmente
-                importa — produtividade com sinal limpo.
+                Cada apontamento recebe uma nota de assertividade a partir de sinais medidos —
+                caminho do arquivo, complexidade da função e frequência de alteração. É cálculo
+                fixo e reproduzível; ainda não aprende com o histórico do seu time.
               </p>
             </article>
             <article className="cr-model">
@@ -447,6 +466,8 @@ export default function AuthGate({ children }: { children: ReactNode }) {
             humana.
           </p>
         </section>
+
+        <LearningLoopStory />
 
         <section id="como" className="cr-section">
           <div className="cr-section-head">
@@ -591,6 +612,9 @@ export default function AuthGate({ children }: { children: ReactNode }) {
       <footer className="cr-footer">
         <span className="cr-nav-name">CodeHero</span>
         <span>By Nelson Borges</span>
+        <a href="#esteira-regras" style={{ color: "inherit" }}>
+          Esteira de regras
+        </a>
         <a href="/docs/" style={{ color: "inherit" }}>
           Docs
         </a>
