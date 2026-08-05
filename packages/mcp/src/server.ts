@@ -5,30 +5,35 @@ import { z } from "zod";
 import { spawnSync } from "node:child_process";
 
 // ---------------------------------------------------------------------------
-// hero-mcp — exposes CodeHero to any MCP client (e.g. Claude). Stateless: it
-// proxies the token-guarded hero-core HTTP endpoints and can run a local scan.
+// hero-mcp — stdio MCP for Cursor / Claude / GitHub Copilot.
 //
-// Config via env:
-//   HERO_CORE_URL  base URL of the public API (e.g. https://codehero.web.app/api)
-//   HERO_TOKEN     per-repo ingest token
-//   HERO_ORG_ID / HERO_PROJECT_ID / HERO_REPO_ID  default target
-//   HERO_SCANNER_CMD  local scanner binary for run_scan
+// Plug-and-play:
+//   npx -y codehero-mcp
+//
+// Env (painel → Integração MCP preenche o mcp.json):
+//   HERO_CORE_URL   default https://codehero.web.app/api
+//   HERO_TOKEN      ingest token do repositório
+//   HERO_ORG_ID / HERO_PROJECT_ID / HERO_REPO_ID
+//   HERO_SCANNER_CMD  opcional — só para run_scan local
 // ---------------------------------------------------------------------------
 
-const CORE_URL = (process.env.HERO_CORE_URL ?? "http://127.0.0.1:5001/codehero-dev/us-central1").replace(
-  /\/$/,
-  "",
-);
-const TOKEN = process.env.HERO_TOKEN ?? "";
-const ORG_ID = process.env.HERO_ORG_ID ?? "";
-const PROJECT_ID = process.env.HERO_PROJECT_ID ?? "";
-const REPO_ID = process.env.HERO_REPO_ID ?? "";
+const DEFAULT_CORE = "https://codehero.web.app/api";
+
+const CORE_URL = (
+  process.env.HERO_CORE_URL ||
+  process.env.CODEHERO_API_URL ||
+  DEFAULT_CORE
+).replace(/\/$/, "");
+const TOKEN = process.env.HERO_TOKEN ?? process.env.CODEHERO_TOKEN ?? "";
+const ORG_ID = process.env.HERO_ORG_ID ?? process.env.CODEHERO_ORG_ID ?? "";
+const PROJECT_ID = process.env.HERO_PROJECT_ID ?? process.env.CODEHERO_PROJECT_ID ?? "";
+const REPO_ID = process.env.HERO_REPO_ID ?? process.env.CODEHERO_REPO_ID ?? "";
 
 function authHeaders(): Record<string, string> {
   return { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" };
 }
 
-const server = new McpServer({ name: "hero-mcp", version: "0.1.0" });
+const server = new McpServer({ name: "hero-mcp", version: "0.2.0" });
 
 server.tool(
   "get_issues",
@@ -42,6 +47,12 @@ server.tool(
     limit: z.number().int().min(1).max(500).default(100),
   },
   async ({ orgId, projectId, repoId, severity, newCodeOnly, limit }) => {
+    if (!TOKEN) {
+      return {
+        content: [{ type: "text", text: "HERO_TOKEN ausente. Cole o mcp.json do painel CodeHero (Integração MCP)." }],
+        isError: true,
+      };
+    }
     if (!repoId) {
       return {
         content: [{ type: "text", text: "repoId é obrigatório (defina HERO_REPO_ID ou passe repoId)." }],
@@ -71,6 +82,12 @@ server.tool(
     fingerprint: z.string(),
   },
   async ({ orgId, projectId, repoId, fingerprint }) => {
+    if (!TOKEN) {
+      return {
+        content: [{ type: "text", text: "HERO_TOKEN ausente. Cole o mcp.json do painel CodeHero." }],
+        isError: true,
+      };
+    }
     if (!repoId) {
       return {
         content: [{ type: "text", text: "repoId é obrigatório (defina HERO_REPO_ID ou passe repoId)." }],
@@ -99,6 +116,12 @@ server.tool(
     status: z.enum(["applied", "rejected", "failed"]),
   },
   async ({ orgId, projectId, repoId, fingerprint, specId, status }) => {
+    if (!TOKEN) {
+      return {
+        content: [{ type: "text", text: "HERO_TOKEN ausente. Cole o mcp.json do painel CodeHero." }],
+        isError: true,
+      };
+    }
     if (!repoId) {
       return {
         content: [{ type: "text", text: "repoId é obrigatório (defina HERO_REPO_ID ou passe repoId)." }],
@@ -117,7 +140,7 @@ server.tool(
 
 server.tool(
   "run_scan",
-  "Roda o scanner CodeHero localmente com as regras ativas do servidor (canônicas + dress code) e retorna o relatório de análise.",
+  "Roda o scanner CodeHero localmente (opcional). Requer HERO_SCANNER_CMD. Sem isso, use get_issues / get_active_rules via API.",
   { path: z.string().default(".") },
   async ({ path }) => {
     const cmd = (process.env.HERO_SCANNER_CMD ?? "").trim();
@@ -126,8 +149,11 @@ server.tool(
         content: [
           {
             type: "text",
-            text:
-              "Defina HERO_SCANNER_CMD (ex.: node /caminho/packages/scanner/dist/index.js). Não use npx hero-scan — pacote inexistente no npm.",
+            text: [
+              "run_scan precisa de HERO_SCANNER_CMD (opcional no plug-and-play).",
+              "Modo API: use get_issues / get_sdd_spec / get_active_rules — não exigem scanner local.",
+              "Avançado: HERO_SCANNER_CMD=\"node caminho/packages/scanner/dist/index.js\"",
+            ].join("\n"),
           },
         ],
         isError: true,
@@ -137,13 +163,15 @@ server.tool(
     const bin = parts[0]!;
     const prefix = parts.slice(1);
     const args = [...prefix, path, "--sarif"];
-    if (CORE_URL) {
-      args.push("--server", CORE_URL);
-    }
+    if (CORE_URL) args.push("--server", CORE_URL);
     if (TOKEN) args.push("--token", TOKEN);
     if (ORG_ID) args.push("--org", ORG_ID);
     if (PROJECT_ID) args.push("--project", PROJECT_ID);
-    const result = spawnSync(bin, args, { encoding: "utf8", maxBuffer: 64 * 1024 * 1024, shell: process.platform === "win32" });
+    const result = spawnSync(bin, args, {
+      encoding: "utf8",
+      maxBuffer: 64 * 1024 * 1024,
+      shell: process.platform === "win32",
+    });
     if (result.error) {
       return { content: [{ type: "text", text: `scanner error: ${result.error.message}` }], isError: true };
     }
@@ -159,13 +187,13 @@ server.tool(
   },
   async ({ fingerprint }) => {
     const text = [
-      "CodeHero verified-fix workflow (Claude / Copilot):",
+      "CodeHero verified-fix workflow (Claude / Copilot / Cursor):",
       "1. get_issues — pick a fingerprint" + (fingerprint ? ` (suggested: ${fingerprint})` : ""),
       "2. get_sdd_spec — obtain the verifiable remediation contract",
       "3. Edit code with a unified_diff scoped to the SDD location",
-      "4. run_scan — assert RULE_RESOLVED (fingerprint gone) and NO_NEW_ISSUES",
+      "4. run_scan — se HERO_SCANNER_CMD estiver definido; senão peça evidência via get_issues",
       "5. submit_fix_result — status=applied|rejected|failed",
-      "Never claim a fix is done without run_scan evidence.",
+      "Never claim a fix is done without scan/API evidence.",
       "",
       "Before generating new code, call get_generation_context with entry describing the guardrails needed",
       '(e.g. "regras de avaliação de código CodeHero").',
@@ -256,7 +284,7 @@ server.tool(
       "Instruções obrigatórias para o agente:",
       "- Respeite as regras abaixo ao gerar ou editar código.",
       "- Não introduza padrões listados como VULNERABILITY / CODE_SMELL.",
-      "- Se alterar código para corrigir findings, rode run_scan e use submit_fix_result.",
+      "- Se alterar código para corrigir findings, use get_issues / run_scan e submit_fix_result.",
       "",
     ];
 
@@ -307,6 +335,8 @@ server.tool(
       const repoId = REPO_ID;
       if (!repoId) {
         sections.push("## Apontamentos abertos\nDefina HERO_REPO_ID para listar issues neste contexto.\n");
+      } else if (!TOKEN) {
+        sections.push("## Apontamentos abertos\nHERO_TOKEN necessário para listar issues.\n");
       } else {
         const url = new URL(`${CORE_URL}/listIssues`);
         url.searchParams.set("orgId", orgId);
@@ -332,4 +362,4 @@ server.tool(
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
-console.error("hero-mcp server ready (stdio)");
+console.error(`hero-mcp ready (stdio) · api=${CORE_URL}`);

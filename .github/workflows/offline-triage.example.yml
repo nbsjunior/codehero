@@ -1,0 +1,46 @@
+# Exemplo — triagem offline (Presence Fase 4)
+#
+# NÃO falha o Quality Gate do PR. Roda em schedule/manual, gera triage.json
+# (heuristic ou LLM local) para upload no portal via applyOfflineTriage.
+#
+# Copie para .github/workflows/offline-triage.yml se quiser o job no seu repo.
+
+name: CodeHero Offline Triage
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1" # segunda 06:00 UTC
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Scan → SARIF (nativo, sem gate)
+        continue-on-error: true
+        run: |
+          npx --yes @codehero/scanner . --sarif --out codehero.sarif || true
+          test -f codehero.sarif || echo '{"runs":[{"results":[]}]}' > codehero.sarif
+
+      - name: Foundation-Sec / heuristic triage
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/nbsjunior/codehero/main/scripts/foundation-sec-triage.mjs -o triage.mjs
+          node triage.mjs --sarif codehero.sarif --out triage.json
+          # Com Ollama/Foundation-Sec local:
+          # node triage.mjs --sarif codehero.sarif --out triage.json \
+          #   --llm-url http://127.0.0.1:11434/v1 --model foundation-sec
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: codehero-triage
+          path: triage.json
+          retention-days: 14

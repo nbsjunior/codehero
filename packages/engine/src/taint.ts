@@ -41,6 +41,11 @@ const SINK_PATTERNS: Record<string, RegExp[]> = {
   ],
   "http.redirect": [/\.redirect$/i, /^res\.redirect$/i, /^response\.redirect$/i],
   "object.merge": [/^Object\.assign$/i, /^_\.merge$/i, /^lodash\.merge$/i],
+  "log.write": [
+    /^console\.(log|info|debug|error|warn)$/i,
+    /^logger\.(log|info|debug|error|warn)$/i,
+    /\.log$/i,
+  ],
 };
 
 function memberPath(node: Node): string | null {

@@ -50,6 +50,7 @@ interface CliOptions {
   withOxlint: boolean;
   withEslint: boolean;
   withSemgrep: boolean;
+  withOpengrep: boolean;
   withPmd: boolean;
   withSpotbugs: boolean;
   spotbugsClasses: string | null;
@@ -80,6 +81,7 @@ function parseArgs(argv: string[]): CliOptions {
     withOxlint: false,
     withEslint: false,
     withSemgrep: false,
+    withOpengrep: false,
     withPmd: false,
     withSpotbugs: false,
     spotbugsClasses: null,
@@ -102,6 +104,7 @@ function parseArgs(argv: string[]): CliOptions {
     else if (a === "--with-spotbugs") opts.withSpotbugs = true;
     else if (a === "--spotbugs-classes") opts.spotbugsClasses = argv[++i] ?? null;
     else if (a === "--with-semgrep") opts.withSemgrep = true;
+    else if (a === "--with-opengrep") opts.withOpengrep = true;
     else if (a === "--with-sca") opts.withSca = true;
     else if (a === "--sca-tool") {
       const v = (argv[++i] ?? "trivy").toLowerCase();
@@ -260,15 +263,22 @@ async function main(): Promise<void> {
 
   // Terceiros: CodeQL/Semgrep cobrem fluxo entre arquivos que o L0 nao alcanca;
   // osv-scanner/trivy cobrem dependencia, eixo que analise de codigo nao ve.
-  // Presence Pack: --with-oxlint / --with-semgrep / --with-sca (soft-fail).
+  // Presence Pack: --with-oxlint / --with-opengrep / --with-semgrep / --with-sca (soft-fail).
   // --joern (opt-in): CPG interprocedural via Joern → mesmo caminho --import.
   const importPaths = [...opts.importSarif];
   const querAlgumExterno =
-    opts.withOxlint || opts.withEslint || opts.withSemgrep || opts.withPmd || opts.withSpotbugs || opts.withSca;
+    opts.withOxlint ||
+    opts.withEslint ||
+    opts.withOpengrep ||
+    opts.withSemgrep ||
+    opts.withPmd ||
+    opts.withSpotbugs ||
+    opts.withSca;
   if (querAlgumExterno) {
     const ext = collectExternalSarifs({
       oxlint: opts.withOxlint,
       eslint: opts.withEslint,
+      opengrep: opts.withOpengrep,
       semgrep: opts.withSemgrep,
       pmd: opts.withPmd,
       spotbugs: opts.withSpotbugs,
@@ -363,6 +373,7 @@ async function main(): Promise<void> {
         file,
         severity: r.properties?.severity,
         engine: r.properties?.engine ?? null,
+        tool: r.properties?.tool ?? (String(r.ruleId || "").startsWith("EXT:") ? String(r.ruleId).split(":")[1] : null),
         findingSource: r.properties?.source === "imported" ? "imported" : "native",
         cyclomatic: fn?.cyclomatic,
         cognitive: fn?.cognitive,
@@ -370,7 +381,12 @@ async function main(): Promise<void> {
         fileChurn: churn.get(file),
         taintPathLength: Array.isArray((r.properties as { taintPath?: string[] } | undefined)?.taintPath)
           ? ((r.properties as { taintPath: string[] }).taintPath.length)
-          : undefined,
+          : typeof (r.properties as { taintPathLength?: number } | undefined)?.taintPathLength === "number"
+            ? (r.properties as { taintPathLength: number }).taintPathLength
+            : undefined,
+        outlierScore:
+          typeof r.properties?.outlierScore === "number" ? r.properties.outlierScore : undefined,
+        familySize: typeof r.properties?.familySize === "number" ? r.properties.familySize : undefined,
       });
       r.properties = {
         ...r.properties,

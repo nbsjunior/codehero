@@ -21,7 +21,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rimraf dist",
-    "test": "node test/lexicalMask.mjs"
+    "test": "node test/lexicalMask.mjs && node test/gateSuppress.mjs"
   },
   "dependencies": {
     "zod": "^3.24.1"

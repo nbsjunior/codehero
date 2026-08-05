@@ -1,18 +1,44 @@
 {
-  "name": "@codehero/mcp",
-  "version": "0.1.0",
-  "private": true,
+  "name": "codehero-mcp",
+  "version": "0.2.0",
+  "description": "CodeHero MCP server — plug-and-play for Cursor, Claude Desktop, and GitHub Copilot",
   "type": "module",
   "bin": {
-    "hero-mcp": "./dist/server.js"
+    "hero-mcp": "./dist/server.js",
+    "codehero-mcp": "./dist/server.js"
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "start": "node src/server.ts",
+    "start": "node dist/server.js",
+    "prepublishOnly": "npm run build",
     "clean": "rimraf dist"
   },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "mcp",
+    "codehero",
+    "cursor",
+    "copilot",
+    "claude",
+    "sast"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nbsjunior/codehero.git",
+    "directory": "packages/mcp"
+  },
+  "homepage": "https://codehero.web.app/docs/#mcp",
+  "license": "UNLICENSED",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
-    "@codehero/contracts": "*",
     "@modelcontextprotocol/sdk": "^1.13.0",
     "zod": "^3.24.1"
   }

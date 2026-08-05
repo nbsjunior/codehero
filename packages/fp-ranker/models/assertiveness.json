@@ -50,6 +50,24 @@
       "right": 0.25
     },
     {
+      "feature": "toolDepth",
+      "threshold": 0.7,
+      "left": -0.1,
+      "right": 0.2
+    },
+    {
+      "feature": "clusterOutlier",
+      "threshold": 0.6,
+      "left": 0.05,
+      "right": -0.25
+    },
+    {
+      "feature": "clusterSizeNorm",
+      "threshold": 0.15,
+      "left": -0.1,
+      "right": 0.12
+    },
+    {
       "feature": "cognitiveNorm",
       "threshold": 0.25,
       "left": -0.15,

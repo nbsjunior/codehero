@@ -9,7 +9,6 @@ export interface CockpitNavItem {
   id: string;
   label: string;
   hint?: string;
-  /** When set, navigates instead of selecting a tab. */
   href?: string;
   external?: boolean;
 }
@@ -17,22 +16,25 @@ export interface CockpitNavItem {
 export interface CockpitNavGroup {
   id: string;
   label: string;
+  /** Agrupa visualmente: operação | portfolio | governanca | recursos */
+  tier?: "operation" | "portfolio" | "governance" | "resources";
   items: CockpitNavItem[];
 }
 
 /**
- * Única navegação do painel — grupos + links (Docs / Estimativa) + rodapé
- * com usuário. Substitui o menu lateral duplicado do AppShell em /admin.
+ * Shell executivo do painel — sidebar preta, acento vermelho, menus segregados.
  */
 export default function AdminCockpitShell({
   groups,
   tab,
   onSelectTab,
+  isPlatformAdmin = false,
   children,
 }: {
   groups: CockpitNavGroup[];
   tab: string;
   onSelectTab: (id: string) => void;
+  isPlatformAdmin?: boolean;
   children: ReactNode;
 }) {
   const { user } = useAuth();
@@ -57,22 +59,20 @@ export default function AdminCockpitShell({
           <a
             key={item.id}
             href={item.href}
-            className="hero-cockpit-nav__btn"
+            className="ex-nav__link"
             target="_blank"
             rel="noreferrer"
             onClick={() => setNavOpen(false)}
           >
-            {item.label}
+            <span>{item.label}</span>
+            <span className="ex-nav__ext" aria-hidden>
+              ↗
+            </span>
           </a>
         );
       }
       return (
-        <Link
-          key={item.id}
-          href={item.href}
-          className="hero-cockpit-nav__btn"
-          onClick={() => setNavOpen(false)}
-        >
+        <Link key={item.id} href={item.href} className="ex-nav__link" onClick={() => setNavOpen(false)}>
           {item.label}
         </Link>
       );
@@ -81,7 +81,7 @@ export default function AdminCockpitShell({
       <button
         key={item.id}
         type="button"
-        className={`hero-cockpit-nav__btn${tab === item.id ? " is-active" : ""}`}
+        className={`ex-nav__link${tab === item.id ? " is-active" : ""}`}
         onClick={() => selectTab(item.id)}
         aria-current={tab === item.id ? "page" : undefined}
       >
@@ -90,72 +90,105 @@ export default function AdminCockpitShell({
     );
   }
 
-  return (
-    <div className={`hero-cockpit${navOpen ? " hero-cockpit--nav-open" : ""}`}>
-      <aside className="hero-cockpit-sidebar" aria-label="Navegação do painel">
-        <Link href="/admin/#instalacao" className="hero-sidebar-brand" onClick={() => setNavOpen(false)} style={{ marginBottom: "1rem" }}>
-          <span className="hero-burst">⚡</span>
-          <span className="hero-display">CodeHero</span>
-        </Link>
+  const useTiers = groups.some((g) => g.tier);
+  const tiers: { id: NonNullable<CockpitNavGroup["tier"]>; label: string }[] = [
+    { id: "operation", label: "Operação" },
+    { id: "portfolio", label: "Portfólio" },
+    { id: "governance", label: "Governança" },
+    { id: "resources", label: "Recursos" },
+  ];
 
-        <nav className="hero-cockpit-nav">
-          {groups.map((group) => (
-            <div key={group.id} className="hero-cockpit-nav-group">
-              <p className="hero-cockpit-nav-group__label">{group.label}</p>
-              <ul className="hero-cockpit-nav-group__list">
-                {group.items.map((item) => (
-                  <li key={item.id}>{renderItem(item)}</li>
-                ))}
-              </ul>
-            </div>
+  function renderGroup(group: CockpitNavGroup) {
+    return (
+      <div key={group.id} className="ex-nav__group">
+        <p className="ex-nav__group-label">{group.label}</p>
+        <ul className="ex-nav__list">
+          {group.items.map((item) => (
+            <li key={item.id}>{renderItem(item)}</li>
           ))}
-        </nav>
+        </ul>
+      </div>
+    );
+  }
 
-        <div className="hero-sidebar-spacer" />
+  function renderTier() {
+    if (!useTiers) return groups.map(renderGroup);
+    const placed = new Set<string>();
+    return (
+      <>
+        {tiers.map((tier) => {
+          const tierGroups = groups.filter((g) => g.tier === tier.id);
+          if (tierGroups.length === 0) return null;
+          for (const g of tierGroups) placed.add(g.id);
+          return (
+            <div key={tier.id} className="ex-nav__tier">
+              <p className="ex-nav__tier-label">{tier.label}</p>
+              {tierGroups.map(renderGroup)}
+            </div>
+          );
+        })}
+        {groups.filter((g) => !placed.has(g.id)).map(renderGroup)}
+      </>
+    );
+  }
 
-        <div className="hero-sidebar-footer" style={{ padding: "0.75rem 0 0" }}>
-          <p
-            className="hero-caption"
-            style={{ margin: "0 0 0.6rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
-            title={user?.email ?? undefined}
-          >
-            {user?.displayName ?? user?.email}
+  return (
+    <div className={`ex-cockpit${navOpen ? " ex-cockpit--nav-open" : ""}`}>
+      <aside className="ex-sidebar" aria-label="Navegação do painel">
+        <div className="ex-sidebar__brand-wrap">
+          <Link href="/admin/#instalacao" className="ex-brand" onClick={() => setNavOpen(false)}>
+            <span className="ex-brand__mark" aria-hidden />
+            <span className="ex-brand__name">CodeHero</span>
+          </Link>
+          <span className={`ex-role${isPlatformAdmin ? " ex-role--admin" : ""}`}>
+            {isPlatformAdmin ? "Admin plataforma" : "Workspace"}
+          </span>
+        </div>
+
+        <nav className="ex-nav">{renderTier()}</nav>
+
+        <div className="ex-sidebar__foot">
+          <p className="ex-sidebar__user" title={user?.email ?? undefined}>
+            {user?.displayName ?? user?.email ?? "Conta"}
           </p>
           <button
             type="button"
-            className="hero-btn hero-btn-outline hero-btn-block"
+            className="ex-btn ex-btn--ghost"
             onClick={() => {
               setNavOpen(false);
               void signOut(auth);
             }}
           >
-            Sair
+            Encerrar sessão
           </button>
         </div>
       </aside>
 
       {navOpen && (
-        <button type="button" className="hero-cockpit-backdrop" aria-label="Fechar menu" onClick={() => setNavOpen(false)} />
+        <button type="button" className="ex-backdrop" aria-label="Fechar menu" onClick={() => setNavOpen(false)} />
       )}
 
-      <div className="hero-cockpit-workspace">
-        <div className="hero-cockpit-topbar">
+      <div className="ex-workspace">
+        <header className="ex-topbar">
           <button
             type="button"
-            className="hero-btn hero-btn-outline hero-cockpit-topbar__menu"
+            className="ex-btn ex-btn--ghost ex-topbar__menu"
             onClick={() => setNavOpen((v) => !v)}
             aria-expanded={navOpen}
           >
-            ☰ Menu
+            Menu
           </button>
-          <span className="hero-cockpit-topbar__crumb">
-            {currentGroup?.label}
-            <span aria-hidden="true"> / </span>
-            {current?.label}
-          </span>
-        </div>
+          <div className="ex-topbar__crumb">
+            <span className="ex-topbar__tier">{currentGroup?.label}</span>
+            <span className="ex-topbar__sep" aria-hidden>
+              /
+            </span>
+            <span className="ex-topbar__page">{current?.label}</span>
+          </div>
+          <div className="ex-topbar__accent" aria-hidden />
+        </header>
 
-        <div className="hero-cockpit-main">{children}</div>
+        <div className="ex-main">{children}</div>
       </div>
     </div>
   );

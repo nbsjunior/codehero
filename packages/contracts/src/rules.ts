@@ -158,6 +158,11 @@ const _CORE_BASE: HeroRule[] = (
       scope: "any",
       regex: "(?i)(md5|sha1)\\s*\\(|hashlib\\.(md5|sha1)|createHash\\(\\s*['\"](md5|sha1)['\"]|hashlib\\.new\\(\\s*['\"](md5|sha1)['\"]",
     },
+    ast: {
+      kind: "call",
+      callees: ["createHash", "md5", "sha1", "hashlib.md5", "hashlib.sha1"],
+      requiresNonLiteralArg: false,
+    },
   },
   {
     id: "HERO-SEC-0095-code-injection-eval",
@@ -334,6 +339,12 @@ const _CORE_BASE: HeroRule[] = (
     pattern: {
       regex: "(?i)(token|secret|password|api[_-]?key|nonce|session).{0,40}Math\\.random\\s*\\(|Math\\.random\\s*\\(.{0,40}(token|secret|password)",
     },
+    // Presence Fase 3: L0 contextual + AST call (reduz FP de Math.random em jogos/UI).
+    ast: {
+      kind: "call",
+      callees: ["Math.random"],
+      requiresNonLiteralArg: false,
+    },
   },
   {
     id: "HERO-SEC-0295-tls-verify-disabled",
@@ -366,6 +377,11 @@ const _CORE_BASE: HeroRule[] = (
     category: "sensitive-data-exposure",
     pattern: {
       regex: "(?i)console\\.(log|info|debug|error|warn)\\s*\\([^)]*(password|secret|token|api[_-]?key|authorization)",
+    },
+    taint: {
+      sources: ["http.param", "http.body", "process.env"],
+      sinks: ["log.write"],
+      sanitizers: ["redact", "mask"],
     },
   },
   {
@@ -400,6 +416,11 @@ const _CORE_BASE: HeroRule[] = (
     pattern: {
       regex: "(?<![.\\w])(console\\.log|console\\.debug|debugger|print)\\s*\\(",
       unless: "(?i)(logger|logging|structlog|//\\s*allow-print)",
+    },
+    ast: {
+      kind: "call",
+      callees: ["console.log", "console.debug", "print"],
+      requiresNonLiteralArg: false,
     },
   },
   {

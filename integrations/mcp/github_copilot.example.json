@@ -1,10 +1,10 @@
 {
-  "description": "GitHub Copilot coding agent — CodeHero MCP (stdio).",
-  "mcpServers": {
+  "description": "GitHub Copilot — CodeHero MCP plug-and-play (npx, sem monorepo).",
+  "servers": {
     "codehero": {
       "type": "stdio",
-      "command": "node",
-      "args": ["./packages/mcp/dist/server.js"],
+      "command": "npx",
+      "args": ["-y", "codehero-mcp@latest"],
       "tools": [
         "get_generation_context",
         "get_active_rules",
@@ -19,8 +19,7 @@
         "HERO_TOKEN": "<ingest-token>",
         "HERO_ORG_ID": "<orgId>",
         "HERO_PROJECT_ID": "<projectId>",
-        "HERO_REPO_ID": "<repoId>",
-        "HERO_SCANNER_CMD": "node ./packages/scanner/dist/index.js"
+        "HERO_REPO_ID": "<repoId>"
       }
     }
   },
@@ -29,7 +28,7 @@
     "1. Call get_issues to list open findings.",
     "2. For each finding to fix, call get_sdd_spec(fingerprint).",
     "3. Apply a unified_diff that satisfies the SDD acceptanceCriteria.",
-    "4. Call run_scan on the changed path and confirm the fingerprint is gone (AC1).",
+    "4. Prefer get_issues to confirm the fingerprint is gone; use run_scan only if HERO_SCANNER_CMD is set.",
     "5. Call submit_fix_result with status applied|rejected|failed."
   ]
 }

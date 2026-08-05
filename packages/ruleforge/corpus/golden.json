@@ -433,5 +433,68 @@
     "expected": "no_match",
     "profile": "cobol",
     "code": "           05  WS-SENHA      PIC X(08) VALUE 'xxxxxxxx'."
+  },
+  {
+    "id": "cobol-string-ovf-01",
+    "ruleId": "HERO-SEC-cobol-string-no-overflow",
+    "expected": "match",
+    "profile": "cobol",
+    "code": "           STRING WS-A DELIMITED BY SIZE INTO WS-BUF"
+  },
+  {
+    "id": "cobol-string-ovf-02",
+    "ruleId": "HERO-SEC-cobol-string-no-overflow",
+    "expected": "no_match",
+    "profile": "cobol",
+    "code": "           STRING WS-A DELIMITED BY SIZE INTO WS-BUF ON OVERFLOW DISPLAY 'OVF'"
+  },
+  {
+    "id": "cobol-alter-01",
+    "ruleId": "HERO-SMELL-cobol-alter",
+    "expected": "match",
+    "profile": "cobol",
+    "code": "           ALTER ERROR-PARA TO PROCEED TO DONE-PARA"
+  },
+  {
+    "id": "cobol-display-secret-01",
+    "ruleId": "HERO-SEC-cobol-display-password",
+    "expected": "match",
+    "profile": "cobol",
+    "code": "           DISPLAY WS-DB-PASSWORD UPON CONSOLE"
+  },
+  {
+    "id": "cobol-accept-01",
+    "ruleId": "HERO-SEC-cobol-accept-unvalidated",
+    "expected": "match",
+    "profile": "cobol",
+    "code": "           ACCEPT WS-INPUT FROM CONSOLE"
+  },
+  {
+    "id": "cobol-unstring-ovf-01",
+    "ruleId": "HERO-SEC-cobol-unstring-no-overflow",
+    "expected": "match",
+    "profile": "cobol",
+    "code": "           UNSTRING WS-LINE DELIMITED BY ',' INTO WS-A WS-B"
+  },
+  {
+    "id": "cobol-unstring-ovf-02",
+    "ruleId": "HERO-SEC-cobol-unstring-no-overflow",
+    "expected": "no_match",
+    "profile": "cobol",
+    "code": "           UNSTRING WS-LINE DELIMITED BY ',' INTO WS-A ON OVERFLOW MOVE 1 TO WS-RC"
+  },
+  {
+    "id": "cobol-dyn-file-01",
+    "ruleId": "HERO-SEC-cobol-dynamic-filename",
+    "expected": "match",
+    "profile": "cobol",
+    "code": "           SELECT IN-FILE ASSIGN TO WS-PATH."
+  },
+  {
+    "id": "cobol-next-sentence-01",
+    "ruleId": "HERO-SMELL-cobol-next-sentence",
+    "expected": "match",
+    "profile": "cobol",
+    "code": "           IF WS-A = 1 NEXT SENTENCE ELSE DISPLAY 'X'"
   }
 ]

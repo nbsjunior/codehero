@@ -46,6 +46,15 @@ export type FindingsBrowserItem = {
   isNewCode?: boolean;
   assertiveness?: number | null;
   fpLikelihood?: number | null;
+  /** Offline Foundation-Sec / heuristic triage (Fase 4) — never the sole gate. */
+  triageScore?: number | null;
+  likelyTruePositive?: boolean | null;
+  triageMode?: string | null;
+  /** Regra com FP local alto — visível, mas fora do Quality Gate. */
+  gateSuppressed?: boolean | null;
+  clusterId?: string | null;
+  familySize?: number | null;
+  outlierScore?: number | null;
 };
 
 function verdictLabel(v: IssueFeedbackVerdict | null | undefined): string | null {
@@ -70,12 +79,32 @@ export function provenanceLabel(item: FindingsBrowserItem): string | null {
     bits.push(item.tool ? `via ${item.tool}` : "importado");
     if (item.originalRuleId) bits.push(item.originalRuleId);
     if (item.isDependency) bits.push("dependência");
+  } else if (item.ruleId?.startsWith("EXT:")) {
+    const tool = item.tool || item.ruleId.split(":")[1];
+    bits.push(tool ? `via ${tool}` : "importado");
+    if (item.isDependency) bits.push("dependência");
   } else if (item.engine) {
     bits.push(item.engine);
   } else if (item.tool) {
     bits.push(item.tool);
   }
   if (item.isNewCode) bits.push("código novo");
+  if (item.gateSuppressed) bits.push("fora do gate (FP local)");
+  if (item.clusterId) {
+    bits.push(
+      item.outlierScore != null && item.outlierScore >= 0.6
+        ? `família ${item.clusterId} (outlier)`
+        : `família ${item.clusterId}${item.familySize ? ` · ${item.familySize}` : ""}`,
+    );
+  }
+  if (typeof item.triageScore === "number") {
+    const pct = Math.round(item.triageScore * 100);
+    bits.push(
+      item.likelyTruePositive === false
+        ? `triagem ${pct}% (suspeito FP)`
+        : `triagem ${pct}% TP`,
+    );
+  }
   if (typeof item.fpLikelihood === "number" && item.fpLikelihood >= 0.55) {
     bits.push(`possível FP ${Math.round(item.fpLikelihood * 100)}%`);
   } else if (typeof item.assertiveness === "number" && item.assertiveness >= 0.7) {

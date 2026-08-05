@@ -16,6 +16,7 @@ import { scoreFinding, DEFAULT_MODEL } from "@codehero/fp-ranker";
 import { db, repoRef } from "./firebase.ts";
 import { recomputeProjectAggregate } from "./projectAggregate.ts";
 import { recordAnalysisAnalytics } from "./analytics.ts";
+import { annotateGateSuppression, loadRuleFpStats } from "./ruleFpStats.ts";
 
 export interface PersistAnalysisInput {
   orgId: string;
@@ -99,12 +100,15 @@ export function computeAnalysisSummary(
       r.partialFingerprints?.["heroHash/v1"] ??
       `${r.ruleId}:${r.locations?.[0]?.physicalLocation?.region?.startLine}`;
     const isNew = newSet.has(fp);
+    const gateSuppressed = r.properties?.gateSuppressed === true;
 
     if (SEVERITIES.includes(sev)) bySeverity[sev] += 1;
-    if (sev === "BLOCKER" && isNew) newBlockerIssues += 1;
+    // Política: regra com FP local alto (≥minFeedback e rate≥0.6) não conta no gate.
+    if (!gateSuppressed && sev === "BLOCKER" && isNew) newBlockerIssues += 1;
 
     // Gate ratings: when CI sent fingerprints, score only new-code issues.
     if (scopeToNewCode && !isNew) continue;
+    if (gateSuppressed) continue;
     if (issueType === "CODE_SMELL") codeSmellEfforts.push(r.properties?.remediationEffortMin ?? 0);
     if (issueType === "VULNERABILITY" && SEVERITIES.includes(sev)) vulnSeverities.push(sev);
   }
@@ -169,7 +173,20 @@ export async function upsertIssuesFromResults(input: {
             file,
             severity: sev,
             engine: r.properties?.engine ?? null,
+            tool:
+              (r.properties?.tool as string | null | undefined) ??
+              (String(r.ruleId || "").startsWith("EXT:") ? String(r.ruleId).split(":")[1] : null),
             findingSource: r.properties?.source === "imported" ? "imported" : "native",
+            ruleRepoFpRate:
+              typeof r.properties?.ruleRepoFpRate === "number" ? r.properties.ruleRepoFpRate : undefined,
+            taintPathLength: Array.isArray(r.properties?.taintPath)
+              ? (r.properties.taintPath as string[]).length
+              : typeof r.properties?.taintPathLength === "number"
+                ? r.properties.taintPathLength
+                : undefined,
+            outlierScore:
+              typeof r.properties?.outlierScore === "number" ? r.properties.outlierScore : undefined,
+            familySize: typeof r.properties?.familySize === "number" ? r.properties.familySize : undefined,
           });
 
     bulkWriter.set(
@@ -201,6 +218,31 @@ export async function upsertIssuesFromResults(input: {
         assertiveness: Math.round(rank.assertiveness * 1000) / 1000,
         fpLikelihood: Math.round(rank.fpLikelihood * 1000) / 1000,
         rankerModel: rank.modelVersion,
+        gateSuppressed: r.properties?.gateSuppressed === true,
+        gateSuppressReason: r.properties?.gateSuppressReason ?? null,
+        ruleRepoFpRate:
+          typeof r.properties?.ruleRepoFpRate === "number" ? r.properties.ruleRepoFpRate : null,
+        ...(typeof r.properties?.clusterId === "string"
+          ? {
+              clusterId: r.properties.clusterId,
+              familySize: r.properties.familySize ?? null,
+              outlierScore:
+                typeof r.properties.outlierScore === "number"
+                  ? Math.round(r.properties.outlierScore * 1000) / 1000
+                  : null,
+              functionName: r.properties.functionName ?? null,
+              embedModel: r.properties.embedModel ?? null,
+            }
+          : {}),
+        ...(typeof r.properties?.triageScore === "number"
+          ? {
+              triageScore: Math.round(r.properties.triageScore * 1000) / 1000,
+              likelyTruePositive:
+                r.properties.likelyTruePositive ?? r.properties.triageScore >= 0.55,
+              triageReason: r.properties.triageReason ?? null,
+              triageMode: r.properties.triageMode ?? "sarif",
+            }
+          : {}),
         status: "open",
         isNewCode: newSet.has(fp),
         branch: input.branch,
@@ -225,6 +267,19 @@ export async function persistAnalysisResults(input: PersistAnalysisInput): Promi
   const rRef = repoRef(orgId, projectId, repoId);
   const analysisId = input.analysisId ?? `${Date.now()}`;
   const now = FieldValue.serverTimestamp();
+
+  // Aprendizado local: regras com FP rate alto no repo saem do cálculo do gate.
+  const stats = await loadRuleFpStats(
+    orgId,
+    projectId,
+    repoId,
+    results.map((r) => r.ruleId),
+  );
+  const { suppressed } = annotateGateSuppression(results, stats);
+  if (suppressed > 0) {
+    console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);
+  }
+
   const summary = computeAnalysisSummary(
     results,
     linesOfCode,

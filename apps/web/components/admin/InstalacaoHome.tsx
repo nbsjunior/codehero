@@ -284,6 +284,29 @@ function InstalacaoHome() {
         }
       />
 
+      <section className="hero-panel" style={{ padding: "1.35rem 1.5rem", marginTop: 0, marginBottom: "1rem" }}>
+        <h2 className="hero-display" style={{ fontSize: "1.25rem", margin: "0 0 0.35rem" }}>
+          Esteira que aprende regras
+        </h2>
+        <p className="hero-caption" style={{ marginTop: 0, marginBottom: "0.85rem" }}>
+          Observar → propor (offline) → provar no corpus (F1 ≥ 0,85) → publicar. A IA não julga o PR; o portão
+          determinístico decide. Cenário real: <code>evolve-all</code> rejeitou mutações sem ganho de F1.
+        </p>
+        <p style={{ margin: 0, display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
+          <Link href="/docs/#aprendizado-continuo" className="hero-btn hero-btn-outline" style={{ textDecoration: "none" }}>
+            Ver passo a passo nas docs
+          </Link>
+          <a
+            href="https://github.com/nbsjunior/codehero/blob/main/docs/wiki/Esteira-de-aprendizado-de-regras.md"
+            target="_blank"
+            rel="noreferrer"
+            className="hero-link"
+          >
+            Wiki (markdown)
+          </a>
+        </p>
+      </section>
+
       {/* Como usar — fluxo simples */}
       <section className="hero-panel" style={{ padding: "1.5rem", marginTop: 0 }}>
         <h2 className="hero-display" style={{ fontSize: "1.5rem", margin: "0 0 0.35rem" }}>

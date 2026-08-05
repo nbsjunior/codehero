@@ -14,10 +14,10 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <header className="hero-page-header">
+    <header className="hero-page-header ex-page-header">
       <div className="hero-page-header__text">
         {eyebrow && <p className="hero-page-header__eyebrow">{eyebrow}</p>}
-        <h1 className="hero-page-header__title hero-display">{title}</h1>
+        <h1 className="hero-page-header__title">{title}</h1>
         {description && <p className="hero-page-header__desc">{description}</p>}
       </div>
       {actions ? <div className="hero-page-header__actions">{actions}</div> : null}
@@ -68,7 +68,7 @@ export function KpiCard({
   return (
     <div className={`hero-kpi${tone ? ` hero-kpi--${tone}` : ""}`}>
       <span className="hero-kpi__label">{label}</span>
-      <strong className="hero-kpi__value hero-display">{value}</strong>
+      <strong className="hero-kpi__value">{value}</strong>
       {sub != null && sub !== "" && <span className="hero-kpi__sub">{sub}</span>}
     </div>
   );

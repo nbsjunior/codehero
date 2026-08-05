@@ -1,0 +1,29 @@
+{
+  "name": "@codehero/code-embed",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "hero-code-embed": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "cluster": "node dist/cli.js cluster",
+    "clean": "rimraf dist",
+    "test": "node test/embed.mjs"
+  },
+  "dependencies": {
+    "@codehero/engine": "*"
+  }
+}

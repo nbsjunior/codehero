@@ -71,6 +71,26 @@ export interface SarifResult {
     assertiveness?: number;
     fpLikelihood?: number;
     rankerModel?: string;
+    /** Path de taint (CodeQL/nativo) — comprimento alimenta fp-ranker. */
+    taintPath?: string[];
+    taintPathLength?: number;
+    /** Triagem offline (Foundation-Sec / heuristic). */
+    triageScore?: number;
+    likelyTruePositive?: boolean;
+    triageReason?: string;
+    triageMode?: string;
+    /** Aprendizado local: fora do Quality Gate, ainda visível. */
+    gateSuppressed?: boolean;
+    gateSuppressReason?: string;
+    ruleRepoFpRate?: number;
+    ruleRepoFeedbackN?: number;
+    /** code-embed (não supervisionado): família AST + outlier. */
+    clusterId?: string;
+    clusterIndex?: number;
+    familySize?: number;
+    outlierScore?: number;
+    functionName?: string;
+    embedModel?: string;
   };
 }
 

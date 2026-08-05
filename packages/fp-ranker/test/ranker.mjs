@@ -30,6 +30,7 @@ console.log("\n=== todo atributo do vetor tem de existir");
 const v = extractFeatures({ ruleId: "R", file: "a.ts", severity: "MAJOR" });
 for (const f of FEATURE_NAMES) check(typeof v[f] === "number", `atributo ${f} ausente`);
 console.log(`  ${FEATURE_NAMES.length} atributos, todos numericos`);
+check(FEATURE_NAMES.length >= 15, "deve incluir toolDepth + cluster*");
 
 console.log("\n=== atributos que o scanner passou a informar movem o score");
 // Sem stump para eles, os atributos eram calculados e nao mudavam nada: 196
@@ -39,6 +40,36 @@ const complexo = scoreFinding(DEFAULT_MODEL, { ruleId: "R", file: "src/a.ts", se
 console.log(`  funcao trivial e arquivo parado -> ${simples.assertiveness.toFixed(3)}`);
 console.log(`  funcao complexa e arquivo quente -> ${complexo.assertiveness.toFixed(3)}`);
 check(complexo.assertiveness > simples.assertiveness, "complexidade e churn tem de mover o score");
+
+console.log("\n=== toolDepth e taintPath movem o score");
+const ox = scoreFinding(DEFAULT_MODEL, { ruleId: "EXT:oxlint:x", file: "src/a.ts", severity: "MAJOR", tool: "oxlint" });
+const ql = scoreFinding(DEFAULT_MODEL, {
+  ruleId: "EXT:codeql:x",
+  file: "src/a.ts",
+  severity: "MAJOR",
+  tool: "codeql",
+  taintPathLength: 6,
+});
+console.log(`  oxlint=${ox.assertiveness.toFixed(3)} codeql+taint=${ql.assertiveness.toFixed(3)}`);
+check(ql.assertiveness > ox.assertiveness, "CodeQL+taint tem de pontuar acima de oxlint");
+
+console.log("\n=== cluster outlier reduz assertividade");
+const noCentro = scoreFinding(DEFAULT_MODEL, {
+  ruleId: "R",
+  file: "src/a.ts",
+  severity: "MAJOR",
+  outlierScore: 0.1,
+  familySize: 20,
+});
+const outlier = scoreFinding(DEFAULT_MODEL, {
+  ruleId: "R",
+  file: "src/a.ts",
+  severity: "MAJOR",
+  outlierScore: 0.95,
+  familySize: 20,
+});
+console.log(`  no centro=${noCentro.assertiveness.toFixed(3)} outlier=${outlier.assertiveness.toFixed(3)}`);
+check(noCentro.assertiveness > outlier.assertiveness, "outlier da família AST deve ser menos assertivo");
 
 console.log("\n=== determinismo");
 const a1 = scoreFinding(DEFAULT_MODEL, casos.producaoCritico).assertiveness;

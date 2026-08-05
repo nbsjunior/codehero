@@ -33,12 +33,20 @@ export default function DocsTopNav() {
           GitHub
         </a>
         <a
-          href="https://github.com/nbsjunior/codehero/wiki"
+          href="https://github.com/nbsjunior/codehero/blob/main/docs/wiki/Conectar-MCP-CodeHero.md"
           target="_blank"
           rel="noreferrer"
           onClick={() => setOpen(false)}
         >
-          Wiki
+          Wiki · MCP
+        </a>
+        <a
+          href="https://github.com/nbsjunior/codehero/blob/main/docs/wiki/Esteira-de-aprendizado-de-regras.md"
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => setOpen(false)}
+        >
+          Wiki · Esteira
         </a>
         <Link
           href="/"

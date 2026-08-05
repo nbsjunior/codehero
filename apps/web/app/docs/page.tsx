@@ -1,6 +1,7 @@
 import Link from "next/link";
 import MermaidDiagram from "@/components/MermaidDiagram";
 import DocsTopNav from "@/components/DocsTopNav";
+import LearningLoopStory from "@/components/LearningLoopStory";
 
 export const metadata = {
   title: "Docs — CodeHero",
@@ -12,6 +13,7 @@ const TOC = [
   { href: "#missao", label: "Missão e valor" },
   { href: "#modelos-matematicos", label: "Modelos matemáticos" },
   { href: "#aprendizado-continuo", label: "Aprendizado contínuo" },
+  { href: "#cenario-ruleforge", label: "Cenário exercitado" },
   { href: "#fluxo-regras", label: "Criação automática de regras" },
   { href: "#modelos", label: "GenAI + motor de prova" },
   { href: "#matematica", label: "Fórmulas (débito, F1, gate)" },
@@ -23,6 +25,11 @@ const TOC = [
   { href: "#vscode", label: "VS Code / Cursor (shift left)" },
   { href: "#previa-repo", label: "Varrer um repositório GitHub" },
   { href: "#mcp", label: "MCP nas IDEs de IA" },
+  { href: "#mcp-cursor", label: "MCP · Cursor" },
+  { href: "#mcp-claude", label: "MCP · Claude" },
+  { href: "#mcp-github", label: "MCP · GitHub Copilot" },
+  { href: "#mcp-devin", label: "MCP · Devin" },
+  { href: "#presenca-sarif", label: "Presença SARIF" },
   { href: "#dress-code", label: "Dress code do time" },
   { href: "#workflow-recomendado", label: "Workflow recomendado" },
   { href: "#arquitetura", label: "Arquitetura (resumo)" },
@@ -101,37 +108,6 @@ const DIAGRAM_MATH_STACK = `flowchart TB
   end
   MR --> QG["Quality Gate"]
   SR --> QG`;
-
-const DIAGRAM_LEARNING_LOOP = `flowchart LR
-  subgraph observe["Observar"]
-    SCAN["Scans CI / IDE / prévia"]
-    FB["Feedback FP/FN"]
-    FIX["submit_fix_result"]
-  end
-  subgraph propose["Propor"]
-    DC["Política nova\\ndo time"]
-    LLM["Dress Code Tools\\nlote offline"]
-  end
-  subgraph prove["Provar"]
-    CORPUS["Corpus golden"]
-    GA["Busca evolutiva"]
-    MET["P · R · F1"]
-  end
-  subgraph ship["Publicar"]
-    RULES["RuleSet ativo"]
-    EDGE["Scanner na borda"]
-  end
-  SCAN --> FB
-  FIX --> FB
-  FB --> LLM
-  DC --> LLM
-  LLM --> GA
-  CORPUS --> GA
-  GA --> MET
-  MET -->|passa portão| RULES
-  MET -->|falha| FB
-  RULES --> EDGE
-  EDGE --> SCAN`;
 
 const DIAGRAM_RULE_AUTOMATION = `flowchart TB
   START["Sinais de entrada"] --> SPLIT{Tipo de sinal}
@@ -266,57 +242,54 @@ export default function DocsPage() {
             />
           </section>
 
-          <section id="aprendizado-continuo">
-            <h2>Como o sistema aprende de forma contínua</h2>
+          <LearningLoopStory id="aprendizado-continuo" variant="docs" />
+
+          <section id="cenario-ruleforge">
+            <h2>Cenário narrado — do dress code ao CI</h2>
             <p>
-              O aprendizado <em>não</em> é “um LLM lê cada arquivo no PR”. O loop é: observar uso real → propor
-              mutações offline → provar no corpus → publicar só o que passa no portão → voltar a observar.
+              Além do run real de <code>evolve-all</code> (rejeição correta quando F1 já é 1,00), o fluxo de produto
+              que o time sente no dia a dia é este:
             </p>
-
             <MermaidDiagram
-              chart={DIAGRAM_LEARNING_LOOP}
-              caption="Figura D — Loop contínuo: observar → propor → provar → publicar. A IA nunca fecha o quality gate."
+              chart={`sequenceDiagram
+  participant Dev
+  participant CI as Action / IDE
+  participant FB as Feedback
+  participant RF as ruleforgeDaily
+  participant Gate as evolve / F1
+  participant RS as RuleSet
+  Dev->>CI: PR com console.log em prod
+  CI-->>Dev: finding HERO-SMELL-debug
+  Dev->>FB: marca FP em arquivo de teste
+  Note over RF: lote offline 1×/dia
+  RF->>Gate: mutação + casos de corpus
+  alt ΔF1>0 e P≥0.85
+    Gate->>RS: PROMOTED
+    RS-->>CI: próxima Action usa regra
+  else sem ganho / P baixa
+    Gate-->>RF: REJECTED auditável
+  end`}
+              caption="Figura — Sequência do cenário de produto: feedback e dress code alimentam o lote; só o portão F1 publica."
             />
-
-            <ol className="cr-docs-steps">
-              <li>
-                <strong>Observar</strong>
-                <p>
-                  Scans da Action, do IDE e da prévia geram findings. Feedback de falso positivo/negativo e resultado
-                  de correções (MCP / SDD) viram telemetria rotulada.
-                </p>
-              </li>
-              <li>
-                <strong>Propor</strong>
-                <p>
-                  Em lote offline, as Dress Code Tools (e curadoria humana) sugerem novas regras ou mutações — a partir
-                  de política do time ou de gaps do corpus.
-                </p>
-              </li>
-              <li>
-                <strong>Provar</strong>
-                <p>
-                  Busca evolutiva reproduzível mede P, R e F1 contra o corpus golden. Candidata ruim é rejeitada com
-                  motivo auditável.
-                </p>
-              </li>
-              <li>
-                <strong>Publicar</strong>
-                <p>
-                  Só o que passa no portão entra no RuleSet ativo. No próximo scan (CI/IDE/prévia) o time já usa a
-                  regra — sem republicar plugin.
-                </p>
-              </li>
-            </ol>
-
             <div className="cr-docs-callout">
-              <strong>Por que isso evita incoerência e falso positivo</strong>
-              <p style={{ margin: 0 }}>
-                O caminho crítico do PR é sempre o mesmo scanner com o mesmo RuleSet. A IA só alimenta o pool de
-                candidatos; o corpus e o F1 decidem. Resultado estável entre execuções e promoção com prova de
-                precisão.
+              <strong>Diferença prática vs outras ferramentas</strong>
+              <p style={{ margin: "0.5rem 0 0" }}>
+                Em suite enterprise, o time espera o vendor; em scanner só-IA, o “julgamento” muda com o modelo. No
+                CodeHero o PR sempre vê o mesmo RuleSet, e a esteira offline é a única porta de entrada de regra nova —
+                com rejeição explícita quando não há ganho (como no <code>evolve-all</code> que rodamos).
               </p>
             </div>
+            <p>
+              Wiki (markdown no repo):{" "}
+              <a
+                href="https://github.com/nbsjunior/codehero/blob/main/docs/wiki/Esteira-de-aprendizado-de-regras.md"
+                target="_blank"
+                rel="noreferrer"
+              >
+                docs/wiki/Esteira-de-aprendizado-de-regras.md
+              </a>
+              .
+            </p>
           </section>
 
           <section id="fluxo-regras">
@@ -617,6 +590,19 @@ export default function DocsPage() {
                 <code>exportRuleforgeFeedback</code> + <code>hero-fp-ranker train</code>.{" "}
                 <strong>4 — CVE mine:</strong> <code>npm run cve:mine</code> extrai pares antes/depois de GHSA/OSV para o
                 corpus do ruleforge (Genkit propõe offline; F1/P≥0.85 decide).
+              </p>
+            </div>
+            <div className="cr-docs-callout">
+              <strong>Locksmith Loop (migração legado)</strong>
+              <p style={{ margin: "0.5rem 0 0" }}>
+                Validação determinística COBOL→Java no espírito AmEx (arXiv:2607.28271):{" "}
+                <em>Witness Search</em> (pairwise / 3-way / LHS / ART / MAP-Elites / UCB1) → parágrafos travados →{" "}
+                <em>Mutation Skills</em> (<code>dispatcher-arm</code>, <code>call-injection</code>) nos dois harnesses →{" "}
+                <em>Parity Gate</em> (<code>paragraphs_hit</code> ∧ <code>stub_log</code> ∧ <code>terminal_state</code>).
+                Mutação só fica se cobertura↑ e parity PASS. CLI:{" "}
+                <code>npm run locksmith -- run examples/legacy/sample.cbl</code> (e{" "}
+                <code>locksmith-locked.cbl</code> para forçar Mutation Skills). Hoje o runner é mock de CFG (não
+                GnuCOBOL/JVM); plugue <code>javaRunner</code> para o alvo real.
               </p>
             </div>
 
@@ -963,81 +949,232 @@ export default function DocsPage() {
           </section>
 
           <section id="mcp">
-            <h2>MCP — Cursor, Claude e GitHub Copilot</h2>
+            <h2>MCP — Cursor, Claude, GitHub Copilot e Devin</h2>
             <p>
-              O servidor MCP do CodeHero conecta agentes de IA às issues reais e ao scanner. O agente não “chuta” o
-              fix: ele segue o contrato SDD e valida com um novo scan.
+              O servidor MCP do CodeHero conecta agentes de IA às issues reais e ao catálogo de regras. O agente não
+              “chuta” o fix: ele segue o contrato SDD e valida com evidência (<code>get_issues</code> / scan).
+            </p>
+            <p>
+              Guia completo versionado:{" "}
+              <a
+                href="https://github.com/nbsjunior/codehero/blob/main/docs/wiki/Conectar-MCP-CodeHero.md"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Conectar-MCP-CodeHero.md
+              </a>
+              . Exemplos JSON:{" "}
+              <a href="https://github.com/nbsjunior/codehero/tree/main/integrations/mcp" target="_blank" rel="noreferrer">
+                integrations/mcp/
+              </a>
+              .
             </p>
 
             <h3>Ferramentas expostas</h3>
             <ul>
               <li>
-                <code>get_generation_context</code> — recebe uma <em>entrada</em> em linguagem natural (ex.:
-                “buscar regras de avaliação CodeHero e aplicar no contexto”) e devolve um bloco pronto para
-                injetar no prompt de geração
+                <code>get_generation_context</code> — entrada em linguagem natural → bloco de regras/issues para o
+                prompt
               </li>
               <li>
-                <code>get_active_rules</code> — catálogo ativo (core + dress code / overlays do projeto)
+                <code>get_active_rules</code> — catálogo ativo (core + dress code)
               </li>
               <li>
-                <code>get_issues</code> — lista findings do projeto
+                <code>get_issues</code> · <code>get_sdd_spec</code> · <code>submit_fix_result</code> — loop de
+                correção
               </li>
               <li>
-                <code>get_sdd_spec</code> — contrato de correção verificável
+                <code>apply_sdd_workflow</code> — roteiro verified-fix
               </li>
               <li>
-                <code>run_scan</code> — roda o scanner (com regras do servidor quando configurado)
-              </li>
-              <li>
-                <code>submit_fix_result</code> — reporta o resultado da correção
-              </li>
-              <li>
-                <code>apply_sdd_workflow</code> — roteiro completo verified-fix (inclui pedir contexto de
-                geração antes de criar código novo)
+                <code>run_scan</code> — opcional (scanner local)
               </li>
             </ul>
 
-            <h3>Contexto de geração (admin)</h3>
-            <p>
-              Em <strong>Painel → Projetos → Integração MCP</strong> você escolhe o projeto, define a{" "}
-              <em>entrada</em> (preset ou texto livre) e copia: regra do agente (<code>AGENTS.md</code> / Cursor
-              rules), prompt para o chat e <code>mcp.json</code>. O fluxo típico: o agente chama{" "}
-              <code>get_generation_context</code> → aplica as regras no contexto → só então gera ou edita código.
-            </p>
-
-            <h3>Passo a passo</h3>
+            <h3>Antes de tudo (comum a todas)</h3>
             <ol className="cr-docs-steps">
               <li>
-                <strong>Integração MCP no admin</strong> (ou aba MCP do workspace)
-                <p>Defina a entrada de contexto e copie o JSON já preenchido (URL, token, org, project).</p>
-              </li>
-              <li>
-                <strong>Cole na IDE de IA</strong>
-                <ul style={{ marginTop: "0.4rem" }}>
-                  <li>
-                    <strong>Claude Desktop</strong> — <code>claude_desktop_config.json</code>
-                  </li>
-                  <li>
-                    <strong>Cursor</strong> — MCP settings / <code>mcp.json</code> + regra do agente
-                  </li>
-                  <li>
-                    <strong>GitHub Copilot</strong> — configuração MCP do agente (ver exemplos em{" "}
-                    <code>integrations/mcp/</code> no repo)
-                  </li>
-                </ul>
-              </li>
-              <li>
-                <strong>Peça ao agente</strong>
+                <strong>Portal</strong>
                 <p>
-                  Ex.: “Chame get_generation_context com as regras CodeHero e aplique no contexto; depois liste
-                  issues CRITICAL, aplique o SDD da primeira, rode o scan e confirme.”
+                  <Link href="/">codehero.web.app</Link> → projeto + repo → <strong>Integração MCP</strong> → copiar o
+                  JSON (já com token).
+                </p>
+              </li>
+              <li>
+                <strong>Node ≥ 20</strong>
+                <p>
+                  O comando <code>npx -y codehero-mcp@latest</code> baixa o pacote na primeira execução.
+                </p>
+              </li>
+              <li>
+                <strong>Teste no chat</strong>
+                <p>
+                  “Chame <code>get_generation_context</code> com as regras CodeHero e aplique no contexto.”
                 </p>
               </li>
             </ol>
+
+            <pre>{`{
+  "command": "npx",
+  "args": ["-y", "codehero-mcp@latest"],
+  "env": {
+    "HERO_CORE_URL": "https://codehero.web.app/api",
+    "HERO_TOKEN": "…",
+    "HERO_ORG_ID": "…",
+    "HERO_PROJECT_ID": "…",
+    "HERO_REPO_ID": "…"
+  }
+}`}</pre>
+          </section>
+
+          <section id="mcp-cursor">
+            <h2>MCP · Cursor</h2>
+            <ol className="cr-docs-steps">
+              <li>
+                <strong>Crie</strong> <code>.cursor/mcp.json</code> na raiz do seu repo com o JSON do portal (formato{" "}
+                <code>mcpServers</code>).
+              </li>
+              <li>
+                <strong>Opcional:</strong> cole a regra do agente em <code>.cursor/rules/codehero-mcp.mdc</code>.
+              </li>
+              <li>
+                <strong>Settings → MCP</strong> — confirme <code>codehero</code> conectado; Refresh se preciso.
+              </li>
+              <li>
+                No Agent Chat: peça <code>get_generation_context</code>, depois <code>get_issues</code> /{" "}
+                <code>get_sdd_spec</code>.
+              </li>
+            </ol>
+          </section>
+
+          <section id="mcp-claude">
+            <h2>MCP · Claude Desktop</h2>
+            <ol className="cr-docs-steps">
+              <li>
+                Edite <code>claude_desktop_config.json</code>:
+                <ul style={{ marginTop: "0.4rem" }}>
+                  <li>macOS: <code>~/Library/Application Support/Claude/</code></li>
+                  <li>Windows: <code>%APPDATA%\Claude\</code></li>
+                </ul>
+              </li>
+              <li>
+                Mesclar o bloco <code>mcpServers.codehero</code> (mesmo JSON do portal).
+              </li>
+              <li>
+                <strong>Feche e reabra</strong> o Claude Desktop por completo.
+              </li>
+              <li>
+                Verifique as tools MCP e chame <code>get_generation_context</code>.
+              </li>
+            </ol>
+          </section>
+
+          <section id="mcp-github">
+            <h2>MCP · GitHub Copilot</h2>
+            <ol className="cr-docs-steps">
+              <li>
+                Crie <code>.vscode/mcp.json</code> com o formato <code>servers</code> (exemplo no repo; o painel
+                também gera).
+              </li>
+              <li>
+                Ative <strong>Agent mode</strong> no Copilot Chat.
+              </li>
+              <li>
+                Autorize as tools CodeHero na sessão.
+              </li>
+              <li>
+                Prompt: use o texto “Prompt pronto” do painel Integração MCP.
+              </li>
+            </ol>
             <p>
-              O token é o mesmo da Action e do plugin. Se vazar: <strong>Rotacionar token</strong> na página do
-              projeto.
+              Ambiente cloud do coding agent precisa de Node 20+ se for usar <code>npx</code> no runner. No editor
+              local (VS Code) basta o Node da máquina.
             </p>
+          </section>
+
+          <section id="mcp-devin">
+            <h2>MCP · Devin</h2>
+            <p>
+              Transport: <strong>STDIO</strong> com <code>npx</code> + <code>codehero-mcp@latest</code>.
+            </p>
+            <ol className="cr-docs-steps">
+              <li>
+                <strong>Web:</strong>{" "}
+                <a href="https://app.devin.ai/settings/connections?tab=mcps" target="_blank" rel="noreferrer">
+                  Settings → Connections → MCP servers
+                </a>{" "}
+                → <em>Add a custom MCP</em> → STDIO → command <code>npx</code>, args{" "}
+                <code>-y codehero-mcp@latest</code>, env = variáveis do portal.
+              </li>
+              <li>
+                <strong>CLI / Local:</strong> grave em <code>.devin/mcp_config.local.json</code> (token) ou{" "}
+                <code>%APPDATA%\devin\mcp_config.json</code> (Windows). Exemplo:{" "}
+                <a
+                  href="https://github.com/nbsjunior/codehero/blob/main/integrations/mcp/devin.example.json"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  devin.example.json
+                </a>
+                .
+              </li>
+              <li>
+                Ou: <code>devin mcp add codehero -t stdio --command npx -- -y codehero-mcp@latest -e HERO_TOKEN=…</code>
+              </li>
+              <li>
+                Na sessão Devin, peça para listar tools e chamar <code>get_issues</code> /{" "}
+                <code>get_generation_context</code>.
+              </li>
+            </ol>
+            <p>
+              Referência Devin:{" "}
+              <a href="https://docs.devin.ai/work-with-devin/mcp" target="_blank" rel="noreferrer">
+                docs.devin.ai/work-with-devin/mcp
+              </a>
+              .
+            </p>
+          </section>
+
+          <section id="presenca-sarif">
+            <h2>Presença SARIF (orquestração)</h2>
+            <p>
+              CodeHero não substitui CodeQL/Semgrep: <strong>orquestra</strong> esses motores via SARIF e aplica a
+              mesma política, gate e proveniência no portal. No hot path do PR: scan nativo + imports; modelos só
+              offline (triagem / ruleforge).
+            </p>
+            <ul>
+              <li>
+                <strong>Pack recomendado:</strong> CodeQL + Semgrep + Oxlint + Trivy/OSV — veja{" "}
+                <a
+                  href="https://github.com/nbsjunior/codehero/blob/main/docs/wiki/Presenca-SARIF.md"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  matriz wiki
+                </a>{" "}
+                e o workflow{" "}
+                <a
+                  href="https://github.com/nbsjunior/codehero/blob/main/.github/workflows/codehero-presence.example.yml"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  codehero-presence.example.yml
+                </a>
+                .
+              </li>
+              <li>
+                Action inputs: <code>oxlint</code>, <code>semgrep</code>, <code>sca</code>, <code>sca-tool</code>,{" "}
+                <code>import-sarif</code>, <code>semantic</code>, <code>metrics</code> (default on).
+              </li>
+              <li>
+                CLI: <code>--with-oxlint</code> / <code>--with-semgrep</code> / <code>--with-sca</code> (soft-fail se o
+                binário não estiver no PATH) ou <code>--import path.sarif</code>.
+              </li>
+              <li>
+                Achados importados aparecem como <code>EXT:&lt;tool&gt;:&lt;rule&gt;</code> com badge{" "}
+                <em>via codeql</em> / <em>via oxlint</em> no findings browser.
+              </li>
+            </ul>
           </section>
 
           <section id="dress-code">
@@ -1125,6 +1262,24 @@ export default function DocsPage() {
               <li>
                 <a href="https://github.com/nbsjunior/codehero/wiki" target="_blank" rel="noreferrer">
                   Wiki
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/nbsjunior/codehero/blob/main/docs/wiki/Conectar-MCP-CodeHero.md"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Wiki — Conectar MCP (Cursor, Claude, Copilot, Devin)
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/nbsjunior/codehero/blob/main/docs/wiki/Esteira-de-aprendizado-de-regras.md"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Wiki — Esteira de aprendizado de regras
                 </a>
               </li>
               <li>
