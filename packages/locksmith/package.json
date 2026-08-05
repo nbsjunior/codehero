@@ -1,0 +1,26 @@
+{
+  "name": "@codehero/locksmith",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "hero-locksmith": "./dist/cli.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "locksmith": "node dist/cli.js",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@codehero/engine": "*"
+  }
+}

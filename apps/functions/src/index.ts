@@ -21,6 +21,8 @@ export { provisionProject } from "./provision.ts";
 export { listIssues, sddSpec } from "./query.ts";
 export { flagIssueFeedback, submitFixResult } from "./feedback.ts";
 export { exportRuleforgeFeedback } from "./exportFeedback.ts";
+export { applyOfflineTriage } from "./applyOfflineTriage.ts";
+export { applyCodeEmbedClusters } from "./applyCodeEmbedClusters.ts";
 export { adminListAllProjects, checkPlatformAdmin, adminListAllIssues, adminGetPlatformSummary } from "./admin.ts";
 export {
   adminListUsers,

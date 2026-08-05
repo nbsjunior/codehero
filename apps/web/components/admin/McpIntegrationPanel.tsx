@@ -111,12 +111,12 @@ export default function McpIntegrationPanel({
           HERO_ORG_ID: selectedProject.orgId,
           HERO_PROJECT_ID: selectedProject.projectId,
           HERO_REPO_ID: selectedRepo.repoId,
-          HERO_SCANNER_CMD: "node <caminho-do-repo>/packages/scanner/dist/index.js",
         }
       : null;
 
-  const mcpServerCommand = "node";
-  const mcpServerArgs = ["<caminho-do-repo>/packages/mcp/dist/server.js"];
+  /** Plug-and-play: npx baixa o pacote público (sem path do monorepo). */
+  const mcpServerCommand = "npx";
+  const mcpServerArgs = ["-y", "codehero-mcp@latest"];
 
   const cursorMcpConfig = mcpEnv
     ? JSON.stringify(
@@ -192,13 +192,22 @@ export default function McpIntegrationPanel({
       <PageHeader
         eyebrow="Projetos"
         title="Integração MCP"
-        description="Configure o servidor MCP e a entrada de contexto que o agente deve carregar antes de gerar código (ex.: regras de avaliação CodeHero)."
+        description="Plug-and-play via npx (pacote codehero-mcp). Cole o JSON no Cursor, Copilot ou Claude — sem clonar o monorepo."
       />
 
       <Callout tone="ok" title="Como funciona">
         A entrada abaixo vira instrução para o agente: ele chama{" "}
         <code>get_generation_context</code> no MCP, recebe as regras ativas (e opcionalmente apontamentos) e
-        aplica esse bloco no contexto de geração — o mesmo motor usado por Action, IDE e esteira.
+        aplica esse bloco no contexto de geração — o mesmo motor usado por Action, IDE e esteira. Guia passo a
+        passo (Cursor, Claude, Copilot, Devin):{" "}
+        <a
+          href="https://github.com/nbsjunior/codehero/blob/main/docs/wiki/Conectar-MCP-CodeHero.md"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Conectar MCP
+        </a>
+        .
       </Callout>
 
       <DataSection title="1. Projeto e repositório">
@@ -329,8 +338,8 @@ export default function McpIntegrationPanel({
             <div>
               <h3 style={{ margin: "0 0 0.4rem", fontSize: "0.95rem" }}>Cursor / Claude — mcp.json</h3>
               <p className="hero-caption" style={{ marginTop: 0, marginBottom: "0.5rem" }}>
-                Compile antes: <code>npm run build -w @codehero/mcp</code>. Ajuste o caminho do{" "}
-                <code>server.js</code>.
+                Usa <code>npx -y codehero-mcp@latest</code> (Node ≥ 20). Publique o pacote uma vez com{" "}
+                <code>npm publish -w codehero-mcp</code>. Cursor: <code>.cursor/mcp.json</code>.
               </p>
               <div className="hero-copyrow">
                 <pre className="hero-code" style={{ maxHeight: 240 }}>

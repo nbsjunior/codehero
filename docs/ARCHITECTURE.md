@@ -4,6 +4,8 @@
 
 Adaptação do plano original (Rust/Go/Postgres/ClickHouse) para um **SaaS nativo em Firebase**, mantendo os três módulos e o princípio central: **a IA nunca está no caminho crítico da inspeção**.
 
+**Produto (público):** esteira de aprendizado passo a passo — [docs/wiki/Esteira-de-aprendizado-de-regras.md](./wiki/Esteira-de-aprendizado-de-regras.md) e [/docs/#aprendizado-continuo](https://codehero.web.app/docs/#aprendizado-continuo).
+
 Quando o CodeHero compartilha um projeto GCP/Firebase com outros apps, os recursos são **segregados** (banco Firestore nomeado, bucket próprio, site de Hosting e Functions com nomes distintos) — ver [Segregação de recursos](#segregação-de-recursos).
 
 ## Princípio invariável

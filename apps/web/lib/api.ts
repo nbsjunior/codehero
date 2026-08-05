@@ -756,6 +756,65 @@ export async function exportRuleforgeFeedback(input: {
   }
 }
 
+/** Aplica JSON de triagem offline (Foundation-Sec / heuristic) aos issues do repo. */
+export async function applyOfflineTriage(input: {
+  orgId: string;
+  projectId: string;
+  repoId: string;
+  triage: {
+    generatedAt?: string;
+    findings: Array<{
+      id?: string;
+      fingerprint?: string;
+      triageScore: number;
+      likelyTruePositive?: boolean;
+      triageReason?: string;
+      triageMode?: string;
+    }>;
+  };
+}): Promise<{ ok: true; updated: number; skipped: number }> {
+  const fn = httpsCallable<typeof input, { ok: true; updated: number; skipped: number }>(
+    functions,
+    "applyOfflineTriage",
+  );
+  try {
+    const res = await fn(input);
+    return res.data;
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha ao aplicar triagem offline."));
+  }
+}
+
+/** Aplica relatório code-embed (famílias AST / K-Means) aos issues. */
+export async function applyCodeEmbedClusters(input: {
+  orgId: string;
+  projectId: string;
+  repoId: string;
+  report: {
+    version?: string;
+    functions: Array<{
+      file: string;
+      startLine: number;
+      endLine: number;
+      name?: string;
+      clusterId: string;
+      familySize: number;
+      outlierScore: number;
+    }>;
+  };
+}): Promise<{ ok: true; updated: number; functions: number }> {
+  const fn = httpsCallable<typeof input, { ok: true; updated: number; functions: number }>(
+    functions,
+    "applyCodeEmbedClusters",
+  );
+  try {
+    const res = await fn(input);
+    return res.data;
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha ao aplicar famílias code-embed."));
+  }
+}
+
 export type MotorRuleSource = "core" | "platform" | "project";
 
 export interface MotorRuleRow {

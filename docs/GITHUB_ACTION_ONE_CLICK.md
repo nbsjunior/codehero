@@ -45,3 +45,20 @@ GITHUB_OAUTH_CLIENT_SECRET=...
 2. Browser → GitHub authorize → callback no **portal** `/projeto/githubOauthCallback`
 3. API (via rewrite do portal) troca o code, grava workflow/secrets com `HERO_CORE_URL=https://codehero.web.app/api`
 4. Redirect → `/projects?org=&id=&slug=&tab=action&gha=ok`
+
+## Presence Pack (SARIF / profundidade)
+
+Para repos JS/TS (ou multi-lang) que querem profundidade sem stub Sonar, ligue na Action (ou no YAML gerado):
+
+| Input | Efeito |
+|---|---|
+| `metrics` | Default `true` — métricas de débito no CI |
+| `semantic` | Taint/semantic TS mais profundo |
+| `oxlint` | Roda Oxlint → `EXT:oxlint:*` |
+| `semgrep` | Roda Semgrep → `EXT:semgrep:*` |
+| `sca` + `sca-tool` | Trivy ou osv-scanner → SCA no gate |
+| `import-sarif` | Paths de SARIF já gerados (ex.: CodeQL) |
+
+New-code no upload usa **diff por linha** (`git diff -U0`) quando possível.
+
+Matriz completa: [docs/wiki/Presenca-SARIF.md](wiki/Presenca-SARIF.md). Workflow de exemplo: [`.github/workflows/codehero-presence.example.yml`](../.github/workflows/codehero-presence.example.yml).

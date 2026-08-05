@@ -46,6 +46,41 @@ inputs:
       VB.Net ainda ficam de fora deste passo.
     required: false
     default: "true"
+  semantic:
+    description: >
+      Camada semântica TypeScript (origem de chamadas stdlib vs projeto) para
+      cortar FP em regras estruturais. Implica metrics=true. Recomendado em repos TS.
+    required: false
+    default: "false"
+  oxlint:
+    description: >
+      Roda Oxlint (JS/TS) e importa SARIF como EXT:oxlint:*. Soft-fail se npx/oxlint
+      falhar. Parte do Presence Pack.
+    required: false
+    default: "false"
+  semgrep:
+    description: >
+      Roda Semgrep (--config auto) e importa SARIF como EXT:semgrep:*. Soft-fail se
+      o binário não existir. Preferível em multi-lang; em JS puro Oxlint costuma bastar.
+      Para OSS puro, prefira opengrep (compatível com as mesmas rulesets).
+    required: false
+    default: "false"
+  opengrep:
+    description: >
+      Roda Opengrep (LGPL, Semgrep-compatible) → EXT:opengrep:*. Soft-fail se ausente.
+      Bom default open-source no PR; combine com CodeQL via import-sarif no nightly.
+    required: false
+    default: "false"
+  sca:
+    description: >
+      SCA de dependências (Trivy fs por padrão, ou osv-scanner via sca-tool).
+      Achados EXT:trivy:* / EXT:osv-scanner:* participam do gate.
+    required: false
+    default: "false"
+  sca-tool:
+    description: "trivy | osv — qual scanner SCA usar quando sca=true"
+    required: false
+    default: "trivy"
   import-sarif:
     description: >
       Caminho(s) de SARIF produzido por OUTRA ferramenta, um por linha —
@@ -115,11 +150,15 @@ runs:
         HERO_PROJECT_ID: ${{ inputs.project-id }}
         HERO_COVERAGE: ${{ inputs.coverage }}
         HERO_METRICS: ${{ inputs.metrics }}
+        HERO_SEMANTIC: ${{ inputs.semantic }}
         HERO_IMPORT_SARIF: ${{ inputs.import-sarif }}
         HERO_JOERN: ${{ inputs.joern }}
+        HERO_OXLINT: ${{ inputs.oxlint }}
+        HERO_SEMGREP: ${{ inputs.semgrep }}
+        HERO_OPENGREP: ${{ inputs.opengrep }}
+        HERO_SCA: ${{ inputs.sca }}
+        HERO_SCA_TOOL: ${{ inputs.sca-tool }}
       run: |
-        # Cada linha de `coverage` vira um --coverage. Sem valor, array vazio
-        # e o scanner nem tenta ler nada.
         COV_ARGS=()
         while IFS= read -r p; do
           [ -n "$p" ] && COV_ARGS+=(--coverage "$p")
@@ -127,13 +166,19 @@ runs:
 
         EXTRA_ARGS=()
         [ "$HERO_METRICS" = "true" ] && EXTRA_ARGS+=(--metrics)
+        [ "$HERO_SEMANTIC" = "true" ] && EXTRA_ARGS+=(--semantic)
         [ "$HERO_JOERN" = "true" ] && EXTRA_ARGS+=(--joern)
+        [ "$HERO_OXLINT" = "true" ] && EXTRA_ARGS+=(--with-oxlint)
+        [ "$HERO_OPENGREP" = "true" ] && EXTRA_ARGS+=(--with-opengrep)
+        [ "$HERO_SEMGREP" = "true" ] && EXTRA_ARGS+=(--with-semgrep)
+        if [ "$HERO_SCA" = "true" ]; then
+          EXTRA_ARGS+=(--with-sca)
+          [ -n "$HERO_SCA_TOOL" ] && EXTRA_ARGS+=(--sca-tool "$HERO_SCA_TOOL")
+        fi
         while IFS= read -r p; do
           [ -n "$p" ] && EXTRA_ARGS+=(--import "$p")
         done <<< "$HERO_IMPORT_SARIF"
 
-        # Busca regras ativas no servidor (canônicas + dress code) e analisa.
-        # Em produção: npx @codehero/scanner. No monorepo, usa o binário local se disponível.
         if [ -f packages/scanner/dist/index.js ]; then
           node packages/scanner/dist/index.js "${{ inputs.path }}" --sarif --out codehero.sarif \
             "${COV_ARGS[@]}" "${EXTRA_ARGS[@]}" \
@@ -143,9 +188,6 @@ runs:
             "${COV_ARGS[@]}" "${EXTRA_ARGS[@]}" \
             --server "$HERO_CORE_URL" --token "$HERO_TOKEN" --org "$HERO_ORG_ID" --project "$HERO_PROJECT_ID" || true
         fi
-        # O `|| true` acima é intencional: o scanner sai não-zero quando ACHA
-        # apontamentos, e quem decide o gate é o upload. Mas ele também
-        # mascarava "binário não encontrado" — daí a checagem do relatório.
         if [ ! -f codehero.sarif ]; then
           echo "::error::CodeHero: o scanner não gerou codehero.sarif (binário ausente ou falha na execução)."
           echo "::error::No monorepo, rode o build do scanner antes desta action; fora dele, verifique o pacote @codehero/scanner."

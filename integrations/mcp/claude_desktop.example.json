@@ -1,15 +1,14 @@
 {
   "mcpServers": {
     "codehero": {
-      "command": "node",
-      "args": ["./packages/mcp/dist/server.js"],
+      "command": "npx",
+      "args": ["-y", "codehero-mcp@latest"],
       "env": {
         "HERO_CORE_URL": "https://codehero.web.app/api",
         "HERO_TOKEN": "<ingest-token>",
         "HERO_ORG_ID": "<orgId>",
         "HERO_PROJECT_ID": "<projectId>",
-        "HERO_REPO_ID": "<repoId>",
-        "HERO_SCANNER_CMD": "node ./packages/scanner/dist/index.js"
+        "HERO_REPO_ID": "<repoId>"
       }
     }
   }

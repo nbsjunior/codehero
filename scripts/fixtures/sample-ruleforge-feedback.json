@@ -1,0 +1,50 @@
+[
+  {
+    "verdict": "false_positive",
+    "ruleId": "HERO-SMELL-0489-debug-statement",
+    "file": "src/__tests__/debug.spec.ts",
+    "snippet": "console.log('ok')"
+  },
+  {
+    "verdict": "confirmed",
+    "ruleId": "HERO-SEC-0078-os-command",
+    "file": "src/api/run.ts",
+    "snippet": "exec(req.query.cmd)"
+  },
+  {
+    "verdict": "false_positive",
+    "ruleId": "HERO-SEC-0089-sql-injection",
+    "file": "dist/bundle.js",
+    "snippet": "query(`select 1`)"
+  },
+  {
+    "verdict": "confirmed",
+    "ruleId": "HERO-SEC-0798-hardcoded-secret",
+    "file": "src/config.ts",
+    "snippet": "api_key = 'sk_live_abcdef123456'"
+  },
+  {
+    "verdict": "false_positive",
+    "ruleId": "HERO-SMELL-0489-debug-statement",
+    "file": "packages/foo/dist/index.js",
+    "snippet": "console.debug(x)"
+  },
+  {
+    "verdict": "confirmed",
+    "ruleId": "HERO-SEC-0079-xss-sink",
+    "file": "src/ui/render.ts",
+    "snippet": "el.innerHTML = req.query.html"
+  },
+  {
+    "verdict": "false_positive",
+    "ruleId": "HERO-SEC-0095-code-injection-eval",
+    "file": "src/vendor/generated/parser.ts",
+    "snippet": "eval('1+1')"
+  },
+  {
+    "verdict": "confirmed",
+    "ruleId": "HERO-SEC-0022-path-traversal",
+    "file": "src/files/read.ts",
+    "snippet": "readFile(path.join(base, req.params.file))"
+  }
+]

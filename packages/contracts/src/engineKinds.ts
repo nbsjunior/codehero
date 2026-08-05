@@ -32,4 +32,5 @@ export type TaintSinkKind =
   | "network.request"
   | "fs.path"
   | "http.redirect"
-  | "object.merge";
+  | "object.merge"
+  | "log.write";

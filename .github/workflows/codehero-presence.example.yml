@@ -1,0 +1,89 @@
+# Exemplo — CodeHero Presence Pack (Opengrep + CodeQL + aprendizado)
+#
+# PR: Opengrep/Oxlint rápidos → gate
+# Nightly (opcional): CodeQL profundo → import
+# Feedback FP/TP no portal → ruleFpStats → regra ruidosa sai do gate (n≥5, rate≥0.6)
+
+name: CodeHero
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  schedule:
+    - cron: "0 4 * * *" # CodeQL nightly
+
+jobs:
+  codehero-pr:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Oxlint → SARIF
+        continue-on-error: true
+        run: |
+          mkdir -p codehero-ext
+          npx --yes oxlint@latest . -f sarif -o codehero-ext/oxlint.sarif || true
+
+      - name: CodeHero Scan + ingest
+        uses: nbsjunior/codehero/packages/github-action@main
+        with:
+          server-url: ${{ vars.HERO_CORE_URL }}
+          token: ${{ secrets.HERO_TOKEN }}
+          org-id: ${{ vars.HERO_ORG_ID }}
+          project-id: ${{ vars.HERO_PROJECT_ID }}
+          repo-id: ${{ vars.HERO_REPO_ID }}
+          path: .
+          metrics: "true"
+          semantic: "true"
+          oxlint: "true"
+          opengrep: "true"
+          semgrep: "false"
+          sca: "false"
+          import-sarif: |
+            codehero-ext/oxlint.sarif
+
+  codehero-codeql-nightly:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          upload: false
+          output: codehero-ext
+
+      - name: CodeHero ingest CodeQL SARIF
+        uses: nbsjunior/codehero/packages/github-action@main
+        with:
+          server-url: ${{ vars.HERO_CORE_URL }}
+          token: ${{ secrets.HERO_TOKEN }}
+          org-id: ${{ vars.HERO_ORG_ID }}
+          project-id: ${{ vars.HERO_PROJECT_ID }}
+          repo-id: ${{ vars.HERO_REPO_ID }}
+          path: .
+          metrics: "true"
+          import-sarif: |
+            codehero-ext/javascript.sarif
+            codehero-ext/javascript-typescript.sarif

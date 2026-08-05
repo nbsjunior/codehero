@@ -258,6 +258,38 @@ function parseStatements(bodyLines: string[], baseLine: number, parent: BuiltNod
       continue;
     }
 
+    // CobRA-oriented verbs → call-like nodes for HERO-ST (Presence Fase 3).
+    const verbCall = (type: string, calleeName: string) => {
+      const node = new BuiltNode(type, line, { row: abs, column: 0 }, { row: abs, column: raw.length });
+      node.add(new BuiltNode("identifier", calleeName, node.startPosition, node.startPosition), "function");
+      parent.add(node);
+    };
+    if (/^STRING\b/i.test(line)) {
+      verbCall("string_statement", "STRING");
+      i++;
+      continue;
+    }
+    if (/^UNSTRING\b/i.test(line)) {
+      verbCall("unstring_statement", "UNSTRING");
+      i++;
+      continue;
+    }
+    if (/^ALTER\b/i.test(line)) {
+      verbCall("alter_statement", "ALTER");
+      i++;
+      continue;
+    }
+    if (/^ACCEPT\b/i.test(line)) {
+      verbCall("accept_statement", "ACCEPT");
+      i++;
+      continue;
+    }
+    if (/^DISPLAY\b/i.test(line)) {
+      verbCall("display_statement", "DISPLAY");
+      i++;
+      continue;
+    }
+
     // Generic statement leaf
     parent.add(new BuiltNode("statement", line, { row: abs, column: 0 }, { row: abs, column: raw.length }));
     i++;

@@ -45,6 +45,11 @@ export const NODE_KINDS: Record<NodeKind, string[]> = {
     "call_statement", // COBOL CALL / T-SQL EXEC
     "perform_statement", // COBOL PERFORM target
     "exec_sql_statement", // COBOL EXEC SQL (treated as call-like)
+    "string_statement", // COBOL STRING (CobRA)
+    "unstring_statement",
+    "alter_statement",
+    "accept_statement",
+    "display_statement",
   ],
   catch: ["catch_clause", "except_clause"],
   function: [

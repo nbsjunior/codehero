@@ -134,7 +134,9 @@ export default function EsteiraPanel() {
       <Callout tone="neutral" title="Fluxo">
         1) Esteira diária propõe evolução de regras existentes e novas regras (security / dress). 2) Você revisa
         abaixo. 3) Ao aprovar, a regra vai para o overlay ativo (IDE, Action, MCP, prévia) e os exemplos entram no
-        corpus Firestore para as próximas avaliações.
+        corpus Firestore para as próximas avaliações. Genkit/CVE só promovem se o motor decidir{" "}
+        <code>PROMOTED</code> (ΔF1&gt;0 e P≥0.85) — ver{" "}
+        <a href="/docs/#modelos">docs · modelos offline</a>.
       </Callout>
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem", margin: "1.25rem 0 0.75rem" }}>

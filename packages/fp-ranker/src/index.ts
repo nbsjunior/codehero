@@ -19,7 +19,10 @@ export type FeatureName =
   | "taintPathLenNorm"
   | "severityRank"
   | "isImported"
-  | "isStructural";
+  | "isStructural"
+  | "toolDepth"
+  | "clusterOutlier"
+  | "clusterSizeNorm";
 
 export const FEATURE_NAMES: FeatureName[] = [
   "ruleRepoFpRate",
@@ -34,6 +37,9 @@ export const FEATURE_NAMES: FeatureName[] = [
   "severityRank",
   "isImported",
   "isStructural",
+  "toolDepth",
+  "clusterOutlier",
+  "clusterSizeNorm",
 ];
 
 export type FeatureVector = Record<FeatureName, number>;
@@ -82,6 +88,8 @@ export interface FindingFeatureInput {
   file: string;
   severity?: string;
   engine?: string | null;
+  /** Analyzer name: codeql, opengrep, semgrep, oxlint, codehero, … */
+  tool?: string | null;
   findingSource?: "native" | "imported" | null;
   /** Histórico: fração de feedbacks FP para esta regra neste repo (0–1). */
   ruleRepoFpRate?: number;
@@ -91,6 +99,10 @@ export interface FindingFeatureInput {
   /** Commits tocando o arquivo no período (normalizado depois). */
   fileChurn?: number;
   taintPathLength?: number;
+  /** code-embed: distância relativa ao centroide da família (0–1). */
+  outlierScore?: number;
+  /** code-embed: tamanho do cluster / família. */
+  familySize?: number;
 }
 
 const SEV_RANK: Record<string, number> = {
@@ -111,6 +123,21 @@ function normMetric(v: number | undefined, cap: number): number {
   return clamp01(v / cap);
 }
 
+/**
+ * Profundidade relativa do motor (priors): CodeQL/Joern > Semgrep/Opengrep >
+ * nativo L0 > linters rápidos. Ajuda o ranker a confiar mais em taint profundo.
+ */
+export function toolDepthScore(tool: string | null | undefined, ruleId?: string): number {
+  const t = (tool || (ruleId?.startsWith("EXT:") ? ruleId.split(":")[1] : "") || "").toLowerCase();
+  if (!t || t === "codehero" || t === "native") return 0.55;
+  if (t === "codeql" || t === "joern") return 1;
+  if (t === "semgrep" || t === "opengrep") return 0.75;
+  if (t === "trivy" || t === "osv" || t === "osv-scanner" || t === "grype") return 0.7;
+  if (t === "spotbugs" || t === "pmd" || t === "findsecbugs") return 0.65;
+  if (t === "oxlint" || t === "eslint") return 0.4;
+  return 0.5;
+}
+
 export function extractFeatures(input: FindingFeatureInput): FeatureVector {
   const file = (input.file || "").replace(/\\/g, "/").toLowerCase();
   return {
@@ -126,6 +153,10 @@ export function extractFeatures(input: FindingFeatureInput): FeatureVector {
     severityRank: SEV_RANK[(input.severity ?? "INFO").toUpperCase()] ?? 0.5,
     isImported: input.findingSource === "imported" ? 1 : 0,
     isStructural: input.engine === "structural" || input.engine === "cpg" ? 1 : 0,
+    toolDepth: toolDepthScore(input.tool, input.ruleId),
+    clusterOutlier: clamp01(input.outlierScore ?? 0),
+    // Famílias grandes = padrão comum do repo (menos suspeito); size 1 = singleton.
+    clusterSizeNorm: normMetric(input.familySize, 40),
   };
 }
 
@@ -267,4 +298,4 @@ export function accuracy(model: RankerModel, examples: LabeledExample[], thresho
   return ok / examples.length;
 }
 
-export { DEFAULT_MODEL } from "./defaultModel.ts";
+export { DEFAULT_MODEL, SEED_MODEL } from "./defaultModel.ts";

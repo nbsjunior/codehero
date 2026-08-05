@@ -76,6 +76,19 @@ export const flagIssueFeedback = onCall<FlagFeedbackInput>(async (request) => {
   }
 
   await batch.commit();
+
+  // Stats locais por regra (gate suppress + feature ruleRepoFpRate).
+  if (verdict === "false_positive" || verdict === "confirmed") {
+    const { bumpRuleFpStat } = await import("./lib/ruleFpStats.ts");
+    await bumpRuleFpStat({
+      orgId,
+      projectId,
+      repoId,
+      ruleId: String(issue.ruleId ?? ""),
+      verdict,
+    });
+  }
+
   return { ok: true };
 });
 

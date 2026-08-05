@@ -17,6 +17,9 @@ import {
 import { dbClient } from "@/lib/firebase";
 import {
   addRepoToProject,
+  applyOfflineTriage,
+  applyCodeEmbedClusters,
+  exportRuleforgeFeedback,
   flagIssueFeedback,
   rotateIngestToken,
   runRepoAutoScanNow,
@@ -89,6 +92,13 @@ interface RepoIssue {
   isNewCode?: boolean;
   assertiveness?: number | null;
   fpLikelihood?: number | null;
+  triageScore?: number | null;
+  likelyTruePositive?: boolean | null;
+  triageMode?: string | null;
+  gateSuppressed?: boolean | null;
+  clusterId?: string | null;
+  familySize?: number | null;
+  outlierScore?: number | null;
 }
 
 const ratingColor: Record<string, string> = {
@@ -172,6 +182,10 @@ export default function ProjectWorkspace({
 
   const [feedbackBusyFp, setFeedbackBusyFp] = useState<string | null>(null);
   const [feedbackError, setFeedbackError] = useState<string | null>(null);
+  const [exportBusy, setExportBusy] = useState(false);
+  const [triageBusy, setTriageBusy] = useState(false);
+  const [offlineMsg, setOfflineMsg] = useState<string | null>(null);
+  const [offlineError, setOfflineError] = useState<string | null>(null);
 
   // Gráfico de manutenibilidade/segurança com drill-down até a lista de apontamentos
   const [drillOpen, setDrillOpen] = useState<"maintainability" | "security" | null>(null);
@@ -303,6 +317,13 @@ export default function ProjectWorkspace({
         isNewCode: issue.isNewCode === true,
         assertiveness: issue.assertiveness ?? null,
         fpLikelihood: issue.fpLikelihood ?? null,
+        triageScore: issue.triageScore ?? null,
+        likelyTruePositive: issue.likelyTruePositive ?? null,
+        triageMode: issue.triageMode ?? null,
+        gateSuppressed: issue.gateSuppressed === true,
+        clusterId: issue.clusterId ?? null,
+        familySize: issue.familySize ?? null,
+        outlierScore: issue.outlierScore ?? null,
       })),
     [issues],
   );
@@ -421,6 +442,96 @@ export default function ProjectWorkspace({
       setFeedbackError(err instanceof Error ? err.message : "Falha ao registrar o feedback.");
     } finally {
       setFeedbackBusyFp(null);
+    }
+  }
+
+  async function handleExportFeedback() {
+    setExportBusy(true);
+    setOfflineError(null);
+    setOfflineMsg(null);
+    try {
+      const res = await exportRuleforgeFeedback({ orgId, limit: 1000, onlyUnmerged: false });
+      const blob = new Blob([JSON.stringify(res.examples, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `ruleforge-feedback-${orgId}-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setOfflineMsg(
+        `Exportados ${res.count} rótulo(s). Próximo: npm run fp:feedback-to-training -- <arquivo> reports/fp-training.json && npm run fp-ranker:train -- reports/fp-training.json`,
+      );
+    } catch (err) {
+      setOfflineError(err instanceof Error ? err.message : "Falha ao exportar feedback.");
+    } finally {
+      setExportBusy(false);
+    }
+  }
+
+  async function handleTriageFile(file: File | null) {
+    if (!file || !selectedRepo) return;
+    setTriageBusy(true);
+    setOfflineError(null);
+    setOfflineMsg(null);
+    try {
+      const raw = JSON.parse(await file.text()) as {
+        generatedAt?: string;
+        findings?: Array<{
+          id?: string;
+          fingerprint?: string;
+          triageScore: number;
+          likelyTruePositive?: boolean;
+          triageReason?: string;
+          triageMode?: string;
+        }>;
+        version?: string;
+        functions?: Array<{
+          file: string;
+          startLine: number;
+          endLine: number;
+          name?: string;
+          clusterId: string;
+          familySize: number;
+          outlierScore: number;
+        }>;
+      };
+      if (raw.functions?.length) {
+        const res = await applyCodeEmbedClusters({
+          orgId,
+          projectId,
+          repoId: selectedRepo.repoId,
+          report: { version: raw.version, functions: raw.functions },
+        });
+        setOfflineMsg(`Famílias AST aplicadas: ${res.updated} issue(s) · ${res.functions} funções no relatório.`);
+      } else if (raw.findings?.length) {
+        const res = await applyOfflineTriage({
+          orgId,
+          projectId,
+          repoId: selectedRepo.repoId,
+          triage: raw,
+        });
+        setOfflineMsg(`Triagem aplicada: ${res.updated} issue(s) atualizado(s), ${res.skipped} ignorado(s).`);
+      } else {
+        throw new Error("JSON sem findings[] (triage) nem functions[] (code-embed).");
+      }
+      const snap = await getDocs(
+        query(
+          collection(dbClient, "orgs", orgId, "projects", projectId, "repos", selectedRepo.repoId, "issues"),
+          where("status", "==", "open"),
+          limit(80),
+        ),
+      );
+      const rows: RepoIssue[] = snap.docs.map((d) => {
+        const data = d.data() as Omit<RepoIssue, "fingerprint">;
+        return { fingerprint: d.id, ...data };
+      });
+      const order = ["BLOCKER", "CRITICAL", "MAJOR", "MINOR", "INFO"];
+      rows.sort((a, b) => order.indexOf(b.severity) - order.indexOf(a.severity));
+      setIssues(rows);
+    } catch (err) {
+      setOfflineError(err instanceof Error ? err.message : "Falha ao aplicar arquivo offline.");
+    } finally {
+      setTriageBusy(false);
     }
   }
 
@@ -889,6 +1000,56 @@ export default function ProjectWorkspace({
                 </div>
               )}
 
+              <div
+                className="hero-panel-sm"
+                style={{ margin: "1.25rem 0", padding: "0.9rem 1rem", display: "grid", gap: "0.65rem" }}
+              >
+                <strong style={{ fontSize: "0.9rem" }}>Modelos offline (Fase 4)</strong>
+                <p className="hero-caption" style={{ margin: 0 }}>
+                  LLM não entra no gate do PR. Exporte feedback para treinar o fp-ranker, ou aplique triagem
+                  Foundation-Sec / heuristic gerada por <code>npm run triage:offline</code>.
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
+                  <button
+                    type="button"
+                    className="hero-btn hero-btn-outline"
+                    style={{ padding: "0.4rem 0.9rem", fontSize: "0.8rem" }}
+                    disabled={exportBusy}
+                    onClick={() => void handleExportFeedback()}
+                  >
+                    {exportBusy ? "Exportando…" : "Exportar feedback (treino)"}
+                  </button>
+                  <label
+                    className="hero-btn hero-btn-outline"
+                    style={{
+                      padding: "0.4rem 0.9rem",
+                      fontSize: "0.8rem",
+                      cursor: triageBusy || !selectedRepo ? "not-allowed" : "pointer",
+                      opacity: triageBusy || !selectedRepo ? 0.6 : 1,
+                    }}
+                  >
+                    {triageBusy ? "Aplicando…" : "Aplicar triage / code-embed JSON"}
+                    <input
+                      type="file"
+                      accept="application/json,.json"
+                      hidden
+                      disabled={triageBusy || !selectedRepo}
+                      onChange={(e) => {
+                        const f = e.target.files?.[0] ?? null;
+                        e.target.value = "";
+                        void handleTriageFile(f);
+                      }}
+                    />
+                  </label>
+                </div>
+                <p className="hero-caption" style={{ margin: 0 }}>
+                  Também aceita <code>reports/code-embed-clusters.json</code> (
+                  <code>npm run code-embed:cluster</code>).
+                </p>
+                {offlineMsg && <p className="hero-caption" style={{ margin: 0, color: "var(--ok, #2a7)" }}>{offlineMsg}</p>}
+                {offlineError && <div className="hero-error">{offlineError}</div>}
+              </div>
+
               <FindingsBrowser
                 title="Apontamentos"
                 subtitle="Lista simples — clique para abrir a ficha. Use ← → no modal e marque confirmado ou falso positivo."
@@ -1116,7 +1277,7 @@ Aplique o retorno no contexto e só então gere/edite o código.`}
                 <span className="hero-step-num">1</span>
                 <div style={{ flex: 1 }}>
                   <p style={{ margin: "0 0 0.6rem" }}>
-                    Compile o servidor: <code>npm run build -w @codehero/mcp</code>
+                    Compile o servidor: <code>npm run build -w codehero-mcp</code>
                   </p>
                 </div>
               </div>

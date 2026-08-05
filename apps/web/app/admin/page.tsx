@@ -47,54 +47,61 @@ import {
 const SHARED_GROUPS: CockpitNavGroup[] = [
   {
     id: "instalacao",
-    label: "Instalação",
+    label: "Início",
+    tier: "operation",
     items: [{ id: "instalacao", label: "Instalação" }],
   },
   {
     id: "visao",
-    label: "Visão",
+    label: "Inteligência",
+    tier: "operation",
     items: [
       { id: "visao-geral", label: "Visão geral" },
       { id: "apontamentos", label: "Apontamentos" },
-      { id: "relatorio", label: "Relatório" },
+      { id: "relatorio", label: "Relatório executivo" },
     ],
   },
   {
     id: "projetos",
-    label: "Projetos",
+    label: "Entrega",
+    tier: "portfolio",
     items: [
       { id: "todos-projetos", label: "Todos os projetos" },
+      { id: "workspace", label: "Workspace ativo" },
       { id: "regras", label: "Regras do motor" },
       { id: "mcp-integracao", label: "Integração MCP" },
-      { id: "workspace", label: "Workspace" },
       { id: "novo-workspace", label: "Novo workspace" },
     ],
   },
   {
     id: "docs",
-    label: "Docs",
+    label: "Referência",
+    tier: "resources",
     items: [{ id: "docs", label: "Documentação", href: "/docs/" }],
   },
   {
     id: "estimativa",
-    label: "Estimativa de Build",
-    items: [{ id: "estimativa", label: "Abrir estimativa", href: "https://produtech.web.app", external: true }],
+    label: "Parceiros",
+    tier: "resources",
+    items: [{ id: "estimativa", label: "Estimativa de Build", href: "https://produtech.web.app", external: true }],
   },
 ];
 
 const ADMIN_ONLY_GROUPS: CockpitNavGroup[] = [
   {
     id: "plataforma",
-    label: "Plataforma",
+    label: "Política",
+    tier: "governance",
     items: [
       { id: "dress-code", label: "Dress code" },
-      { id: "esteira", label: "Esteira" },
+      { id: "esteira", label: "Esteira de regras" },
       { id: "feature-toggles", label: "Feature toggles" },
     ],
   },
   {
     id: "operacoes",
-    label: "Operações",
+    label: "Infraestrutura",
+    tier: "governance",
     items: [
       { id: "escala", label: "Escala e filas" },
       { id: "cotas", label: "Cotas" },
@@ -102,7 +109,8 @@ const ADMIN_ONLY_GROUPS: CockpitNavGroup[] = [
   },
   {
     id: "usuarios",
-    label: "Usuários",
+    label: "Pessoas",
+    tier: "governance",
     items: [{ id: "usuarios", label: "Todos os usuários" }],
   },
 ];
@@ -444,21 +452,20 @@ function AdminPanelInner() {
 
   if (status === "checking" || status === "loading") {
     return (
-      <main className="hero-shell">
-        <p className="hero-caption">Carregando painel…</p>
+      <main className="ex-boot">
+        <p className="ex-boot__msg">Carregando painel executivo…</p>
       </main>
     );
   }
   if (status === "denied") {
     return (
-      <main className="hero-shell">
-        <div className="hero-panel" style={{ padding: "2rem", textAlign: "center" }}>
-          <h1 className="hero-display" style={{ fontSize: "1.8rem" }}>
-            Acesso restrito
-          </h1>
-          <p style={{ color: "var(--muted)" }}>Faça login com uma conta válida para abrir o painel.</p>
-          <Link href="/" className="hero-link" style={{ display: "inline-block", marginTop: "1rem" }}>
-            ← Voltar
+      <main className="ex-boot">
+        <div className="ex-boot__card">
+          <p className="ex-boot__eyebrow">Acesso</p>
+          <h1 className="ex-boot__title">Área restrita</h1>
+          <p className="ex-boot__desc">Faça login com uma conta válida para abrir o painel.</p>
+          <Link href="/" className="ex-btn ex-btn--primary">
+            Voltar ao início
           </Link>
         </div>
       </main>
@@ -466,7 +473,7 @@ function AdminPanelInner() {
   }
   if (status === "error") {
     return (
-      <main className="hero-shell">
+      <main className="ex-boot">
         <div className="hero-error">{errorMsg}</div>
       </main>
     );
@@ -495,8 +502,13 @@ function AdminPanelInner() {
     : projects.reduce((acc, p) => worseRating(acc, p.securityRating), "A");
 
   return (
-    <main className="hero-shell hero-shell--cockpit">
-      <AdminCockpitShell groups={groups} tab={tab} onSelectTab={selectTab}>
+    <main className="ex-shell">
+      <AdminCockpitShell
+        groups={groups}
+        tab={tab}
+        onSelectTab={selectTab}
+        isPlatformAdmin={isPlatformAdmin}
+      >
         {tab === "instalacao" && <InstalacaoHome />}
 
         {tab === "visao-geral" && (
@@ -1079,7 +1091,7 @@ export default function AdminPage() {
   return (
     <AuthGate>
       <AppShell>
-        <Suspense fallback={<p className="hero-caption" style={{ padding: "2rem" }}>Carregando…</p>}>
+        <Suspense fallback={<main className="ex-boot"><p className="ex-boot__msg">Carregando painel executivo…</p></main>}>
           <AdminPanelInner />
         </Suspense>
       </AppShell>

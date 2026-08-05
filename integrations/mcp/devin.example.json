@@ -1,0 +1,22 @@
+{
+  "description": "Devin — CodeHero MCP (stdio / npx). Prefer .devin/mcp_config.local.json for tokens.",
+  "mcpServers": {
+    "codehero": {
+      "command": "npx",
+      "args": ["-y", "codehero-mcp@latest"],
+      "env": {
+        "HERO_CORE_URL": "https://codehero.web.app/api",
+        "HERO_TOKEN": "<ingest-token>",
+        "HERO_ORG_ID": "<orgId>",
+        "HERO_PROJECT_ID": "<projectId>",
+        "HERO_REPO_ID": "<repoId>"
+      }
+    }
+  },
+  "notes": [
+    "Web UI: Settings > Connections > MCP servers > Add a custom MCP > STDIO",
+    "CLI: devin mcp add codehero -t stdio --command npx -- -y codehero-mcp@latest -e HERO_TOKEN=... -s local",
+    "Windows user config: %APPDATA%\\devin\\mcp_config.json",
+    "Docs: https://docs.devin.ai/work-with-devin/mcp"
+  ]
+}

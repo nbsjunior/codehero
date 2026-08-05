@@ -14,12 +14,59 @@ function normPath(p) {
     .replace(/\/+/g, "/");
 }
 
+/**
+ * Parse `git diff -U0` into Map<path, Set<line>> for line-level new-code.
+ * Falls back to empty map on failure.
+ */
+function changedLinesByFile(base) {
+  /** @type {Map<string, Set<number>>} */
+  const map = new Map();
+  try {
+    const diff = execSync(`git diff -U0 ${base}...HEAD`, {
+      encoding: "utf8",
+      maxBuffer: 64 * 1024 * 1024,
+    });
+    let file = "";
+    for (const line of diff.split("\n")) {
+      const af = line.match(/^\+\+\+ b\/(.+)$/);
+      if (af) {
+        file = normPath(af[1]);
+        if (!map.has(file)) map.set(file, new Set());
+        continue;
+      }
+      // @@ -old,count +newStart,newCount @@
+      const hunk = line.match(/^@@\s+-\d+(?:,\d+)?\s+\+(\d+)(?:,(\d+))?\s+@@/);
+      if (hunk && file) {
+        const start = parseInt(hunk[1], 10);
+        const count = hunk[2] !== undefined ? parseInt(hunk[2], 10) : 1;
+        const set = map.get(file) ?? new Set();
+        for (let i = 0; i < count; i++) set.add(start + i);
+        map.set(file, set);
+      }
+    }
+  } catch {
+    /* best-effort */
+  }
+  return map;
+}
+
 function pathMatchesChanged(uri, changedSet) {
   const u = normPath(uri);
   if (!u) return false;
   if (changedSet.has(u)) return true;
   for (const c of changedSet) {
     if (u === c || u.endsWith("/" + c) || c.endsWith("/" + u)) return true;
+  }
+  return false;
+}
+
+function lineInChangedFile(uri, line, lineMap) {
+  const u = normPath(uri);
+  if (!u || !line) return false;
+  for (const [path, lines] of lineMap) {
+    if (u === path || u.endsWith("/" + path) || path.endsWith("/" + u)) {
+      return lines.has(Number(line));
+    }
   }
   return false;
 }
@@ -46,9 +93,13 @@ function renderFindingsMarkdown(sarif, repoLabel) {
     const loc = r.locations?.[0]?.physicalLocation;
     const file = loc?.artifactLocation?.uri ?? "?";
     const line = loc?.region?.startLine ?? "?";
+    const tool = p.tool || (String(r.ruleId || "").startsWith("EXT:") ? String(r.ruleId).split(":")[1] : null);
     lines.push(
       `## [${p.severity ?? "INFO"}] ${r.ruleId} — \`${file}:${line}\``,
       ``,
+    );
+    if (tool) lines.push(`**Procedência:** via ${tool}`, ``);
+    lines.push(
       `**Risco:** ${p.risk ?? "—"}`,
       ``,
       `**Motivo:** ${p.reason ?? r.message?.text ?? "—"}`,
@@ -85,20 +136,38 @@ try {
   /* best-effort */
 }
 
-// New-code fingerprints = issues whose file changed in this PR/push.
+// New-code fingerprints: prefer LINE-level (git diff -U0); fall back to file-level.
 let newCodeFingerprints = [];
 try {
   const base = process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : "HEAD~1";
-  const changed = new Set(
-    execSync(`git diff --name-only ${base}...HEAD`, { encoding: "utf8" })
-      .split("\n")
-      .filter(Boolean)
-      .map(normPath),
-  );
-  newCodeFingerprints = (sarif.runs?.[0]?.results ?? [])
-    .filter((r) => pathMatchesChanged(r.locations?.[0]?.physicalLocation?.artifactLocation?.uri, changed))
-    .map((r) => r.partialFingerprints?.["heroHash/v1"])
-    .filter(Boolean);
+  const lineMap = changedLinesByFile(base);
+  const results = sarif.runs?.[0]?.results ?? [];
+  if (lineMap.size > 0) {
+    newCodeFingerprints = results
+      .filter((r) => {
+        const loc = r.locations?.[0]?.physicalLocation;
+        return lineInChangedFile(
+          loc?.artifactLocation?.uri,
+          loc?.region?.startLine,
+          lineMap,
+        );
+      })
+      .map((r) => r.partialFingerprints?.["heroHash/v1"])
+      .filter(Boolean);
+    console.log(`CodeHero: new-code line-level → ${newCodeFingerprints.length} fingerprint(s) in ${lineMap.size} file(s)`);
+  } else {
+    const changed = new Set(
+      execSync(`git diff --name-only ${base}...HEAD`, { encoding: "utf8" })
+        .split("\n")
+        .filter(Boolean)
+        .map(normPath),
+    );
+    newCodeFingerprints = results
+      .filter((r) => pathMatchesChanged(r.locations?.[0]?.physicalLocation?.artifactLocation?.uri, changed))
+      .map((r) => r.partialFingerprints?.["heroHash/v1"])
+      .filter(Boolean);
+    console.log(`CodeHero: new-code file-level fallback → ${newCodeFingerprints.length} fingerprint(s)`);
+  }
 } catch {
   /* best-effort */
 }

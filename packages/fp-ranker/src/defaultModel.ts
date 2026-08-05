@@ -1,11 +1,14 @@
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import type { RankerModel } from "./index.ts";
 
 /**
  * Seed model — priors honestos até existir corpus de feedback suficiente.
  * Treinar de verdade: `hero-fp-ranker train feedback.json models/assertiveness.json`
- * e versionar o artefato. Mesma entrada → mesma saída.
+ * (trainSize > 0). Mesma entrada → mesma saída.
  */
-export const DEFAULT_MODEL: RankerModel = {
+export const SEED_MODEL: RankerModel = {
   version: "seed-priors-v2",
   algorithm: "gbm-stumps-v1",
   // learningRate 1, NAO 0.2.
@@ -34,15 +37,40 @@ export const DEFAULT_MODEL: RankerModel = {
     { feature: "severityRank", threshold: 0.6, left: -0.1, right: 0.35 },
     { feature: "isImported", threshold: 0.5, left: 0.05, right: 0.15 },
     { feature: "taintPathLenNorm", threshold: 0.25, left: -0.05, right: 0.25 },
-    // Complexidade e churn: sem estes três stumps os atributos existem, são
-    // calculados pelo scanner e NÃO movem nada — o modelo dava só 2 valores
-    // distintos em 196 achados. Peso baixo de propósito: são priors, e o sinal
-    // forte tem de vir do treino com feedback real.
-    //
-    // Direção: código complexo e código que muda muito concentram defeito de
-    // verdade; achado em função trivial e arquivo parado é mais suspeito.
+    // toolDepth: CodeQL/Joern (≈1) mais assertivo que oxlint (≈0.4).
+    { feature: "toolDepth", threshold: 0.7, left: -0.1, right: 0.2 },
+    // Outlier da família AST → mais suspeito; família grande → um pouco mais assertivo.
+    { feature: "clusterOutlier", threshold: 0.6, left: 0.05, right: -0.25 },
+    { feature: "clusterSizeNorm", threshold: 0.15, left: -0.1, right: 0.12 },
     { feature: "cognitiveNorm", threshold: 0.25, left: -0.15, right: 0.2 },
     { feature: "nestingNorm", threshold: 0.4, left: -0.05, right: 0.15 },
     { feature: "fileChurnNorm", threshold: 0.1, left: -0.2, right: 0.2 },
   ],
 };
+
+function tryLoadFitted(): RankerModel | null {
+  // Opt-out: keep seed even if a fitted artifact exists (CI/tests).
+  if (process.env.HERO_RANKER_SEED === "1") return null;
+  try {
+    const here = dirname(fileURLToPath(import.meta.url));
+    // src/ → ../models ; dist/ → ../models
+    const candidates = [
+      process.env.HERO_RANKER_MODEL,
+      join(here, "../models/assertiveness.json"),
+      join(here, "../../models/assertiveness.json"),
+    ].filter(Boolean) as string[];
+    for (const p of candidates) {
+      if (!existsSync(p)) continue;
+      const raw = JSON.parse(readFileSync(p, "utf8")) as RankerModel;
+      if (raw?.algorithm === "gbm-stumps-v1" && Array.isArray(raw.stumps) && (raw.trainSize ?? 0) > 0) {
+        return raw;
+      }
+    }
+  } catch {
+    // fall through to seed
+  }
+  return null;
+}
+
+/** Runtime model: fitted artifact when trainSize>0, else seed priors. */
+export const DEFAULT_MODEL: RankerModel = tryLoadFitted() ?? SEED_MODEL;

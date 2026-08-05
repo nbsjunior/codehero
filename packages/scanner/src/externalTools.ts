@@ -121,11 +121,36 @@ export function runSemgrep(cwd = process.cwd()): ExternalRunResult {
       tool: "semgrep",
       ok: false,
       sarifPath: null,
-      hint: "Instale Semgrep (pip install semgrep) ou use CodeQL no CI e --import",
+      hint: "Instale Semgrep (pip install semgrep) ou use --with-opengrep / CodeQL --import",
       stderr: (r.stderr || r.stdout || r.error?.message || "").slice(0, 800),
     };
   }
   return { tool: "semgrep", ok: true, sarifPath: out };
+}
+
+/**
+ * Opengrep — motor OSS (LGPL) compatível com rulesets Semgrep.
+ * Preferível no CI open-source quando Semgrep CE/Pro não está disponível.
+ */
+export function runOpengrep(cwd = process.cwd()): ExternalRunResult {
+  const dir = mkdtempSync(join(tmpdir(), "hero-opengrep-"));
+  const out = join(dir, "opengrep.sarif");
+  // Binário `opengrep` (pip/cargo/release) ou npx wrapper se existir.
+  let r = runCapture("opengrep", ["scan", "--config", "auto", "--sarif", "--output", out, cwd]);
+  if (r.error || (r.status !== 0 && !existsSync(out))) {
+    r = runCapture("npx", ["--yes", "opengrep", "scan", "--config", "auto", "--sarif", "--output", out, cwd]);
+  }
+  if (!existsSync(out)) {
+    return {
+      tool: "opengrep",
+      ok: false,
+      sarifPath: null,
+      hint:
+        "Instale Opengrep (https://github.com/opengrep/opengrep) ou use --with-semgrep / CodeQL --import",
+      stderr: (r.stderr || r.stdout || r.error?.message || "").slice(0, 800),
+    };
+  }
+  return { tool: "opengrep", ok: true, sarifPath: out };
 }
 
 export type ScaTool = "trivy" | "osv";
@@ -268,6 +293,7 @@ export function collectExternalSarifs(opts: {
   oxlint?: boolean;
   eslint?: boolean;
   semgrep?: boolean;
+  opengrep?: boolean;
   pmd?: boolean;
   spotbugs?: boolean;
   spotbugsClasses?: string;
@@ -284,6 +310,7 @@ export function collectExternalSarifs(opts: {
   };
   if (opts.oxlint) rodar(runOxlint(cwd));
   if (opts.eslint) rodar(runEslint(cwd));
+  if (opts.opengrep) rodar(runOpengrep(cwd));
   if (opts.semgrep) rodar(runSemgrep(cwd));
   if (opts.pmd) rodar(runPmd(cwd));
   if (opts.spotbugs) rodar(runSpotbugs(cwd, opts.spotbugsClasses));
