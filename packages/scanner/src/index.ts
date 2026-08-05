@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
-import { relative } from "node:path";
+import { relative, resolve } from "node:path";
 import {
   RULES,
   mergeCoverageReports,
@@ -19,12 +19,13 @@ import { parseCoverageFile } from "./coverage.ts";
 import { collectStructural, type StructuralSummary } from "./metrics.ts";
 import { buildCopybookIndex } from "./copybooks.ts";
 import { buildSemanticIndex, EMPTY_SEMANTIC_INDEX, expandCopybooks } from "@codehero/engine";
-import { importSarifFiles, type ImportSummary } from "./importSarif.ts";
+import { importSarifFiles, type ImportSummary, type ImportedFinding } from "./importSarif.ts";
 import { buildSarif } from "./sarif.ts";
 import { loadRulesFile, resolveActiveRules } from "./fetchRules.ts";
 import { runJoernScan } from "@codehero/cpg-joern";
 import { scoreFinding, DEFAULT_MODEL } from "@codehero/fp-ranker";
 import { collectExternalSarifs } from "./externalTools.ts";
+import { colapsaEcoEntreFerramentas } from "./dedupeCrossTool.ts";
 
 interface CliOptions {
   paths: string[];
@@ -47,7 +48,11 @@ interface CliOptions {
   /** Opt-in CPG via Joern (JVM/Docker). */
   joern: boolean;
   withOxlint: boolean;
+  withEslint: boolean;
   withSemgrep: boolean;
+  withPmd: boolean;
+  withSpotbugs: boolean;
+  spotbugsClasses: string | null;
   withSca: boolean;
   scaTool: "trivy" | "osv";
 }
@@ -73,7 +78,11 @@ function parseArgs(argv: string[]): CliOptions {
     importSarif: [],
     joern: false,
     withOxlint: false,
+    withEslint: false,
     withSemgrep: false,
+    withPmd: false,
+    withSpotbugs: false,
+    spotbugsClasses: null,
     withSca: false,
     scaTool: "trivy",
   };
@@ -88,6 +97,10 @@ function parseArgs(argv: string[]): CliOptions {
     else if (a === "--semantic") { opts.semantic = true; opts.metrics = true; }
     else if (a === "--joern") opts.joern = true;
     else if (a === "--with-oxlint") opts.withOxlint = true;
+    else if (a === "--with-eslint") opts.withEslint = true;
+    else if (a === "--with-pmd") opts.withPmd = true;
+    else if (a === "--with-spotbugs") opts.withSpotbugs = true;
+    else if (a === "--spotbugs-classes") opts.spotbugsClasses = argv[++i] ?? null;
     else if (a === "--with-semgrep") opts.withSemgrep = true;
     else if (a === "--with-sca") opts.withSca = true;
     else if (a === "--sca-tool") {
@@ -250,13 +263,24 @@ async function main(): Promise<void> {
   // Presence Pack: --with-oxlint / --with-semgrep / --with-sca (soft-fail).
   // --joern (opt-in): CPG interprocedural via Joern → mesmo caminho --import.
   const importPaths = [...opts.importSarif];
-  if (opts.withOxlint || opts.withSemgrep || opts.withSca) {
+  const querAlgumExterno =
+    opts.withOxlint || opts.withEslint || opts.withSemgrep || opts.withPmd || opts.withSpotbugs || opts.withSca;
+  if (querAlgumExterno) {
     const ext = collectExternalSarifs({
       oxlint: opts.withOxlint,
+      eslint: opts.withEslint,
       semgrep: opts.withSemgrep,
+      pmd: opts.withPmd,
+      spotbugs: opts.withSpotbugs,
+      spotbugsClasses: opts.spotbugsClasses ?? undefined,
       sca: opts.withSca,
       scaTool: opts.scaTool,
-      cwd,
+      // O ALVO do scan, nao o diretorio de trabalho. Passar `cwd` fazia toda
+      // ferramenta externa analisar a raiz do repositorio enquanto o CodeHero
+      // analisava o subcaminho pedido — e o ESLint chegava a nao rodar por nao
+      // achar config no lugar errado. O `--joern` ja usava paths[0]; o Presence
+      // Pack nao.
+      cwd: resolve(opts.paths[0] ?? "."),
     });
     for (const log of ext.logs) {
       if (log.ok) {
@@ -293,7 +317,26 @@ async function main(): Promise<void> {
     );
   }
 
-  const sarif = buildSarif(findings, coverage, linesOfCode, structural, imported?.findings);
+  // ECO ENTRE FERRAMENTAS. A dedup do motor cobre so os achados nativos; os
+  // importados entravam por fora e o mesmo problema aparecia duas vezes.
+  // Medido: `eval()` reportado por SONAR-js-S5334 e por EXT:eslint:no-eval, e
+  // o mesmo `==` nas colunas 8 e 9 — 5 apontamentos para 3 problemas.
+  //
+  // Granularidade de LINHA, nao de coluna: ferramentas diferentes ancoram o
+  // mesmo problema em colunas diferentes (o operador, o token anterior, o
+  // inicio da expressao). Exigir coluna igual nao colapsaria nada.
+  //
+  // Nada se perde: quem sobrevive carrega os ids absorvidos, entao o rastro de
+  // conformidade continua completo. Orquestrar sem isto so multiplica ruido —
+  // e ai juntar ferramentas piora o produto em vez de melhorar.
+  const importadosFiltrados = colapsaEcoEntreFerramentas(findings, imported?.findings ?? [], cwd);
+  if (imported && importadosFiltrados.absorvidos > 0) {
+    process.stderr.write(
+      `CodeHero: ${importadosFiltrados.absorvidos} apontamento(s) de terceiros ja cobertos por regra propria na mesma linha\n`,
+    );
+  }
+
+  const sarif = buildSarif(findings, coverage, linesOfCode, structural, importadosFiltrados.restantes);
 
   // Assertividade (ranqueador FP): anota properties no SARIF — determinístico.
   //

@@ -26,7 +26,7 @@
     "build:locksmith": "npm run build -w @codehero/locksmith",
     "locksmith": "node packages/locksmith/dist/cli.js",
     "test:engine": "npm run test -w @codehero/engine",
-    "test": "npm run test:contracts && npm run test:ranker && npm run test:engine",
+    "test": "npm run test:contracts && npm run test:ranker && npm run test:scanner && npm run test:engine",
     "emulators": "firebase emulators:start",
     "dev:web": "npm run dev -w @codehero/web",
     "ruleforge:evaluate": "npm run evaluate -w @codehero/ruleforge",
@@ -39,7 +39,8 @@
     "build:cpg": "npm run build -w @codehero/cpg-joern",
     "build:fp-ranker": "npm run build -w @codehero/fp-ranker",
     "test:contracts": "npm run test --workspace=@codehero/contracts",
-    "test:ranker": "npm run test --workspace=@codehero/fp-ranker"
+    "test:ranker": "npm run test --workspace=@codehero/fp-ranker",
+    "test:scanner": "npm run test --workspace=@codehero/scanner"
   },
   "devDependencies": {
     "typescript": "^5.7.2"
