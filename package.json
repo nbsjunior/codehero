@@ -18,7 +18,7 @@
     "build:engine": "npm run build -w @codehero/engine",
     "build:scanner": "npm run build -w @codehero/scanner",
     "build:ruleforge": "npm run build -w @codehero/ruleforge",
-    "build:mcp": "npm run build -w @codehero/mcp",
+    "build:mcp": "npm run build -w codehero-mcp",
     "build:ide": "npm run build -w codehero-ide",
     "package:ide": "npm run package -w codehero-ide",
     "build:functions": "npm run build -w @codehero/functions",
