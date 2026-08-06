@@ -218,8 +218,8 @@ export default function AuthGate({ children }: { children: ReactNode }) {
               </a>
             </div>
           </div>
-          <div className="lx-hero-visual" aria-hidden="true">
-            <LandingFlow />
+          <div className="lx-hero-visual">
+            <LandingFlow compact />
           </div>
         </section>
 
@@ -269,29 +269,12 @@ export default function AuthGate({ children }: { children: ReactNode }) {
         <section className="lx-section lx-flow-section" id="fluxo" aria-labelledby="lx-flow-title">
           <div className="lx-section-inner">
             <p className="lx-kicker">Arquitetura operacional</p>
-            <h2 id="lx-flow-title">Quatro estágios. Um feedback loop.</h2>
+            <h2 id="lx-flow-title">Quatro estágios. Integrações explícitas. Um loop.</h2>
             <p className="lx-prose">
-              Do push ao merge, o CodeHero separa detecção, decisão, remediação e aprendizado. Cada estágio
-              tem dono claro — scanner, policy engine, agentes de correção, cockpit de engenharia.
+              Do push ao merge, cada fase publica um contrato para a seguinte. A Esteira não é um relatório —
+              devolve memória de regra ao próximo Scan.
             </p>
-            <ol className="lx-flow-detail">
-              <li>
-                <strong>Scan</strong> — motores paralelos; findings normalizados; SARIF de ferramentas
-                externas entra no mesmo envelope.
-              </li>
-              <li>
-                <strong>Gate</strong> — severidade, regras da org, suppressões com rastreio. Bloqueia ou
-                libera com evidência.
-              </li>
-              <li>
-                <strong>Correção</strong> — agentes propõem patch só no que passou o filtro de política.
-                Diff revisável; sem surpresa em produção.
-              </li>
-              <li>
-                <strong>Esteira</strong> — FP, qualidade do patch e custo alimentam o próximo ciclo. O time
-                não reexplica a mesma exceção.
-              </li>
-            </ol>
+            <LandingFlow detailed />
           </div>
         </section>
 
