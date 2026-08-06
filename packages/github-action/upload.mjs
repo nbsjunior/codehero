@@ -1,7 +1,9 @@
 // Uploads the SARIF report to the CodeHero ingest endpoint and enforces the
 // quality gate. Pure Node (>=18) — uses the built-in fetch, no dependencies.
 import { readFileSync, writeFileSync, appendFileSync } from "node:fs";
-import { execSync } from "node:child_process";
+// `execFileSync` para tudo que interpola valor; `execSync` fica só para o
+// pipeline abaixo, que é comando literal fixo e precisa mesmo de shell.
+import { execFileSync, execSync } from "node:child_process";
 
 const SEVERITY_ORDER = ["BLOCKER", "CRITICAL", "MAJOR", "MINOR", "INFO"];
 
@@ -22,7 +24,11 @@ function changedLinesByFile(base) {
   /** @type {Map<string, Set<number>>} */
   const map = new Map();
   try {
-    const diff = execSync(`git diff -U0 ${base}...HEAD`, {
+    // execFileSync com argumentos em ARRAY: nao passa por shell, entao `base`
+    // — que vem do contexto do GitHub — nao pode injetar comando. Era
+    // `execSync(`git diff -U0 ${base}...HEAD`)`, template interpolado direto
+    // no shell, e o proprio CodeHero apontou.
+    const diff = execFileSync("git", ["diff", "-U0", `${base}...HEAD`], {
       encoding: "utf8",
       maxBuffer: 64 * 1024 * 1024,
     });
@@ -157,7 +163,7 @@ try {
     console.log(`CodeHero: new-code line-level → ${newCodeFingerprints.length} fingerprint(s) in ${lineMap.size} file(s)`);
   } else {
     const changed = new Set(
-      execSync(`git diff --name-only ${base}...HEAD`, { encoding: "utf8" })
+      execFileSync("git", ["diff", "--name-only", `${base}...HEAD`], { encoding: "utf8" })
         .split("\n")
         .filter(Boolean)
         .map(normPath),

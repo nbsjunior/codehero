@@ -95,11 +95,20 @@ export function matchPattern(
     const linha = linhasAlvo[i] ?? "";
     const m = re.exec(linha);
     if (!m) continue;
-    // `unless` também olha o texto mascarado: um "eslint-disable" escrito
-    // dentro de uma string não deveria poder desligar uma regra.
-    if (unless && unless.test(linha)) continue;
-    const col = (m.index ?? 0) + 1;
     const crua = linhasCruas[i] ?? linha;
+    // `unless` avalia a linha CRUA, não a mascarada.
+    //
+    // A versão anterior usava a mascarada, com o argumento de que um
+    // "eslint-disable" dentro de uma string não deveria desligar a regra. O
+    // raciocínio estava invertido: marcador de supressão vive em COMENTÁRIO —
+    // `# nosec`, `// sanitize: ...`, `// eslint-disable` — e o comentário é
+    // exatamente o que a máscara apaga.
+    //
+    // Efeito medido: NENHUMA regra com `unless` baseado em comentário podia ser
+    // suprimida. Uma justificativa escrita ao lado do código não tinha efeito
+    // nenhum, o que torna o gate impossível de calibrar honestamente.
+    if (unless && unless.test(crua)) continue;
+    const col = (m.index ?? 0) + 1;
     matches.push({ line: i + 1, column: col, endColumn: col + m[0].length, snippet: crua.trim() });
   }
   return matches;

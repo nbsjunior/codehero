@@ -38,9 +38,27 @@ const args = [
   "--log-level=info",
 ];
 
+// Sem `shell: true`. O fallback via npx precisava dele porque no Windows `npx`
+// é um `.cmd`, mas com shell os argumentos são CONCATENADOS sem escape — e
+// `--outfile=${outfile}` carrega um caminho do sistema de arquivos. O próprio
+// CodeHero apontou isto como command injection, e estava certo.
+//
+// A resolução por extensão substitui o shell: `spawnSync` executa `npx.cmd`
+// diretamente quando esse é o nome real do binário.
+const npxCandidatos = process.platform === "win32" ? ["npx.cmd", "npx"] : ["npx"];
+
+function rodarViaNpx() {
+  for (const bin of npxCandidatos) {
+    const r = spawnSync(bin, ["--yes", "esbuild@0.25.0", ...args], { stdio: "inherit" });
+    const err = /** @type {NodeJS.ErrnoException | undefined} */ (r.error);
+    if (!err || err.code !== "ENOENT") return r;
+  }
+  return { status: 1, error: new Error("npx não encontrado no PATH") };
+}
+
 const result = esbuildBin
   ? spawnSync(process.execPath, [esbuildBin, ...args], { stdio: "inherit" })
-  : spawnSync("npx", ["--yes", "esbuild@0.25.0", ...args], { stdio: "inherit", shell: true });
+  : rodarViaNpx();
 
 if (result.status !== 0) process.exit(result.status ?? 1);
 

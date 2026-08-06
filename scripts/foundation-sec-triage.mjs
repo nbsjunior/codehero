@@ -68,6 +68,24 @@ function heuristicScore(f) {
   return Math.max(0, Math.min(1, score));
 }
 
+/**
+ * Valida o endpoint antes de usar.
+ *
+ * `--llm-url` vem da linha de comando do operador, mas interpolar valor
+ * arbitrario direto num `fetch` e o padrao que o proprio CodeHero aponta como
+ * SSRF — e ele estava certo: sem validacao, um valor com barra invertida ou
+ * esquema exotico ia parar na requisicao. Exigir http/https e uma URL bem
+ * formada custa duas linhas e fecha o buraco.
+ */
+function endpointValido(url) {
+  try {
+    const u = new URL(url);
+    return u.protocol === "http:" || u.protocol === "https:" ? u : null;
+  } catch {
+    return null;
+  }
+}
+
 async function llmScore(f, llmUrl, model) {
   const prompt = [
     "You are a SAST triage assistant. Score how likely this finding is a TRUE POSITIVE (0.0–1.0).",
@@ -78,7 +96,10 @@ async function llmScore(f, llmUrl, model) {
     `message=${f.message}`,
     `snippet=${(f.snippet || "").slice(0, 400)}`,
   ].join("\n");
-  const res = await fetch(`${llmUrl.replace(/\/$/, "")}/chat/completions`, {
+  const base = endpointValido(llmUrl);
+  if (!base) throw new Error(`--llm-url invalida: ${llmUrl}`);
+  const alvo = new URL("chat/completions", base.href.endsWith("/") ? base.href : base.href + "/");
+  const res = await fetch(alvo, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

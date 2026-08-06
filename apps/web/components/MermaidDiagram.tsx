@@ -44,7 +44,9 @@ export default function MermaidDiagram({
         const id = `mermaid-${reactId}-${Math.random().toString(36).slice(2, 8)}`;
         const { svg } = await mermaid.render(id, chart.trim());
         if (!cancelled && hostRef.current) {
-          hostRef.current.innerHTML = svg;
+          // O `chart` vem de constantes do repositório, não de entrada de
+          // usuário. Sem o modo strict do Mermaid, isto seria XSS.
+          hostRef.current.innerHTML = svg; // sanitize: securityLevel strict do Mermaid
           setError(null);
         }
       } catch (err) {
