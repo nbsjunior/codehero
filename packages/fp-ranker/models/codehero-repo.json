@@ -1,0 +1,251 @@
+{
+  "version": "audit-2026-08",
+  "algorithm": "gbm-stumps-v1",
+  "learningRate": 0.15,
+  "baseScore": -0.9808269613508367,
+  "stumps": [
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.5272722727281819,
+      "right": -0.09415629870038955
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.5113061452052106,
+      "right": -0.09136396080843177
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.4953051857372689,
+      "right": -0.0886717232830273
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.4793408831007297,
+      "right": -0.0860751889725089
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.46348048246875395,
+      "right": -0.0835701875553166
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.4477859467210822,
+      "right": -0.08115276286206037
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.43231319343808633,
+      "right": -0.07881916086880317
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.4171116059300486,
+      "right": -0.07656581834138161
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.40222380062316754,
+      "right": -0.07438935210769608
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.38768562133897494,
+      "right": -0.07228654893293518
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.37352632367541283,
+      "right": -0.07025435597147968
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.3597689094935615,
+      "right": -0.06828987176858829
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.34643057174218356,
+      "right": -0.06639033778479493
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.33352321264719115,
+      "right": -0.06455313041612838
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.3210540027699555,
+      "right": -0.06277575348372501
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.30902595380191994,
+      "right": -0.06105583116706974
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.29743848356914454,
+      "right": -0.05939110135592055
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.2862879570975065,
+      "right": -0.05777940939689421
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.2755681924305217,
+      "right": -0.05621870221169338
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.2652709240308703,
+      "right": -0.0547070227649933
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.25538621997609695,
+      "right": -0.053242504861067796
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.24590285179758437,
+      "right": -0.05182336824930546
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.23680861777685752,
+      "right": -0.05044791401981479
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.22809062189718085,
+      "right": -0.04911452027135882
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.2197355115526644,
+      "right": -0.047821638034862626
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.21172967764078526,
+      "right": -0.04656778743670901
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.20405942089739854,
+      "right": -0.04535155408697656
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.19671108835358447,
+      "right": -0.04417158567866176
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.18967118366524244,
+      "right": -0.04302658878478407
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.18292645484039344,
+      "right": -0.04191532584108052
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.17646396260519498,
+      "right": -0.04083661230276131
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.9,
+      "left": -0.07120277381767501,
+      "right": 0.0893315651563542
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.9,
+      "left": -0.06921624510015524,
+      "right": 0.0870358780971938
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.1751956405612794,
+      "right": -0.039986873788106225
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.9,
+      "left": -0.06806900978094571,
+      "right": 0.08581985322579964
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.17143630479301825,
+      "right": -0.039083178626957094
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.9,
+      "left": -0.06695298968873759,
+      "right": 0.08460716521949606
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.1677846577870165,
+      "right": -0.03821824352959886
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.9,
+      "left": -0.06586667528511754,
+      "right": 0.08339883540936896
+    },
+    {
+      "feature": "severityRank",
+      "threshold": 0.65,
+      "left": 0.16423721552428666,
+      "right": -0.037389956867866135
+    }
+  ],
+  "trainedAt": "2026-08-06T22:29:01.616Z",
+  "trainSize": 33,
+  "notes": "Treinado em 33 apontamentos rotulados a mao no repositorio CodeHero (agosto/2026). Acuracia leave-one-out 81.8%, linha de base 72.7%. Conjunto pequeno e de um unico acervo — serve como ponto de partida medido, nao como modelo geral."
+}
