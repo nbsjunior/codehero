@@ -16,3 +16,18 @@ packages/contracts/src/sdd.ts
 # --- Artefatos e rascunhos ---
 tmp/
 *.min.js
+
+# --- Arquivos cujo CONTEUDO sao padroes de deteccao ---
+# O gerador do catalogo Sonar e o comparador guardam as regexes das regras
+# como dado. O scanner as le como codigo e acusa `/nosql|$where/i` de ser
+# NoSQL injection. Nao e supressao de achado real: e a mesma categoria de
+# examples/ e corpus/ — material de regra, nao aplicacao.
+scripts/generate-sonar-way-rules.mjs
+scripts/compare-sonar-way.mjs
+
+# Seed do emulador local: token de demonstracao, nunca vai a producao.
+scripts/seed-emulator.mjs
+
+# Fixtures de teste dos pacotes: definem codigo deliberadamente vulneravel
+# para exercitar os detectores (mesma categoria de fixtures.ts/selftest.ts).
+packages/*/test/

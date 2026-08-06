@@ -231,9 +231,34 @@ const _CORE_BASE: HeroRule[] = (
     // mantido (casos os-01..os-12 em corpus/golden.json).
     // A forma de método só conta quando o receptor nomeia child_process;
     // a chamada nua continua contando.
+    //
+    // SEGUNDA AUDITORIA: a versão acima ainda acusava `spawnSync("where",
+    // [bin])` — 35 vezes no próprio repositório, e era a regra BLOCKER mais
+    // frequente do catálogo. A distinção é técnica e não estava sendo feita:
+    // `exec`/`execSync` executam via SHELL, então importam quando o comando é
+    // MONTADO; `spawn`/`execFile` não usam shell e só são perigosos com
+    // `shell: true` explícito.
     pattern: {
+      // `any` porque a interpolação que caracteriza o comando montado vive
+      // DENTRO da string — com o escopo `code` a máscara a apaga antes da
+      // regex ver, e a regra perdia 3 dos 4 casos de corpus.
+      scope: "any",
+      // Três formas, nesta ordem:
+      //   1. `exec`/`execSync` cujo 1º argumento NÃO é literal de aspas — o
+      //      shell executa o que estiver na variável;
+      //   2. `exec`/`execSync` com literal CONCATENADO;
+      //   3. família `spawn`/`execFile` com `shell: true` explícito.
+      // O lookbehind `(?<![.\w])` na forma nua é o que impede `re.exec(line)`
+      // de virar command injection — foi um falso positivo real, corrigido e
+      // travado nos casos os-08..os-11 do corpus.
+      // SEM `(?i)`: JavaScript é case-sensitive e estas funções são sempre
+      // camelCase. Com o flag, `EXEC(@sql)` — texto de T-SQL dentro de uma
+      // string do próprio catálogo — virava command injection. Detector de
+      // identificador em linguagem case-sensitive não pode ignorar caixa.
       regex:
-        "(?i)(?:\\b(?:child_process|childProcess|cp)\\s*\\.\\s*(?:execSync|execFileSync|spawnSync|execFile|exec|spawn)\\s*\\(|(?:^|[^.\\w])(?:execSync|execFileSync|spawnSync|execFile|exec|spawn)\\s*\\()",
+        "(?:(?:child_process|childProcess|cp)\\s*\\.\\s*(?:execSync|exec)|(?<![.\\w])(?:execSync|exec))\\s*\\(\\s*(?!['\"])" +
+        "|(?:(?:child_process|childProcess|cp)\\s*\\.\\s*)?(?<![.\\w])(?:execSync|exec)\\s*\\([^)]*['\"]\\s*\\+" +
+        "|(?<![.\\w])(?:spawnSync|spawn|execFile|execFileSync|execSync|exec)\\s*\\([^)]*shell\\s*:\\s*true",
       unless: "(?i)(shell\\s*:\\s*false)|^\\s*(//|\\*|#)",
     },
     taint: {
@@ -255,7 +280,12 @@ const _CORE_BASE: HeroRule[] = (
     category: "ssrf",
     pattern: {
       scope: "any",
-      regex: "(?i)fetch\\s*\\(\\s*[`$].*\\$\\{",
+      regex: "(?i)fetch\\s*\\(\\s*`[^`]*\\$\\{",
+      // SCREAMING_CASE é constante de módulo por convenção universal em JS —
+      // não é valor vindo do usuário. Sem esta exclusão a regra acusa todo
+      // `fetch(`${API_BASE}/x`)`: foram 5 falsos positivos e zero verdadeiros
+      // no próprio repositório, numa regra CRITICAL.
+      unless: "\\$\\{\\s*[A-Z_][A-Z0-9_]*\\s*\\}",
     },
     taint: {
       sources: ["http.param", "http.body"],
@@ -399,6 +429,11 @@ const _CORE_BASE: HeroRule[] = (
     pattern: {
       scope: "any",
       regex: "(?i)(curl|wget).{0,80}\\|\\s*(ba)?sh",
+      // A regra roda em `scope: any` (o corpus golden prova que mascarar a
+      // quebra), então ela enxerga texto de interface. No próprio repositório
+      // ela casou o PLACEHOLDER de um formulário — a frase de exemplo
+      // "Sem curl | bash em scripts de setup". Prosa não é comando.
+      unless: "(?i)placeholder|aria-|title=|Ex\\.:|exemplo|<p>|<li>|description",
     },
   },
   {

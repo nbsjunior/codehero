@@ -26,9 +26,6 @@ export default function DocsTopNav() {
       </button>
 
       <div id="cr-docs-nav-links" className={`cr-docs-nav-links${open ? " is-open" : ""}`}>
-        <a href="https://produtech.web.app" target="_blank" rel="noreferrer" onClick={() => setOpen(false)}>
-          Estimativa Build
-        </a>
         <a href="https://github.com/nbsjunior/codehero" target="_blank" rel="noreferrer" onClick={() => setOpen(false)}>
           GitHub
         </a>

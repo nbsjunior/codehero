@@ -79,12 +79,6 @@ const SHARED_GROUPS: CockpitNavGroup[] = [
     tier: "resources",
     items: [{ id: "docs", label: "Documentação", href: "/docs/" }],
   },
-  {
-    id: "estimativa",
-    label: "Parceiros",
-    tier: "resources",
-    items: [{ id: "estimativa", label: "Estimativa de Build", href: "https://produtech.web.app", external: true }],
-  },
 ];
 
 const ADMIN_ONLY_GROUPS: CockpitNavGroup[] = [

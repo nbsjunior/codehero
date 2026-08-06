@@ -14,6 +14,7 @@ import { httpsCallable, type FunctionsError } from "firebase/functions";
 import { auth, functions } from "@/lib/firebase";
 import { useAuth } from "@/lib/useAuth";
 import LearningLoopStory from "@/components/LearningLoopStory";
+import LandingFlow from "@/components/LandingFlow";
 
 type Mode = "login" | "signup" | "forgot";
 
@@ -152,559 +153,417 @@ export default function AuthGate({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="cr-page">
-      <header className="cr-nav">
-        <a className="cr-nav-brand" href="#top" onClick={() => setNavOpen(false)}>
-          <span className="cr-nav-mark" aria-hidden>
+    <div className="lx-page" id="top">
+      <header className="lx-nav">
+        <a className="lx-nav-brand" href="#top" onClick={() => setNavOpen(false)}>
+          <span className="lx-nav-mark" aria-hidden>
             H
           </span>
-          <span className="cr-nav-name">CodeHero</span>
+          <span className="lx-nav-name">CodeHero</span>
         </a>
 
         <button
           type="button"
-          className="cr-nav-toggle"
+          className="lx-nav-toggle"
           aria-expanded={navOpen}
-          aria-controls="cr-nav-menu"
+          aria-controls="lx-nav-menu"
+          aria-label={navOpen ? "Fechar menu" : "Abrir menu"}
           onClick={() => setNavOpen((v) => !v)}
         >
-          <span className="cr-sr-only">Menu</span>
-          <span aria-hidden>{navOpen ? "✕" : "☰"}</span>
+          <span />
+          <span />
+          <span />
         </button>
 
-        <nav id="cr-nav-menu" className={`cr-nav-links${navOpen ? " is-open" : ""}`}>
-          <a href="#esteira-regras" onClick={() => setNavOpen(false)}>
-            Esteira de regras
+        <nav id="lx-nav-menu" className={`lx-nav-links${navOpen ? " is-open" : ""}`} aria-label="Principal">
+          <a href="#fluxo" onClick={() => setNavOpen(false)}>
+            Fluxo
           </a>
-          <a href="#como" onClick={() => setNavOpen(false)}>
-            Como funciona
+          <a href="#mercado" onClick={() => setNavOpen(false)}>
+            Mercado
           </a>
-          <a href="/docs/" onClick={() => setNavOpen(false)}>
+          <a href="#esteira" onClick={() => setNavOpen(false)}>
+            Esteira
+          </a>
+          <a href="/docs" onClick={() => setNavOpen(false)}>
             Docs
           </a>
-          <button type="button" className="cr-btn cr-btn-ghost" onClick={() => goAuth("login")}>
+          <button type="button" className="lx-nav-cta" onClick={() => goAuth("login")}>
             Entrar
           </button>
         </nav>
       </header>
 
-      <main id="top">
-        <section className="cr-hero">
-          <div className="cr-hero-copy cr-rise">
-            <p className="cr-eyebrow">regras que evoluem · gate que não mente</p>
-            <h1 className="cr-brand">CodeHero</h1>
-            <p className="cr-headline">
-              Corte bugs e dívida técnica pela metade.
-              <span className="cr-headline-accent"> Seja o herói do PR.</span>
+      <main>
+        <section className="lx-hero" aria-labelledby="lx-hero-title">
+          <div className="lx-hero-copy">
+            <p className="lx-kicker">Plataforma de engenharia · scan → gate → correção</p>
+            <h1 id="lx-hero-title" className="lx-brand">
+              CodeHero
+            </h1>
+            <p className="lx-headline">
+              O controle de qualidade que o board exige — e a esteira que o time consegue operar.
             </p>
-            <p className="cr-subhead">
-              As regras se atualizam sozinhas a partir do uso real do time — e só entram no CI depois de provar
-              precisão no corpus. Mesmo código, mesmo resultado: sem incoerência entre PRs e sem falso positivo que
-              vira ruído.
+            <p className="lx-lede">
+              Unifique SAST, SCA, secrets, IaC e mainframe num contrato único de gate. Trate falso positivo
+              como dado de produto. Deixe a IA corrigir o que o policy engine já classificou — sem cobrar
+              por linha de código, sem depender de um único fornecedor de scanner.
             </p>
-            <div className="cr-cta-row">
-              <button type="button" className="cr-btn cr-btn-primary cr-btn-lg" onClick={() => goAuth("signup")}>
-                Começar grátis
+            <div className="lx-cta-row">
+              <button type="button" className="lx-btn lx-btn-primary" onClick={() => goAuth("signup")}>
+                Solicitar acesso
               </button>
-              <button type="button" className="cr-btn cr-btn-secondary cr-btn-lg" onClick={() => goAuth("login")}>
-                Já tenho conta
+              <a className="lx-btn lx-btn-ghost" href="#fluxo">
+                Ver o fluxo
+              </a>
+            </div>
+          </div>
+          <div className="lx-hero-visual" aria-hidden="true">
+            <LandingFlow />
+          </div>
+        </section>
+
+        <section className="lx-section lx-thesis" aria-labelledby="lx-thesis-title">
+          <div className="lx-section-inner">
+            <p className="lx-kicker">Tese para o CTO</p>
+            <h2 id="lx-thesis-title">Segurança de aplicação não é um scanner. É um sistema de decisão.</h2>
+            <p className="lx-prose">
+              Ferramentas de mercado entregam volume de findings. O CodeHero entrega <em>governança
+              operacional</em>: o que bloqueia merge, o que a IA pode corrigir, o que o time marcou como
+              falso positivo — e como essa memória reduz o próximo ciclo. O resultado não é um PDF de
+              compliance. É um pipeline que acelera release com risco controlado.
+            </p>
+            <div className="lx-pillars">
+              <article className="lx-pillar" style={{ animationDelay: "0.05s" }}>
+                <h3>Gate multi-motor</h3>
+                <p>
+                  Presence, Opengrep, Semgrep Community, Trivy, Gitleaks, Checkov e SARIF importado —
+                  score único, thresholds por org, suppress auditável.
+                </p>
+              </article>
+              <article className="lx-pillar" style={{ animationDelay: "0.12s" }}>
+                <h3>IA com orçamento</h3>
+                <p>
+                  Correção automática só depois do gate. Custo por projeto e por execução — não por LOC.
+                  Telemetria de tokens e qualidade no cockpit.
+                </p>
+              </article>
+              <article className="lx-pillar" style={{ animationDelay: "0.19s" }}>
+                <h3>Memória institucional</h3>
+                <p>
+                  Falso positivo vira estatística de regra. A esteira aprende o que o time já decidiu —
+                  menos ruído no próximo PR, mais velocidade no review.
+                </p>
+              </article>
+              <article className="lx-pillar" style={{ animationDelay: "0.26s" }}>
+                <h3>Um contrato, duas eras</h3>
+                <p>
+                  Repositórios cloud e mainframe (COBOL, JCL, CICS, DB2) no mesmo modelo de job, finding e
+                  política. Modernização sem silo de ferramenta.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section className="lx-section lx-flow-section" id="fluxo" aria-labelledby="lx-flow-title">
+          <div className="lx-section-inner">
+            <p className="lx-kicker">Arquitetura operacional</p>
+            <h2 id="lx-flow-title">Quatro estágios. Um feedback loop.</h2>
+            <p className="lx-prose">
+              Do push ao merge, o CodeHero separa detecção, decisão, remediação e aprendizado. Cada estágio
+              tem dono claro — scanner, policy engine, agentes de correção, cockpit de engenharia.
+            </p>
+            <ol className="lx-flow-detail">
+              <li>
+                <strong>Scan</strong> — motores paralelos; findings normalizados; SARIF de ferramentas
+                externas entra no mesmo envelope.
+              </li>
+              <li>
+                <strong>Gate</strong> — severidade, regras da org, suppressões com rastreio. Bloqueia ou
+                libera com evidência.
+              </li>
+              <li>
+                <strong>Correção</strong> — agentes propõem patch só no que passou o filtro de política.
+                Diff revisável; sem surpresa em produção.
+              </li>
+              <li>
+                <strong>Esteira</strong> — FP, qualidade do patch e custo alimentam o próximo ciclo. O time
+                não reexplica a mesma exceção.
+              </li>
+            </ol>
+          </div>
+        </section>
+
+        <section className="lx-section lx-strengths" aria-labelledby="lx-str-title">
+          <div className="lx-section-inner">
+            <p className="lx-kicker">Fortalezas</p>
+            <h2 id="lx-str-title">O que diferencia o CodeHero na mesa do board</h2>
+            <div className="lx-strength-grid">
+              <article>
+                <h3>Desacoplamento de custo de IA e tamanho do repo</h3>
+                <p>
+                  Modelos cobram por token de correção — não por milhão de linhas indexadas. Você escala
+                  análise estática sem inflar a fatura de GenAI na mesma curva.
+                </p>
+              </article>
+              <article>
+                <h3>Policy como produto, não como planilha</h3>
+                <p>
+                  Thresholds, allowlists e suppressões vivem no banco com auditoria. O gate do CI é a mesma
+                  regra que o CTO vê no cockpit — sem drift entre “política oficial” e “o que o YAML faz”.
+                </p>
+              </article>
+              <article>
+                <h3>Multi-engine sem lock-in narrativo</h3>
+                <p>
+                  Presence e Opengrep cobrem o núcleo open; Semgrep Community e SARIF importado fecham o
+                  gap de regras e ferramentas já contratadas. Trocar um motor não redefine o produto.
+                </p>
+              </article>
+              <article>
+                <h3>Observabilidade de engenharia de segurança</h3>
+                <p>
+                  Jobs, findings, FP por regra, custo de agentes e status de PR — telemetria executiva para
+                  AppSec e para o VP de Engenharia na mesma tela.
+                </p>
+              </article>
+              <article>
+                <h3>Mainframe no mesmo SLA de gate</h3>
+                <p>
+                  Inventário, parsers e políticas para COBOL/JCL não são um “módulo aparte de consultoria”.
+                  Entram no contrato de finding e no mesmo fluxo de correção assistida.
+                </p>
+              </article>
+              <article>
+                <h3>Open core auditável</h3>
+                <p>
+                  Código e contratos abertos para inspeção de segurança. Você avalia a superfície antes de
+                  confiar o gate do monorepo crítico à plataforma.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section className="lx-section lx-market" id="mercado" aria-labelledby="lx-mkt-title">
+          <div className="lx-section-inner">
+            <p className="lx-kicker">Comparativo de mercado</p>
+            <h2 id="lx-mkt-title">Onde as suítes enterprise param — e o CodeHero continua</h2>
+            <p className="lx-prose">
+              Comparação honesta com o padrão de mercado (SAST/SCA cloud com billing por LOC, UI de
+              findings, plugin de IDE). O CodeHero não substitui o seu scanner favorito: orquestra,
+              governa e remedia em cima do sinal.
+            </p>
+            <div className="lx-table-wrap">
+              <table className="lx-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Capacidade</th>
+                    <th scope="col">Suítes enterprise típicas</th>
+                    <th scope="col">CodeHero</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">Modelo de custo</th>
+                    <td>Frequente: seats + LOC / contributors</td>
+                    <td>Projetos, execuções e orçamento de IA — sem taxar tamanho do monorepo</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Decisão de merge</th>
+                    <td>Policy packs genéricos; FP muitas vezes só no UI</td>
+                    <td>Gate versionado + suppress com estatística de regra na esteira</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Correção</th>
+                    <td>Sugestão em IDE ou ticket; pouco amarrado ao gate</td>
+                    <td>Agentes pós-gate, diff no PR, custo e qualidade medidos</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Heterogeneidade de scanners</th>
+                    <td>Ecossistema do vendor; import limitado</td>
+                    <td>Motores open + SARIF de terceiros no mesmo score</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Mainframe / legado</th>
+                    <td>Produto separado ou parceiro</td>
+                    <td>Mesmo job model e políticas</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Taint / dataflow profundo</th>
+                    <td>Forte em engines proprietários inter-file</td>
+                    <td>
+                      Intra-procedural sólido via Presence; inter-file profundo — complemente com SARIF do
+                      seu SAST atual
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Lock-in</th>
+                    <td>Alto (regras, UI, billing)</td>
+                    <td>Contrato aberto; motores substituíveis; dados na sua cloud</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="lx-footnote">
+              Leitura para o CTO: use o CodeHero como <strong>camada de controle e remediação</strong>.
+              Mantenha o SAST enterprise onde o dataflow inter-file for requisito regulatório — importe o
+              SARIF e unifique o gate.
+            </p>
+          </div>
+        </section>
+
+        <section className="lx-section lx-mainframe" aria-labelledby="lx-mf-title">
+          <div className="lx-section-inner lx-mf-grid">
+            <div>
+              <p className="lx-kicker">Portfólio híbrido</p>
+              <h2 id="lx-mf-title">Cloud e mainframe. Mesmo rigor de engenharia.</h2>
+              <p className="lx-prose">
+                Inventário de programas, copybooks, JCL e dependências DB2/CICS — com findings e políticas
+                no mesmo cockpit que o time de produto já usa para o monorepo. Modernização deixa de ser um
+                projeto paralelo de ferramenta.
+              </p>
+            </div>
+            <ul className="lx-mf-list">
+              <li>COBOL, JCL, CICS, DB2 no contrato de análise</li>
+              <li>Gates e correção assistida alinhados ao restante do SDLC</li>
+              <li>Visibilidade executiva do risco legado junto do cloud-native</li>
+            </ul>
+          </div>
+        </section>
+
+        <div className="lx-section lx-esteira" id="esteira">
+          <div className="lx-section-inner">
+            <p className="lx-kicker">Esteira que aprende</p>
+            <LearningLoopStory id="esteira-ciclo" />
+          </div>
+        </div>
+
+        <section className="lx-section lx-close" aria-labelledby="lx-close-title">
+          <div className="lx-section-inner lx-close-inner">
+            <h2 id="lx-close-title">Pronto para colocar o gate sob o seu comando?</h2>
+            <p className="lx-prose">
+              Crie a conta, conecte a org e rode o primeiro job. Em poucos ciclos você tem baseline de
+              findings, política de merge e telemetria de custo de correção — o kit mínimo que um CTO
+              precisa para defender velocidade com segurança.
+            </p>
+            <div className="lx-cta-row">
+              <button type="button" className="lx-btn lx-btn-primary" onClick={() => goAuth("signup")}>
+                Criar conta
               </button>
-            </div>
-          </div>
-
-          <div className="cr-hero-visual cr-float" aria-hidden>
-            <div className="cr-panel-mock">
-              <div className="cr-panel-bar">
-                <span />
-                <span />
-                <span />
-                <em>codehero · missao #4821</em>
-              </div>
-              <div className="cr-panel-body">
-                <p className="cr-panel-title">Herói detectou 3 ameaças</p>
-                <ul className="cr-findings">
-                  <li>
-                    <strong>CWE-79</strong> XSS refletido em <code>renderComment</code>
-                  </li>
-                  <li>
-                    <strong>Política</strong> `console.log` em produção
-                  </li>
-                  <li>
-                    <strong>CWE-338</strong> `Math.random` usado como token
-                  </li>
-                </ul>
-                <div className="cr-panel-footer">
-                  <span className="cr-chip">QG: falhou</span>
-                  <span className="cr-chip cr-chip-ok">0 FP no corpus</span>
-                </div>
-              </div>
+              <a className="lx-btn lx-btn-ghost" href="/docs">
+                Ler a documentação
+              </a>
             </div>
           </div>
         </section>
 
-        <section className="cr-trust">
-          <p>Regras que sobem sozinhas. Resultado estável. Falso positivo fica do lado de fora do gate.</p>
-        </section>
-
-        <section id="poderes" className="cr-section">
-          <div className="cr-section-head">
-            <h2>Por que times escolhem o CodeHero</h2>
-            <p>O catálogo aprende com o time. O gate só promove o que passa no teste.</p>
-          </div>
-          <div className="cr-feature-grid">
-            <article className="cr-feature">
-              <h3>Regras que se atualizam sozinhas</h3>
-              <p>
-                Feedback, gaps e novas políticas alimentam o próximo ciclo. Candidatas boas sobem; as que pioram
-                precisão ou geram regressão ficam de fora — sem release manual do vendor.
-              </p>
-            </article>
-            <article className="cr-feature">
-              <h3>Sem incoerência entre scans</h3>
-              <p>
-                O mesmo trecho de código produz o mesmo finding no CI, no editor e na prévia. Nada de “passou ontem,
-                falhou hoje” por variação de modelo.
-              </p>
-            </article>
-            <article className="cr-feature">
-              <h3>Falso positivo sob controle</h3>
-              <p>
-                Toda regra nova é medida contra um corpus rotulado (precisão, recall, F1). Só o que melhora o score
-                sem regressão chega ao quality gate do time.
-              </p>
-            </article>
-          </div>
-        </section>
-
-        {/*
-          Secao de mainframe: e o unico recorte em que "melhor que o mercado" e
-          afirmacao verificavel, e ate agora nao aparecia em lugar nenhum da
-          pagina. Todo numero aqui sai do catalogo — 41 das 46 regras COBOL sao
-          proprias, contra 6 das 110 de Java.
-        */}
-        <section id="mainframe" className="cr-section cr-section-alt">
-          <div className="cr-section-head">
-            <h2>Mainframe: onde o CodeHero vai mais fundo</h2>
-            <p>
-              COBOL e DB2 não são um add-on aqui. São o recorte em que a análise faz o que
-              nenhuma ferramenta do mercado faz — e sem edição paga.
-            </p>
-          </div>
-          <div className="cr-feature-grid">
-            <article className="cr-feature">
-              <h3>Copybook expandido antes de analisar</h3>
-              <p>
-                Sem expandir <code>COPY</code>, o analisador vê uma linha e não o programa — e não
-                sabe qual pedaço está faltando. O CodeHero resolve o copybook e ainda preserva a
-                origem: o apontamento aponta para <code>CLIENTE.cpy:4</code>, não para uma linha
-                deslocada do programa.
-              </p>
-            </article>
-            <article className="cr-feature">
-              <h3>SQLCODE não verificado após EXEC SQL</h3>
-              <p>
-                O DB2 devolve +100 quando não acha linha e não interrompe nada: o programa segue
-                com a variável intacta e grava. A verificação quase nunca está inline — está num
-                parágrafo comum. O CodeHero <strong>segue o PERFORM</strong> para conferir se
-                aquele parágrafo realmente olha o SQLCODE.
-              </p>
-            </article>
-            <article className="cr-feature">
-              <h3>Dado morto que atravessa o copybook</h3>
-              <p>
-                Campo declarado e nunca referenciado ocupa espaço no registro e se propaga por
-                dezenas de programas via copybook compartilhado. Encontrar exige cruzar a DATA
-                DIVISION com a PROCEDURE DIVISION inteira — não é padrão de texto.
-              </p>
-            </article>
-          </div>
-        </section>
-
-        {/*
-          Orquestracao: a posicao honesta em Java e Node. Competir por contagem
-          de regras com ESLint e SonarQube e perder por aritmetica; a diferenca
-          esta em juntar tudo num gate so, sem eco.
-        */}
-        <section id="orquestracao" className="cr-section">
-          <div className="cr-section-head">
-            <h2>Um gate, todos os motores</h2>
-            <p>
-              Em Java e Node já existem analisadores livres e maduros. O CodeHero não tenta
-              substituí-los — ele os reúne num resultado só.
-            </p>
-          </div>
-          <div className="cr-feature-grid">
-            <article className="cr-feature">
-              <h3>Roda o que já é padrão no seu ecossistema</h3>
-              <p>
-                ESLint e oxlint em Node; PMD e SpotBugs em Java; Semgrep, Trivy e osv-scanner para
-                dependência. Qualquer SARIF também entra — CodeQL inclusive. Ferramenta ausente
-                não quebra o scan: ela informa como instalar e o resto segue.
-              </p>
-            </article>
-            <article className="cr-feature">
-              <h3>Sem contar o mesmo problema duas vezes</h3>
-              <p>
-                Quando duas ferramentas apontam a mesma linha, o relatório mostra uma entrada e
-                registra as outras — nada se perde, e o número que você lê é o número de
-                problemas, não de opiniões sobre eles.
-              </p>
-            </article>
-            <article className="cr-feature">
-              <h3>Procedência em cada apontamento</h3>
-              <p>
-                Todo achado de terceiro carrega de quem é a afirmação e qual regra original a
-                gerou. Você sabe o que veio do CodeHero, o que veio do ESLint e o que veio do
-                CodeQL — sem misturar responsabilidade.
-              </p>
-            </article>
-          </div>
-        </section>
-
-        <section id="missao" className="cr-section cr-section-alt">
-          <div className="cr-section-head">
-            <h2>Diferente do mercado</h2>
-            <p>Mais leve que suites enterprise. Mais estável que scanner só de IA. Comparação direta abaixo.</p>
-          </div>
-          <div className="cr-compare-wrap">
-            <table className="cr-compare-table">
-              <thead>
-                <tr>
-                  <th scope="col">Critério</th>
-                  <th scope="col" className="cr-compare-highlight">
-                    CodeHero
-                  </th>
-                  <th scope="col">Suites enterprise clássicas</th>
-                  <th scope="col">Scanners só de IA</th>
-                  <th scope="col">Linters soltos</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">Custo</th>
-                  <td className="cr-compare-highlight">Gratuito</td>
-                  <td>Licença enterprise</td>
-                  <td>Custo por token/arquivo</td>
-                  <td>Gratuito</td>
-                </tr>
-                <tr>
-                  <th scope="row">Motor de detecção</th>
-                  <td className="cr-compare-highlight">Reproduzível (padrão / AST)</td>
-                  <td>Reproduzível</td>
-                  <td>LLM por arquivo</td>
-                  <td>Reproduzível</td>
-                </tr>
-                <tr>
-                  <th scope="row">Evolução das regras</th>
-                  <td className="cr-compare-highlight">Busca evolutiva com prova no corpus</td>
-                  <td>Releases do vendor</td>
-                  <td>Depende do modelo</td>
-                  <td>Comunidade/config manual</td>
-                </tr>
-                <tr>
-                  <th scope="row">Consistência</th>
-                  <td className="cr-compare-highlight">Mesmo input → mesmo resultado</td>
-                  <td>Alta</td>
-                  <td>Varia por execução</td>
-                  <td>Alta</td>
-                </tr>
-                <tr>
-                  <th scope="row">Controle de falso positivo</th>
-                  <td className="cr-compare-highlight">Promoção só com ganho de precisão</td>
-                  <td>Curadoria do vendor</td>
-                  <td>Fraco / opaco</td>
-                  <td>Manual</td>
-                </tr>
-                <tr>
-                  <th scope="row">Política do time</th>
-                  <td className="cr-compare-highlight">Sim — em linguagem natural</td>
-                  <td>Não</td>
-                  <td>Não</td>
-                  <td>Não</td>
-                </tr>
-                <tr>
-                  <th scope="row">Correção verificável</th>
-                  <td className="cr-compare-highlight">SDD Spec + critérios de aceite</td>
-                  <td>Quick fix limitado</td>
-                  <td>Sugestão sem verificação</td>
-                  <td>Nenhuma</td>
-                </tr>
-                <tr>
-                  <th scope="row">Agente nativo (MCP)</th>
-                  <td className="cr-compare-highlight">Sim</td>
-                  <td>Add-on comercial</td>
-                  <td>Variável</td>
-                  <td>Não</td>
-                </tr>
-                <tr>
-                  <th scope="row">Linguagens legadas</th>
-                  <td className="cr-compare-highlight">COBOL, DB2, T-SQL, VB.Net inclusos</td>
-                  <td>Add-on separado</td>
-                  <td>Raro</td>
-                  <td>Não</td>
-                </tr>
-                <tr>
-                  <th scope="row">Copybook COBOL expandido</th>
-                  <td className="cr-compare-highlight">Sim — com a origem do achado preservada</td>
-                  <td>Só na edição paga</td>
-                  <td>Não</td>
-                  <td>Não</td>
-                </tr>
-                <tr>
-                  <th scope="row">SQLCODE não verificado (COBOL + DB2)</th>
-                  <td className="cr-compare-highlight">Sim — segue o PERFORM entre parágrafos</td>
-                  <td>Não</td>
-                  <td>Não</td>
-                  <td>Não</td>
-                </tr>
-                <tr>
-                  <th scope="row">Apontamento pronto para autofix</th>
-                  <td className="cr-compare-highlight">Risco, motivo e correção no próprio SARIF</td>
-                  <td>Só o achado</td>
-                  <td>Texto sem estrutura</td>
-                  <td>Só o achado</td>
-                </tr>
-                <tr>
-                  <th scope="row">Tempo de scan</th>
-                  <td className="cr-compare-highlight">Segundos</td>
-                  <td>Minutos</td>
-                  <td>Minutos + custo por token</td>
-                  <td>Segundos</td>
-                </tr>
-                {/* Linha em que perdemos, deliberadamente mantida. Uma tabela
-                    em que um lado vence tudo é descontada inteira por comprador
-                    técnico — e esta é a limitação real do motor L0. */}
-                <tr>
-                  <th scope="row">Fluxo entre arquivos</th>
-                  <td className="cr-compare-highlight">Taint dentro do arquivo (JS/TS)</td>
-                  <td>Taint entre arquivos</td>
-                  <td>Varia</td>
-                  <td>Não faz</td>
-                </tr>
-                <tr>
-                  <th scope="row">Setup</th>
-                  <td className="cr-compare-highlight">1 clique (plugin/prévia)</td>
-                  <td>Servidor próprio</td>
-                  <td>Chave de API</td>
-                  <td>Config por repo</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p className="cr-compare-note">
-            Onde a análise profunda entre arquivos é o requisito, o CodeHero ingere o SARIF de
-            motores como CodeQL e Semgrep e continua sendo a camada de política, gate e autofix —
-            complementar, não substituto.
-          </p>
-        </section>
-
-        <section id="modelos" className="cr-section">
-          <div className="cr-section-head">
-            <h2>Onde a IA entra — e onde não entra</h2>
-            <p>
-              Inteligência artificial fortalece as regras da plataforma. Seu código permanece
-              privado — e a análise, sob o seu controle.
-            </p>
-          </div>
-
-          <div className="cr-models">
-            <article className="cr-model">
-              <span className="cr-model__role">Padrão sempre atualizado</span>
-              <strong className="cr-model__name">Evolução contínua</strong>
-              <p>
-                As regras da plataforma melhoram todos os dias, sem custo extra para o time e sem
-                risco de “inventar” proteção no ar — cada melhoria é validada antes de valer.
-              </p>
-            </article>
-            <article className="cr-model">
-              <span className="cr-model__role">Sua política vira proteção</span>
-              <strong className="cr-model__name">Regras sob medida</strong>
-              <p>
-                Transformamos ameaças recentes e políticas escritas em português em regras claras
-                que o time consegue aplicar — menos interpretação, mais conformidade.
-              </p>
-            </article>
-            <article className="cr-model">
-              <span className="cr-model__role">Menos ruído, mais foco</span>
-              <strong className="cr-model__name">Assertividade calculada</strong>
-              <p>
-                Cada apontamento recebe uma nota de assertividade a partir de sinais medidos —
-                caminho do arquivo, complexidade da função e frequência de alteração. É cálculo
-                fixo e reproduzível; ainda não aprende com o histórico do seu time.
-              </p>
-            </article>
-            <article className="cr-model">
-              <span className="cr-model__role">Do achado à correção</span>
-              <strong className="cr-model__name">Correção assistida</strong>
-              <p>
-                Quando há um apontamento, sugerimos a correção pronta para aplicar — sob demanda,
-                com precisão, sem expor o repositório a um modelo em lote.
-              </p>
-            </article>
-          </div>
-
-          <p className="cr-compare-note">
-            <strong>A análise do seu código não passa por IA.</strong> A inteligência artificial
-            trabalha só no aprimoramento das regras da plataforma — nunca no seu repositório. O
-            resultado é previsível: o mesmo commit gera o mesmo parecer no CI, no editor e na
-            prévia. Nenhuma regra proposta entra em produção sem evidência de qualidade e aprovação
-            humana.
-          </p>
-        </section>
-
-        <LearningLoopStory />
-
-        <section id="como" className="cr-section">
-          <div className="cr-section-head">
-            <h2>Três passos para engajar o time</h2>
-            <p>Do zero ao primeiro relatório — sem setup cansado.</p>
-          </div>
-          <ol className="cr-steps">
-            <li>
-              <span>01</span>
-              <div>
-                <strong>Crie a conta</strong>
-                <p>Defina a política do time uma vez; o catálogo começa a evoluir a partir daí.</p>
-              </div>
-            </li>
-            <li>
-              <span>02</span>
-              <div>
-                <strong>Instale o plugin</strong>
-                <p>Baixe o VSIX no portal e proteja o editor com um clique.</p>
-              </div>
-            </li>
-            <li>
-              <span>03</span>
-              <div>
-                <strong>Rode a prévia</strong>
-                <p>Cole o GitHub público e mostre o relatório antes do PR.</p>
-              </div>
-            </li>
-          </ol>
-        </section>
-
-        <section id="auth" className="cr-section cr-auth-section">
-          <div className="cr-auth-layout">
-            <div className="cr-auth-pitch">
-              <p className="cr-eyebrow">missão aceita</p>
-              <h2>Entre no portal. Vista a capa.</h2>
-              <p>
-                Conta em segundos. Depois: política do time, plugin e prévia na Cloud — o gate só bloqueia o que já
-                passou pelo filtro de precisão.
-              </p>
+        <section className="lx-auth" id="auth" aria-labelledby="auth-title">
+          <div className="lx-auth-panel">
+            <div className="lx-auth-tabs" role="tablist" aria-label="Autenticação">
+              <TabButton active={mode === "login"} onClick={() => setMode("login")}>
+                Entrar
+              </TabButton>
+              <TabButton active={mode === "signup"} onClick={() => setMode("signup")}>
+                Criar conta
+              </TabButton>
+              <TabButton active={mode === "forgot"} onClick={() => setMode("forgot")}>
+                Recuperar
+              </TabButton>
             </div>
 
-            <div className="cr-auth-card">
-              <div className="cr-tabs">
-                <TabButton
-                  active={mode === "login"}
-                  onClick={() => {
-                    setMode("login");
-                    setError(null);
-                  }}
-                >
-                  Entrar
-                </TabButton>
-                <TabButton
-                  active={mode === "signup"}
-                  onClick={() => {
-                    setMode("signup");
-                    setError(null);
-                  }}
-                >
-                  Criar conta
-                </TabButton>
-              </div>
+            <h2 id="auth-title" className="lx-auth-title">
+              {mode === "login" && "Acesso à plataforma"}
+              {mode === "signup" && "Criar conta CodeHero"}
+              {mode === "forgot" && "Recuperar senha"}
+            </h2>
+            <p className="lx-auth-sub">
+              {mode === "forgot"
+                ? "Enviamos um link de redefinição se o email existir na base."
+                : "Email corporativo. Google SSO disponível."}
+            </p>
 
-              {mode === "forgot" ? (
-                <p className="cr-auth-hint">Informe seu email — enviaremos um link para redefinir a senha.</p>
-              ) : (
-                <p className="cr-auth-hint">
-                  {mode === "signup" ? "Conta grátis · ~30 segundos" : "Bem-vindo de volta, herói."}
+            <form onSubmit={handleSubmit} className="lx-auth-form">
+              <label className="lx-field">
+                <span>Email</span>
+                <input
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="você@empresa.com"
+                />
+              </label>
+
+              {mode !== "forgot" && (
+                <label className="lx-field">
+                  <span>Senha</span>
+                  <input
+                    type="password"
+                    autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                    required
+                    minLength={6}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="mín. 6 caracteres"
+                  />
+                </label>
+              )}
+
+              {error && (
+                <p className="lx-banner lx-banner-error" role="alert">
+                  {error}
+                </p>
+              )}
+              {notice && (
+                <p className="lx-banner lx-banner-ok" role="status">
+                  {notice}
                 </p>
               )}
 
-              <form onSubmit={handleSubmit} className="cr-form">
-                <div>
-                  <label className="cr-label" htmlFor="email">
-                    Email
-                  </label>
-                  <input
-                    id="email"
-                    className="cr-input"
-                    type="email"
-                    required
-                    autoComplete="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-
-                {mode !== "forgot" && (
-                  <div>
-                    <label className="cr-label" htmlFor="password">
-                      Senha
-                    </label>
-                    <input
-                      id="password"
-                      className="cr-input"
-                      type="password"
-                      required
-                      minLength={6}
-                      autoComplete={mode === "signup" ? "new-password" : "current-password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                  </div>
-                )}
-
-                {error && <div className="cr-error">{error}</div>}
-                {notice && <div className="cr-notice">{notice}</div>}
-
-                <button type="submit" className="cr-btn cr-btn-primary cr-btn-block" disabled={busy}>
-                  {busy
-                    ? "Um instante…"
+              <button type="submit" className="lx-btn lx-btn-primary lx-btn-block" disabled={busy}>
+                {busy
+                  ? "Aguarde…"
+                  : mode === "login"
+                    ? "Entrar"
                     : mode === "signup"
-                      ? "Criar minha conta"
-                      : mode === "forgot"
-                        ? "Enviar link"
-                        : "Entrar"}
-                </button>
-              </form>
-
-              {mode === "login" && (
-                <button type="button" className="cr-text-btn" onClick={() => setMode("forgot")}>
-                  Esqueci minha senha
-                </button>
-              )}
-              {mode === "forgot" && (
-                <button type="button" className="cr-text-btn" onClick={() => setMode("login")}>
-                  Voltar para o login
-                </button>
-              )}
-
-              <div className="cr-auth-or">ou</div>
-
-              <button type="button" className="cr-btn cr-btn-secondary cr-btn-block" disabled={busy} onClick={handleGoogle}>
-                Continuar com Google
+                      ? "Criar conta"
+                      : "Enviar link"}
               </button>
-            </div>
+            </form>
+
+            {mode !== "forgot" && (
+              <>
+                <div className="lx-auth-divider">
+                  <span>ou</span>
+                </div>
+                <button
+                  type="button"
+                  className="lx-btn lx-btn-ghost lx-btn-block"
+                  onClick={handleGoogle}
+                  disabled={busy}
+                >
+                  Continuar com Google
+                </button>
+              </>
+            )}
           </div>
         </section>
       </main>
 
-      <footer className="cr-footer">
-        <span className="cr-nav-name">CodeHero</span>
-        <span>By Nelson Borges</span>
-        <a href="#esteira-regras" style={{ color: "inherit" }}>
-          Esteira de regras
-        </a>
-        <a href="/docs/" style={{ color: "inherit" }}>
-          Docs
-        </a>
-        <a href="https://produtech.web.app" target="_blank" rel="noreferrer" style={{ color: "inherit" }}>
-          Estimativa Build
+      <footer className="lx-footer">
+        <span>CodeHero</span>
+        <span className="lx-footer-sep" aria-hidden>
+          ·
+        </span>
+        <a href="/docs">Documentação</a>
+        <span className="lx-footer-sep" aria-hidden>
+          ·
+        </span>
+        <a href="https://github.com/nsborges/CodeHero" rel="noopener noreferrer" target="_blank">
+          GitHub
         </a>
       </footer>
     </div>
@@ -713,7 +572,7 @@ export default function AuthGate({ children }: { children: ReactNode }) {
 
 function TabButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: ReactNode }) {
   return (
-    <button type="button" onClick={onClick} className={`cr-tab${active ? " is-active" : ""}`}>
+    <button type="button" onClick={onClick} className={`lx-tab${active ? " is-active" : ""}`}>
       {children}
     </button>
   );
@@ -721,8 +580,8 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
 
 function FullPageSplash({ children }: { children: ReactNode }) {
   return (
-    <div className="cr-page cr-splash">
-      <span className="cr-eyebrow">{children}</span>
+    <div className="lx-page lx-splash">
+      <span className="lx-kicker">{children}</span>
     </div>
   );
 }

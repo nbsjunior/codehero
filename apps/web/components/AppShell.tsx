@@ -121,16 +121,6 @@ export default function AppShell({ children }: { children: ReactNode }) {
             <span aria-hidden>▤</span>
             Docs
           </Link>
-          <a
-            href="https://produtech.web.app"
-            className="hero-sidebar-link"
-            target="_blank"
-            rel="noreferrer"
-            onClick={() => setNavOpen(false)}
-          >
-            <span aria-hidden>▣</span>
-            Estimativa Build
-          </a>
         </nav>
 
         <div className="hero-sidebar-spacer" />

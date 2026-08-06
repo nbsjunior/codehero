@@ -421,8 +421,17 @@ async function main(): Promise<void> {
     const threshold = SEV_ORDER.indexOf(opts.failOn);
     // Achado importado PARTICIPA do gate: ingerir CodeQL sem deixar o
     // resultado reprovar o build nao serviria para nada.
+    // SECURITY_HOTSPOT nao reprova o build — e a mesma semantica do Sonar.
+    //
+    // Hotspot e a classificacao para "precisa de revisao humana, a ferramenta
+    // NAO tem como decidir". `new RegExp(variavel)` e ReDoS quando a variavel
+    // vem de fora e operacao normal quando vem de configuracao confiavel; o L0
+    // nao distingue. Reprovar o build nesses casos treina o time a ignorar o
+    // vermelho, que e pior do que nao ter gate.
+    //
+    // Eles continuam no relatorio e no SARIF: some do gate, nao da vista.
     const worst = [
-      ...findings.map((f) => f.rule.severity),
+      ...findings.filter((f) => f.rule.type !== "SECURITY_HOTSPOT").map((f) => f.rule.severity),
       ...(imported?.findings.map((f) => f.severity) ?? []),
     ].reduce((acc, sev) => Math.max(acc, SEV_ORDER.indexOf(sev)), -1);
     if (worst >= threshold) process.exitCode = 1;

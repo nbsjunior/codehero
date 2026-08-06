@@ -356,8 +356,9 @@
   {
     "id": "os-03",
     "ruleId": "HERO-SEC-0078-os-command",
-    "expected": "match",
-    "code": "const out = execSync(\"git ls-files\");"
+    "expected": "no_match",
+    "code": "const out = execSync(\"git ls-files\");",
+    "note": "execSync com comando LITERAL fixo nao tem nada injetavel. A regra se chama OsCommandInjection e sua mensagem diz 'entrada de usuario alcanca child_process' — exigir achado aqui contradiz a propria definicao. Uso de child_process sem injecao seria outra regra, de tipo SECURITY_HOTSPOT."
   },
   {
     "id": "os-04",
@@ -368,8 +369,9 @@
   {
     "id": "os-05",
     "ruleId": "HERO-SEC-0078-os-command",
-    "expected": "match",
-    "code": "cp.spawn(bin, args)"
+    "expected": "no_match",
+    "code": "cp.spawn(bin, args)",
+    "note": "spawn com argumentos em ARRAY nao passa por shell: nao ha injecao de comando. Era o falso positivo mais frequente do catalogo (35x no proprio repositorio)."
   },
   {
     "id": "os-08",
@@ -496,5 +498,68 @@
     "expected": "match",
     "profile": "cobol",
     "code": "           IF WS-A = 1 NEXT SENTENCE ELSE DISPLAY 'X'"
+  },
+  {
+    "id": "oscmd-01",
+    "ruleId": "HERO-SEC-0078-os-command",
+    "expected": "match",
+    "code": "const diff = execSync(`git diff -U0 ${base}...HEAD`, { encoding: 'utf8' });",
+    "note": "template interpolado em execSync usa shell"
+  },
+  {
+    "id": "oscmd-02",
+    "ruleId": "HERO-SEC-0078-os-command",
+    "expected": "match",
+    "code": "exec(\"rm -rf \" + userDir)",
+    "note": "concatenacao em exec"
+  },
+  {
+    "id": "oscmd-03",
+    "ruleId": "HERO-SEC-0078-os-command",
+    "expected": "match",
+    "code": "spawnSync(\"npx\", [\"--yes\", \"esbuild\", ...args], { shell: true })",
+    "note": "spawn com shell: true e perigoso mesmo com args em array"
+  },
+  {
+    "id": "oscmd-04",
+    "ruleId": "HERO-SEC-0078-os-command",
+    "expected": "no_match",
+    "code": "const r = spawnSync(process.platform === \"win32\" ? \"where\" : \"which\", [bin], { encoding: \"utf8\" });",
+    "note": "args em ARRAY sem shell NAO usa shell — era o falso positivo mais frequente do catalogo (35x)"
+  },
+  {
+    "id": "oscmd-05",
+    "ruleId": "HERO-SEC-0078-os-command",
+    "expected": "no_match",
+    "code": "execFileSync(\"git\", [\"status\"])",
+    "note": "execFile nunca usa shell"
+  },
+  {
+    "id": "oscmd-06",
+    "ruleId": "HERO-SEC-0078-os-command",
+    "expected": "no_match",
+    "code": "import { spawnSync } from \"node:child_process\";",
+    "note": "import nao e chamada"
+  },
+  {
+    "id": "ssrf-10",
+    "ruleId": "HERO-SEC-0918-ssrf",
+    "expected": "no_match",
+    "code": "const res = await fetch(`${GH_API}${path}`, { method });",
+    "note": "SCREAMING_CASE e constante por convencao — host fixo, nao e SSRF"
+  },
+  {
+    "id": "ssrf-11",
+    "ruleId": "HERO-SEC-0918-ssrf",
+    "expected": "match",
+    "code": "await fetch(`${userUrl}/api`)",
+    "note": "host vindo de variavel comum"
+  },
+  {
+    "id": "pipe-10",
+    "ruleId": "HERO-SEC-0506-pipe-to-shell",
+    "expected": "no_match",
+    "code": "placeholder={`Ex.: \"Sem curl | bash em scripts de setup.\"`}",
+    "note": "texto de interface, nao comando"
   }
 ]
