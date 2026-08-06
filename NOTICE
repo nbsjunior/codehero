@@ -1,0 +1,9 @@
+CodeHero
+Copyright 2024–2026 CodeHero contributors
+
+This product includes software developed by CodeHero contributors.
+Licensed under the Apache License, Version 2.0 — see LICENSE.
+
+The hosted commercial service (portal, managed API, and cloud operations)
+is separate from this open-source repository. Do not commit production
+credentials or infrastructure inventory here.

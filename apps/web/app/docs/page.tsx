@@ -589,7 +589,7 @@ export default function DocsPage() {
                 severidade…). Modelo versionado; confirmar/descartar no workspace gera rótulos;{" "}
                 <code>exportRuleforgeFeedback</code> + <code>hero-fp-ranker train</code>.{" "}
                 <strong>4 — CVE mine:</strong> <code>npm run cve:mine</code> extrai pares antes/depois de GHSA/OSV para o
-                corpus do ruleforge (Genkit propõe offline; F1/P≥0.85 decide).
+                corpus do ruleforge (orquestração de agentes propõe offline; F1/P≥0.85 decide).
               </p>
             </div>
             <div className="cr-docs-callout">
@@ -1154,7 +1154,7 @@ export default function DocsPage() {
                 </a>{" "}
                 e o workflow{" "}
                 <a
-                  href="https://github.com/nbsjunior/codehero/blob/main/.github/workflows/codehero-presence.example.yml"
+                  href="https://github.com/nbsjunior/codehero/blob/main/examples/github-workflows/codehero-presence.example.yml"
                   target="_blank"
                   rel="noreferrer"
                 >

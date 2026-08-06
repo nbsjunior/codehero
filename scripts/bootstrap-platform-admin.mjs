@@ -3,8 +3,8 @@
  *
  *   node scripts/bootstrap-platform-admin.mjs <email> <password>
  *
- * Uses Application Default Credentials (gcloud auth application-default login)
- * against project YOUR_CLOUD_PROJECT_ID / Firestore DB codehero.
+ * Uses Application Default Credentials (gcloud auth application-default login).
+ * Requires GCLOUD_PROJECT and optional FIRESTORE_DATABASE_ID.
  */
 import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
@@ -21,9 +21,14 @@ if (password.length < 6) {
   process.exit(1);
 }
 
+const projectId = process.env.GCLOUD_PROJECT?.trim() || process.env.GOOGLE_CLOUD_PROJECT?.trim();
+if (!projectId) {
+  console.error("Defina GCLOUD_PROJECT antes de rodar o bootstrap.");
+  process.exit(1);
+}
+
 const DATABASE_ID = process.env.FIRESTORE_DATABASE_ID?.trim() || "codehero";
-process.env.GCLOUD_PROJECT = process.env.GCLOUD_PROJECT ?? "YOUR_CLOUD_PROJECT_ID";
-initializeApp({ projectId: "YOUR_CLOUD_PROJECT_ID" });
+initializeApp({ projectId });
 const db = DATABASE_ID !== "(default)" ? getFirestore(DATABASE_ID) : getFirestore();
 const auth = getAuth();
 

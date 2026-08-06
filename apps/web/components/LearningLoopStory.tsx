@@ -8,7 +8,7 @@ const DIAGRAM_LOOP = `flowchart LR
     F["Feedback FP / FN"]
   end
   subgraph P["2 · Propor"]
-    D["Dress code / Genkit\\nlote offline"]
+    D["Dress code / orquestração\\nde agentes · offline"]
     M["Pool de mutações"]
   end
   subgraph V["3 · Provar"]
@@ -115,15 +115,15 @@ export default function LearningLoopStory({
                 <circle cx="60" cy="36" r="4" fill="currentColor" />
                 <circle cx="100" cy="28" r="4" fill="currentColor" />
                 <text x="48" y="66" fontSize="10" fill="currentColor">
-                  Genkit · offline
+                  Agentes · offline
                 </text>
               </svg>
             </div>
             <figcaption>
               <strong>Propor</strong>
               <p>
-                Em lote (fora do PR), Dress Code Tools / Genkit sugerem mutações ou regras novas a partir de política do
-                time, gaps e feedback. A IA <em>não</em> fecha o gate.
+                Em lote (fora do PR), Dress Code Tools e a orquestração de agentes sugerem mutações ou regras novas a
+                partir de política do time, gaps e feedback. A IA <em>não</em> fecha o gate.
               </p>
             </figcaption>
           </figure>
@@ -268,8 +268,8 @@ export default function LearningLoopStory({
           </ol>
           <p>
             Em paralelo, o cenário de produto completa o ciclo: o time escreve dress code (“proibido{" "}
-            <code>console.log</code> em produção”) → Genkit propõe regra → casos entram no corpus → se F1 subir com P ≥
-            0,85, aí sim promove. O reject do evolve-all prova a metade crítica:{" "}
+            <code>console.log</code> em produção”) → a orquestração de agentes propõe a regra → casos entram no corpus →
+            se F1 subir com P ≥ 0,85, aí sim promove. O reject do evolve-all prova a metade crítica:{" "}
             <strong>o motor sabe dizer não</strong> — o que suites só-IA e releases opacos raramente mostram.
           </p>
         </div>

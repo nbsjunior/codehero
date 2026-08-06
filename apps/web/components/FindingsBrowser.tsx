@@ -46,7 +46,7 @@ export type FindingsBrowserItem = {
   isNewCode?: boolean;
   assertiveness?: number | null;
   fpLikelihood?: number | null;
-  /** Offline Foundation-Sec / heuristic triage (Fase 4) — never the sole gate. */
+  /** Offline batch triage / heuristic (Fase 4) — never the sole gate. */
   triageScore?: number | null;
   likelyTruePositive?: boolean | null;
   triageMode?: string | null;

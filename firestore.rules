@@ -1,18 +1,12 @@
 rules_version = '2';
 
-// CodeHero — multi-tenant SaaS security model (projeto compartilhado "YOUR_CLOUD_PROJECT_ID").
-//
-// CANONICAL deploy source for production rules is the [redacted] repo
-// (firestore.rules), which merges these CodeHero paths with the default-deny
-// used by OTHER_APP. Do NOT `firebase deploy --only firestore:rules` from this
-// repo alone — it would wipe the sibling app ruleset. See docs/ARCHITECTURE.md.
+// CodeHero — multi-tenant security model for the named database.
 //
 // Access is scoped per organization. A user may only read/write data of orgs
-// they are a member of. All writes to analysis/issue data go through Cloud
-// Functions with the Admin SDK (which bypasses these rules), so the client
-// rules are intentionally read-mostly.
+// they are a member of. Analysis/issue writes go through server Admin SDK
+// (bypasses these rules); client rules are intentionally read-mostly.
 //
-// Platform admins (documented in platformAdmins/{uid}) are a separate,
+// Platform admins (platformAdmins/{uid}) are a separate,
 // narrow escape hatch: they can READ across every org/project (for the
 // global admin dashboard) but never WRITE — writes always go through Admin
 // SDK functions. Membership in platformAdmins is granted via Admin SDK

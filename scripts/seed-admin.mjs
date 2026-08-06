@@ -20,7 +20,10 @@ if (!identifier) {
 
 const DATABASE_ID = process.env.FIRESTORE_DATABASE_ID?.trim() || "codehero";
 
-process.env.GCLOUD_PROJECT = process.env.GCLOUD_PROJECT ?? "YOUR_CLOUD_PROJECT_ID";
+if (!process.env.GCLOUD_PROJECT?.trim() && !process.env.GOOGLE_CLOUD_PROJECT?.trim()) {
+  console.error("Defina GCLOUD_PROJECT (ou GOOGLE_CLOUD_PROJECT) antes de rodar o seed.");
+  process.exit(1);
+}
 initializeApp();
 const db = DATABASE_ID !== "(default)" ? getFirestore(DATABASE_ID) : getFirestore();
 const auth = getAuth();

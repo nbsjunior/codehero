@@ -16,7 +16,7 @@ flowchart LR
     F["Feedback FP / FN"]
   end
   subgraph P["2 · Propor"]
-    D["Dress code / Genkit lote offline"]
+    D["Dress code / orquestração de agentes · lote offline"]
     M["Pool de mutações"]
   end
   subgraph V["3 · Provar"]
@@ -39,7 +39,7 @@ flowchart LR
 | Passo | O que acontece | O que **não** acontece |
 |---|---|---|
 | **1. Observar** | Findings + flags FP/FN + resultados de correção viram telemetria | LLM não lê o diff do PR para “inventar” regra na hora |
-| **2. Propor** | Genkit / dress code / curadoria humana alimentam o pool (`ruleforgeDaily`) | Proposta não publica sozinha no RuleSet |
+| **2. Propor** | Orquestração de agentes / dress code / curadoria humana alimentam o pool (`ruleforgeDaily`) | Proposta não publica sozinha no RuleSet |
 | **3. Provar** | `@codehero/ruleforge` mede P, R, F1 no corpus (`evolve.ts`) | Não há “confiança” subjetiva do modelo |
 | **4. Publicar** | Só com ΔF1&gt;0, P≥0,85 e zero regressão | Sem republicar plugin / Action |
 
@@ -106,7 +106,7 @@ DECISÃO: REJECTED — sem mutações registradas para esta regra
 
 1. Dev marca FP: `console.log` em arquivo de teste.
 2. Admin publica dress code: “proibido `console.log` em produção”.
-3. Genkit propõe regra + casos entram no corpus.
+3. A orquestração de agentes propõe a regra + casos entram no corpus.
 4. Se ΔF1&gt;0 e P≥0,85 → proposta na fila → RuleSet.
 5. Próximo PR: scanner determinístico aplica a regra — sem LLM no hot path.
 
@@ -116,7 +116,7 @@ DECISÃO: REJECTED — sem mutações registradas para esta regra
 |---|---|
 | `npm run ruleforge:evaluate` | Tabela P/R/F1 por regra |
 | `npm run ruleforge:evolve-all` | Busca evolutiva em lote |
-| Cloud Function `ruleforgeDaily` | Genkit 1×/dia (requer `GEMINI_API_KEY`) |
+| Job cloud `ruleforgeDaily` | Orquestração de agentes 1×/dia (chave do provedor em secret) |
 
 ## Links
 

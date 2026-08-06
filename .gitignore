@@ -9,6 +9,8 @@ firebase-debug.log
 firestore-debug.log
 ui-debug.log
 .env
+.env.*
+!.env*.example
 .env.local
 *.local
 .DS_Store
@@ -19,3 +21,12 @@ tmp/
 apps/functions/vendor/
 apps/functions/package.json.workspace
 packages/ide-vscode/bundled/*.cjs
+packages/mcp/_rules.json
+.claude/
+*.pem
+*.p12
+*serviceAccount*.json
+credentials.json
+reports/
+ops/
+.firebaserc.local

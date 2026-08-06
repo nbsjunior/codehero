@@ -61,4 +61,4 @@ Para repos JS/TS (ou multi-lang) que querem profundidade sem stub Sonar, ligue n
 
 New-code no upload usa **diff por linha** (`git diff -U0`) quando possível.
 
-Matriz completa: [docs/wiki/Presenca-SARIF.md](wiki/Presenca-SARIF.md). Workflow de exemplo: [`.github/workflows/codehero-presence.example.yml`](../.github/workflows/codehero-presence.example.yml).
+Matriz completa: [docs/wiki/Presenca-SARIF.md](wiki/Presenca-SARIF.md). Workflow de exemplo: [`examples/github-workflows/codehero-presence.example.yml`](../examples/github-workflows/codehero-presence.example.yml).

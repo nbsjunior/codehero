@@ -57,12 +57,12 @@ Stats em `repos/{repoId}/ruleFpStats`. O fp-ranker também usa `ruleRepoFpRate` 
 
 | Modelo | Uso |
 |---|---|
-| Genkit / Gemini | Dress code + mutações ruleforge (portão F1) |
+| Orquestração de agentes | Dress code + mutações ruleforge (portão F1) |
 | fp-ranker | Treino com `exportRuleforgeFeedback` → `hero-fp-ranker train` |
-| Foundation-Sec / LLM local | `scripts/foundation-sec-triage.mjs` em batch — **não** no gate |
+| LLM local / triagem em lote | `scripts/foundation-sec-triage.mjs` em batch — **não** no gate |
 
 Docs produto: [/docs/#presenca-sarif](https://codehero.web.app/docs/#presenca-sarif)
 
 ## Exemplo de workflow
 
-Ver [`.github/workflows/codehero-presence.example.yml`](../../.github/workflows/codehero-presence.example.yml).
+Ver [`examples/github-workflows/codehero-presence.example.yml`](../../examples/github-workflows/codehero-presence.example.yml).

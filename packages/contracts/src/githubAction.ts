@@ -1,14 +1,31 @@
-/** Production base URL for CodeHero Cloud Functions (internal / ops only). */
-export const CODEHERO_FUNCTIONS_BASE_URL = "https://YOUR_API_BASE_URL";
+/**
+ * Public portal origin (hosted product). Override with `CODEHERO_PORTAL_ORIGIN`
+ * if you self-host the dashboard.
+ */
+function portalOrigin(): string {
+  try {
+    const fromEnv =
+      typeof process !== "undefined" ? process.env?.CODEHERO_PORTAL_ORIGIN?.trim() : undefined;
+    if (fromEnv) return fromEnv.replace(/\/$/, "");
+  } catch {
+    /* ignore */
+  }
+  return "https://codehero.web.app";
+}
 
-/** Hosted portal — all customer-facing HTTP (OAuth, CI ingest, rules). */
-export const CODEHERO_PORTAL_ORIGIN = "https://codehero.web.app";
+export const CODEHERO_PORTAL_ORIGIN = portalOrigin();
 
 /**
- * Public API base that customers and CI use. Hosting rewrites `/api/*` to
- * Cloud Functions so repos never need to know about Firebase URLs.
+ * Public API base that customers and CI use (`/api/*` on the portal).
+ * Provider-specific function URLs are never published in this repository.
  */
 export const CODEHERO_PUBLIC_API_BASE = `${CODEHERO_PORTAL_ORIGIN}/api`;
+
+/**
+ * @deprecated Prefer {@link CODEHERO_PUBLIC_API_BASE}. Kept as an alias so
+ * internal callers do not hardcode infrastructure endpoints.
+ */
+export const CODEHERO_FUNCTIONS_BASE_URL = CODEHERO_PUBLIC_API_BASE;
 
 /** Canonical OAuth callback path prefix on the portal (before `/{slug}/…`). */
 export const CODEHERO_GITHUB_OAUTH_CALLBACK_SUFFIX = "githubOauthCallback";

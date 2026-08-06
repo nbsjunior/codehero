@@ -1,15 +1,22 @@
 /**
- * Logical Firebase resource IDs for CodeHero.
+ * Logical resource IDs for a self-hosted or cloud deployment.
  *
- * When sharing a GCP/Firebase project with other apps, keep these segregated:
- * named Firestore database, dedicated Storage bucket, distinct Hosting site,
- * and non-colliding Cloud Function export names. Auth remains project-scoped.
- *
- * Override via env in Functions / web client; do not put secrets here.
+ * Never commit a real cloud project id or bucket name here.
+ * Operators set these via environment variables at runtime.
  */
+function env(name: string, fallback = ""): string {
+  try {
+    return (typeof process !== "undefined" ? process.env?.[name]?.trim() : undefined) || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export const CODEHERO_FIREBASE = {
-  projectId: "YOUR_CLOUD_PROJECT_ID",
-  hostingSite: "codehero",
-  firestoreDatabaseId: "codehero",
-  storageBucket: "YOUR_STORAGE_BUCKET",
+  /** Cloud project id — required in production (`GCLOUD_PROJECT` or `FIREBASE_PROJECT_ID`). */
+  projectId: env("GCLOUD_PROJECT") || env("FIREBASE_PROJECT_ID"),
+  hostingSite: env("CODEHERO_HOSTING_SITE", "codehero"),
+  firestoreDatabaseId: env("FIRESTORE_DATABASE_ID", "codehero"),
+  /** Object-storage bucket — required in production (`FIREBASE_STORAGE_BUCKET`). */
+  storageBucket: env("FIREBASE_STORAGE_BUCKET"),
 } as const;

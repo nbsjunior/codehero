@@ -85,7 +85,7 @@ if (!firebaseConfig.apiKey || !firebaseConfig.appId || !firebaseConfig.projectId
 if (firebaseConfig.projectId.includes("=") || /VITE_|NEXT_PUBLIC_/.test(firebaseConfig.projectId)) {
   throw new Error(
     "NEXT_PUBLIC_FIREBASE_PROJECT_ID looks polluted (contains a KEY= prefix). " +
-      "Re-set the GitHub secret to exactly: YOUR_CLOUD_PROJECT_ID",
+      "Set the secret/env to the bare project id only.",
   );
 }
 

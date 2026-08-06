@@ -2,7 +2,7 @@ import { setGlobalOptions } from "firebase-functions/v2";
 
 // Pin segregated resources before any Admin SDK import side-effects.
 process.env.FIRESTORE_DATABASE_ID = process.env.FIRESTORE_DATABASE_ID?.trim() || "codehero";
-process.env.FIREBASE_STORAGE_BUCKET = process.env.FIREBASE_STORAGE_BUCKET?.trim() || "YOUR_STORAGE_BUCKET";
+process.env.FIREBASE_STORAGE_BUCKET = process.env.FIREBASE_STORAGE_BUCKET?.trim() || "";
 process.env.GEMINI_MODEL = process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash";
 
 setGlobalOptions({ region: "us-central1", maxInstances: 200, invoker: "public" });

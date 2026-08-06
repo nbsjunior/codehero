@@ -13,21 +13,17 @@ import { logger } from "firebase-functions";
 // can be re-pointed without a deploy of new code.
 // ---------------------------------------------------------------------------
 
-// ATIVAR O CLAUDE (caminho Vertex — sem fornecedor novo, sem secret):
-//   1. Habilitar os modelos Anthropic no Model Garden do projeto `YOUR_CLOUD_PROJECT_ID`
-//   2. Conceder `roles/aiplatform.user` à service account do runtime das
-//      Functions (a mesma que já roda hoje)
-//   3. Criar a repository variable HERO_VERTEX_ENABLED=true e re-rodar o
-//      workflow de deploy — ele monta apps/functions/.env a partir dela
+// ATIVAR MODELOS VIA VERTEX (self-host / ops):
+//   1. Habilitar os modelos desejados no Model Garden do SEU projeto cloud
+//   2. Conceder `roles/aiplatform.user` à service account do runtime
+//   3. Definir HERO_VERTEX_ENABLED=true no ambiente das Functions
 //
-// A ordem importa: sem os passos 1 e 2 a chamada volta 403/404 do Model
-// Garden. Por isso `vertexAvailable()` exige o opt-in EXPLÍCITO em vez de
-// apenas detectar o projeto GCP — que no runtime das Functions está sempre
-// presente e ligaria o Vertex sozinho, no primeiro deploy, antes da hora.
+// A ordem importa: sem os passos 1 e 2 a chamada volta 403/404.
+// Por isso `vertexAvailable()` exige opt-in EXPLÍCITO.
 //
-// Enquanto a flag estiver desligada, tudo degrada para o Gemini e a esteira
-// roda exatamente como hoje. A API direta da Anthropic segue disponível como
-// override (`HERO_MODEL_*=anthropic:...` + secret ANTHROPIC_API_KEY).
+// Enquanto a flag estiver desligada, tudo degrada para o modelo padrão
+// configurado em GEMINI_MODEL / HERO_MODEL_*. A API direta de outros
+// provedores segue disponível como override (`HERO_MODEL_*=…` + secrets).
 
 export type ModelRole =
   /** Daily batch of rule proposals. High volume, low unit value — the evaluator filters. */

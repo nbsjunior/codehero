@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentação do produto
+    url: https://codehero.web.app/docs
+    about: Guias de uso (Action, MCP, dress code, quality gate)
+  - name: Relatar vulnerabilidade
+    url: https://github.com/nbsjunior/codehero/security/advisories/new
+    about: Use Security Advisories — não abra issue pública com exploits

@@ -100,7 +100,7 @@ export default function EsteiraPanel() {
       <PageHeader
         eyebrow="Plataforma"
         title="Esteira de regras"
-        description="Genkit propõe · motor valida no corpus · humano aprova · regra entra em todos os canais"
+        description="Orquestração de agentes propõe · motor valida no corpus · humano aprova · regra entra em todos os canais"
         actions={
           <button
             type="button"
@@ -134,7 +134,7 @@ export default function EsteiraPanel() {
       <Callout tone="neutral" title="Fluxo">
         1) Esteira diária propõe evolução de regras existentes e novas regras (security / dress). 2) Você revisa
         abaixo. 3) Ao aprovar, a regra vai para o overlay ativo (IDE, Action, MCP, prévia) e os exemplos entram no
-        corpus Firestore para as próximas avaliações. Genkit/CVE só promovem se o motor decidir{" "}
+        corpus na nuvem para as próximas avaliações. Orquestração de agentes / CVE só promovem se o motor decidir{" "}
         <code>PROMOTED</code> (ΔF1&gt;0 e P≥0.85) — ver{" "}
         <a href="/docs/#modelos">docs · modelos offline</a>.
       </Callout>

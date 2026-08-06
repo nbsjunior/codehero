@@ -48,9 +48,28 @@ Toda alegação acima já foi exercitada de ponta a ponta neste repositório, n�
 
 Guia completo para quem usa a plataforma: **[codehero.web.app/docs](https://codehero.web.app/docs)**.
 
-## Começando
+## Contribuindo (open source)
 
-Crie a conta no [portal](https://codehero.web.app), provisionne um projeto e escolha o canal (Action, plugin, prévia ou MCP). Detalhes: [docs na plataforma](https://codehero.web.app/docs).
+Pull requests são bem-vindos no motor, contratos, Action, MCP e docs.
+
+- [CONTRIBUTING.md](./CONTRIBUTING.md) — como contribuir
+- [SECURITY.md](./SECURITY.md) — vulnerabilidades (privadas)
+- [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
+- Licença: [Apache-2.0](./LICENSE)
+
+**Não** envie secrets, IDs de tenant nem workflows de deploy de produção. A operação
+da plataforma hospedada fica fora deste repositório.
+
+```bash
+npm ci
+npm test
+```
+
+Exemplos de workflow para o *seu* repositório: [`examples/github-workflows/`](./examples/github-workflows/).
+
+## Começando (produto hospedado)
+
+Crie a conta no [portal](https://codehero.web.app), provisione um projeto e escolha o canal (Action, plugin, prévia ou MCP). Detalhes: [docs na plataforma](https://codehero.web.app/docs).
 
 ## Status atual
 

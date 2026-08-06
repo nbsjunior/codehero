@@ -1008,7 +1008,7 @@ export default function ProjectWorkspace({
                 <strong style={{ fontSize: "0.9rem" }}>Modelos offline (Fase 4)</strong>
                 <p className="hero-caption" style={{ margin: 0 }}>
                   LLM não entra no gate do PR. Exporte feedback para treinar o fp-ranker, ou aplique triagem
-                  Foundation-Sec / heuristic gerada por <code>npm run triage:offline</code>.
+                  Triagem offline / heurística gerada por <code>npm run triage:offline</code>.
                 </p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", alignItems: "center" }}>
                   <button

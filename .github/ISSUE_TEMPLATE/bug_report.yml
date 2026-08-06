@@ -1,0 +1,34 @@
+name: Bug report
+description: Algo não funciona como esperado no código open source
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Não inclua tokens, `.env`, IDs de org/projeto reais ou dumps de produção.
+  - type: textarea
+    id: what
+    attributes:
+      label: O que aconteceu
+      description: Comportamento observado vs esperado
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Passos para reproduzir
+      description: Comandos mínimos (ex. `npm run scan -- examples/...`)
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Versão / commit
+      placeholder: main @ abc1234
+  - type: textarea
+    id: env
+    attributes:
+      label: Ambiente
+      description: OS, Node version — sem secrets
+      placeholder: "Windows 11 · Node 22"

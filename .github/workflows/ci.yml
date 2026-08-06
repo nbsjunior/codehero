@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build packages
+        run: |
+          npm run build:contracts
+          npm run build:engine
+          npm run build:fp-ranker
+          npm run build:code-embed
+          npm run build:scanner
+          npm run build:ruleforge
+          npm run build:mcp
+
+      - name: Test
+        run: npm test

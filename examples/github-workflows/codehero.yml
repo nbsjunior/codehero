@@ -1,0 +1,33 @@
+name: CodeHero Analysis (exemplo)
+
+# Modelo open-source: NÃO coloque IDs reais de org/projeto/repo neste arquivo.
+# Copie para o seu repositório e preencha secrets/vars, ou use o one-click do portal.
+#
+# Secrets:  HERO_TOKEN
+# Vars:     HERO_CORE_URL  (ex.: https://codehero.web.app/api)
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  codehero:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: nbsjunior/codehero/packages/github-action@main
+        with:
+          server-url: ${{ vars.HERO_CORE_URL }}
+          token: ${{ secrets.HERO_TOKEN }}
+          org-id: ${{ vars.HERO_ORG_ID }}
+          project-id: ${{ vars.HERO_PROJECT_ID }}
+          repo-id: ${{ vars.HERO_REPO_ID }}
+          path: "."
+          fail-on: CRITICAL
