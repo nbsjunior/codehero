@@ -1,4 +1,5 @@
 name: CodeHero Analysis
+
 on:
   pull_request:
   push:
@@ -15,12 +16,42 @@ jobs:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
 
-      - uses: nbsjunior/codehero/packages/github-action@main
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Instalar dependências do monorepo
+        run: npm ci
+
+      # O scanner PRECISA ser construído aqui.
+      #
+      # A action usa `packages/scanner/dist` quando existe e só cai no
+      # `npx @codehero/scanner` fora do monorepo — mas esse pacote NÃO está
+      # publicado no npm (404). Sem este passo a action falha com "binário
+      # ausente", que foi o motivo de esta esteira nunca ter passado.
+      #
+      # cpg-joern e fp-ranker entram porque o scanner os importa: sem eles o
+      # `tsc` falha com TS2307 no runner e passa batido localmente, onde o
+      # `npm run build` da raiz constrói o monorepo inteiro.
+      - name: Build do scanner
+        run: >-
+          npm run build:contracts && npm run build:engine &&
+          npm run build:cpg && npm run build:fp-ranker &&
+          npm run build:scanner
+
+      # Action LOCAL, não a remota `@main`: dentro do próprio repositório é o
+      # `dist` recém-construído que deve rodar, não uma versão publicada.
+      - name: CodeHero Scan
+        uses: ./packages/github-action
         with:
           server-url: ${{ vars.HERO_CORE_URL }}
           token: ${{ secrets.HERO_TOKEN }}
-          org-id: "YOUR_ORG_ID"
-          project-id: "YOUR_PROJECT_ID"
-          repo-id: "YOUR_REPO_ID"
+          # Aceita os IDs como variable OU como secret: identificador não é
+          # segredo, mas em repositório público mantê-lo fora do YAML é o certo,
+          # e cada instalação escolhe onde guardar.
+          org-id: ${{ vars.HERO_ORG_ID || secrets.HERO_ORG_ID }}
+          project-id: ${{ vars.HERO_PROJECT_ID || secrets.HERO_PROJECT_ID }}
+          repo-id: ${{ vars.HERO_REPO_ID || secrets.HERO_REPO_ID }}
           path: "."
           fail-on: CRITICAL
