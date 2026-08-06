@@ -31,12 +31,17 @@ const STEPS = [
   },
 ] as const;
 
-const EDGES = [
+const EDGES: ReadonlyArray<{
+  from: string;
+  to: string;
+  label: string;
+  loop?: boolean;
+}> = [
   { from: "Scan", to: "Gate", label: "envelope SARIF" },
   { from: "Gate", to: "Correção", label: "só o que a política libera" },
   { from: "Correção", to: "Esteira", label: "qualidade · custo · FP" },
   { from: "Esteira", to: "Scan", label: "política atualizada", loop: true },
-] as const;
+];
 
 export default function LandingFlow({
   compact = false,
