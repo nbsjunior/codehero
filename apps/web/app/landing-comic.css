@@ -17,6 +17,56 @@
   color: var(--ink);
 }
 
+
+/* --- Vermelho legivel como TEXTO ----------------------------------------- */
+/*
+   O `--accent` (#e8121f) foi feito para ser FUNDO. Como texto ele da 3.72 no
+   modo escuro e 4.63 no claro, ou seja, reprova ou passa raspando na WCAG AA.
+   Medido no navegador, nao estimado.
+
+   E escurecer nao resolve: melhora no claro e piora no escuro, porque as
+   direcoes sao opostas. Entao aqui e um token por tema.
+
+   O quadro `--virada` INVERTE o fundo (usa --ink), entao o vermelho dele
+   inverte junto, senao a correcao quebraria exatamente onde o contraste ja
+   era mais critico.
+*/
+.hq {
+  --hq-vermelho-texto: #bf0a15; /* 6.42 sobre papel claro */
+}
+
+@media (prefers-color-scheme: dark) {
+  .hq {
+    --hq-vermelho-texto: #ff5a63; /* 5.66 sobre papel escuro */
+  }
+}
+
+:root[data-theme="dark"] .hq {
+  --hq-vermelho-texto: #ff5a63;
+}
+
+:root[data-theme="light"] .hq {
+  --hq-vermelho-texto: #bf0a15;
+}
+
+.hq-quadro--virada {
+  --hq-vermelho-texto: #ff5a63;
+}
+
+@media (prefers-color-scheme: dark) {
+  .hq-quadro--virada {
+    --hq-vermelho-texto: #bf0a15;
+  }
+}
+
+:root[data-theme="dark"] .hq-quadro--virada {
+  --hq-vermelho-texto: #bf0a15;
+}
+
+:root[data-theme="light"] .hq-quadro--virada {
+  --hq-vermelho-texto: #ff5a63;
+}
+
 /* --- Capa ---------------------------------------------------------------- */
 
 .hq-capa {
@@ -55,6 +105,9 @@
 }
 
 .hq-marca {
+  /* Uma palavra so. Quebrada em duas linhas parece erro de layout, entao ela
+     nunca quebra e o tamanho e que cede. */
+  white-space: nowrap;
   font-size: clamp(2.9rem, 13vw, 7rem);
   line-height: 0.88;
   letter-spacing: -0.03em;
@@ -160,6 +213,163 @@
   }
 }
 
+
+/* ===========================================================================
+   DESKTOP: OCUPAR A LARGURA, NAO SO ESTICAR A CAIXA
+   ---------------------------------------------------------------------------
+   Medido em 1280px antes desta secao: a capa usava 48% da largura e deixava
+   596px de nada a direita, e cada quadro tinha 235px sobrando do lado do
+   texto. Linha de leitura curta e boa; caixa larga com metade vazia nao e.
+   A correcao nao e alargar o texto, e colocar CONTEUDO no espaco.
+   =========================================================================== */
+
+@media (min-width: 900px) {
+  /* Capa em duas colunas: argumento a esquerda, prova a direita. */
+  .hq-capa {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    align-items: center;
+    column-gap: clamp(2rem, 5vw, 4.5rem);
+    padding-top: clamp(2.5rem, 6vw, 4.5rem);
+    padding-bottom: clamp(2.5rem, 6vw, 4.5rem);
+  }
+
+  .hq-capa-inner {
+    grid-column: 1;
+    max-width: none;
+  }
+
+  /* Na coluna da esquerda sobram ~563px: a 112px a marca quebrava em duas
+     linhas. Aqui ela e dimensionada para caber inteira. */
+  .hq-capa-inner .hq-marca {
+    font-size: clamp(3.4rem, 7.2vw, 6rem);
+  }
+
+  .hq-vitrine {
+    grid-column: 2;
+  }
+
+  /* Quadro: rotulo a esquerda, texto a direita. E a diagramacao de quadrinho,
+     com a legenda ao lado da arte, e usa os 235px que sobravam. */
+  .hq-quadro:not(.hq-quadro--largo) {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.28fr);
+    column-gap: clamp(1.6rem, 3.5vw, 3rem);
+    align-items: start;
+  }
+
+  .hq-quadro:not(.hq-quadro--largo) .hq-titulo {
+    grid-column: 1;
+    margin-top: 0;
+    position: sticky;
+    top: 5.5rem;
+  }
+
+  .hq-quadro:not(.hq-quadro--largo) .hq-corpo {
+    grid-column: 2;
+  }
+
+  /* Sem coluna estreita, o paragrafo pode respirar mais. */
+  .hq-corpo p {
+    max-width: 68ch;
+  }
+}
+
+/* --- Vitrine: o achado que abre a pagina --------------------------------- */
+
+.hq-vitrine {
+  position: relative;
+  z-index: 2;
+  margin-top: 2rem;
+  border: var(--hq-borda) solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-hard);
+  padding: 0;
+  overflow: hidden;
+  /* Leve inclinacao de quadro colado na pagina. */
+  rotate: -0.8deg;
+}
+
+@media (min-width: 900px) {
+  .hq-vitrine {
+    margin-top: 0;
+  }
+}
+
+.hq-vitrine-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  border-bottom: var(--hq-borda) solid var(--line);
+  background: var(--ink);
+  color: var(--paper);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.hq-vitrine-sev {
+  background: var(--accent);
+  /* Branco fixo, nao `--accent-ink`: no tema escuro esse token vira quase
+     preto e o selo caia para 4.28. Branco sobre o vermelho da 4.63. */
+  color: #fff;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius);
+}
+
+.hq-vitrine-codigo {
+  padding: 1rem 0.9rem 0.4rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.hq-vitrine-codigo p {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0;
+  font-family: "JetBrains Mono", monospace;
+  font-size: clamp(0.74rem, 1.5vw, 0.86rem);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.hq-vitrine-onde {
+  flex: none;
+  width: 3.4rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.hq-vitrine-codigo b {
+  color: var(--hq-vermelho-texto);
+}
+
+.hq-vitrine-verdito {
+  margin: 0;
+  padding: 0.85rem 0.9rem 0.5rem;
+  border-top: 2px dashed var(--line);
+  font-weight: 800;
+  font-size: clamp(0.95rem, 2vw, 1.05rem);
+  line-height: 1.4;
+}
+
+.hq-vitrine-nota {
+  margin: 0;
+  padding: 0 0.9rem 1rem;
+  font-size: clamp(0.78rem, 1.7vw, 0.86rem);
+  line-height: 1.45;
+  color: var(--muted);
+}
+
 /* --- Botoes -------------------------------------------------------------- */
 
 .hq-ctas {
@@ -260,7 +470,7 @@
   opacity: 0.85;
 }
 .hq-quadro--virada strong {
-  color: var(--accent);
+  color: var(--hq-vermelho-texto);
 }
 
 .hq-quadro--calmo {

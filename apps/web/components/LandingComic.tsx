@@ -84,15 +84,24 @@ function Quadro({
   children,
   tom = "normal",
   id,
+  largo = false,
 }: {
   n?: string;
   titulo: string;
   children: ReactNode;
   tom?: "normal" | "virada" | "calmo";
   id?: string;
+  /** Ocupa a largura inteira em vez de dividir titulo e texto em colunas.
+   *  Vale para o diagrama de fluxo e para a tabela de limites, que precisam
+   *  do espaco horizontal. */
+  largo?: boolean;
 }) {
   return (
-    <section id={id} data-anima className={`hq-quadro hq-quadro--${tom}`}>
+    <section
+      id={id}
+      data-anima
+      className={`hq-quadro hq-quadro--${tom}${largo ? " hq-quadro--largo" : ""}`}
+    >
       {n ? (
         <span className="hq-num" aria-hidden>
           {n}
@@ -149,6 +158,39 @@ export default function LandingComic({
             </a>
           </div>
         </div>
+        {/*
+          O lado direito da capa mostrava só linhas decorativas, e no desktop
+          sobravam 596px de nada. Agora ele carrega o argumento: um achado de
+          verdade, do tipo que só o CodeHero encontra, legível em três segundos.
+          Espaço em branco vira demonstração.
+        */}
+        <aside className="hq-vitrine" aria-label="Exemplo de apontamento">
+          <div className="hq-vitrine-topo">
+            <span className="hq-vitrine-arquivo">DB2BATCH.cbl</span>
+            <span className="hq-vitrine-sev">CRÍTICO</span>
+          </div>
+          <div className="hq-vitrine-codigo">
+            <p>
+              <span className="hq-vitrine-onde">COBOL</span>
+              <code>
+                01 WS-VLR-TOTAL <b>PIC S9(4)</b>
+              </code>
+            </p>
+            <p>
+              <span className="hq-vitrine-onde">DB2</span>
+              <code>
+                VLR_TOTAL <b>INTEGER</b>
+              </code>
+            </p>
+          </div>
+          <p className="hq-vitrine-verdito">
+            Quatro dígitos recebendo dez. O valor chega cortado, sem erro nenhum.
+          </p>
+          <p className="hq-vitrine-nota">
+            Nenhuma ferramenta de COBOL vê o tipo da coluna. Nenhuma de SQL vê o PIC.
+          </p>
+        </aside>
+
         <div className="hq-capa-arte" aria-hidden>
           <span className="hq-raio" />
           <span className="hq-raio" />
@@ -214,7 +256,7 @@ export default function LandingComic({
           </Fala>
         </Quadro>
 
-        <Quadro n="05" titulo="Do push ao merge, sem etapa escondida.">
+        <Quadro n="05" largo titulo="Do push ao merge, sem etapa escondida.">
           <p>
             Cada fase só consome o que a anterior publicou. Nada acontece fora do caminho que você vê
             aqui.
@@ -232,7 +274,7 @@ export default function LandingComic({
           </p>
         </Quadro>
 
-        <Quadro n="07" tom="calmo" titulo="Onde ela se destaca e onde ainda não vai." id="limites">
+        <Quadro n="07" largo tom="calmo" titulo="Onde ela se destaca e onde ainda não vai." id="limites">
           <div className="hq-duas">
             <div className="hq-coluna hq-coluna--forte">
               <h3>Se destaca</h3>
