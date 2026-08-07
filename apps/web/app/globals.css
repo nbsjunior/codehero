@@ -578,6 +578,26 @@ body:has(.ex-boot) {
   font-weight: 700;
 }
 
+/* Ação dentro de um texto corrido — "Limpar filtros" no estado vazio.
+   Herda o tipo do texto ao redor para não virar um botão solto no meio da
+   frase; só a cor e o sublinhado indicam que é clicável. */
+.hero-link-btn {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--accent);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.hero-link-btn:hover,
+.hero-link-btn:focus-visible {
+  color: var(--fg);
+}
+
 .hero-divider {
   border: none;
   border-top: 3px solid var(--line);

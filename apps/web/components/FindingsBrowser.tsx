@@ -299,6 +299,25 @@ export default function FindingsBrowser({
 
       {loading ? (
         <p className="hero-caption">Carregando apontamentos…</p>
+      ) : filtered.length === 0 && findings.length > 0 ? (
+        // "Não há apontamento" e "o filtro escondeu todos" são situações
+        // diferentes, e a mesma frase para as duas faz o usuário achar que a
+        // ferramenta quebrou. Aqui existem apontamentos — só nenhum passa no
+        // filtro —, então a saída é desfazer o filtro, não rodar outro scan.
+        <p className="hero-caption">
+          Nenhum apontamento neste filtro.{" "}
+          <button
+            type="button"
+            className="hero-link-btn"
+            onClick={() => {
+              setSevFilter(null);
+              onClearExternalFilter?.();
+            }}
+          >
+            Limpar filtros
+          </button>{" "}
+          para ver os {findings.length}.
+        </p>
       ) : filtered.length === 0 ? (
         <p className="hero-caption">{emptyMessage}</p>
       ) : (

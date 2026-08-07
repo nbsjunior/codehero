@@ -59,7 +59,7 @@ export default function WorkspaceWizard({
       <PageHeader
         eyebrow="Projetos"
         title="Novo workspace"
-        description="Crie organização (ou reutilize), projeto e repositórios vinculados — tokens mostrados uma vez."
+        description="Organização, projeto e repositórios em quatro passos. Os tokens aparecem só no final, uma vez."
       />
 
       <ol className="hero-wizard-steps" aria-label="Passos">
@@ -123,7 +123,7 @@ export default function WorkspaceWizard({
       )}
 
       {step === 2 && (
-        <DataSection title="Projeto" description="Container que consolida um ou mais repositórios">
+        <DataSection title="Projeto" description="Agrupa um ou mais repositórios sob a mesma configuração">
           <div style={{ display: "grid", gap: "0.75rem" }}>
             <input
               className="hero-input"
@@ -149,7 +149,7 @@ export default function WorkspaceWizard({
       )}
 
       {step === 3 && (
-        <DataSection title="Repositórios" description="URLs GitHub (pode adicionar depois)">
+        <DataSection title="Repositórios" description="URLs do GitHub. Dá para adicionar mais depois.">
           <form onSubmit={finish} style={{ display: "grid", gap: "0.75rem" }}>
             {repoUrls.map((url, i) => (
               <div key={i} style={{ display: "flex", gap: "0.5rem" }}>
@@ -168,6 +168,7 @@ export default function WorkspaceWizard({
                   <button
                     type="button"
                     className="hero-btn hero-btn-outline"
+                    aria-label={`Remover repositório ${i + 1}`}
                     onClick={() => setRepoUrls(repoUrls.filter((_, j) => j !== i))}
                   >
                     −
@@ -176,7 +177,7 @@ export default function WorkspaceWizard({
               </div>
             ))}
             <button type="button" className="hero-btn hero-btn-outline" onClick={() => setRepoUrls([...repoUrls, ""])}>
-              + Repositório
+              + Adicionar repositório
             </button>
             <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
               <button type="button" className="hero-btn hero-btn-outline" onClick={() => setStep(2)} disabled={busy}>
@@ -191,12 +192,15 @@ export default function WorkspaceWizard({
       )}
 
       {step === 4 && created && (
-        <DataSection title="Pronto" description="Guarde os tokens agora — não serão mostrados de novo">
+        <DataSection
+          title="Copie os tokens antes de sair"
+          description="Cada token aparece uma única vez. Se sair sem copiar, será preciso rotacionar o token do repositório para gerar outro."
+        >
           <Callout tone="ok" title="Workspace criado">
             Projeto <code>{created.slug}</code> · {created.repos.length} repositório(s)
           </Callout>
           {created.repos.length === 0 ? (
-            <p className="hero-caption">Nenhum repo vinculado. Você pode adicionar no Workspace.</p>
+            <p className="hero-caption">Nenhum repositório vinculado ainda. Adicione um no workspace.</p>
           ) : (
             <div style={{ display: "grid", gap: "0.75rem", marginTop: "1rem" }}>
               {created.repos.map((r) => (
