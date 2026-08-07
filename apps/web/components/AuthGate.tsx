@@ -176,14 +176,14 @@ export default function AuthGate({ children }: { children: ReactNode }) {
         </button>
 
         <nav id="lx-nav-menu" className={`lx-nav-links${navOpen ? " is-open" : ""}`} aria-label="Principal">
+          <a href="#produto" onClick={() => setNavOpen(false)}>
+            Produto
+          </a>
           <a href="#fluxo" onClick={() => setNavOpen(false)}>
             Fluxo
           </a>
           <a href="#mercado" onClick={() => setNavOpen(false)}>
             Mercado
-          </a>
-          <a href="#esteira" onClick={() => setNavOpen(false)}>
-            Esteira
           </a>
           <a href="/docs" onClick={() => setNavOpen(false)}>
             Docs
@@ -195,248 +195,218 @@ export default function AuthGate({ children }: { children: ReactNode }) {
       </header>
 
       <main>
+        {/* 1 · Hook — brand + outcome only */}
         <section className="lx-hero" aria-labelledby="lx-hero-title">
           <div className="lx-hero-copy">
-            <p className="lx-kicker">Plataforma de engenharia · scan → gate → correção</p>
+            <p className="lx-kicker">Engenharia de qualidade · AppSec · Mainframe</p>
             <h1 id="lx-hero-title" className="lx-brand">
               CodeHero
             </h1>
             <p className="lx-headline">
-              O controle de qualidade que o board exige — e a esteira que o time consegue operar.
+              Gate de merge sob o seu comando — com esteira que aprende o que o time já decidiu.
             </p>
             <p className="lx-lede">
-              Unifique SAST, SCA, secrets, IaC e mainframe num contrato único de gate. Trate falso positivo
-              como dado de produto. Deixe a IA corrigir o que o policy engine já classificou — sem cobrar
-              por linha de código, sem depender de um único fornecedor de scanner.
+              A camada de controle entre scanners, política e correção com IA. Menos ruído no PR. Mais
+              velocidade com risco explícito.
             </p>
             <div className="lx-cta-row">
               <button type="button" className="lx-btn lx-btn-primary" onClick={() => goAuth("signup")}>
                 Solicitar acesso
               </button>
-              <a className="lx-btn lx-btn-ghost" href="#fluxo">
-                Ver o fluxo
+              <a className="lx-btn lx-btn-ghost" href="#produto">
+                Conhecer o produto
               </a>
             </div>
           </div>
-          <div className="lx-hero-visual">
-            <LandingFlow compact />
-          </div>
         </section>
 
-        <section className="lx-section lx-thesis" aria-labelledby="lx-thesis-title">
+        {/* 2 · Product story — read before seeing the flow */}
+        <section className="lx-section lx-product" id="produto" aria-labelledby="lx-product-title">
           <div className="lx-section-inner">
-            <p className="lx-kicker">Tese para o CTO</p>
-            <h2 id="lx-thesis-title">Segurança de aplicação não é um scanner. É um sistema de decisão.</h2>
-            <p className="lx-prose">
-              Ferramentas de mercado entregam volume de findings. O CodeHero entrega <em>governança
-              operacional</em>: o que bloqueia merge, o que a IA pode corrigir, o que o time marcou como
-              falso positivo — e como essa memória reduz o próximo ciclo. O resultado não é um PDF de
-              compliance. É um pipeline que acelera release com risco controlado.
+            <p className="lx-kicker">O produto</p>
+            <h2 id="lx-product-title">Não é mais um scanner. É o sistema que decide o que importa.</h2>
+            <p className="lx-prose lx-prose-lead">
+              Suítes enterprise acumulam findings. O CodeHero transforma esse sinal em{" "}
+              <em>governança operacional</em>: o que bloqueia merge, o que a IA pode corrigir, o que o time
+              marcou como falso positivo — e como essa memória acelera o próximo ciclo.
             </p>
-            <div className="lx-pillars">
-              <article className="lx-pillar" style={{ animationDelay: "0.05s" }}>
-                <h3>Gate multi-motor</h3>
+
+            <div className="lx-promise-grid">
+              <article className="lx-promise">
+                <span className="lx-promise-num" aria-hidden>
+                  01
+                </span>
+                <h3>Um contrato de gate</h3>
                 <p>
-                  Presence, Opengrep, Semgrep Community, Trivy, Gitleaks, Checkov e SARIF importado —
-                  score único, thresholds por org, suppress auditável.
+                  Presence, Opengrep, Semgrep Community, Trivy, Gitleaks, Checkov e SARIF importado — score
+                  único, thresholds por org, suppress auditável. O CI e o cockpit falam a mesma política.
                 </p>
               </article>
-              <article className="lx-pillar" style={{ animationDelay: "0.12s" }}>
-                <h3>IA com orçamento</h3>
+              <article className="lx-promise">
+                <span className="lx-promise-num" aria-hidden>
+                  02
+                </span>
+                <h3>IA depois da política</h3>
                 <p>
-                  Correção automática só depois do gate. Custo por projeto e por execução — não por LOC.
-                  Telemetria de tokens e qualidade no cockpit.
+                  Correção automática só no que o gate liberou. Custo por projeto e execução — não por linha
+                  de código. Diff no PR, telemetria no cockpit.
                 </p>
               </article>
-              <article className="lx-pillar" style={{ animationDelay: "0.19s" }}>
-                <h3>Memória institucional</h3>
+              <article className="lx-promise">
+                <span className="lx-promise-num" aria-hidden>
+                  03
+                </span>
+                <h3>Memória que reduz ruído</h3>
                 <p>
-                  Falso positivo vira estatística de regra. A esteira aprende o que o time já decidiu —
-                  menos ruído no próximo PR, mais velocidade no review.
-                </p>
-              </article>
-              <article className="lx-pillar" style={{ animationDelay: "0.26s" }}>
-                <h3>Um contrato, duas eras</h3>
-                <p>
-                  Repositórios cloud e mainframe (COBOL, JCL, CICS, DB2) no mesmo modelo de job, finding e
-                  política. Modernização sem silo de ferramenta.
+                  Falso positivo vira estatística de regra. A esteira devolve aprendizado ao próximo scan —
+                  o time para de reexplicar a mesma exceção.
                 </p>
               </article>
             </div>
+
+            <p className="lx-product-bridge">
+              Abaixo, o caminho completo — do push ao merge — e o que cada fase entrega à seguinte.
+            </p>
           </div>
         </section>
 
+        {/* 3 · Flow — proof after narrative */}
         <section className="lx-section lx-flow-section" id="fluxo" aria-labelledby="lx-flow-title">
           <div className="lx-section-inner">
-            <p className="lx-kicker">Arquitetura operacional</p>
-            <h2 id="lx-flow-title">Quatro estágios. Integrações explícitas. Um loop.</h2>
+            <p className="lx-kicker">Como opera</p>
+            <h2 id="lx-flow-title">Scan → Gate → Correção → Esteira</h2>
             <p className="lx-prose">
-              Do push ao merge, cada fase publica um contrato para a seguinte. A Esteira não é um relatório —
-              devolve memória de regra ao próximo Scan.
+              Quatro estágios, um feedback loop. Cada seta é um contrato: a fase seguinte só consome o que a
+              anterior publicou. A Esteira não fecha o ciclo em relatório — devolve memória ao Scan.
             </p>
             <LandingFlow detailed />
           </div>
         </section>
 
-        <section className="lx-section lx-strengths" aria-labelledby="lx-str-title">
+        {/* 4 · Why CodeHero — sharp differentiators */}
+        <section className="lx-section lx-strengths" id="porque" aria-labelledby="lx-str-title">
           <div className="lx-section-inner">
-            <p className="lx-kicker">Fortalezas</p>
-            <h2 id="lx-str-title">O que diferencia o CodeHero na mesa do board</h2>
-            <div className="lx-strength-grid">
+            <p className="lx-kicker">Por que CodeHero</p>
+            <h2 id="lx-str-title">O que o board e o time de engenharia ganham juntos</h2>
+            <div className="lx-strength-grid lx-strength-grid--4">
               <article>
-                <h3>Desacoplamento de custo de IA e tamanho do repo</h3>
+                <h3>Custo de IA desacoplado do tamanho do repo</h3>
                 <p>
-                  Modelos cobram por token de correção — não por milhão de linhas indexadas. Você escala
-                  análise estática sem inflar a fatura de GenAI na mesma curva.
+                  Você escala análise estática sem inflar GenAI na curva de LOC. Orçamento por execução,
+                  visível no cockpit.
                 </p>
               </article>
               <article>
-                <h3>Policy como produto, não como planilha</h3>
+                <h3>Policy como produto</h3>
                 <p>
-                  Thresholds, allowlists e suppressões vivem no banco com auditoria. O gate do CI é a mesma
-                  regra que o CTO vê no cockpit — sem drift entre “política oficial” e “o que o YAML faz”.
+                  Thresholds e suppressões versionados com auditoria. Sem drift entre a planilha “oficial” e
+                  o que o YAML do CI realmente faz.
                 </p>
               </article>
               <article>
-                <h3>Multi-engine sem lock-in narrativo</h3>
+                <h3>Multi-engine sem lock-in</h3>
                 <p>
-                  Presence e Opengrep cobrem o núcleo open; Semgrep Community e SARIF importado fecham o
-                  gap de regras e ferramentas já contratadas. Trocar um motor não redefine o produto.
+                  Motores open no núcleo; SARIF do scanner que você já paga. Trocar um engine não redefine o
+                  produto.
                 </p>
               </article>
               <article>
-                <h3>Observabilidade de engenharia de segurança</h3>
+                <h3>Cloud e mainframe no mesmo gate</h3>
                 <p>
-                  Jobs, findings, FP por regra, custo de agentes e status de PR — telemetria executiva para
-                  AppSec e para o VP de Engenharia na mesma tela.
-                </p>
-              </article>
-              <article>
-                <h3>Mainframe no mesmo SLA de gate</h3>
-                <p>
-                  Inventário, parsers e políticas para COBOL/JCL não são um “módulo aparte de consultoria”.
-                  Entram no contrato de finding e no mesmo fluxo de correção assistida.
-                </p>
-              </article>
-              <article>
-                <h3>Open core auditável</h3>
-                <p>
-                  Código e contratos abertos para inspeção de segurança. Você avalia a superfície antes de
-                  confiar o gate do monorepo crítico à plataforma.
+                  COBOL, JCL, CICS, DB2 no mesmo contrato de finding e correção assistida — modernização sem
+                  silo de ferramenta.
                 </p>
               </article>
             </div>
           </div>
         </section>
 
+        {/* 5 · Market frame */}
         <section className="lx-section lx-market" id="mercado" aria-labelledby="lx-mkt-title">
           <div className="lx-section-inner">
-            <p className="lx-kicker">Comparativo de mercado</p>
-            <h2 id="lx-mkt-title">Onde as suítes enterprise param — e o CodeHero continua</h2>
+            <p className="lx-kicker">Mercado</p>
+            <h2 id="lx-mkt-title">Complementa a suíte. Não compete com o PDF dela.</h2>
             <p className="lx-prose">
-              Comparação honesta com o padrão de mercado (SAST/SCA cloud com billing por LOC, UI de
-              findings, plugin de IDE). O CodeHero não substitui o seu scanner favorito: orquestra,
-              governa e remedia em cima do sinal.
+              O CodeHero orquestra, governa e remedia em cima do sinal — inclusive do SAST que você já
+              contratou.
             </p>
             <div className="lx-table-wrap">
               <table className="lx-table">
                 <thead>
                   <tr>
                     <th scope="col">Capacidade</th>
-                    <th scope="col">Suítes enterprise típicas</th>
+                    <th scope="col">Suítes enterprise</th>
                     <th scope="col">CodeHero</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <th scope="row">Modelo de custo</th>
-                    <td>Frequente: seats + LOC / contributors</td>
-                    <td>Projetos, execuções e orçamento de IA — sem taxar tamanho do monorepo</td>
+                    <td>Seats + LOC / contributors</td>
+                    <td>Projetos, execuções e orçamento de IA</td>
                   </tr>
                   <tr>
                     <th scope="row">Decisão de merge</th>
-                    <td>Policy packs genéricos; FP muitas vezes só no UI</td>
-                    <td>Gate versionado + suppress com estatística de regra na esteira</td>
+                    <td>Policy packs; FP muitas vezes só no UI</td>
+                    <td>Gate versionado + suppress com estatística na esteira</td>
                   </tr>
                   <tr>
                     <th scope="row">Correção</th>
-                    <td>Sugestão em IDE ou ticket; pouco amarrado ao gate</td>
-                    <td>Agentes pós-gate, diff no PR, custo e qualidade medidos</td>
+                    <td>Sugestão em IDE ou ticket</td>
+                    <td>Agentes pós-gate, diff no PR, custo medido</td>
                   </tr>
                   <tr>
-                    <th scope="row">Heterogeneidade de scanners</th>
-                    <td>Ecossistema do vendor; import limitado</td>
-                    <td>Motores open + SARIF de terceiros no mesmo score</td>
+                    <th scope="row">Scanners heterogêneos</th>
+                    <td>Ecossistema do vendor</td>
+                    <td>Open + SARIF de terceiros no mesmo score</td>
                   </tr>
                   <tr>
-                    <th scope="row">Mainframe / legado</th>
-                    <td>Produto separado ou parceiro</td>
+                    <th scope="row">Mainframe</th>
+                    <td>Produto ou parceiro à parte</td>
                     <td>Mesmo job model e políticas</td>
                   </tr>
                   <tr>
-                    <th scope="row">Taint / dataflow profundo</th>
-                    <td>Forte em engines proprietários inter-file</td>
-                    <td>
-                      Intra-procedural sólido via Presence; inter-file profundo — complemente com SARIF do
-                      seu SAST atual
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Lock-in</th>
-                    <td>Alto (regras, UI, billing)</td>
-                    <td>Contrato aberto; motores substituíveis; dados na sua cloud</td>
+                    <th scope="row">Dataflow inter-file</th>
+                    <td>Forte em engines proprietários</td>
+                    <td>Presence intra-procedural; complemente via SARIF do seu SAST</td>
                   </tr>
                 </tbody>
               </table>
             </div>
             <p className="lx-footnote">
               Leitura para o CTO: use o CodeHero como <strong>camada de controle e remediação</strong>.
-              Mantenha o SAST enterprise onde o dataflow inter-file for requisito regulatório — importe o
-              SARIF e unifique o gate.
+              Mantenha o SAST enterprise onde o dataflow profundo for requisito — importe o SARIF e unifique
+              o gate.
             </p>
           </div>
         </section>
 
-        <section className="lx-section lx-mainframe" aria-labelledby="lx-mf-title">
-          <div className="lx-section-inner lx-mf-grid">
-            <div>
-              <p className="lx-kicker">Portfólio híbrido</p>
-              <h2 id="lx-mf-title">Cloud e mainframe. Mesmo rigor de engenharia.</h2>
-              <p className="lx-prose">
-                Inventário de programas, copybooks, JCL e dependências DB2/CICS — com findings e políticas
-                no mesmo cockpit que o time de produto já usa para o monorepo. Modernização deixa de ser um
-                projeto paralelo de ferramenta.
-              </p>
-            </div>
-            <ul className="lx-mf-list">
-              <li>COBOL, JCL, CICS, DB2 no contrato de análise</li>
-              <li>Gates e correção assistida alinhados ao restante do SDLC</li>
-              <li>Visibilidade executiva do risco legado junto do cloud-native</li>
-            </ul>
-          </div>
-        </section>
-
+        {/* 6 · Learning loop */}
         <div className="lx-section lx-esteira" id="esteira">
           <div className="lx-section-inner">
             <p className="lx-kicker">Esteira que aprende</p>
+            <p className="lx-prose lx-esteira-intro">
+              O aprendizado não é “um LLM lê cada arquivo no PR”. É um ciclo com prova: observar → propor →
+              validar no corpus → publicar só o que melhora precisão.
+            </p>
             <LearningLoopStory id="esteira-ciclo" />
           </div>
         </div>
 
+        {/* 7 · Close */}
         <section className="lx-section lx-close" aria-labelledby="lx-close-title">
           <div className="lx-section-inner lx-close-inner">
-            <h2 id="lx-close-title">Pronto para colocar o gate sob o seu comando?</h2>
+            <h2 id="lx-close-title">Coloque o gate sob o seu comando.</h2>
             <p className="lx-prose">
-              Crie a conta, conecte a org e rode o primeiro job. Em poucos ciclos você tem baseline de
-              findings, política de merge e telemetria de custo de correção — o kit mínimo que um CTO
-              precisa para defender velocidade com segurança.
+              Crie a conta, conecte a org, rode o primeiro job. Em poucos ciclos: baseline, política de merge
+              e telemetria de custo — o kit mínimo para defender velocidade com segurança.
             </p>
             <div className="lx-cta-row">
               <button type="button" className="lx-btn lx-btn-primary" onClick={() => goAuth("signup")}>
                 Criar conta
               </button>
               <a className="lx-btn lx-btn-ghost" href="/docs">
-                Ler a documentação
+                Documentação
               </a>
             </div>
           </div>

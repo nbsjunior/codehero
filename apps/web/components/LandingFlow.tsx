@@ -2,7 +2,7 @@
 
 /**
  * Esteira animada — Scan → Gate → Correção → Esteira → (feedback) Scan.
- * Mostra o payload que atravessa cada integração entre fases.
+ * Uma única instância na home, abaixo do descritivo do produto.
  */
 const STEPS = [
   {
@@ -43,24 +43,15 @@ const EDGES: ReadonlyArray<{
   { from: "Esteira", to: "Scan", label: "política atualizada", loop: true },
 ];
 
-export default function LandingFlow({
-  compact = false,
-  detailed = false,
-}: {
-  compact?: boolean;
-  /** Mostra legendas de integração e loop de feedback (seção Fluxo). */
-  detailed?: boolean;
-}) {
-  const cls = [
-    "lx-flow",
-    compact ? "lx-flow--compact" : "",
-    detailed ? "lx-flow--detailed" : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
+export default function LandingFlow({ detailed = false }: { detailed?: boolean }) {
+  const cls = ["lx-flow", detailed ? "lx-flow--detailed" : ""].filter(Boolean).join(" ");
 
   return (
-    <div className={cls} role="img" aria-label="Fluxo CodeHero: Scan, Gate, Correção, Esteira, com feedback para o próximo scan">
+    <div
+      className={cls}
+      role="img"
+      aria-label="Fluxo CodeHero: Scan, Gate, Correção, Esteira, com feedback para o próximo scan"
+    >
       <div className="lx-flow__track" aria-hidden="true">
         <div className="lx-flow__spine">
           <span className="lx-flow__packet" />
@@ -105,9 +96,8 @@ export default function LandingFlow({
       ) : null}
 
       <p className="lx-flow__caption">
-        {detailed
-          ? "Cada seta é um contrato: o estágio seguinte só consome o que o anterior publicou. A Esteira devolve memória ao Scan — o loop fecha."
-          : "Detecção → decisão → remediação → memória — feedback no próximo scan"}
+        Cada seta é um contrato: o estágio seguinte só consome o que o anterior publicou. A Esteira
+        devolve memória ao Scan — o loop fecha.
       </p>
     </div>
   );
