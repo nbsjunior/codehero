@@ -16,7 +16,7 @@ import { camposDeclarados, tamanhoDoPic } from "./cobolData.ts";
 // ---------------------------------------------------------------------------
 
 export interface AchadoDados {
-  tipo: "move-trunca" | "move-alfa-para-num" | "indicador-nulo-ausente" | "cursor-nunca-usado";
+  tipo: "move-trunca" | "move-trunca-exibicao" | "move-alfa-para-num" | "indicador-nulo-ausente" | "cursor-nunca-usado";
   linha: number;
   detalhe: string;
   trecho: string;
@@ -93,12 +93,25 @@ function moveTrunca(root: BuiltNode, campos: ReturnType<typeof tabelaDeCampos>):
       if (to.alfanumerico !== td.alfanumerico) continue; // tratado na análise 2
       if (td.digitos >= to.digitos) continue;
 
+      // DESTINO EDITADO É OUTRA COISA.
+      //
+      // Medido no CardDemo: 9 dos 13 apontamentos restantes moviam um valor
+      // para `+ZZZ,ZZZ,ZZZ.99` ou `$$,$$$,$$9.99`. Campo editado é de EXIBIÇÃO,
+      // não de cálculo. O dado guardado não corrompe: quem sai errado é o
+      // relatório, e só quando o valor chega perto do limite.
+      //
+      // Misturar os dois casos na mesma severidade faz a análise perder
+      // autoridade justamente onde ela mais serve, que é o caso de corrupção.
+      const paraExibicao = td.editado && !to.editado;
+
       out.push({
-        tipo: "move-trunca",
+        tipo: paraExibicao ? "move-trunca-exibicao" : "move-trunca",
         linha: n.startPosition.row,
-        detalhe: to.alfanumerico
-          ? `${origem.nome} PIC ${origem.picture} não cabe em ${destino.nome} PIC ${destino.picture}: o texto é cortado à direita`
-          : `${origem.nome} PIC ${origem.picture} não cabe em ${destino.nome} PIC ${destino.picture}: COBOL corta os dígitos MAIS significativos, então o valor muda de ordem de grandeza`,
+        detalhe: paraExibicao
+          ? `${origem.nome} PIC ${origem.picture} tem ${to.digitos} dígitos e o campo de saída ${destino.nome} PIC ${destino.picture} comporta ${td.digitos}: o dado guardado fica certo, o relatório é que sai cortado`
+          : to.alfanumerico
+            ? `${origem.nome} PIC ${origem.picture} não cabe em ${destino.nome} PIC ${destino.picture}: o texto é cortado à direita`
+            : `${origem.nome} PIC ${origem.picture} não cabe em ${destino.nome} PIC ${destino.picture}: COBOL corta os dígitos MAIS significativos, então o valor muda de ordem de grandeza`,
         trecho: texto.slice(0, 100),
         paragrafo: paragrafoDe(n),
       });

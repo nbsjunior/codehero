@@ -71,6 +71,7 @@ const ANALISE_DB2: Record<AchadoDb2["tipo"], string> = {
 /** Integridade de dado dentro do programa (ver cobolDados.ts). */
 const ANALISE_DADOS: Record<AchadoDados["tipo"], string> = {
   "move-trunca": "HERO-CBL-0197-move-trunca",
+  "move-trunca-exibicao": "HERO-CBL-0198-move-trunca-exibicao",
   "move-alfa-para-num": "HERO-CBL-0704-move-classe-trocada",
   "indicador-nulo-ausente": "HERO-CBL-0305-indicador-nulo-ausente",
   "cursor-nunca-usado": "HERO-CBL-0561-cursor-nunca-usado",
@@ -146,7 +147,20 @@ export async function collectStructural(
           snippet: c.trecho,
         });
       }
-      for (const d of camposMortos(parsed.root as never)) {
+      // Copybook declara campo para OUTROS programas usarem. Analisado
+      // sozinho, todo campo dele parece morto.
+      //
+      // Medido no CardDemo da AWS, 113 arquivos COBOL reais: dos 5464
+      // apontamentos de dado morto, 5070 estavam dentro de copybook. Noventa e
+      // tres por cento de ruido, o bastante para o time desligar a analise
+      // inteira e junto com ela os 394 apontamentos que eram legitimos.
+      //
+      // A analise so vale no programa, onde a DATA DIVISION e a PROCEDURE
+      // DIVISION estao ambas presentes. Quando o copybook e expandido dentro
+      // de um programa, os campos dele entram nessa contagem pelo caminho
+      // normal.
+      const ehCopybook = /\.cpy$/i.test(m.file);
+      for (const d of ehCopybook ? [] : camposMortos(parsed.root as never)) {
         cobolFindings.push({
           analysis: COBOL_ANALYSES["HERO-CBL-1164-dado-morto"]!,
           file: m.file,

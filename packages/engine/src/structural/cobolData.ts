@@ -74,31 +74,93 @@ function extraiClausulas(texto: string): {
  * cabe 4 dígitos, e receber um `INTEGER` do DB2 ali trunca em silêncio. Sem
  * este cálculo a regra de truncamento não existe.
  */
-export function tamanhoDoPic(pic: string): { digitos: number; decimais: number; alfanumerico: boolean } | null {
+export function tamanhoDoPic(pic: string): {
+  digitos: number;
+  decimais: number;
+  alfanumerico: boolean;
+  /** PICTURE de edição (`$`, `Z`, `,`, `.`, `+`): campo de saída, não de cálculo. */
+  editado: boolean;
+} | null {
   if (!pic) return null;
-  const p = pic.toUpperCase();
+  // A cláusula de USAGE não faz parte da PICTURE e precisa sair antes de
+  // qualquer leitura: `COMP-3` tem um hífen, que é símbolo de sinal flutuante,
+  // e fazia o campo ser classificado como editado.
+  const p = pic
+    .toUpperCase()
+    .replace(/\b(?:USAGE\s+)?(?:IS\s+)?(?:COMP(?:UTATIONAL)?(?:-[1-5])?|BINARY|PACKED-DECIMAL|DISPLAY-1|DISPLAY|INDEX|POINTER)\b/g, "")
+    .trim();
+
+  // PICTURE DE EDIÇÃO
+  // ---------------------------------------------------------------------------
+  // Medido contra COBOL real (AWS CardDemo, 113 arquivos): a versão anterior
+  // contava só `9 X A Z *` e ignorava `$`, `+`, `-` e a vírgula. Isso fazia
+  // `$$,$$$,$$9.99` valer 1 dígito em vez de 10, e a análise de MOVE apontava
+  // truncamento em 13 formatações de relatório perfeitamente corretas.
+  //
+  // As regras que importam para contar capacidade:
+  //   9 Z *      uma posição de dígito cada
+  //   $ + -      inserção FLUTUANTE: n símbolos dão n-1 posições, porque uma
+  //              fica reservada para o próprio símbolo. Um só é inserção fixa
+  //              e não vale dígito nenhum
+  //   , B 0 /    inserção: ocupam espaço, não carregam dígito
+  //   .          é o ponto decimal do campo editado, faz o papel do V
+  //   CR DB      dois caracteres de sinal, nenhum dígito
+  // `CR`/`DB` entram como par; `C` solto NÃO é símbolo de edição, e incluí-lo
+  // marcava `PIC S9(4) COMP` como campo editado por causa do C de COMP.
+  const editado = (/[Z*$,]/.test(p) || /\b(CR|DB)\b/.test(p) || /[+\-]/.test(p)) && /[9Z*$]/.test(p);
+
   let digitos = 0;
   let decimais = 0;
   let alfanumerico = false;
-  let depoisDoV = false;
+  let depoisDoPonto = false;
 
-  // Expande a forma `9(4)` para contagem, e conta `9`/`X`/`A` avulsos.
-  const re = /([9XAZ*])(?:\((\d+)\))?|(V)|(S)/g;
+  // `CR` e `DB` saem antes: senão o `C`, o `R`, o `D` e o `B` seriam lidos soltos.
+  const limpo = p.replace(/\b(CR|DB)\b/g, "");
+
+  const re = /([9XAZ*$+\-])(?:\((\d+)\))?|(V|\.)|(S)|([,B0/])/g;
   let m: RegExpExecArray | null;
-  while ((m = re.exec(p)) !== null) {
+  let flutuantes = 0; // total de `$`/`+`/`-` vistos, para descontar um no fim
+
+  while ((m = re.exec(limpo)) !== null) {
     if (m[3]) {
-      depoisDoV = true;
+      // `V` é implícito, `.` é o ponto do campo editado. Ambos separam a parte
+      // decimal, e só o primeiro conta.
+      if (!depoisDoPonto) depoisDoPonto = true;
       continue;
     }
-    if (m[4]) continue; // sinal não ocupa dígito em COMP-3/DISPLAY sem SEPARATE
+    if (m[4]) continue; // `S` não ocupa posição sem SEPARATE CHARACTER
+    if (m[5]) continue; // inserção pura: ocupa espaço, não carrega dígito
+
     const simbolo = m[1]!;
     const n = m[2] ? parseInt(m[2], 10) : 1;
-    if (simbolo === "X" || simbolo === "A") alfanumerico = true;
-    if (depoisDoV) decimais += n;
+
+    if (simbolo === "X" || simbolo === "A") {
+      alfanumerico = true;
+      if (depoisDoPonto) decimais += n;
+      else digitos += n;
+      continue;
+    }
+    if (simbolo === "$" || simbolo === "+" || simbolo === "-") {
+      flutuantes += n;
+      if (depoisDoPonto) decimais += n;
+      else digitos += n;
+      continue;
+    }
+    // 9, Z, *
+    if (depoisDoPonto) decimais += n;
     else digitos += n;
   }
+
+  // Um dos símbolos flutuantes é o próprio sinal ou cifrão impresso, não uma
+  // posição de dígito. Sinal fixo (um só) não vale dígito nenhum.
+  if (flutuantes > 0) {
+    const desconto = 1;
+    if (digitos >= desconto) digitos -= desconto;
+    else if (decimais >= desconto) decimais -= desconto;
+  }
+
   if (digitos === 0 && decimais === 0 && !alfanumerico) return null;
-  return { digitos: digitos + decimais, decimais, alfanumerico };
+  return { digitos: digitos + decimais, decimais, alfanumerico, editado };
 }
 
 interface Item {

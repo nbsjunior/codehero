@@ -135,6 +135,21 @@ export const COBOL_ANALYSES: Record<string, CobolAnalysis> = {
     whyNotPattern:
       "A linha do MOVE não diz o tamanho de nada, e a linha do PIC não diz que há um MOVE. É preciso cruzar a DATA DIVISION com a PROCEDURE DIVISION, e resolver cada destino quando o comando tem vários.",
   },
+  "HERO-CBL-0198-move-trunca-exibicao": {
+    id: "HERO-CBL-0198-move-trunca-exibicao",
+    name: "MoveTruncaNaExibicao",
+    message:
+      "Valor movido para campo de saída menor: o dado guardado continua certo, o relatório é que sai cortado. Aparece só quando o valor chega perto do limite, o que costuma ser no fechamento de mês.",
+    severity: "MAJOR",
+    type: "BUG",
+    remediationEffortMin: 10,
+    cwe: ["CWE-197"],
+    owasp: [],
+    sddTemplateId: "sdd.cobol.ajustar-picture",
+    category: "data-integrity",
+    whyNotPattern:
+      "Exige contar as posições de dígito de uma PICTURE de edição, onde `$`, `Z` e `+` valem dígito e vírgula não vale, e comparar com o PIC da origem, declarado em outro ponto do programa.",
+  },
   "HERO-CBL-0704-move-classe-trocada": {
     id: "HERO-CBL-0704-move-classe-trocada",
     name: "MoveAlfanumericoParaNumerico",
