@@ -24,6 +24,8 @@ export { kmeans, detectarAnomalias, paresSimilares } from "./structural/clusteri
 export type { Cluster, ClusterResult, Anomalia, ParSimilar } from "./structural/clustering.ts";
 export { sqlcodeNaoChecado } from "./structural/cobolSqlcode.ts";
 export { analisarDb2 } from "./structural/cobolDb2.ts";
+export { analisarDados } from "./structural/cobolDados.ts";
+export type { AchadoDados } from "./structural/cobolDados.ts";
 export { parseSqlplSource } from "./structural/sqlplParse.ts";
 export type { AchadoDb2 } from "./structural/cobolDb2.ts";
 export type { SqlcodeNaoChecado } from "./structural/cobolSqlcode.ts";

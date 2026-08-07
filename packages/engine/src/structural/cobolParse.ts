@@ -290,6 +290,28 @@ function parseStatements(bodyLines: string[], baseLine: number, parent: BuiltNod
       continue;
     }
 
+    // MOVE ganha nó próprio: é o verbo mais frequente do COBOL e o que mais
+    // silenciosamente corrompe dado, porque truncar não gera erro. Como nó, o
+    // comando fica disponível tanto para as análises algorítmicas quanto para
+    // regras estruturais, em vez de virar `statement` genérico.
+    if (/^MOVE\b/i.test(line)) {
+      const node = new BuiltNode("move_statement", line, { row: abs, column: 0 }, { row: abs, column: raw.length });
+      const m = /^MOVE\s+(?:CORRESPONDING\s+|CORR\s+)?([\w-]+)\s+TO\s+(.+?)\.?$/i.exec(line);
+      if (m) {
+        node.add(
+          new BuiltNode("identifier", m[1]!, node.startPosition, node.startPosition),
+          "origem",
+        );
+        node.add(
+          new BuiltNode("identifier", m[2]!.trim(), node.startPosition, node.endPosition),
+          "destino",
+        );
+      }
+      parent.add(node);
+      i++;
+      continue;
+    }
+
     // Generic statement leaf
     parent.add(new BuiltNode("statement", line, { row: abs, column: 0 }, { row: abs, column: raw.length }));
     i++;

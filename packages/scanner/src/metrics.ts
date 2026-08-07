@@ -3,6 +3,7 @@ import {
   matchStructural,
   sqlcodeNaoChecado,
   analisarDb2,
+  analisarDados,
   camposMortos,
   candidatesFor,
   findDuplicates,
@@ -20,6 +21,7 @@ import {
   type DuplicationSummary,
   type StructuralThresholds,
   type AchadoDb2,
+  type AchadoDados,
 } from "@codehero/engine";
 
 // ---------------------------------------------------------------------------
@@ -64,6 +66,14 @@ const ANALISE_DB2: Record<AchadoDb2["tipo"], string> = {
   "cursor-sem-close": "HERO-CBL-0404-cursor-sem-close",
   "sql-em-laco": "HERO-CBL-1049-sql-em-laco",
   "commit-em-cursor": "HERO-CBL-0459-commit-em-cursor",
+};
+
+/** Integridade de dado dentro do programa (ver cobolDados.ts). */
+const ANALISE_DADOS: Record<AchadoDados["tipo"], string> = {
+  "move-trunca": "HERO-CBL-0197-move-trunca",
+  "move-alfa-para-num": "HERO-CBL-0704-move-classe-trocada",
+  "indicador-nulo-ausente": "HERO-CBL-0305-indicador-nulo-ausente",
+  "cursor-nunca-usado": "HERO-CBL-0561-cursor-nunca-usado",
 };
 
 /** Achado de analise COBOL algoritmica (ver cobolAnalyses.ts). */
@@ -147,6 +157,16 @@ export async function collectStructural(
       }
       // A costura COBOL <-> DB2. Cada uma cruza a DATA DIVISION, o texto do SQL
       // e o aninhamento do PERFORM — nenhuma cabe numa linha.
+      // Integridade interna: DATA DIVISION cruzada com a PROCEDURE DIVISION.
+      for (const d of analisarDados(parsed.root as never)) {
+        cobolFindings.push({
+          analysis: COBOL_ANALYSES[ANALISE_DADOS[d.tipo]]!,
+          file: m.file,
+          startLine: d.linha + 1,
+          detail: `${d.detalhe}${d.paragrafo ? ` em ${d.paragrafo}` : ""}`,
+          snippet: d.trecho,
+        });
+      }
       for (const d of analisarDb2(parsed.root as never)) {
         cobolFindings.push({
           analysis: COBOL_ANALYSES[ANALISE_DB2[d.tipo]]!,

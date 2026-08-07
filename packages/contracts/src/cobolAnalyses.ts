@@ -120,6 +120,66 @@ export const COBOL_ANALYSES: Record<string, CobolAnalysis> = {
     whyNotPattern:
       "Três fatos em lugares diferentes: o COMMIT está dentro de um laço (aninhamento), existe um cursor aberto (outra linha) e esse cursor não foi declarado WITH HOLD (uma terceira linha, às vezes em copybook).",
   },
+  "HERO-CBL-0197-move-trunca": {
+    id: "HERO-CBL-0197-move-trunca",
+    name: "MoveQueTrunca",
+    message:
+      "MOVE para campo menor: o COBOL corta e não avisa. Em campo numérico o corte é nos dígitos MAIS significativos, então 1.250.000 vira 250.000 e o programa segue como se nada fosse.",
+    severity: "CRITICAL",
+    type: "BUG",
+    remediationEffortMin: 10,
+    cwe: ["CWE-197"],
+    owasp: [],
+    sddTemplateId: "sdd.cobol.ajustar-picture",
+    category: "data-integrity",
+    whyNotPattern:
+      "A linha do MOVE não diz o tamanho de nada, e a linha do PIC não diz que há um MOVE. É preciso cruzar a DATA DIVISION com a PROCEDURE DIVISION, e resolver cada destino quando o comando tem vários.",
+  },
+  "HERO-CBL-0704-move-classe-trocada": {
+    id: "HERO-CBL-0704-move-classe-trocada",
+    name: "MoveAlfanumericoParaNumerico",
+    message:
+      "MOVE de campo alfanumérico para numérico: se a origem trouxer espaço ou letra, o resultado depende do compilador e das opções de compilação. Costuma dar lixo em produção e abend em teste, ou o contrário.",
+    severity: "MAJOR",
+    type: "BUG",
+    remediationEffortMin: 15,
+    cwe: ["CWE-704"],
+    owasp: [],
+    sddTemplateId: "sdd.cobol.validar-antes-do-move",
+    category: "data-integrity",
+    whyNotPattern:
+      "Exige saber a CLASSE dos dois campos, que está declarada longe do comando. `MOVE A TO B` é a mesma forma textual nos dois casos.",
+  },
+  "HERO-CBL-0305-indicador-nulo-ausente": {
+    id: "HERO-CBL-0305-indicador-nulo-ausente",
+    name: "IndicadorDeNuloAusente",
+    message:
+      "Coluna que aceita NULL lida sem variável indicadora: o DB2 devolve SQLCODE -305 e a host variable fica sem valor. O programa segue com o conteúdo anterior do campo.",
+    severity: "CRITICAL",
+    type: "BUG",
+    remediationEffortMin: 15,
+    cwe: ["CWE-252"],
+    owasp: [],
+    sddTemplateId: "sdd.db2.indicador-de-nulo",
+    category: "data-integrity",
+    whyNotPattern:
+      "Cruza a definição da coluna com a lista do INTO, por posição. Saber se falta indicador exige emparelhar a enésima coluna com a enésima host variable.",
+  },
+  "HERO-CBL-0561-cursor-nunca-usado": {
+    id: "HERO-CBL-0561-cursor-nunca-usado",
+    name: "CursorNuncaUsado",
+    message:
+      "Cursor declarado e nunca aberto: sobra de manutenção que sugere um caminho de leitura que não existe. Quem for manter o programa vai procurar por ele.",
+    severity: "MINOR",
+    type: "CODE_SMELL",
+    remediationEffortMin: 5,
+    cwe: ["CWE-561"],
+    owasp: [],
+    sddTemplateId: "sdd.smell.remove-dead-code",
+    category: "code-smell",
+    whyNotPattern:
+      "O defeito é a AUSÊNCIA de um OPEN em qualquer lugar do programa. Nenhuma linha isolada mostra isso.",
+  },
 };
 
 export const COBOL_ANALYSIS_LIST: CobolAnalysis[] = Object.values(COBOL_ANALYSES);
