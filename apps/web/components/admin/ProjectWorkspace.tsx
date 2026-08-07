@@ -280,7 +280,7 @@ export default function ProjectWorkspace({
       setTab("action");
       setGhaBanner({
         kind: "error",
-        text: search.get("msg") || "Falha ao instalar a Action no GitHub.",
+        text: search.get("msg") || "Não consegui instalar a Action. Verifique se você tem permissão de admin no repositório.",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -395,7 +395,7 @@ export default function ProjectWorkspace({
       await load();
       selectRepo(repoId);
     } catch (err) {
-      setAddRepoError(err instanceof Error ? err.message : "Falha ao adicionar repositório.");
+      setAddRepoError(err instanceof Error ? err.message : "Não consegui adicionar o repositório. Confira se a URL está correta e se a Action tem acesso.");
     } finally {
       setAddingRepo(false);
     }
@@ -416,7 +416,7 @@ export default function ProjectWorkspace({
     } catch (err) {
       setGhaBanner({
         kind: "error",
-        text: err instanceof Error ? err.message : "Falha ao iniciar o OAuth do GitHub.",
+        text: err instanceof Error ? err.message : "Não consegui iniciar a autorização no GitHub. Nada foi alterado — tente de novo.",
       });
       setInstallingGha(false);
     }
@@ -439,7 +439,7 @@ export default function ProjectWorkspace({
         ),
       );
     } catch (err) {
-      setFeedbackError(err instanceof Error ? err.message : "Falha ao registrar o feedback.");
+      setFeedbackError(err instanceof Error ? err.message : "Não consegui registrar seu feedback. O apontamento continua no estado anterior.");
     } finally {
       setFeedbackBusyFp(null);
     }
@@ -462,7 +462,7 @@ export default function ProjectWorkspace({
         `Exportados ${res.count} rótulo(s). Próximo: npm run fp:feedback-to-training -- <arquivo> reports/fp-training.json && npm run fp-ranker:train -- reports/fp-training.json`,
       );
     } catch (err) {
-      setOfflineError(err instanceof Error ? err.message : "Falha ao exportar feedback.");
+      setOfflineError(err instanceof Error ? err.message : "Não consegui exportar o feedback. Nenhum dado foi perdido — tente de novo.");
     } finally {
       setExportBusy(false);
     }
@@ -513,7 +513,7 @@ export default function ProjectWorkspace({
         });
         setOfflineMsg(`Triagem aplicada: ${res.updated} issue(s) atualizado(s), ${res.skipped} ignorado(s).`);
       } else {
-        throw new Error("JSON sem findings[] (triage) nem functions[] (code-embed).");
+        throw new Error("Arquivo não reconhecido. Esperava um JSON com findings[] (triagem) ou functions[] (code-embed).");
       }
       const snap = await getDocs(
         query(
@@ -530,7 +530,7 @@ export default function ProjectWorkspace({
       rows.sort((a, b) => order.indexOf(b.severity) - order.indexOf(a.severity));
       setIssues(rows);
     } catch (err) {
-      setOfflineError(err instanceof Error ? err.message : "Falha ao aplicar arquivo offline.");
+      setOfflineError(err instanceof Error ? err.message : "Não consegui aplicar o arquivo. Nada foi alterado no projeto.");
     } finally {
       setTriageBusy(false);
     }
@@ -558,7 +558,7 @@ export default function ProjectWorkspace({
         ),
       );
     } catch (err) {
-      setAutoScanError(err instanceof Error ? err.message : "Falha ao salvar a checagem automática.");
+      setAutoScanError(err instanceof Error ? err.message : "Não consegui salvar a configuração. A checagem automática segue como estava.");
     } finally {
       setAutoScanBusy(false);
     }
@@ -572,7 +572,7 @@ export default function ProjectWorkspace({
       await runRepoAutoScanNow({ orgId, projectId, repoId: selectedRepo.repoId });
       await load();
     } catch (err) {
-      setAutoScanError(err instanceof Error ? err.message : "Falha ao rodar a checagem agora.");
+      setAutoScanError(err instanceof Error ? err.message : "Não consegui iniciar a checagem. A programação automática não foi afetada.");
     } finally {
       setRunNowBusy(false);
     }
@@ -591,7 +591,7 @@ export default function ProjectWorkspace({
       setRepos((prev) => prev.map((r) => (r.repoId === selectedRepo.repoId ? { ...r, ingestToken: newToken } : r)));
       setRotateConfirm(false);
     } catch (err) {
-      setRotateError(err instanceof Error ? err.message : "Falha ao rotacionar o token.");
+      setRotateError(err instanceof Error ? err.message : "Não consegui rotacionar o token. O token atual continua válido.");
     } finally {
       setRotating(false);
     }

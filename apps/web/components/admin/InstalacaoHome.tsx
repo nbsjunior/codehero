@@ -207,7 +207,7 @@ function InstalacaoHome() {
       setShowProvision(false);
       await loadProjects(isAdmin);
     } catch (err) {
-      setProvisionError(err instanceof Error ? err.message : "Falha ao provisionar o projeto.");
+      setProvisionError(err instanceof Error ? err.message : "Não consegui criar o projeto. Nada foi salvo — revise os dados e tente de novo.");
     } finally {
       setProvisioning(false);
     }
@@ -243,7 +243,7 @@ function InstalacaoHome() {
       });
       setDressText("");
     } catch (err) {
-      setDressError(err instanceof Error ? err.message : "Falha ao interpretar o dress code.");
+      setDressError(err instanceof Error ? err.message : "Não consegui interpretar o dress code. As regras ativas não mudaram.");
     } finally {
       setDressBusy(false);
     }
@@ -264,7 +264,7 @@ function InstalacaoHome() {
       });
       setPreview(res);
     } catch (err) {
-      setPreviewError(err instanceof Error ? err.message : "Falha na prévia do repositório.");
+      setPreviewError(err instanceof Error ? err.message : "Não consegui gerar a prévia. O repositório pode ser privado ou grande demais.");
       console.error("previewRepoScan client error", err);
     } finally {
       setPreviewBusy(false);

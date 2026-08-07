@@ -48,7 +48,7 @@ export default function WorkspaceWizard({
       setCreated(res);
       setStep(4);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Falha ao criar workspace.");
+      setError(err instanceof Error ? err.message : "Não consegui criar o workspace. Nada foi salvo — revise o nome e tente de novo.");
     } finally {
       setBusy(false);
     }
