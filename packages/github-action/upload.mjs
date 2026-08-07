@@ -205,16 +205,19 @@ if (!res.ok) {
   // recusando antes de chegar na function. Token errado devolveria JSON da
   // própria API. Distinguir os dois poupa horas de caça ao token certo.
   const naBorda = (res.status === 401 || res.status === 403) && /<html|<title>/i.test(corpo);
-  console.error(`::error::CodeHero: envio da análise falhou com HTTP ${res.status}.`);
+  console.error(
+    `::error::Não consegui enviar a análise para a plataforma (HTTP ${res.status}). ` +
+      "O scan rodou normalmente — só o envio falhou.",
+  );
   if (naBorda) {
     console.error(
-      "::error::A resposta é uma página de erro do Google Cloud, não da API — " +
-        "a requisição foi recusada ANTES de chegar na function. Isso é permissão de " +
-        "invocação (IAM), não token: confira se `ingestAnalysis` aceita chamada não " +
-        "autenticada e se o rewrite de /api no Hosting aponta para ela.",
+      "::error::A resposta veio do Google Cloud, não da aplicação: a chamada foi " +
+        "recusada antes de chegar na função. Isso é permissão de invocação, não " +
+        "token — um token errado devolveria uma resposta da própria API. " +
+        "Verifique se a função ingestAnalysis aceita chamada não autenticada.",
     );
   } else {
-    console.error(`::error::Resposta: ${corpo.slice(0, 400)}`);
+    console.error(`::error::Resposta do servidor: ${corpo.slice(0, 400)}`);
   }
 
   // RECUO PARA O GATE LOCAL.
@@ -227,7 +230,10 @@ if (!res.ok) {
   const limiar = (process.env.FAIL_ON || "CRITICAL").toUpperCase();
   const corte = SEVERITY_ORDER.indexOf(limiar);
   if (corte < 0) {
-    console.error(`::error::fail-on inválido: ${limiar}. Esperado um de ${SEVERITY_ORDER.join("|")}.`);
+    console.error(
+      `::error::Valor inválido em fail-on: "${limiar}". ` +
+        `Use um destes: ${SEVERITY_ORDER.join(", ")}.`,
+    );
     process.exit(1);
   }
   const resultados = sarif.runs?.[0]?.results ?? [];
@@ -235,9 +241,20 @@ if (!res.ok) {
     const i = SEVERITY_ORDER.indexOf((r.properties?.severity ?? "INFO").toUpperCase());
     return i >= 0 && i <= corte;
   });
+  // O log de CI é lido sob pressão de build quebrado. Nada de `SARIF`,
+  // `fail-on` ou `apontamento(s)`: quem está ali quer saber se o build caiu
+  // por causa do código e o que fazer a seguir.
+  const quantos =
+    reprovam.length === 1 ? "1 apontamento" : `${reprovam.length} apontamentos`;
   console.error(
-    `::warning::Sem veredito do servidor. Aplicando o gate LOCAL sobre o SARIF ` +
-      `(fail-on=${limiar}): ${reprovam.length} apontamento(s) no limiar ou acima.`,
+    "::warning::A plataforma não respondeu, então o resultado abaixo vem da " +
+      "verificação local.",
+  );
+  console.error(
+    reprovam.length > 0
+      ? `::warning::${quantos} de severidade ${limiar} ou acima — o build reprova. ` +
+          "A lista completa está no artefato codehero-findings."
+      : `::warning::Nenhum apontamento de severidade ${limiar} ou acima. O build segue.`,
   );
   for (const r of reprovam.slice(0, 20)) {
     const loc = r.locations?.[0]?.physicalLocation;
