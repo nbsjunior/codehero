@@ -16,6 +16,7 @@ import { getPlatformOpsConfig } from "./lib/platformOps.ts";
 import { verifyIngestToken } from "./lib/ingestToken.ts";
 import { httpCors } from "./lib/httpSecurity.ts";
 import { consumeRateLimit } from "./lib/authz.ts";
+import { observe } from "./lib/observability.ts";
 
 const IngestSchema = z.object({
   orgId: z.string().min(1),
@@ -74,6 +75,7 @@ export const ingestAnalysis = onRequest(
       await assertBuildQuota(orgId);
     } catch (err) {
       if (err instanceof HttpsError && err.code === "resource-exhausted") {
+        observe("ingest.quota_exceeded", { orgId, projectId, repoId });
         res.status(429).json({ error: "quota_exceeded", message: err.message });
         return;
       }
@@ -95,7 +97,12 @@ export const ingestAnalysis = onRequest(
 
     const recent = await findRecentIngest(orgId, projectId, repoId, idempotencyKey);
     if (recent) {
-      logger.info("ingest idempotent hit", { orgId, projectId, repoId, analysisId: recent.analysisId });
+      observe("ingest.deduplicated", {
+        orgId,
+        projectId,
+        repoId,
+        analysisId: recent.analysisId,
+      });
       res.status(200).json({
         analysisId: recent.analysisId,
         summary: recent.summary,
@@ -156,6 +163,7 @@ export const ingestAnalysis = onRequest(
           source: "github-action",
           newCodeFingerprints,
         });
+        observe("ingest.job_enqueued", { orgId, projectId, repoId, analysisId });
       } catch (err) {
         logger.error("failed to enqueue ingest job — falling back to sync upsert", {
           analysisId,
@@ -180,7 +188,7 @@ export const ingestAnalysis = onRequest(
       logger.warn("quota increment failed", { orgId, err: String(err) });
     }
 
-    logger.info("analysis ingested", {
+    observe("ingest.accepted", {
       orgId,
       projectId,
       repoId,

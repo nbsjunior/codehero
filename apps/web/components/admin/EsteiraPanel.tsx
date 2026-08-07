@@ -78,14 +78,23 @@ export default function EsteiraPanel() {
 
   async function review(p: RuleProposalRow, decision: "approved" | "rejected") {
     const verb = decision === "approved" ? "Aprovar" : "Rejeitar";
-    if (!window.confirm(`${verb} “${p.title}”?\n\nAprovação ativa a regra em todos os canais (Action, IDE, prévia, MCP) e grava casos no corpus.`)) {
+    let note: string | undefined;
+    if (decision === "rejected") {
+      const typed = window.prompt(`${verb} “${p.title}”?\n\nMotivo (opcional, vai para o corpus/auditoria):`, "");
+      if (typed === null) return;
+      note = typed.trim() || undefined;
+    } else if (
+      !window.confirm(
+        `${verb} “${p.title}”?\n\nAprovação ativa a regra em todos os canais (Action, IDE, prévia, MCP) e grava casos no corpus.`,
+      )
+    ) {
       return;
     }
     setBusyId(p.id);
     setError(null);
     setMsg(null);
     try {
-      await reviewRuleProposal({ proposalId: p.id, decision });
+      await reviewRuleProposal({ proposalId: p.id, decision, note });
       setMsg(decision === "approved" ? `Aprovada: ${p.ruleId}` : `Rejeitada: ${p.ruleId}`);
       await load();
     } catch (err) {

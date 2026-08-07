@@ -5,8 +5,10 @@ import {
   maintainabilityRating,
   ratingFromWorstSeverity,
   evaluateQualityGate,
+  mergeQualityGate,
   SEVERITIES,
   type Severity,
+  type QualityGateThresholds,
   coveragePercent as coveragePct,
   type CoverageCounter,
   type SarifLog,
@@ -38,6 +40,8 @@ export interface PersistAnalysisInput {
   /** Duplicação medida (--metrics); `null`/ausente pula a condição. */
   duplicationPercent?: number | null;
   analysisId?: string;
+  /** Per-project gate thresholds (merged with defaults when omitted). */
+  qualityGateThresholds?: QualityGateThresholds | null;
 }
 
 export interface PersistAnalysisResult {
@@ -85,6 +89,7 @@ export function computeAnalysisSummary(
    */
   coveragePercent?: number | null,
   duplicationPercent?: number | null,
+  qualityGateThresholds?: QualityGateThresholds | null,
 ): PersistAnalysisResult["summary"] {
   const newSet = new Set(newCodeFingerprints ?? []);
   const scopeToNewCode = newSet.size > 0;
@@ -118,13 +123,16 @@ export function computeAnalysisSummary(
   const debtRatio = technicalDebtRatio(debtMin, linesOfCode);
   const maintRating = maintainabilityRating(debtRatio);
   const securityRating = ratingFromWorstSeverity(vulnSeverities);
-  const gate = evaluateQualityGate({
-    newCodeCoverage: coveragePercent ?? null,
-    newCodeDuplication: duplicationPercent ?? null,
-    newBlockerIssues,
-    securityRating,
-    maintainabilityRating: maintRating,
-  });
+  const gate = evaluateQualityGate(
+    {
+      newCodeCoverage: coveragePercent ?? null,
+      newCodeDuplication: duplicationPercent ?? null,
+      newBlockerIssues,
+      securityRating,
+      maintainabilityRating: maintRating,
+    },
+    mergeQualityGate(qualityGateThresholds),
+  );
 
   return {
     total: results.length,
@@ -280,12 +288,22 @@ export async function persistAnalysisResults(input: PersistAnalysisInput): Promi
     console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);
   }
 
+  let thresholds = input.qualityGateThresholds ?? null;
+  if (!thresholds) {
+    const projSnap = await db.doc(`orgs/${orgId}/projects/${projectId}`).get();
+    const raw = projSnap.get("qualityGate") as Partial<QualityGateThresholds> | undefined;
+    thresholds = mergeQualityGate(raw ?? null);
+  } else {
+    thresholds = mergeQualityGate(thresholds);
+  }
+
   const summary = computeAnalysisSummary(
     results,
     linesOfCode,
     input.newCodeFingerprints,
     input.coveragePercent,
     input.duplicationPercent,
+    thresholds,
   );
 
   if (!input.deferIssueWrites) {

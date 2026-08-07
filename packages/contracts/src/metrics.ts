@@ -71,6 +71,20 @@ export const DEFAULT_QUALITY_GATE: QualityGateThresholds = {
   maxMaintainabilityRating: "A",
 };
 
+export function mergeQualityGate(
+  partial?: Partial<QualityGateThresholds> | null,
+): QualityGateThresholds {
+  if (!partial) return { ...DEFAULT_QUALITY_GATE };
+  return {
+    minNewCodeCoverage: partial.minNewCodeCoverage ?? DEFAULT_QUALITY_GATE.minNewCodeCoverage,
+    maxNewCodeDuplication: partial.maxNewCodeDuplication ?? DEFAULT_QUALITY_GATE.maxNewCodeDuplication,
+    maxNewBlockerIssues: partial.maxNewBlockerIssues ?? DEFAULT_QUALITY_GATE.maxNewBlockerIssues,
+    maxSecurityRating: partial.maxSecurityRating ?? DEFAULT_QUALITY_GATE.maxSecurityRating,
+    maxMaintainabilityRating:
+      partial.maxMaintainabilityRating ?? DEFAULT_QUALITY_GATE.maxMaintainabilityRating,
+  };
+}
+
 export interface QualityGateInput {
   /**
    * `null` = não medido (nenhum relatório de cobertura enviado). A condição é

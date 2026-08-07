@@ -21,14 +21,18 @@ import {
   applyCodeEmbedClusters,
   exportRuleforgeFeedback,
   flagIssueFeedback,
+  getProjectQualityGate,
   rotateIngestToken,
   runRepoAutoScanNow,
   setRepoAutoScan,
   startGithubActionInstall,
+  updateProjectQualityGate,
   type IssueFeedbackVerdict,
+  type QualityGateThresholdsDto,
   type RepoAutoScan,
 } from "@/lib/api";
 import { HERO_CORE_URL } from "@/lib/heroCoreUrl";
+import OrgMembersPanel from "@/components/admin/OrgMembersPanel";
 
 interface ProjectData {
   name: string;
@@ -199,6 +203,12 @@ export default function ProjectWorkspace({
   const [runNowBusy, setRunNowBusy] = useState(false);
   const [periodicityDraft, setPeriodicityDraft] = useState(7);
 
+  const [gate, setGate] = useState<QualityGateThresholdsDto | null>(null);
+  const [gateDefaults, setGateDefaults] = useState<QualityGateThresholdsDto | null>(null);
+  const [gateBusy, setGateBusy] = useState(false);
+  const [gateMsg, setGateMsg] = useState<string | null>(null);
+  const [gateError, setGateError] = useState<string | null>(null);
+
   const load = useCallback(async () => {
     if (!orgId || !projectId) {
       setError("Informe org e projeto na URL (?org=…&id=…).");
@@ -215,6 +225,14 @@ export default function ProjectWorkspace({
         return;
       }
       setProject(projSnap.data() as ProjectData);
+
+      try {
+        const g = await getProjectQualityGate({ orgId, projectId });
+        setGate(g.thresholds);
+        setGateDefaults(g.defaults);
+      } catch {
+        setGate(null);
+      }
 
       const reposSnap = await getDocs(
         query(collection(dbClient, "orgs", orgId, "projects", projectId, "repos"), orderBy("createdAt", "asc")),
@@ -727,6 +745,91 @@ export default function ProjectWorkspace({
           <RatingBadges p={project} />
         </div>
       </header>
+
+      {gate && (
+        <section className="hero-panel" style={{ padding: "1.25rem", marginTop: "1.25rem" }}>
+          <h2 style={{ fontSize: "1.2rem", margin: "0 0 0.35rem" }}>Quality gate do projeto</h2>
+          <p className="hero-caption" style={{ marginTop: 0 }}>
+            Usado no ingest (Action/CLI). Defaults: cobertura {gateDefaults?.minNewCodeCoverage}% · blockers{" "}
+            {gateDefaults?.maxNewBlockerIssues} · ratings {gateDefaults?.maxSecurityRating}/
+            {gateDefaults?.maxMaintainabilityRating}.
+          </p>
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!gate) return;
+              setGateBusy(true);
+              setGateError(null);
+              setGateMsg(null);
+              try {
+                const res = await updateProjectQualityGate({ orgId, projectId, thresholds: gate });
+                setGate(res.thresholds);
+                setGateMsg("Gate salvo — vale no próximo ingest.");
+              } catch (err) {
+                setGateError(err instanceof Error ? err.message : "Falha ao salvar.");
+              } finally {
+                setGateBusy(false);
+              }
+            }}
+            style={{ display: "grid", gap: "0.65rem", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))" }}
+          >
+            {(
+              [
+                ["minNewCodeCoverage", "Cobertura mín. %"],
+                ["maxNewCodeDuplication", "Duplicação máx. %"],
+                ["maxNewBlockerIssues", "Blockers novos máx."],
+              ] as const
+            ).map(([key, label]) => (
+              <label key={key} className="hero-label">
+                {label}
+                <input
+                  className="hero-input"
+                  type="number"
+                  value={gate[key]}
+                  onChange={(ev) => setGate({ ...gate, [key]: Number(ev.target.value) })}
+                />
+              </label>
+            ))}
+            <label className="hero-label">
+              Security máx.
+              <select
+                className="hero-input"
+                value={gate.maxSecurityRating}
+                onChange={(ev) => setGate({ ...gate, maxSecurityRating: ev.target.value })}
+              >
+                {["A", "B", "C", "D", "E"].map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="hero-label">
+              Maintainability máx.
+              <select
+                className="hero-input"
+                value={gate.maxMaintainabilityRating}
+                onChange={(ev) => setGate({ ...gate, maxMaintainabilityRating: ev.target.value })}
+              >
+                {["A", "B", "C", "D", "E"].map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div style={{ alignSelf: "end" }}>
+              <button type="submit" className="hero-btn hero-btn-accent" disabled={gateBusy}>
+                {gateBusy ? "Salvando…" : "Salvar gate"}
+              </button>
+            </div>
+          </form>
+          {gateError && <div className="hero-error">{gateError}</div>}
+          {gateMsg && <p className="hero-caption">{gateMsg}</p>}
+        </section>
+      )}
+
+      <OrgMembersPanel orgId={orgId} />
 
       <section className="hero-panel" style={{ padding: "1.25rem", marginTop: "1.5rem" }}>
         <div className="ch-section-title">

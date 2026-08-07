@@ -5,6 +5,7 @@ import type { SarifLog } from "@codehero/contracts";
 import { normalizeSarifResultsToCatalog } from "@codehero/contracts/catalog";
 import { db, storage, STORAGE_BUCKET_NAME, FIRESTORE_DATABASE_ID, repoRef } from "./lib/firebase.ts";
 import { upsertIssuesFromResults } from "./lib/ingestCore.ts";
+import { observe } from "./lib/observability.ts";
 
 /**
  * Worker that finishes deferred issue writes after ingest returned the quality
@@ -68,8 +69,9 @@ export const processIngestJob = onDocumentCreated(
         .set({ issuesPending: false, issuesWrittenAt: FieldValue.serverTimestamp() }, { merge: true });
 
       await snap.ref.set({ status: "done", finishedAt: FieldValue.serverTimestamp() }, { merge: true });
-      logger.info("processIngestJob done", { orgId, projectId, repoId, analysisId, count: results.length });
+      observe("ingest.job_done", { orgId, projectId, repoId, analysisId, findings: results.length });
     } catch (err) {
+      observe("ingest.job_failed", { orgId, projectId, repoId, analysisId, error: String(err).slice(0, 200) });
       logger.error("processIngestJob failed", { jobId: snap.id, err: String(err) });
       await snap.ref.set(
         { status: "failed", error: String(err).slice(0, 500), finishedAt: FieldValue.serverTimestamp() },

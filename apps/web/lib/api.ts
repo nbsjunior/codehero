@@ -1020,3 +1020,133 @@ function formatCallableError(err: unknown, fallback: string): string {
   }
   return fallback;
 }
+
+export interface QualityGateThresholdsDto {
+  minNewCodeCoverage: number;
+  maxNewCodeDuplication: number;
+  maxNewBlockerIssues: number;
+  maxSecurityRating: string;
+  maxMaintainabilityRating: string;
+}
+
+export async function getProjectQualityGate(input: {
+  orgId: string;
+  projectId: string;
+}): Promise<{ thresholds: QualityGateThresholdsDto; defaults: QualityGateThresholdsDto }> {
+  const fn = httpsCallable<
+    typeof input,
+    { thresholds: QualityGateThresholdsDto; defaults: QualityGateThresholdsDto }
+  >(functions, "getProjectQualityGate");
+  const res = await fn(input);
+  return res.data;
+}
+
+export async function updateProjectQualityGate(input: {
+  orgId: string;
+  projectId: string;
+  thresholds: QualityGateThresholdsDto;
+}): Promise<{ ok: boolean; thresholds: QualityGateThresholdsDto }> {
+  const fn = httpsCallable<typeof input, { ok: boolean; thresholds: QualityGateThresholdsDto }>(
+    functions,
+    "updateProjectQualityGate",
+  );
+  try {
+    const res = await fn(input);
+    return res.data;
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha ao salvar o quality gate."));
+  }
+}
+
+export interface OrgMemberRow {
+  uid: string;
+  role: string;
+  email: string | null;
+  displayName: string | null;
+  joinedAt: string | null;
+}
+
+export interface OrgInviteRow {
+  inviteId: string;
+  email: string;
+  role: string;
+  createdAt: string | null;
+  expiresAt: string | null;
+}
+
+export async function listOrgMembers(orgId: string): Promise<{
+  members: OrgMemberRow[];
+  invites: OrgInviteRow[];
+}> {
+  const fn = httpsCallable<{ orgId: string }, { members: OrgMemberRow[]; invites: OrgInviteRow[] }>(
+    functions,
+    "listOrgMembers",
+  );
+  try {
+    const res = await fn({ orgId });
+    return res.data;
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha ao listar membros."));
+  }
+}
+
+export async function inviteOrgMember(input: {
+  orgId: string;
+  email: string;
+  role?: "admin" | "member";
+}): Promise<{ inviteId: string; email: string; role: string; acceptToken: string; expiresAt: string }> {
+  const fn = httpsCallable<
+    typeof input,
+    { inviteId: string; email: string; role: string; acceptToken: string; expiresAt: string }
+  >(functions, "inviteOrgMember");
+  try {
+    const res = await fn(input);
+    return res.data;
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha ao convidar."));
+  }
+}
+
+export async function acceptOrgInvite(input: {
+  orgId: string;
+  inviteId: string;
+  token: string;
+}): Promise<{ ok: boolean; orgId: string; role: string }> {
+  const fn = httpsCallable<typeof input, { ok: boolean; orgId: string; role: string }>(
+    functions,
+    "acceptOrgInvite",
+  );
+  try {
+    const res = await fn(input);
+    return res.data;
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha ao aceitar convite."));
+  }
+}
+
+export async function removeOrgMember(input: {
+  orgId: string;
+  memberUid: string;
+}): Promise<{ ok: boolean }> {
+  const fn = httpsCallable<typeof input, { ok: boolean }>(functions, "removeOrgMember");
+  try {
+    const res = await fn(input);
+    return res.data;
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha ao remover membro."));
+  }
+}
+
+export async function setOrgMemberRole(input: {
+  orgId: string;
+  memberUid: string;
+  role: "admin" | "member";
+}): Promise<{ ok: boolean }> {
+  const fn = httpsCallable<typeof input, { ok: boolean }>(functions, "setOrgMemberRole");
+  try {
+    const res = await fn(input);
+    return res.data;
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha ao alterar role."));
+  }
+}

@@ -148,6 +148,10 @@ service cloud.firestore {
         allow write: if false; // managed by functions
       }
 
+      match /invites/{inviteId} {
+        allow read, write: if false; // Admin SDK callables only
+      }
+
       match /projects/{projectId} {
         allow read: if isOrgMember(orgId) || isPlatformAdmin();
         allow write: if false;

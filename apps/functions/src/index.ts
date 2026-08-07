@@ -44,3 +44,11 @@ export { startGithubActionInstall, githubOAuthCallback } from "./githubActionIns
 export { addRepoToProject, listProjectRepos } from "./repos.ts";
 export { listFeatureFlags, setFeatureFlag } from "./featureFlags.ts";
 export { setRepoAutoScan, runRepoAutoScanNow, autoScanRepos } from "./autoScan.ts";
+export { getProjectQualityGate, updateProjectQualityGate } from "./qualityGate.ts";
+export {
+  listOrgMembers,
+  inviteOrgMember,
+  acceptOrgInvite,
+  setOrgMemberRole,
+  removeOrgMember,
+} from "./orgMembers.ts";

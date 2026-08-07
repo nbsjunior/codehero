@@ -19,6 +19,7 @@ import {
 import { useAuth } from "@/lib/useAuth";
 import { useFeatureFlag } from "@/lib/useFeatureFlag";
 import OnboardingChecklist, { buildOnboardingSteps } from "@/components/admin/OnboardingChecklist";
+import { acceptOrgInvite } from "@/lib/api";
 
 interface ProjectRow {
   id: string;
@@ -57,6 +58,8 @@ function InstalacaoHome() {
   const [provisionError, setProvisionError] = useState<string | null>(null);
   const [ingestToken, setIngestToken] = useState<string | null>(null);
   const [showProvision, setShowProvision] = useState(false);
+  const [inviteMsg, setInviteMsg] = useState<string | null>(null);
+  const [inviteError, setInviteError] = useState<string | null>(null);
 
   // Dress code
   const [dressText, setDressText] = useState("");
@@ -202,6 +205,32 @@ function InstalacaoHome() {
     };
   }, [user, loadProjects]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const sp = new URLSearchParams(window.location.search);
+    const inviteOrg = sp.get("inviteOrg");
+    const inviteId = sp.get("inviteId");
+    const token = sp.get("token");
+    if (!inviteOrg || !inviteId || !token || !user) return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        await acceptOrgInvite({ orgId: inviteOrg, inviteId, token });
+        if (!cancelled) {
+          setInviteMsg("Convite aceito — a org já aparece na lista.");
+          await loadProjects(isAdmin);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setInviteError(err instanceof Error ? err.message : "Não foi possível aceitar o convite.");
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user, isAdmin, loadProjects]);
+
   async function handleProvision(e: FormEvent) {
     e.preventDefault();
     setProvisionError(null);
@@ -301,6 +330,9 @@ function InstalacaoHome() {
         steps={onboardingSteps}
         onCreateProject={() => setShowProvision(true)}
       />
+
+      {inviteMsg && <div className="hero-panel" style={{ padding: "0.85rem 1rem", marginBottom: "1rem" }}>{inviteMsg}</div>}
+      {inviteError && <div className="hero-error">{inviteError}</div>}
 
       <section className="hero-panel" style={{ padding: "1.35rem 1.5rem", marginTop: 0, marginBottom: "1rem" }}>
         <h2 className="hero-display" style={{ fontSize: "1.25rem", margin: "0 0 0.35rem" }}>
