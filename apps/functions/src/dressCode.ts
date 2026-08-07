@@ -4,6 +4,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { isUnsafeRegex } from "@codehero/contracts";
 import { db } from "./lib/firebase.ts";
 import { requireOrgRole, requireVerifiedEmail } from "./lib/authz.ts";
+import { httpCors, enforceAppCheck } from "./lib/httpSecurity.ts";
 
 const GEMINI_API_KEY = defineSecret("GEMINI_API_KEY");
 
@@ -78,7 +79,14 @@ export interface SubmitDressCodeInput {
  * Global exige platform admin; project exige membro da org (ou admin).
  */
 export const submitDressCode = onCall(
-  { secrets: [GEMINI_API_KEY], timeoutSeconds: 120, cors: true, invoker: "public", memory: "512MiB" },
+  {
+    secrets: [GEMINI_API_KEY],
+    timeoutSeconds: 120,
+    cors: httpCors,
+    enforceAppCheck,
+    invoker: "public",
+    memory: "512MiB",
+  },
   async (request) => {
     try {
       return await handleSubmitDressCode(request);

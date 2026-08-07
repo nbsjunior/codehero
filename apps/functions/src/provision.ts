@@ -7,6 +7,7 @@ import { deriveRepoName } from "./lib/repoName.ts";
 import { generateIngestToken, storeIngestToken } from "./lib/ingestToken.ts";
 import { requireVerifiedEmail, consumeRateLimit } from "./lib/authz.ts";
 import { parseGithubUrl } from "./lib/repoScan.ts";
+import { portalCallableOpts } from "./lib/httpSecurity.ts";
 
 interface ProvisionInput {
   orgName: string;
@@ -22,7 +23,7 @@ interface ProvisionInput {
  * becomes the project's first repo; more can be added later via
  * `addRepoToProject`.
  */
-export const provisionProject = onCall<ProvisionInput>(async (request) => {
+export const provisionProject = onCall<ProvisionInput>(portalCallableOpts, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
   await requireVerifiedEmail(uid);

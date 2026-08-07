@@ -3,6 +3,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { db, repoRef } from "./lib/firebase.ts";
 import { generateIngestToken, storeIngestToken } from "./lib/ingestToken.ts";
 import { requireOrgRole, requireVerifiedEmail } from "./lib/authz.ts";
+import { portalCallableOpts } from "./lib/httpSecurity.ts";
 
 interface RotateTokenInput {
   orgId: string;
@@ -19,7 +20,7 @@ interface RotateTokenInput {
  * getting 401s from ingestAnalysis/listIssues/sddSpec/submitFixResult until
  * reconfigured). Restricted to owner/admin so a leaked-token rotate is an intentional privilege.
  */
-export const rotateIngestToken = onCall<RotateTokenInput>(async (request) => {
+export const rotateIngestToken = onCall<RotateTokenInput>(portalCallableOpts, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
 

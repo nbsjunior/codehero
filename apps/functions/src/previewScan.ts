@@ -11,13 +11,14 @@ import {
   incrementPreviewQuota,
   requireVerifiedEmail,
 } from "./lib/quotas.ts";
+import { portalCallableOpts } from "./lib/httpSecurity.ts";
 
 /**
  * One-click preview: GitHub público → zip → regras canônicas + dress rules → resumo.
  * Sem LLM no caminho de inspeção.
  */
 export const previewRepoScan = onCall(
-  { timeoutSeconds: 300, memory: "1GiB", cors: true },
+  { ...portalCallableOpts, timeoutSeconds: 300, memory: "1GiB" },
   async (request) => {
     const uid = request.auth?.uid;
     if (!uid) throw new HttpsError("unauthenticated", "Faça login para rodar a prévia.");

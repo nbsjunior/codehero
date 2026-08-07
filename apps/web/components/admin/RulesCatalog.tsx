@@ -82,6 +82,18 @@ export default function RulesCatalog() {
       .filter((g) => g.count > 0);
   }, [groups, query, sourceFilter]);
 
+  const stubCount = totals?.sonarStub ?? 0;
+  const liveNative =
+    (totals?.core ?? 0) +
+    (totals?.sonarLive ?? 0) +
+    (totals?.platform ?? 0) +
+    (totals?.project ?? 0);
+  // structural is counted inside core catalog rows with implementation structural —
+  // totals.core already includes HERO + structural from listMotorRules.
+  const scannable = liveNative;
+  const denom = scannable + stubCount;
+  const livePct = denom > 0 ? Math.round((scannable / denom) * 100) : 100;
+
   function toggleGroup(id: string) {
     setOpenGroups((prev) => {
       const n = new Set(prev);
@@ -137,18 +149,39 @@ export default function RulesCatalog() {
       />
 
       {totals && (
-        <p className="hero-caption" style={{ marginTop: "-0.5rem", marginBottom: "1rem" }}>
-          {totals.all} regras · {totals.core} core · {totals.sonar ?? 0} Sonar way (
-          {totals.sonarLive ?? 0} L0 · {totals.sonarStub ?? 0} catálogo) · {totals.platform} plataforma ·{" "}
-          {totals.project} projeto
-          {lintCoverage ? ` · lacunas lint ${lintCoverage.covered}/${lintCoverage.total}` : ""}
-        </p>
+        <>
+          <div className="rules-honesty" role="group" aria-label="Cobertura real do scanner">
+            <div className="rules-honesty__stat">
+              <strong>{livePct}%</strong>
+              <span>disparam no scan nativo</span>
+            </div>
+            <div className="rules-honesty__bar" aria-hidden>
+              <span style={{ width: `${livePct}%` }} />
+            </div>
+            <p className="hero-caption" style={{ margin: 0 }}>
+              {scannable} live (core + estrutural + Sonar L0 + overlays) · {stubCount} stubs Sonar
+              (catálogo / SARIF importado — <em>não</em> rodam no <code>hero-scanner</code> sozinho)
+            </p>
+          </div>
+          <p className="hero-caption" style={{ marginTop: "0.75rem", marginBottom: "1rem" }}>
+            {totals.all} regras · {totals.core} core · {totals.sonar ?? 0} Sonar way (
+            {totals.sonarLive ?? 0} L0 · {totals.sonarStub ?? 0} stub) · {totals.platform} plataforma ·{" "}
+            {totals.project} projeto
+            {lintCoverage ? ` · lacunas lint ${lintCoverage.covered}/${lintCoverage.total}` : ""}
+          </p>
+        </>
       )}
 
-      <Callout tone="ok" title="Sonar way no CodeHero">
-        As 2.668 regras do Sonar way (JS/TS, Python, Java, C#, COBOL, T‑SQL/DB2) estão no catálogo. Detectores L0
-        rodam no scanner CodeHero; as demais ficam como stubs de catálogo e passam a gerar apontamentos quando o
-        SARIF do Sonar é ingerido (rule keys mapeadas para <code>SONAR-*</code>).
+      <Callout tone={stubCount > 0 ? "warn" : "ok"} title="Honestidade do catálogo">
+        {stubCount > 0 ? (
+          <>
+            A maior parte do Sonar way ainda é <strong>stub de catálogo</strong>. Contar stubs como
+            “cobertura CodeHero” infla o número. Use o filtro <em>Sonar L0</em> para ver o que o
+            scanner executa de fato; stubs só geram apontamentos quando o SARIF do Sonar é ingerido.
+          </>
+        ) : (
+          "Nenhum stub Sonar no catálogo ativo — tudo listado dispara no motor ou overlays."
+        )}
       </Callout>
 
       {lintCoverage && lintCoverage.total > 0 && (
@@ -194,8 +227,8 @@ export default function RulesCatalog() {
               ["core", "Só core"],
               ["structural", "Estrutural (AST)"],
               ["sonar", "Sonar way"],
-              ["sonar-live", "Sonar L0"],
-              ["sonar-stub", "Sonar catálogo"],
+              ["sonar-live", "Sonar L0 (live)"],
+              ["sonar-stub", "Sonar stub (não dispara)"],
               ["custom", "Criadas (dress code)"],
             ] as const
           ).map(([id, label]) => (

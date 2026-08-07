@@ -12,4 +12,14 @@ export const PORTAL_ORIGINS = [
 /** Restrict browser CORS; CI/server clients are unaffected (no Origin). */
 export const httpCors = PORTAL_ORIGINS;
 
+/**
+ * When true, callables with `enforceAppCheck: true` reject missing App Check tokens.
+ * Set ENFORCE_APP_CHECK=true in Functions runtime (and NEXT_PUBLIC_FIREBASE_APPCHECK_SITE_KEY on web).
+ */
 export const enforceAppCheck = process.env.ENFORCE_APP_CHECK === "true";
+
+/** Default options for browser-facing mutating callables. */
+export const portalCallableOpts = {
+  cors: httpCors,
+  enforceAppCheck,
+} as const;

@@ -14,6 +14,9 @@ import {
   type HeroRule,
   type SarifResult,
 } from "@codehero/contracts";
+import { parseGithubUrl } from "./githubUrl.ts";
+
+export { parseGithubUrl } from "./githubUrl.ts";
 
 const require = createRequire(import.meta.url);
 
@@ -44,12 +47,6 @@ export interface RepoScanFinding {
     cwe: string[];
     effortMin?: number;
   };
-}
-
-export function parseGithubUrl(url: string): { owner: string; repo: string; branch: string } | null {
-  const m = url.match(/^https?:\/\/github\.com\/([^/]+)\/([^/#?]+?)(?:\.git)?(?:\/tree\/([^/#?]+))?\/?$/i);
-  if (!m) return null;
-  return { owner: m[1]!, repo: m[2]!.replace(/\.git$/, ""), branch: m[3] ?? "main" };
 }
 
 export interface AdmZipEntry {

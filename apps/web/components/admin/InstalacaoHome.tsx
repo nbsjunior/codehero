@@ -18,6 +18,7 @@ import {
 } from "@/lib/api";
 import { useAuth } from "@/lib/useAuth";
 import { useFeatureFlag } from "@/lib/useFeatureFlag";
+import OnboardingChecklist, { buildOnboardingSteps } from "@/components/admin/OnboardingChecklist";
 
 interface ProjectRow {
   id: string;
@@ -93,6 +94,18 @@ function InstalacaoHome() {
         remediationEffortMin: f.ficha?.effortMin,
       })),
     [preview],
+  );
+
+  const onboardingSteps = useMemo(
+    () =>
+      buildOnboardingSteps({
+        user,
+        projectCount: projects.length,
+        repoCount: projects.reduce((n, p) => n + (p.repoCount || 0), 0),
+        openIssues: projects.reduce((n, p) => n + (p.openIssues || 0), 0),
+        hasIngestTokenFlash: !!ingestToken,
+      }),
+    [user, projects, ingestToken],
   );
 
   const loadProjects = useCallback(async (admin: boolean) => {
@@ -282,6 +295,11 @@ function InstalacaoHome() {
             {showProvision ? "Fechar" : "Novo projeto"}
           </button>
         }
+      />
+
+      <OnboardingChecklist
+        steps={onboardingSteps}
+        onCreateProject={() => setShowProvision(true)}
       />
 
       <section className="hero-panel" style={{ padding: "1.35rem 1.5rem", marginTop: 0, marginBottom: "1rem" }}>

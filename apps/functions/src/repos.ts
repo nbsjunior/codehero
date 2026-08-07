@@ -7,6 +7,7 @@ import { assertRepoQuota } from "./lib/quotas.ts";
 import { generateIngestToken, storeIngestToken } from "./lib/ingestToken.ts";
 import { requireVerifiedEmail } from "./lib/authz.ts";
 import { parseGithubUrl } from "./lib/repoScan.ts";
+import { portalCallableOpts } from "./lib/httpSecurity.ts";
 
 interface AddRepoInput {
   orgId: string;
@@ -22,7 +23,7 @@ interface AddRepoInput {
  * member may add a repo; each gets its own ingestToken so its CI pipeline is
  * independent of siblings in the same project.
  */
-export const addRepoToProject = onCall<AddRepoInput>(async (request) => {
+export const addRepoToProject = onCall<AddRepoInput>(portalCallableOpts, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
   await requireVerifiedEmail(uid);

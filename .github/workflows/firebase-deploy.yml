@@ -118,6 +118,7 @@ jobs:
           cat > apps/functions/.env <<EOF
           HERO_VERTEX_ENABLED=${{ vars.HERO_VERTEX_ENABLED || 'false' }}
           HERO_VERTEX_REGION=${{ vars.HERO_VERTEX_REGION || 'global' }}
+          ENFORCE_APP_CHECK=${{ vars.ENFORCE_APP_CHECK || 'false' }}
           EOF
           echo "--- apps/functions/.env ---"
           cat apps/functions/.env
