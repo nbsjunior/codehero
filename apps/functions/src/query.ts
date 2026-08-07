@@ -2,21 +2,19 @@ import { onRequest } from "firebase-functions/v2/https";
 import { SddSpecSchema, type Severity } from "@codehero/contracts";
 import { repoRef } from "./lib/firebase.ts";
 import { buildSpecFromIssue, type IssueData } from "./lib/sddBuilder.ts";
+import { verifyIngestToken } from "./lib/ingestToken.ts";
+import { httpCors } from "./lib/httpSecurity.ts";
 
 /** Verify the per-repo ingest token from the Authorization header. */
 async function authorizeRepo(orgId: string, projectId: string, repoId: string, authHeader: string | undefined) {
-  const token = (authHeader ?? "").replace(/^Bearer\s+/i, "");
-  const rSnap = await repoRef(orgId, projectId, repoId).get();
-  if (!rSnap.exists) return { ok: false as const, status: 404, error: "repo_not_found" };
-  if (!token || token !== rSnap.get("ingestToken")) return { ok: false as const, status: 401, error: "unauthorized" };
-  return { ok: true as const };
+  return verifyIngestToken(repoRef(orgId, projectId, repoId), authHeader);
 }
 
 /**
  * Token-guarded read API for agents/CI (the MCP server proxies this).
  * GET /listIssues?orgId=..&projectId=..&repoId=..&severity=CRITICAL&newCodeOnly=true&limit=100&cursor=<docId>
  */
-export const listIssues = onRequest({ cors: true, maxInstances: 100 }, async (req, res) => {
+export const listIssues = onRequest({ cors: httpCors, maxInstances: 100 }, async (req, res) => {
   const orgId = String(req.query.orgId ?? "");
   const projectId = String(req.query.projectId ?? "");
   const repoId = String(req.query.repoId ?? "");
@@ -59,7 +57,7 @@ export const listIssues = onRequest({ cors: true, maxInstances: 100 }, async (re
  * Token-guarded SDD spec builder for agents/CI.
  * POST /sddSpec { orgId, projectId, repoId, fingerprint }
  */
-export const sddSpec = onRequest({ cors: true }, async (req, res) => {
+export const sddSpec = onRequest({ cors: httpCors }, async (req, res) => {
   if (req.method !== "POST") {
     res.status(405).json({ error: "method_not_allowed" });
     return;

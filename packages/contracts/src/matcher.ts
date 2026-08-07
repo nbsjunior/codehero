@@ -90,9 +90,14 @@ export function matchPattern(
   const linhasAlvo = alvo.split(/\r?\n/);
   const linhasCruas = source.split(/\r?\n/);
   const matches: PatternMatch[] = [];
+  const MAX_LINE = 8_000;
+  const MAX_MATCHES = 500;
 
   for (let i = 0; i < linhasAlvo.length; i++) {
+    if (matches.length >= MAX_MATCHES) break;
     const linha = linhasAlvo[i] ?? "";
+    // Skip pathological lines (minified / generated) that amplify ReDoS risk.
+    if (linha.length > MAX_LINE) continue;
     const m = re.exec(linha);
     if (!m) continue;
     const crua = linhasCruas[i] ?? linha;

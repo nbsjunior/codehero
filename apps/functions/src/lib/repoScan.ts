@@ -1,12 +1,13 @@
 import { createWriteStream, existsSync, mkdirSync, readFileSync, readdirSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { join, resolve, sep } from "node:path";
 import { pipeline } from "node:stream/promises";
-import { Readable } from "node:stream";
+import { Readable, Transform } from "node:stream";
 import { createRequire } from "node:module";
 import { createHash } from "node:crypto";
 import { HttpsError } from "firebase-functions/v2/https";
 import {
   matchPattern,
+  buildLexicalMask,
   buildFindingFicha,
   severityToSarifLevel,
   HERO_FINGERPRINT_ALGO,
@@ -71,6 +72,33 @@ export function loadAdmZip(): new (path: string) => AdmZipInstance {
   }
 }
 
+/** Hard cap on GitHub zip download (compressed). */
+export const MAX_ZIP_BYTES = 80 * 1024 * 1024;
+/** Hard cap on uncompressed bytes extracted. */
+export const MAX_EXTRACT_BYTES = 200 * 1024 * 1024;
+
+function assertSafeZipEntry(entryName: string, extractDir: string): string {
+  const normalized = entryName.replace(/\\/g, "/");
+  if (!normalized || normalized.startsWith("/") || normalized.includes("\0")) {
+    throw new HttpsError("invalid-argument", "zip entry path inválido");
+  }
+  if (normalized.split("/").some((p) => p === ".." || p === "")) {
+    // allow "" only from trailing slash dirs — reject ..
+    if (normalized.split("/").includes("..")) {
+      throw new HttpsError("invalid-argument", "zip slip bloqueado");
+    }
+  }
+  if (normalized.split("/").includes("..")) {
+    throw new HttpsError("invalid-argument", "zip slip bloqueado");
+  }
+  const dest = resolve(extractDir, normalized);
+  const root = resolve(extractDir) + sep;
+  if (dest !== resolve(extractDir) && !dest.startsWith(root)) {
+    throw new HttpsError("invalid-argument", "zip slip bloqueado");
+  }
+  return dest;
+}
+
 export async function downloadGithubZip(
   parsed: { owner: string; repo: string; branch: string },
   zipPath: string,
@@ -82,7 +110,29 @@ export async function downloadGithubZip(
       headers: { "User-Agent": "CodeHero-repoScan" },
     });
     if (res.ok && res.body) {
-      await pipeline(Readable.fromWeb(res.body as never), createWriteStream(zipPath));
+      const len = Number(res.headers.get("content-length") ?? 0);
+      if (Number.isFinite(len) && len > MAX_ZIP_BYTES) {
+        throw new HttpsError("resource-exhausted", "Repositório zip excede o limite de download.");
+      }
+      let downloaded = 0;
+      const limiter = new Transform({
+        transform(chunk, _enc, cb) {
+          downloaded += chunk.length;
+          if (downloaded > MAX_ZIP_BYTES) {
+            cb(new Error("zip_too_large"));
+            return;
+          }
+          cb(null, chunk);
+        },
+      });
+      try {
+        await pipeline(Readable.fromWeb(res.body as never), limiter, createWriteStream(zipPath));
+      } catch (err) {
+        if (err instanceof Error && /zip_too_large/.test(err.message)) {
+          throw new HttpsError("resource-exhausted", "Repositório zip excede o limite de download.");
+        }
+        throw err;
+      }
       return;
     }
   }
@@ -114,6 +164,9 @@ const SCAN_EXTS = new Set([
 
 const EXCLUDED_DIR_NAMES = new Set(["node_modules", ".git", "dist", ".next"]);
 
+/** Files larger than this are skipped entirely. */
+const MAX_FILE_SIZE_BYTES = 3_000_000;
+
 function extOf(name: string): string {
   const dot = name.lastIndexOf(".");
   return dot >= 0 ? name.slice(dot).toLowerCase() : "";
@@ -129,12 +182,22 @@ function extOf(name: string): string {
  */
 export function extractScannableEntries(zip: AdmZipInstance, extractDir: string, budget: number): number {
   let extracted = 0;
+  let uncompressed = 0;
+  mkdirSync(extractDir, { recursive: true });
   for (const entry of zip.getEntries()) {
     if (extracted >= budget) break;
     if (entry.isDirectory) continue;
-    const parts = entry.entryName.split("/");
+    const parts = entry.entryName.replace(/\\/g, "/").split("/");
+    if (parts.includes("..")) continue;
     if (parts.some((p) => EXCLUDED_DIR_NAMES.has(p))) continue;
     if (!SCAN_EXTS.has(extOf(entry.entryName))) continue;
+    assertSafeZipEntry(entry.entryName, extractDir);
+    const rawSize = Number((entry as AdmZipEntry & { header?: { size?: number } }).header?.size ?? 0);
+    if (rawSize > MAX_FILE_SIZE_BYTES) continue;
+    uncompressed += rawSize > 0 ? rawSize : 0;
+    if (uncompressed > MAX_EXTRACT_BYTES) {
+      throw new HttpsError("resource-exhausted", "Extração do zip excede o limite de bytes.");
+    }
     zip.extractEntryTo(entry, extractDir, true, true);
     extracted += 1;
   }
@@ -181,8 +244,6 @@ export interface ScanTreeResult {
  *  now that extraction is selective (see extractScannableEntries), so the
  *  cost of a bigger budget is mostly read+regex time, not disk I/O. */
 export const DEFAULT_FILE_BUDGET = 3000;
-/** Files larger than this are skipped entirely (not read, not counted in LOC) — guards against pathological single-file cost (minified bundles, generated code, data dumps). */
-const MAX_FILE_SIZE_BYTES = 3_000_000;
 
 export function scanTree(root: string, rules: HeroRule[], fileBudget = DEFAULT_FILE_BUDGET): ScanTreeResult {
   const findings: RepoScanFinding[] = [];
@@ -200,10 +261,11 @@ export function scanTree(root: string, rules: HeroRule[], fileBudget = DEFAULT_F
     filesScanned += 1;
     linesOfCode += source.length ? source.split("\n").length : 0;
     const rel = file.slice(root.length + 1).replace(/\\/g, "/");
+    const mask = buildLexicalMask(source);
     for (const rule of rules) {
       let matches;
       try {
-        matches = matchPattern(rule.pattern, source);
+        matches = matchPattern(rule.pattern, source, { mask });
       } catch {
         continue;
       }

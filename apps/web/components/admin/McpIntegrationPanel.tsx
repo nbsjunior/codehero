@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import CopyButton from "@/components/CopyButton";
 import { Callout, DataSection, PageHeader } from "@/components/AdminUi";
-import { dbClient } from "@/lib/firebase";
+import { dbClient } from "@/lib/firebaseDb";
 import { HERO_CORE_URL } from "@/lib/heroCoreUrl";
 import type { AdminProjectRow } from "@/lib/api";
 
@@ -67,17 +67,21 @@ export default function McpIntegrationPanel({
     [projects, orgProjectKey],
   );
 
+  const [pastedToken, setPastedToken] = useState("");
+
   const loadRepos = useCallback(async (orgId: string, projectId: string) => {
     setReposLoading(true);
     setReposError(null);
     try {
       const snap = await getDocs(collection(dbClient, "orgs", orgId, "projects", projectId, "repos"));
       const list: RepoWithToken[] = snap.docs.map((d) => {
-        const data = d.data() as { name?: string; ingestToken?: string };
+        const data = d.data() as { name?: string; ingestToken?: string; ingestTokenHint?: string };
         return {
           repoId: d.id,
           name: data.name || d.id,
-          ingestToken: data.ingestToken ?? "",
+          // Never trust client-readable Firestore for the bearer — paste after rotate.
+          ingestToken: "",
+          hint: data.ingestTokenHint ?? "",
         };
       });
       setRepos(list);
@@ -103,11 +107,13 @@ export default function McpIntegrationPanel({
     [repos, repoId],
   );
 
+  const effectiveToken = pastedToken.trim() || selectedRepo?.ingestToken || "";
+
   const mcpEnv =
-    selectedProject && selectedRepo?.ingestToken
+    selectedProject && selectedRepo && effectiveToken
       ? {
           HERO_CORE_URL,
-          HERO_TOKEN: selectedRepo.ingestToken,
+          HERO_TOKEN: effectiveToken,
           HERO_ORG_ID: selectedProject.orgId,
           HERO_PROJECT_ID: selectedProject.projectId,
           HERO_REPO_ID: selectedRepo.repoId,
@@ -247,10 +253,21 @@ export default function McpIntegrationPanel({
                 {repos.map((r) => (
                   <option key={r.repoId} value={r.repoId}>
                     {r.name}
-                    {!r.ingestToken ? " (sem token)" : ""}
+                    {!r.ingestToken ? " (cole o token após rotacionar no workspace)" : ""}
                   </option>
                 ))}
               </select>
+            </label>
+            <label style={{ display: "grid", gap: "0.35rem" }}>
+              <span className="hero-caption">Token de ingestão (colar após rotacionar)</span>
+              <input
+                className="hero-input"
+                type="password"
+                autoComplete="off"
+                placeholder="chp_…"
+                value={pastedToken}
+                onChange={(e) => setPastedToken(e.target.value)}
+              />
             </label>
             {reposError && <div className="hero-error">{reposError}</div>}
             {selectedProject && onOpenWorkspace && (

@@ -1,6 +1,6 @@
 "use client";
 import { httpsCallable } from "firebase/functions";
-import { functions } from "./firebase";
+import { functions } from "./firebaseFunctions";
 
 export interface ProvisionResult {
   orgId: string;
@@ -708,12 +708,20 @@ export interface AdminIssuesResult {
   topCauses: AdminRuleCause[];
   mostFindings: AdminRepoFindingCount[];
   leastFindings: AdminRepoFindingCount[];
+  nextCursor?: string | null;
+  truncated?: boolean;
 }
 
-export async function adminListAllIssues(): Promise<AdminIssuesResult> {
-  const fn = httpsCallable<undefined, AdminIssuesResult>(functions, "adminListAllIssues");
+export async function adminListAllIssues(input?: {
+  cursor?: string;
+  limit?: number;
+}): Promise<AdminIssuesResult> {
+  const fn = httpsCallable<{ cursor?: string; limit?: number } | undefined, AdminIssuesResult>(
+    functions,
+    "adminListAllIssues",
+  );
   try {
-    const res = await fn();
+    const res = await fn(input);
     return res.data;
   } catch (err) {
     throw new Error(formatCallableError(err, "Falha ao carregar os apontamentos."));

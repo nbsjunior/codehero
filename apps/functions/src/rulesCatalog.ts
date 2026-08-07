@@ -157,33 +157,31 @@ export const listMotorRules = onCall(async (request) => {
   }
 
   if (admin) {
-    const orgsSnap = await db.collection("orgs").get();
-    await Promise.all(
-      orgsSnap.docs.map(async (orgDoc) => {
-        const orgName = (orgDoc.data().name as string | undefined) ?? orgDoc.id;
-        const projectsSnap = await orgDoc.ref.collection("projects").get();
-        await Promise.all(
-          projectsSnap.docs.map(async (p) => {
-            const projectName = (p.data().name as string | undefined) ?? p.id;
-            const rulesSnap = await p.ref.collection("dressRules").limit(200).get();
-            for (const d of rulesSnap.docs) {
-              const rule = asHeroRule(d.data() as Record<string, unknown>, d.id);
-              if (!rule) continue;
-              rows.push(
-                toRow(rule, {
-                  source: "project",
-                  canDelete: true,
-                  orgId: orgDoc.id,
-                  projectId: p.id,
-                  orgName,
-                  projectName,
-                }),
-              );
-            }
+    // collectionGroup avoids org→project→dressRules N+1 fan-out.
+    try {
+      const cg = await db.collectionGroup("dressRules").limit(2000).get();
+      for (const d of cg.docs) {
+        const parts = d.ref.path.split("/");
+        // orgs/{orgId}/projects/{projectId}/dressRules/{id}
+        if (parts.length < 6 || parts[0] !== "orgs" || parts[2] !== "projects") continue;
+        const orgId = parts[1]!;
+        const projectId = parts[3]!;
+        const rule = asHeroRule(d.data() as Record<string, unknown>, d.id);
+        if (!rule) continue;
+        rows.push(
+          toRow(rule, {
+            source: "project",
+            canDelete: true,
+            orgId,
+            projectId,
+            orgName: orgId,
+            projectName: projectId,
           }),
         );
-      }),
-    );
+      }
+    } catch (err) {
+      console.error("listMotorRules collectionGroup dressRules", err);
+    }
   } else {
     const orgIds = await memberOrgIds(uid);
     await Promise.all(

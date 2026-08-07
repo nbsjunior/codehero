@@ -3,6 +3,7 @@ import { useEffect, useId, useRef, useState } from "react";
 
 /**
  * Renders a Mermaid diagram client-side (works with Next static export).
+ * Defers the heavy mermaid chunk until the figure enters the viewport.
  */
 export default function MermaidDiagram({
   chart,
@@ -14,8 +15,30 @@ export default function MermaidDiagram({
   const reactId = useId().replace(/:/g, "");
   const hostRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    const el = hostRef.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setVisible(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setVisible(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "200px 0px", threshold: 0.01 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!visible) return;
     let cancelled = false;
     async function render() {
       if (!hostRef.current) return;
@@ -59,7 +82,7 @@ export default function MermaidDiagram({
     return () => {
       cancelled = true;
     };
-  }, [chart, reactId]);
+  }, [chart, reactId, visible]);
 
   return (
     <figure className="cr-docs-diagram">

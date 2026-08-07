@@ -7,8 +7,6 @@ import { loadCorpus } from "@codehero/ruleforge";
 import { computeLintCoverage, formatLintGapDigest, lintGapWindowSeed } from "@codehero/contracts";
 import { db } from "./lib/firebase.ts";
 import { loadActiveRules } from "./lib/activeRules.ts";
-import { ruleforgeDailyFlow, type RuleforgeDailyReport } from "./genkit/ruleforgeFlow.ts";
-import { draftToEnqueue, proposeNewRulesBatch } from "./genkit/newRulesFlow.ts";
 import { getCveDigestForPrompt } from "./lib/cveWatchlist.ts";
 import { describeRouting } from "./genkit/models.ts";
 import {
@@ -16,6 +14,8 @@ import {
   enqueueNewRuleProposals,
   loadFirestoreCorpusCases,
 } from "./ruleProposals.ts";
+
+import type { RuleforgeDailyReport } from "./genkit/ruleforgeFlow.ts";
 
 const GEMINI_API_KEY = defineSecret("GEMINI_API_KEY");
 
@@ -80,6 +80,10 @@ async function runDaily(trigger: "schedule" | "manual"): Promise<
   RuleforgeDailyReport & { proposalsEnqueued: number; newRuleProposals: number }
 > {
   ensureGenkitApiKey();
+  const [{ ruleforgeDailyFlow }, { draftToEnqueue, proposeNewRulesBatch }] = await Promise.all([
+    import("./genkit/ruleforgeFlow.ts"),
+    import("./genkit/newRulesFlow.ts"),
+  ]);
   const feedback = await loadFeedbackContext();
   const firestoreCorpus = await loadFirestoreCorpusCases();
   const packaged = loadCorpus();

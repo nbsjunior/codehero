@@ -4,6 +4,9 @@ import { FieldValue } from "firebase-admin/firestore";
 import { slugifyProjectName } from "@codehero/contracts";
 import { db } from "./lib/firebase.ts";
 import { deriveRepoName } from "./lib/repoName.ts";
+import { generateIngestToken, storeIngestToken } from "./lib/ingestToken.ts";
+import { requireVerifiedEmail, consumeRateLimit } from "./lib/authz.ts";
+import { parseGithubUrl } from "./lib/repoScan.ts";
 
 interface ProvisionInput {
   orgName: string;
@@ -22,9 +25,14 @@ interface ProvisionInput {
 export const provisionProject = onCall<ProvisionInput>(async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
+  await requireVerifiedEmail(uid);
+  await consumeRateLimit(`provision:${uid}`, 10);
 
   const { orgName, projectName, repoUrl } = request.data ?? ({} as ProvisionInput);
   if (!orgName || !projectName) throw new HttpsError("invalid-argument", "orgName and projectName are required");
+  if (repoUrl && !parseGithubUrl(repoUrl)) {
+    throw new HttpsError("invalid-argument", "repoUrl must be a github.com HTTPS URL");
+  }
 
   const orgRef = db.collection("orgs").doc();
   const projectRef = orgRef.collection("projects").doc();
@@ -72,12 +80,11 @@ export const provisionProject = onCall<ProvisionInput>(async (request) => {
   if (repoUrl) {
     const repoDocRef = projectRef.collection("repos").doc();
     repoId = repoDocRef.id;
-    ingestToken = `chp_${randomBytes(24).toString("hex")}`;
+    ingestToken = generateIngestToken();
     batch.set(repoDocRef, {
       name: deriveRepoName(repoUrl),
       repoUrl,
       mainBranch: "main",
-      ingestToken,
       debtMinutes: 0,
       maintainabilityRating: "A",
       securityRating: "A",
@@ -90,11 +97,15 @@ export const provisionProject = onCall<ProvisionInput>(async (request) => {
 
   await batch.commit();
 
+  if (repoId && ingestToken) {
+    await storeIngestToken(projectRef.collection("repos").doc(repoId), ingestToken);
+  }
+
   return {
     orgId: orgRef.id,
     projectId: projectRef.id,
     slug,
     repoId,
-    ingestToken, // shown once — stored as a CI secret by the caller (null if no repoUrl given yet)
+    ingestToken, // shown once — stored under secrets/ci (null if no repoUrl)
   };
 });

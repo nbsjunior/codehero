@@ -1,13 +1,17 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { getAuth } from "firebase-admin/auth";
 import "./lib/firebase.ts"; // ensure Admin app is initialized
+import { consumeRateLimit } from "./lib/authz.ts";
+import { httpCors, enforceAppCheck } from "./lib/httpSecurity.ts";
 
 /**
  * Public one-click signup. Creates the Auth user with Admin SDK and returns a
  * custom token so the web client can sign in even when the Email/Password
  * provider is disabled in the Firebase Console (common shared-project footgun).
  */
-export const registerAccount = onCall({ cors: true }, async (request) => {
+export const registerAccount = onCall(
+  { cors: httpCors, enforceAppCheck },
+  async (request) => {
   if (request.auth?.uid) {
     throw new HttpsError("already-exists", "Você já está autenticado.");
   }
@@ -21,12 +25,15 @@ export const registerAccount = onCall({ cors: true }, async (request) => {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     throw new HttpsError("invalid-argument", "Email inválido.");
   }
-  if (password.length < 6) {
-    throw new HttpsError("invalid-argument", "A senha precisa ter pelo menos 6 caracteres.");
+  if (password.length < 8) {
+    throw new HttpsError("invalid-argument", "A senha precisa ter pelo menos 8 caracteres.");
   }
   if (password.length > 128) {
     throw new HttpsError("invalid-argument", "Senha muito longa.");
   }
+
+  await consumeRateLimit(`register:${email.slice(0, 64)}`, 5);
+  await consumeRateLimit(`register:ip:${request.rawRequest?.ip ?? "unknown"}`, 20);
 
   const auth = getAuth();
   try {
@@ -44,7 +51,7 @@ export const registerAccount = onCall({ cors: true }, async (request) => {
       throw new HttpsError("already-exists", "Já existe uma conta com esse email — use Entrar.");
     }
     if (code === "auth/invalid-password" || code === "auth/weak-password") {
-      throw new HttpsError("invalid-argument", "A senha precisa ter pelo menos 6 caracteres.");
+      throw new HttpsError("invalid-argument", "A senha precisa ter pelo menos 8 caracteres.");
     }
     console.error("registerAccount failed", err);
     throw new HttpsError("internal", "Não foi possível criar a conta. Tente de novo.");

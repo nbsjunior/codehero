@@ -13,6 +13,9 @@ import {
 import { ingestIdempotencyKey, findRecentIngest } from "./lib/ingestIdempotency.ts";
 import { assertBuildQuota, incrementBuildQuota } from "./lib/quotas.ts";
 import { getPlatformOpsConfig } from "./lib/platformOps.ts";
+import { verifyIngestToken } from "./lib/ingestToken.ts";
+import { httpCors } from "./lib/httpSecurity.ts";
+import { consumeRateLimit } from "./lib/authz.ts";
 
 const IngestSchema = z.object({
   orgId: z.string().min(1),
@@ -35,7 +38,7 @@ const IngestSchema = z.object({
  * 4. Enqueue issue upserts via ingestJobs (Firestore trigger worker)
  */
 export const ingestAnalysis = onRequest(
-  { cors: true, maxInstances: 200, memory: "1GiB", timeoutSeconds: 120 },
+  { cors: httpCors, maxInstances: 200, memory: "1GiB", timeoutSeconds: 120 },
   async (req, res) => {
     if (req.method !== "POST") {
       res.status(405).json({ error: "method_not_allowed" });
@@ -50,16 +53,21 @@ export const ingestAnalysis = onRequest(
     const { orgId, projectId, repoId, branch, commit, linesOfCode, newCodeFingerprints, sarif } =
       parsed.data;
 
-    const token = (req.headers.authorization ?? "").replace(/^Bearer\s+/i, "");
     const rRef = repoRef(orgId, projectId, repoId);
-    const rSnap = await rRef.get();
-    if (!rSnap.exists) {
-      res.status(404).json({ error: "repo_not_found" });
-      return;
-    }
-    if (!token || token !== rSnap.get("ingestToken")) {
+    const auth = await verifyIngestToken(rRef, req.headers.authorization);
+    if (!auth.ok) {
       res.status(401).json({ error: "unauthorized" });
       return;
+    }
+
+    try {
+      await consumeRateLimit(`ingest:${orgId}:${repoId}`, 120);
+    } catch (err) {
+      if (err instanceof HttpsError && err.code === "resource-exhausted") {
+        res.status(429).json({ error: "rate_limited", message: err.message });
+        return;
+      }
+      throw err;
     }
 
     try {

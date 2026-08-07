@@ -1,6 +1,9 @@
 import { onCall, onRequest, HttpsError } from "firebase-functions/v2/https";
 import { FieldValue } from "firebase-admin/firestore";
 import { db, repoRef } from "./lib/firebase.ts";
+import { verifyIngestToken } from "./lib/ingestToken.ts";
+import { httpCors } from "./lib/httpSecurity.ts";
+import { requireVerifiedEmail } from "./lib/authz.ts";
 
 type Verdict = "false_positive" | "confirmed" | "fix_accepted" | "fix_rejected";
 
@@ -29,6 +32,7 @@ interface FlagFeedbackInput {
 export const flagIssueFeedback = onCall<FlagFeedbackInput>(async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
+  await requireVerifiedEmail(uid);
 
   const { orgId, projectId, repoId, fingerprint, verdict, note } = request.data ?? ({} as FlagFeedbackInput);
   if (!orgId || !projectId || !repoId || !fingerprint || !verdict) {
@@ -104,7 +108,7 @@ export const flagIssueFeedback = onCall<FlagFeedbackInput>(async (request) => {
  * A human explicitly flagging false_positive/confirmed is the only
  * unambiguous corpus signal.
  */
-export const submitFixResult = onRequest({ cors: true }, async (req, res) => {
+export const submitFixResult = onRequest({ cors: httpCors }, async (req, res) => {
   if (req.method !== "POST") {
     res.status(405).json({ error: "method_not_allowed" });
     return;
@@ -114,15 +118,15 @@ export const submitFixResult = onRequest({ cors: true }, async (req, res) => {
     res.status(400).json({ error: "orgId, projectId, repoId, fingerprint and status are required" });
     return;
   }
-
-  const rRef = repoRef(orgId, projectId, repoId);
-  const rSnap = await rRef.get();
-  if (!rSnap.exists) {
-    res.status(404).json({ error: "repo_not_found" });
+  const allowedStatus = new Set(["applied", "rejected", "skipped", "failed"]);
+  if (!allowedStatus.has(String(status))) {
+    res.status(400).json({ error: "invalid_status", allowed: [...allowedStatus] });
     return;
   }
-  const token = (req.headers.authorization ?? "").replace(/^Bearer\s+/i, "");
-  if (!token || token !== rSnap.get("ingestToken")) {
+
+  const rRef = repoRef(orgId, projectId, repoId);
+  const auth = await verifyIngestToken(rRef, req.headers.authorization);
+  if (!auth.ok) {
     res.status(401).json({ error: "unauthorized" });
     return;
   }

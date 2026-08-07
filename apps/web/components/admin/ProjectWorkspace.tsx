@@ -14,7 +14,7 @@ import {
   VerticalBars,
   countByField,
 } from "@/components/RepoHealthCharts";
-import { dbClient } from "@/lib/firebase";
+import { dbClient } from "@/lib/firebaseDb";
 import {
   addRepoToProject,
   applyOfflineTriage,
@@ -45,7 +45,9 @@ interface RepoData {
   repoId: string;
   name: string;
   repoUrl: string | null;
+  /** Present only after provision/add/rotate — never reloaded from Firestore. */
   ingestToken: string;
+  ingestTokenHint?: string;
   debtMinutes: number;
   maintainabilityRating: string;
   securityRating: string;
@@ -230,6 +232,12 @@ export default function ProjectWorkspace({
         return {
           repoId: d.id,
           ...data,
+          ingestToken: "",
+          ingestTokenHint:
+            (data as { ingestTokenHint?: string }).ingestTokenHint ??
+            (typeof (data as { ingestToken?: string }).ingestToken === "string"
+              ? String((data as { ingestToken?: string }).ingestToken).slice(-6)
+              : ""),
           autoScan: rawAutoScan
             ? {
                 enabled: !!rawAutoScan.enabled,
@@ -1216,8 +1224,16 @@ export default function ProjectWorkspace({
                         <td><code>HERO_TOKEN</code></td>
                         <td>secret</td>
                         <td style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                          <code style={{ fontSize: "0.78rem" }}>••••••••{selectedRepo.ingestToken.slice(-6)}</code>
-                          <CopyButton text={selectedRepo.ingestToken} label="Copiar token" />
+                          <code style={{ fontSize: "0.78rem" }}>
+                            ••••••••{selectedRepo.ingestTokenHint || selectedRepo.ingestToken.slice(-6) || "??????"}
+                          </code>
+                          {selectedRepo.ingestToken ? (
+                            <CopyButton text={selectedRepo.ingestToken} label="Copiar token" />
+                          ) : (
+                            <span className="hero-muted" style={{ fontSize: "0.8rem" }}>
+                              Token só é exibido na criação/rotação — rotacione para obter um novo.
+                            </span>
+                          )}
                         </td>
                       </tr>
                     </tbody>
@@ -1323,8 +1339,16 @@ Aplique o retorno no contexto e só então gere/edite o código.`}
                   o mesmo token usado por CI, IDE e MCP para este repositório — rotacionar invalida todos de uma vez
                 </p>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap", marginTop: "0.75rem" }}>
-                  <code className="hero-badge">••••••••{selectedRepo.ingestToken.slice(-6)}</code>
-                  <CopyButton text={selectedRepo.ingestToken} label="Copiar token completo" />
+                  <code className="hero-badge">
+                    ••••••••{selectedRepo.ingestTokenHint || selectedRepo.ingestToken.slice(-6) || "??????"}
+                  </code>
+                  {selectedRepo.ingestToken ? (
+                    <CopyButton text={selectedRepo.ingestToken} label="Copiar token completo" />
+                  ) : (
+                    <span className="hero-muted" style={{ fontSize: "0.8rem" }}>
+                      Rotacione o token para copiar o valor completo (não fica armazenado no browser).
+                    </span>
+                  )}
                   <button
                     type="button"
                     className="hero-btn hero-btn-outline"

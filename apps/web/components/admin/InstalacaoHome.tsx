@@ -5,7 +5,7 @@ import { collection, collectionGroup, doc, getDoc, getDocs, query, where } from 
 import FindingFichaCard from "@/components/FindingFichaCard";
 import FindingsBrowser, { type FindingsBrowserItem } from "@/components/FindingsBrowser";
 import { PageHeader } from "@/components/AdminUi";
-import { dbClient } from "@/lib/firebase";
+import { dbClient } from "@/lib/firebaseDb";
 import {
   adminListAllProjects,
   checkPlatformAdmin,

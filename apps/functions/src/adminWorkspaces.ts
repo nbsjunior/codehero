@@ -6,6 +6,7 @@ import { db } from "./lib/firebase.ts";
 import { deriveRepoName } from "./lib/repoName.ts";
 import { recomputeProjectAggregate } from "./lib/projectAggregate.ts";
 import { getOrgQuotas } from "./lib/quotas.ts";
+import { generateIngestToken, storeIngestToken } from "./lib/ingestToken.ts";
 
 async function requirePlatformAdmin(uid: string): Promise<void> {
   const snap = await db.doc(`platformAdmins/${uid}`).get();
@@ -114,13 +115,12 @@ export const adminCreateProject = onCall<AdminCreateProjectInput>(async (request
   const repos: Array<{ repoId: string; name: string; repoUrl: string; ingestToken: string }> = [];
   for (const repoUrl of repoUrls) {
     const repoDocRef = projectDoc.collection("repos").doc();
-    const ingestToken = `chp_${randomBytes(24).toString("hex")}`;
+    const ingestToken = generateIngestToken();
     const name = deriveRepoName(repoUrl);
     batch.set(repoDocRef, {
       name,
       repoUrl,
       mainBranch: "main",
-      ingestToken,
       debtMinutes: 0,
       maintainabilityRating: "A",
       securityRating: "A",
@@ -133,6 +133,9 @@ export const adminCreateProject = onCall<AdminCreateProjectInput>(async (request
   }
 
   await batch.commit();
+  for (const r of repos) {
+    await storeIngestToken(projectDoc.collection("repos").doc(r.repoId), r.ingestToken);
+  }
   if (repos.length > 0) {
     await recomputeProjectAggregate(orgId, projectDoc.id);
   }

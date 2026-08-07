@@ -2,6 +2,7 @@ import Link from "next/link";
 import MermaidDiagram from "@/components/MermaidDiagram";
 import DocsTopNav from "@/components/DocsTopNav";
 import LearningLoopStory from "@/components/LearningLoopStory";
+import "./docs.css";
 
 export const metadata = {
   title: "Docs — CodeHero",

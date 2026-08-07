@@ -23,6 +23,7 @@
     "build:ide": "npm run build -w codehero-ide",
     "package:ide": "npm run package -w codehero-ide",
     "build:functions": "npm run build -w @codehero/functions",
+    "build:deploy": "npm run build:contracts && npm run build:engine && npm run build:ruleforge && npm run build:fp-ranker && npm run build:functions",
     "build": "npm run build:contracts && npm run build:engine && npm run build:cpg && npm run build:fp-ranker && npm run build:code-embed && npm run build:scanner && npm run build:ruleforge && npm run build:mcp && npm run build:ide && npm run build:functions",
     "build:locksmith": "npm run build -w @codehero/locksmith",
     "locksmith": "node packages/locksmith/dist/cli.js",

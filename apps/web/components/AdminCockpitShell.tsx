@@ -2,7 +2,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { signOut } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth } from "@/lib/firebaseCore";
 import { useAuth } from "@/lib/useAuth";
 
 export interface CockpitNavItem {

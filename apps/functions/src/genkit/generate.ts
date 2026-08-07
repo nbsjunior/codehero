@@ -1,9 +1,6 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { AnthropicVertex } from "@anthropic-ai/vertex-sdk";
 import { logger } from "firebase-functions";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import type { z } from "genkit";
-import { ai, googleAI } from "./ai.ts";
 import {
   resolveRoute,
   vertexProjectId,
@@ -16,9 +13,8 @@ import {
 // One structured-generation entry point for every ruleforge flow, so a role
 // can be re-routed to another provider without touching flow code.
 //
-// Both providers are asked for the SAME zod schema; the Anthropic path
-// converts it to JSON Schema and re-validates the reply with zod, so a
-// malformed structured output fails here rather than downstream.
+// Anthropic / Genkit SDKs are loaded via dynamic import so cold starts of
+// non-AI Functions (ingest, query, …) do not pay for the agent stack.
 // ---------------------------------------------------------------------------
 
 /**
@@ -55,25 +51,34 @@ export function toVertexModelId(model: string): string {
   return VERTEX_MODEL_IDS[model] ?? model;
 }
 
-let anthropicClient: Anthropic | null = null;
-let vertexClient: AnthropicVertex | null = null;
+type ClaudeClient = {
+  messages: {
+    create: (args: Record<string, unknown>) => Promise<{
+      stop_reason: string | null;
+      stop_details?: { type?: string } | null;
+      content: Array<{ type: string; text?: string }>;
+    }>;
+  };
+};
 
-/**
- * Ambos os clientes expõem a mesma `messages.create`, então o resto do
- * adaptador não precisa saber por onde a chamada saiu.
- */
-function getClaudeClient(provider: ModelProvider): Anthropic | AnthropicVertex {
+let anthropicClient: ClaudeClient | null = null;
+let vertexClient: ClaudeClient | null = null;
+
+async function getClaudeClient(provider: ModelProvider): Promise<ClaudeClient> {
   if (provider === "vertex") {
-    // Autenticação por Application Default Credentials: nas Functions é a
-    // própria service account do runtime, sem chave para guardar.
-    vertexClient ??= new AnthropicVertex({
-      projectId: vertexProjectId() ?? undefined,
-      region: vertexRegion(),
-    });
+    if (!vertexClient) {
+      const { AnthropicVertex } = await import("@anthropic-ai/vertex-sdk");
+      vertexClient = new AnthropicVertex({
+        projectId: vertexProjectId() ?? undefined,
+        region: vertexRegion(),
+      }) as unknown as ClaudeClient;
+    }
     return vertexClient;
   }
-  // Construído tarde: o secret só existe no momento da chamada.
-  anthropicClient ??= new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  if (!anthropicClient) {
+    const { default: Anthropic } = await import("@anthropic-ai/sdk");
+    anthropicClient = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }) as unknown as ClaudeClient;
+  }
   return anthropicClient;
 }
 
@@ -101,6 +106,7 @@ async function generateWithGemini<T extends z.ZodTypeAny>(
   opts: GenerateOptions<T>,
   model: string,
 ): Promise<z.infer<T> | null> {
+  const { ai, googleAI } = await import("./ai.ts");
   const { output } = await ai.generate({
     model: googleAI.model(model),
     prompt: opts.prompt,
@@ -127,8 +133,9 @@ async function generateWithClaude<T extends z.ZodTypeAny>(
   // quebraria os padrões.
   const modern = supportsAdaptiveThinking(model);
   const wireModel = provider === "vertex" ? toVertexModelId(model) : model;
+  const client = await getClaudeClient(provider);
 
-  const response = await getClaudeClient(provider).messages.create({
+  const response = await client.messages.create({
     model: wireModel,
     max_tokens: opts.maxTokens ?? 16000,
     // Adaptive é o único on-mode no Sonnet 5, e fica desligado se não for
@@ -153,8 +160,8 @@ async function generateWithClaude<T extends z.ZodTypeAny>(
   }
 
   const text = response.content
-    .filter((b): b is Anthropic.TextBlock => b.type === "text")
-    .map((b) => b.text)
+    .filter((b) => b.type === "text" && typeof b.text === "string")
+    .map((b) => b.text ?? "")
     .join("");
   if (!text.trim()) return null;
 

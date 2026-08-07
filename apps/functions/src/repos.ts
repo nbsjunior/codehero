@@ -1,10 +1,12 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
-import { randomBytes } from "node:crypto";
 import { FieldValue } from "firebase-admin/firestore";
 import { db, projectRef } from "./lib/firebase.ts";
 import { deriveRepoName } from "./lib/repoName.ts";
 import { recomputeProjectAggregate } from "./lib/projectAggregate.ts";
 import { assertRepoQuota } from "./lib/quotas.ts";
+import { generateIngestToken, storeIngestToken } from "./lib/ingestToken.ts";
+import { requireVerifiedEmail } from "./lib/authz.ts";
+import { parseGithubUrl } from "./lib/repoScan.ts";
 
 interface AddRepoInput {
   orgId: string;
@@ -23,10 +25,14 @@ interface AddRepoInput {
 export const addRepoToProject = onCall<AddRepoInput>(async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
+  await requireVerifiedEmail(uid);
 
   const { orgId, projectId, repoUrl, name } = request.data ?? ({} as AddRepoInput);
   if (!orgId || !projectId || !repoUrl) {
     throw new HttpsError("invalid-argument", "orgId, projectId and repoUrl are required");
+  }
+  if (!parseGithubUrl(repoUrl)) {
+    throw new HttpsError("invalid-argument", "repoUrl must be a github.com HTTPS URL");
   }
 
   const member = await db.doc(`orgs/${orgId}/members/${uid}`).get();
@@ -53,12 +59,11 @@ export const addRepoToProject = onCall<AddRepoInput>(async (request) => {
   await assertRepoQuota(orgId, orgRepoCount);
 
   const repoDocRef = pRef.collection("repos").doc();
-  const ingestToken = `chp_${randomBytes(24).toString("hex")}`;
+  const ingestToken = generateIngestToken();
   await repoDocRef.set({
     name: name?.trim() || deriveRepoName(repoUrl),
     repoUrl,
     mainBranch: "main",
-    ingestToken,
     debtMinutes: 0,
     maintainabilityRating: "A",
     securityRating: "A",
@@ -68,6 +73,7 @@ export const addRepoToProject = onCall<AddRepoInput>(async (request) => {
     addedBy: uid,
   });
 
+  await storeIngestToken(repoDocRef, ingestToken);
   await recomputeProjectAggregate(orgId, projectId);
 
   return { repoId: repoDocRef.id, ingestToken };

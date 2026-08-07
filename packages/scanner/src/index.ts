@@ -13,7 +13,8 @@ import {
   type Severity,
 } from "@codehero/contracts";
 import { analyzeSource, enableScanCache, type Finding } from "./engine.ts";
-import { collectFiles } from "./walk.ts";
+import { collectFilesAsync } from "./walk.ts";
+import { mapPool } from "./pool.ts";
 import { loadIgnoreFile, makeIgnoreMatcher, IGNORE_FILE } from "./ignore.ts";
 import { parseCoverageFile } from "./coverage.ts";
 import { collectStructural, type StructuralSummary } from "./metrics.ts";
@@ -26,6 +27,8 @@ import { runJoernScan } from "@codehero/cpg-joern";
 import { scoreFinding, DEFAULT_MODEL } from "@codehero/fp-ranker";
 import { collectExternalSarifs } from "./externalTools.ts";
 import { colapsaEcoEntreFerramentas } from "./dedupeCrossTool.ts";
+
+const SCAN_CONCURRENCY = Math.max(1, Number(process.env.CODEHERO_SCAN_CONCURRENCY ?? 8) || 8);
 
 interface CliOptions {
   paths: string[];
@@ -149,7 +152,7 @@ async function main(): Promise<void> {
   const cwd = process.cwd();
   // CLI patterns stack on top of .codeheroignore rather than replacing it.
   const ignorePatterns = [...loadIgnoreFile(cwd), ...opts.ignore];
-  const files = collectFiles(opts.paths, makeIgnoreMatcher(ignorePatterns));
+  const files = await collectFilesAsync(opts.paths, makeIgnoreMatcher(ignorePatterns));
   const findings: Finding[] = [];
   let linesOfCode = 0;
 
@@ -165,46 +168,80 @@ async function main(): Promise<void> {
   const copyStats = { arquivos: 0, resolvidos: 0, ausentes: new Set<string>(), linhas: 0, ciclos: 0 };
   const origensPorArquivo = new Map<string, Array<{ file: string; line: number; depth: number }>>();
 
-  for (const file of files) {
+  type FileResult = {
+    findings: Finding[];
+    loc: number;
+    metric?: { path: string; source: string };
+    copy?: {
+      resolved: number;
+      missing: string[];
+      expandedLines: number;
+      cycles: number;
+      origins: Array<{ file: string; line: number; depth: number }>;
+      rel: string;
+    };
+  };
+
+  const fileResults = await mapPool(files, SCAN_CONCURRENCY, async (file): Promise<FileResult> => {
     let source: string;
     try {
       source = readFileSync(file, "utf8");
     } catch {
-      continue;
+      return { findings: [], loc: 0 };
     }
-    linesOfCode += source.length ? source.split("\n").length : 0;
+    const loc = source.length ? source.split("\n").length : 0;
     const rel = relative(cwd, file) || file;
 
     if (/\.(cbl|cob|cpy)$/i.test(file)) {
       const exp = expandCopybooks(source, { file: rel, resolver: copybooks });
-      copyStats.arquivos++;
-      copyStats.resolvidos += exp.resolved.length;
-      for (const m of exp.missing) copyStats.ausentes.add(m);
-      copyStats.linhas += exp.expandedLines;
-      copyStats.ciclos += exp.cycles.length;
-
+      const out: Finding[] = [];
       for (const f of analyzeSource(rel, exp.source, rules)) {
         // Remapeia para a origem: sem isto o achado apontaria para a linha
         // DESLOCADA, e "campo na linha 380" num programa de 200 linhas destroi
         // a confianca no relatorio inteiro.
         const o = exp.origins[f.startLine - 1];
-        findings.push(o ? { ...f, file: o.file, startLine: o.line } : f);
+        out.push(o ? { ...f, file: o.file, startLine: o.line } : f);
       }
-      if (opts.metrics) {
-        paraMetricas.push({ path: rel, source: exp.source });
-        // O mapa precisa sobreviver ate DEPOIS das metricas: as analises COBOL
-        // rodam sobre o fonte EXPANDIDO, e sem remapear elas apontariam para a
-        // linha deslocada — mesmo defeito que o mapa existe para evitar.
-        // Chave normalizada: `computeFileMetrics` troca `\` por `/`, e no
-        // Windows o caminho relativo vem com `\` — sem normalizar dos dois
-        // lados a busca nunca casa e o remapeamento vira no-op silencioso.
-        origensPorArquivo.set(rel.split("\\").join("/"), exp.origins);
-      }
-      continue;
+      return {
+        findings: out,
+        loc,
+        metric: opts.metrics ? { path: rel, source: exp.source } : undefined,
+        copy: {
+          resolved: exp.resolved.length,
+          missing: exp.missing,
+          expandedLines: exp.expandedLines,
+          cycles: exp.cycles.length,
+          origins: exp.origins,
+          rel,
+        },
+      };
     }
 
-    for (const f of analyzeSource(rel, source, rules)) findings.push(f);
-    if (opts.metrics) paraMetricas.push({ path: rel, source });
+    return {
+      findings: analyzeSource(rel, source, rules),
+      loc,
+      metric: opts.metrics ? { path: rel, source } : undefined,
+    };
+  });
+
+  for (const fr of fileResults) {
+    linesOfCode += fr.loc;
+    for (const f of fr.findings) findings.push(f);
+    if (fr.metric) paraMetricas.push(fr.metric);
+    if (fr.copy) {
+      copyStats.arquivos++;
+      copyStats.resolvidos += fr.copy.resolved;
+      for (const m of fr.copy.missing) copyStats.ausentes.add(m);
+      copyStats.linhas += fr.copy.expandedLines;
+      copyStats.ciclos += fr.copy.cycles;
+      // O mapa precisa sobreviver ate DEPOIS das metricas: as analises COBOL
+      // rodam sobre o fonte EXPANDIDO, e sem remapear elas apontariam para a
+      // linha deslocada — mesmo defeito que o mapa existe para evitar.
+      // Chave normalizada: `computeFileMetrics` troca `\` por `/`, e no
+      // Windows o caminho relativo vem com `\` — sem normalizar dos dois
+      // lados a busca nunca casa e o remapeamento vira no-op silencioso.
+      origensPorArquivo.set(fr.copy.rel.split("\\").join("/"), fr.copy.origins);
+    }
   }
 
   if (copyStats.arquivos > 0 && copyStats.ausentes.size > 0) {

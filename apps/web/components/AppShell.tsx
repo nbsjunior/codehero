@@ -3,7 +3,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, sendEmailVerification } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth } from "@/lib/firebaseCore";
 import { useAuth } from "@/lib/useAuth";
 
 /** Persistent nudge until the user confirms email — previews/scans require it (see previewScan.ts). */

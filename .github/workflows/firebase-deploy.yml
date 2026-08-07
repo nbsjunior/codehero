@@ -17,6 +17,21 @@ name: Deploy CodeHero para Firebase
 on:
   push:
     branches: [main]
+    paths:
+      - "apps/**"
+      - "packages/contracts/**"
+      - "packages/engine/**"
+      - "packages/ruleforge/**"
+      - "packages/fp-ranker/**"
+      - "packages/code-embed/**"
+      - "packages/scanner/**"
+      - "firebase.json"
+      - "firestore.rules"
+      - "firestore.indexes.json"
+      - "storage.rules"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/firebase-deploy.yml"
   workflow_dispatch:
 
 permissions:
@@ -33,6 +48,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+          cache: npm
 
       # Falhar aqui, com mensagem, e melhor do que falhar no `firebase deploy`
       # depois de dez minutos de build.
@@ -52,8 +68,8 @@ jobs:
       - name: Instalar dependencias do monorepo
         run: npm ci
 
-      - name: Build dos contratos e das Functions
-        run: npm run build
+      - name: Build deploy (contratos + ruleforge + functions + web)
+        run: npm run build:deploy
 
       - name: Build do dashboard (Next.js static export)
         working-directory: apps/web
@@ -67,6 +83,7 @@ jobs:
           NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
           NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
           NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}
+          NEXT_PUBLIC_FIREBASE_APPCHECK_SITE_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_APPCHECK_SITE_KEY }}
         run: npm run build
 
       # O .firebaserc versionado tem placeholders de proposito (repo aberto).

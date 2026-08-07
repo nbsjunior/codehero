@@ -86,13 +86,13 @@ export function runOxlint(cwd = process.cwd()): ExternalRunResult {
   const dir = mkdtempSync(join(tmpdir(), "hero-oxlint-"));
   const out = join(dir, "oxlint.sarif");
   // Prefer npx so CI/dev don't need a global install.
-  const r = runCapture("npx", ["--yes", "oxlint@latest", cwd, "-f", "sarif", "-o", out]);
+  const r = runCapture("npx", ["--yes", "oxlint@1.22.0", cwd, "-f", "sarif", "-o", out]);
   if (r.error) {
     return {
       tool: "oxlint",
       ok: false,
       sarifPath: null,
-      hint: "Instale Node e rode: npx oxlint@latest . -f sarif -o oxlint.sarif",
+      hint: "Instale Node e rode: npx oxlint@1.22.0 . -f sarif -o oxlint.sarif",
       stderr: r.error.message,
     };
   }

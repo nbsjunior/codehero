@@ -213,17 +213,24 @@ export const checkPlatformAdmin = onCall(async (request) => {
 });
 
 const MAX_ISSUES = 2000;
+const ISSUES_ORGS_PAGE = 25;
 
 /**
- * Every open finding across every repo/org — consolidated admin view.
- * Queries each repo's issues subcollection (COLLECTION scope — auto-indexed)
- * rather than collectionGroup+status, which needs a single-field exemption
- * that firebase-tools often fails to deploy against the codehero database.
+ * Open findings across repos — paginated by org so the call stays bounded.
+ * Pass `{ cursor }` (last orgId) to continue; `truncated` means more orgs remain.
  */
 export const adminListAllIssues = onCall({ memory: "1GiB", timeoutSeconds: 540 }, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
   await requirePlatformAdmin(uid);
+
+  const { cursor, limit } = (request.data ?? {}) as { cursor?: string; limit?: number };
+  const pageSize = Math.min(100, Math.max(1, limit ?? ISSUES_ORGS_PAGE));
+
+  let orgsQuery = db.collection("orgs").orderBy(FieldPath.documentId()).limit(pageSize);
+  if (cursor) orgsQuery = orgsQuery.startAfter(cursor);
+  const orgsSnap = await orgsQuery.get();
+  const nextCursor = orgsSnap.docs.length === pageSize ? orgsSnap.docs[orgsSnap.docs.length - 1]!.id : null;
 
   type RepoMeta = {
     orgId: string;
@@ -235,7 +242,6 @@ export const adminListAllIssues = onCall({ memory: "1GiB", timeoutSeconds: 540 }
   };
 
   const repos: RepoMeta[] = [];
-  const orgsSnap = await db.collection("orgs").get();
   await Promise.all(
     orgsSnap.docs.map(async (orgDoc) => {
       const orgName = (orgDoc.data().name as string | undefined) ?? orgDoc.id;
@@ -363,5 +369,7 @@ export const adminListAllIssues = onCall({ memory: "1GiB", timeoutSeconds: 540 }
     topCauses,
     mostFindings,
     leastFindings,
+    nextCursor,
+    truncated: nextCursor != null || items.length >= MAX_ISSUES,
   };
 });

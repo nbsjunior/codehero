@@ -2,8 +2,8 @@ import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { defineSecret } from "firebase-functions/params";
 import { FieldValue } from "firebase-admin/firestore";
 import { isUnsafeRegex } from "@codehero/contracts";
-import { interpretDressCode, type DressCodeDraftRule } from "./genkit/dressCodeFlow.ts";
 import { db } from "./lib/firebase.ts";
+import { requireOrgRole, requireVerifiedEmail } from "./lib/authz.ts";
 
 const GEMINI_API_KEY = defineSecret("GEMINI_API_KEY");
 
@@ -27,7 +27,19 @@ async function requireOrgMember(uid: string, orgId: string): Promise<void> {
   }
 }
 
-function toOverlayRule(draft: DressCodeDraftRule, dressCodeId: string) {
+function toOverlayRule(
+  draft: {
+    idSlug: string;
+    name: string;
+    message: string;
+    category: string;
+    severity: string;
+    languages: string[];
+    patternRegex: string;
+    patternUnless?: string;
+  },
+  dressCodeId: string,
+) {
   return {
     id: `HERO-DRESS-${draft.idSlug}`,
     name: draft.name,
@@ -89,6 +101,7 @@ async function handleSubmitDressCode(request: {
 }): Promise<Record<string, unknown>> {
     const uid = request.auth?.uid;
     if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
+    await requireVerifiedEmail(uid);
 
     const data = request.data as SubmitDressCodeInput;
     const text = data?.naturalLanguage?.trim() ?? "";
@@ -96,19 +109,23 @@ async function handleSubmitDressCode(request: {
     if (text.length > 8000) throw new HttpsError("invalid-argument", "dress code text too long");
 
     const scope = data.scope === "project" ? "project" : "global";
+    const requireApproval = !!data.requireApproval;
+    const activate = !requireApproval && data.activate !== false;
+
     if (scope === "global") await requirePlatformAdmin(uid);
     else {
       if (!data.orgId || !data.projectId) {
         throw new HttpsError("invalid-argument", "orgId and projectId required for project scope");
       }
-      await requireOrgMember(uid, data.orgId);
+      // Draft / propose: any member. Activate overlays: owner|admin only.
+      if (activate) await requireOrgRole(data.orgId, uid, ["owner", "admin"]);
+      else await requireOrgMember(uid, data.orgId);
     }
 
     wireGeminiKey();
+    const { interpretDressCode } = await import("./genkit/dressCodeFlow.ts");
     const proposal = await interpretDressCode(text);
     const dressCodeId = db.collection("_").doc().id;
-    const requireApproval = !!data.requireApproval;
-    const activate = !requireApproval && data.activate !== false;
 
     const safeRules = proposal.rules.filter(
       (r) => !isUnsafeRegex(r.patternRegex) && !(r.patternUnless && isUnsafeRegex(r.patternUnless)),

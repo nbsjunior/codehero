@@ -1,4 +1,5 @@
 "use client";
+import dynamic from "next/dynamic";
 import { Fragment, Suspense, useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -7,16 +8,8 @@ import AppShell from "@/components/AppShell";
 import AuthGate from "@/components/AuthGate";
 import AdminCockpitShell, { type CockpitNavGroup } from "@/components/AdminCockpitShell";
 import { Callout, DataSection, KpiCard, KpiGroup, PageHeader } from "@/components/AdminUi";
-import ProjectWorkspace from "@/components/admin/ProjectWorkspace";
-import WorkspaceWizard from "@/components/admin/WorkspaceWizard";
 import InstalacaoHome from "@/components/admin/InstalacaoHome";
-import UsersPanel from "@/components/admin/UsersPanel";
-import RulesCatalog from "@/components/admin/RulesCatalog";
-import McpIntegrationPanel from "@/components/admin/McpIntegrationPanel";
-import RelatorioPanel from "@/components/admin/RelatorioPanel";
-import EsteiraPanel from "@/components/admin/EsteiraPanel";
-import FindingsBrowser, { type FindingsBrowserItem } from "@/components/FindingsBrowser";
-import { dbClient } from "@/lib/firebase";
+import { dbClient } from "@/lib/firebaseDb";
 import { useAuth } from "@/lib/useAuth";
 import {
   adminGetPlatformSummary,
@@ -43,6 +36,19 @@ import {
   type PlatformSummary,
   type RepoRow,
 } from "@/lib/api";
+
+const ProjectWorkspace = dynamic(() => import("@/components/admin/ProjectWorkspace"), { ssr: false });
+const WorkspaceWizard = dynamic(() => import("@/components/admin/WorkspaceWizard"), { ssr: false });
+const UsersPanel = dynamic(() => import("@/components/admin/UsersPanel"), { ssr: false });
+const RulesCatalog = dynamic(() => import("@/components/admin/RulesCatalog"), { ssr: false });
+const McpIntegrationPanel = dynamic(() => import("@/components/admin/McpIntegrationPanel"), { ssr: false });
+const RelatorioPanel = dynamic(() => import("@/components/admin/RelatorioPanel"), { ssr: false });
+const EsteiraPanel = dynamic(() => import("@/components/admin/EsteiraPanel"), { ssr: false });
+const FindingsBrowser = dynamic(
+  () => import("@/components/FindingsBrowser").then((m) => m.default),
+  { ssr: false },
+);
+type FindingsBrowserItem = import("@/components/FindingsBrowser").FindingsBrowserItem;
 
 const SHARED_GROUPS: CockpitNavGroup[] = [
   {
@@ -247,44 +253,49 @@ function AdminPanelInner() {
         membershipSnap.docs.map((d) => d.ref.parent.parent?.id).filter((id): id is string => Boolean(id)),
       ),
     ];
-    const rows: AdminProjectRow[] = [];
-    for (const orgId of orgIds) {
-      const orgSnap = await getDoc(doc(dbClient, "orgs", orgId));
-      const orgName = orgSnap.exists() ? ((orgSnap.data().name as string | undefined) ?? orgId) : orgId;
-      const projectsSnap = await getDocs(collection(dbClient, "orgs", orgId, "projects"));
-      for (const p of projectsSnap.docs) {
-        const data = p.data();
-        const reposSnap = await getDocs(collection(dbClient, "orgs", orgId, "projects", p.id, "repos"));
-        rows.push({
-          orgId,
-          orgName,
-          projectId: p.id,
-          name: (data.name as string | undefined) ?? p.id,
-          repoCount: reposSnap.size,
-          debtMinutes: (data.debtMinutes as number | undefined) ?? 0,
-          maintainabilityRating: (data.maintainabilityRating as string | undefined) ?? "A",
-          securityRating: (data.securityRating as string | undefined) ?? "A",
-          qualityGateStatus: (data.qualityGateStatus as string | undefined) ?? "PASSED",
-          openIssues: (data.openIssues as number | undefined) ?? 0,
-          lastAnalyzedAt: null,
-          repos: reposSnap.docs.map((r) => {
-            const rd = r.data();
-            return {
-              repoId: r.id,
-              name: (rd.name as string | undefined) ?? r.id,
-              repoUrl: (rd.repoUrl as string | null | undefined) ?? null,
-              debtMinutes: (rd.debtMinutes as number | undefined) ?? 0,
-              maintainabilityRating: (rd.maintainabilityRating as string | undefined) ?? "A",
-              securityRating: (rd.securityRating as string | undefined) ?? "A",
-              qualityGateStatus: (rd.qualityGateStatus as string | undefined) ?? "PASSED",
-              openIssues: (rd.openIssues as number | undefined) ?? 0,
+    const perOrg = await Promise.all(
+      orgIds.map(async (orgId) => {
+        const orgSnap = await getDoc(doc(dbClient, "orgs", orgId));
+        const orgName = orgSnap.exists() ? ((orgSnap.data().name as string | undefined) ?? orgId) : orgId;
+        const projectsSnap = await getDocs(collection(dbClient, "orgs", orgId, "projects"));
+        return Promise.all(
+          projectsSnap.docs.map(async (p) => {
+            const data = p.data();
+            // Prefer rolled-up repoCount; only list repos when the UI needs URLs.
+            const reposSnap = await getDocs(collection(dbClient, "orgs", orgId, "projects", p.id, "repos"));
+            const row: AdminProjectRow = {
+              orgId,
+              orgName,
+              projectId: p.id,
+              name: (data.name as string | undefined) ?? p.id,
+              repoCount: (data.repoCount as number | undefined) ?? reposSnap.size,
+              debtMinutes: (data.debtMinutes as number | undefined) ?? 0,
+              maintainabilityRating: (data.maintainabilityRating as string | undefined) ?? "A",
+              securityRating: (data.securityRating as string | undefined) ?? "A",
+              qualityGateStatus: (data.qualityGateStatus as string | undefined) ?? "PASSED",
+              openIssues: (data.openIssues as number | undefined) ?? 0,
               lastAnalyzedAt: null,
+              repos: reposSnap.docs.map((r) => {
+                const rd = r.data();
+                return {
+                  repoId: r.id,
+                  name: (rd.name as string | undefined) ?? r.id,
+                  repoUrl: (rd.repoUrl as string | null | undefined) ?? null,
+                  debtMinutes: (rd.debtMinutes as number | undefined) ?? 0,
+                  maintainabilityRating: (rd.maintainabilityRating as string | undefined) ?? "A",
+                  securityRating: (rd.securityRating as string | undefined) ?? "A",
+                  qualityGateStatus: (rd.qualityGateStatus as string | undefined) ?? "PASSED",
+                  openIssues: (rd.openIssues as number | undefined) ?? 0,
+                  lastAnalyzedAt: null,
+                };
+              }),
             };
+            return row;
           }),
-        });
-      }
-    }
-    return rows;
+        );
+      }),
+    );
+    return perOrg.flat();
   }
 
   useEffect(() => {

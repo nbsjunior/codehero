@@ -37,6 +37,10 @@ service cloud.firestore {
       allow write: if false; // via Admin SDK (adminSetPlatformAdmin / seed-admin.mjs)
     }
 
+    match /_rateLimits/{id} {
+      allow read, write: if false;
+    }
+
     // Collection-group LIST rule for `members`, declared at the TOP LEVEL
     // with a `{path=**}` wildcard parent. This is deliberate and required:
     // Firestore does NOT reliably apply a `list`/collectionGroup rule from a
@@ -154,6 +158,11 @@ service cloud.firestore {
         match /repos/{repoId} {
           allow read: if isOrgMember(orgId) || isPlatformAdmin();
           allow write: if false; // managed by functions
+
+          // CI bearer — Admin SDK only (never client-readable)
+          match /secrets/{secretId} {
+            allow read, write: if false;
+          }
 
           match /analyses/{analysisId} {
             allow read: if isOrgMember(orgId) || isPlatformAdmin();

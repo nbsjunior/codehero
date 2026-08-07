@@ -1,7 +1,8 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
-import { randomBytes } from "node:crypto";
 import { FieldValue } from "firebase-admin/firestore";
 import { db, repoRef } from "./lib/firebase.ts";
+import { generateIngestToken, storeIngestToken } from "./lib/ingestToken.ts";
+import { requireOrgRole, requireVerifiedEmail } from "./lib/authz.ts";
 
 interface RotateTokenInput {
   orgId: string;
@@ -16,8 +17,7 @@ interface RotateTokenInput {
  * rotating one never affects a sibling repo in the same project. Invalidates
  * the old token immediately (CI/MCP clients holding the stale value start
  * getting 401s from ingestAnalysis/listIssues/sddSpec/submitFixResult until
- * reconfigured). Any org member may rotate — not owner-restricted, so a
- * developer can recover from a leaked token without waiting on an admin.
+ * reconfigured). Restricted to owner/admin so a leaked-token rotate is an intentional privilege.
  */
 export const rotateIngestToken = onCall<RotateTokenInput>(async (request) => {
   const uid = request.auth?.uid;
@@ -28,15 +28,16 @@ export const rotateIngestToken = onCall<RotateTokenInput>(async (request) => {
     throw new HttpsError("invalid-argument", "orgId, projectId and repoId are required");
   }
 
-  const member = await db.doc(`orgs/${orgId}/members/${uid}`).get();
-  if (!member.exists) throw new HttpsError("permission-denied", "not a member of this org");
+  await requireVerifiedEmail(uid);
+  await requireOrgRole(orgId, uid, ["owner", "admin"]);
 
   const rRef = repoRef(orgId, projectId, repoId);
   const rSnap = await rRef.get();
   if (!rSnap.exists) throw new HttpsError("not-found", "repo not found");
 
-  const ingestToken = `chp_${randomBytes(24).toString("hex")}`;
-  await rRef.update({ ingestToken, tokenRotatedAt: FieldValue.serverTimestamp(), tokenRotatedBy: uid });
+  const ingestToken = generateIngestToken();
+  await storeIngestToken(rRef, ingestToken);
+  await rRef.update({ tokenRotatedAt: FieldValue.serverTimestamp(), tokenRotatedBy: uid });
 
   return { ingestToken };
 });

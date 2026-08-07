@@ -9,6 +9,7 @@ import {
 } from "@codehero/contracts";
 import { db, projectRef, repoRef } from "./lib/firebase.ts";
 import { installCodeHeroOnRepo, parseGithubOwnerRepo } from "./lib/githubApi.ts";
+import { readIngestTokenPlain } from "./lib/ingestToken.ts";
 
 /** Optional — set via Cloud Run env / Secret Manager after OAuth App exists. */
 function githubOAuthClientId(): string {
@@ -288,7 +289,7 @@ export const githubOAuthCallback = onRequest({ cors: false }, async (req, res) =
         return;
       }
 
-      const ingestToken = String(rSnap.data()?.ingestToken ?? "");
+      const ingestToken = await readIngestTokenPlain(rRef);
       if (!ingestToken) {
         await stateRef.delete().catch(() => undefined);
         failSt("Repositório sem token de ingestão — rotacione o token no portal.");

@@ -2,14 +2,17 @@ import { onRequest, onCall, HttpsError } from "firebase-functions/v2/https";
 import { getAuth } from "firebase-admin/auth";
 import { projectRef, db } from "./lib/firebase.ts";
 import { loadActiveRules, loadRulesCatalog } from "./lib/activeRules.ts";
+import { hashIngestToken } from "./lib/ingestToken.ts";
+import { httpCors } from "./lib/httpSecurity.ts";
 
 /**
  * GET /getActiveRules?orgId=&projectId=
  *
  * Returns LIVE scan rules only (core + Sonar L0 ports + overlays).
+ * Requires Bearer (ingest token or Firebase ID token) — patterns are not public.
  * For the full informational catalog (incl. Sonar stubs), use GET /getRulesCatalog.
  */
-export const getActiveRules = onRequest({ cors: true }, async (req, res) => {
+export const getActiveRules = onRequest({ cors: httpCors }, async (req, res) => {
   if (req.method !== "GET" && req.method !== "HEAD") {
     res.status(405).json({ error: "method_not_allowed" });
     return;
@@ -18,18 +21,31 @@ export const getActiveRules = onRequest({ cors: true }, async (req, res) => {
   const orgId = String(req.query.orgId ?? "").trim() || undefined;
   const projectId = String(req.query.projectId ?? "").trim() || undefined;
   const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    res.status(401).json({ error: "unauthorized" });
+    return;
+  }
 
   let includeOverlays = false;
-  if (orgId && projectId && authHeader) {
+  if (orgId && projectId) {
     const allowed = await authorizeRulesAccess(orgId, projectId, authHeader);
     if (!allowed.ok) {
       res.status(allowed.status).json({ error: allowed.error });
       return;
     }
     includeOverlays = true;
-  } else if (authHeader && (orgId || projectId)) {
+  } else if (orgId || projectId) {
     res.status(400).json({ error: "orgId and projectId are required together" });
     return;
+  } else {
+    // Global live rules still require a valid Firebase ID token (portal identity).
+    try {
+      await getAuth().verifyIdToken(authHeader.replace(/^Bearer\s+/i, "").trim());
+    } catch {
+      // CI may send ingest token without org in query — reject unless ID token.
+      res.status(401).json({ error: "unauthorized" });
+      return;
+    }
   }
 
   const payload = await loadActiveRules(
@@ -137,8 +153,16 @@ async function authorizeRulesAccess(
   const pSnap = await projectRef(orgId, projectId).get();
   if (!pSnap.exists) return { ok: false, status: 404, error: "project_not_found" };
 
-  const repoMatch = await pSnap.ref.collection("repos").where("ingestToken", "==", token).limit(1).get();
+  const repoMatch = await pSnap.ref
+    .collection("repos")
+    .where("ingestTokenHash", "==", hashIngestToken(token))
+    .limit(1)
+    .get();
   if (!repoMatch.empty) return { ok: true };
+
+  // Legacy plaintext field (pre-hash migration)
+  const legacy = await pSnap.ref.collection("repos").where("ingestToken", "==", token).limit(1).get();
+  if (!legacy.empty) return { ok: true };
 
   try {
     const decoded = await getAuth().verifyIdToken(token);
