@@ -1,13 +1,23 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import MermaidDiagram from "@/components/MermaidDiagram";
 import DocsTopNav from "@/components/DocsTopNav";
 import LearningLoopStory from "@/components/LearningLoopStory";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 import "./docs.css";
 
-export const metadata = {
-  title: "Docs — CodeHero",
+export const metadata: Metadata = {
+  title: "Docs",
   description:
     "Modelos matemáticos, aprendizado contínuo de regras, quality gate, GitHub Action, VS Code e MCP.",
+  alternates: { canonical: "/docs/" },
+  openGraph: {
+    title: `Docs · ${SITE_NAME}`,
+    description:
+      "Modelos matemáticos, aprendizado contínuo de regras, quality gate, GitHub Action, VS Code e MCP.",
+    url: `${SITE_URL}/docs/`,
+    type: "article",
+  },
 };
 
 const TOC = [

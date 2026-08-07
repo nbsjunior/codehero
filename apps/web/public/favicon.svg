@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="CodeHero">
+  <rect width="64" height="64" fill="#0a0a0a"/>
+  <rect x="8" y="8" width="48" height="48" fill="none" stroke="#f4f3ee" stroke-width="3"/>
+  <path d="M22 22h6v20h-6zm14 0h6v20h-6z" fill="#f4f3ee"/>
+  <rect x="8" y="52" width="20" height="4" fill="#e8121f"/>
+</svg>
