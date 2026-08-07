@@ -1,0 +1,1430 @@
+{
+  "_porque": "Curadoria humana sobre o catálogo Sonar Way gerado. `sonarWayLiveRules.json` é DERIVADO deste arquivo mais `sonarWayRules.json` — não edite o live à mão: rode `node scripts/build-sonar-live.mjs`.",
+  "selecao": [
+    "SONAR-cobol-S1134",
+    "SONAR-cobol-S1135",
+    "SONAR-cobol-S1725",
+    "SONAR-cobol-S4507",
+    "SONAR-cobol-SQL.DynamicSqlCheck",
+    "SONAR-cs-S1075",
+    "SONAR-cs-S1134",
+    "SONAR-cs-S1135",
+    "SONAR-cs-S1206",
+    "SONAR-cs-S1313",
+    "SONAR-cs-S1481",
+    "SONAR-cs-S1696",
+    "SONAR-cs-S2053",
+    "SONAR-cs-S2068",
+    "SONAR-cs-S2076",
+    "SONAR-cs-S2078",
+    "SONAR-cs-S2083",
+    "SONAR-cs-S2091",
+    "SONAR-cs-S2092",
+    "SONAR-cs-S2115",
+    "SONAR-cs-S2245",
+    "SONAR-cs-S2259",
+    "SONAR-cs-S2612",
+    "SONAR-cs-S2631",
+    "SONAR-cs-S2755",
+    "SONAR-cs-S2925",
+    "SONAR-cs-S3241",
+    "SONAR-cs-S3249",
+    "SONAR-cs-S3329",
+    "SONAR-cs-S3330",
+    "SONAR-cs-S3926",
+    "SONAR-cs-S4036",
+    "SONAR-cs-S4423",
+    "SONAR-cs-S4426",
+    "SONAR-cs-S4433",
+    "SONAR-cs-S4502",
+    "SONAR-cs-S4507",
+    "SONAR-cs-S4790",
+    "SONAR-cs-S4830",
+    "SONAR-cs-S5122",
+    "SONAR-cs-S5131",
+    "SONAR-cs-S5135",
+    "SONAR-cs-S5147",
+    "SONAR-cs-S5332",
+    "SONAR-cs-S5334",
+    "SONAR-cs-S5344",
+    "SONAR-cs-S5443",
+    "SONAR-cs-S5445",
+    "SONAR-cs-S5542",
+    "SONAR-cs-S5547",
+    "SONAR-cs-S5659",
+    "SONAR-cs-S5753",
+    "SONAR-cs-S5766",
+    "SONAR-cs-S5773",
+    "SONAR-cs-S5856",
+    "SONAR-cs-S5883",
+    "SONAR-cs-S6096",
+    "SONAR-cs-S6173",
+    "SONAR-cs-S6287",
+    "SONAR-cs-S6399",
+    "SONAR-cs-S6418",
+    "SONAR-cs-S6444",
+    "SONAR-cs-S6561",
+    "SONAR-cs-S6640",
+    "SONAR-cs-S6776",
+    "SONAR-cs-S6781",
+    "SONAR-cs-S7039",
+    "SONAR-cs-S907",
+    "SONAR-java-S1075",
+    "SONAR-java-S1111",
+    "SONAR-java-S1113",
+    "SONAR-java-S1128",
+    "SONAR-java-S1134",
+    "SONAR-java-S1135",
+    "SONAR-java-S1174",
+    "SONAR-java-S1175",
+    "SONAR-java-S1206",
+    "SONAR-java-S1217",
+    "SONAR-java-S131",
+    "SONAR-java-S1313",
+    "SONAR-java-S1481",
+    "SONAR-java-S2053",
+    "SONAR-java-S2068",
+    "SONAR-java-S2076",
+    "SONAR-java-S2078",
+    "SONAR-java-S2083",
+    "SONAR-java-S2091",
+    "SONAR-java-S2092",
+    "SONAR-java-S2095",
+    "SONAR-java-S2112",
+    "SONAR-java-S2115",
+    "SONAR-java-S2168",
+    "SONAR-java-S2186",
+    "SONAR-java-S2245",
+    "SONAR-java-S2276",
+    "SONAR-java-S2612",
+    "SONAR-java-S2631",
+    "SONAR-java-S2639",
+    "SONAR-java-S2675",
+    "SONAR-java-S2755",
+    "SONAR-java-S2925",
+    "SONAR-java-S3064",
+    "SONAR-java-S3329",
+    "SONAR-java-S3330",
+    "SONAR-java-S3752",
+    "SONAR-java-S4036",
+    "SONAR-java-S4274",
+    "SONAR-java-S4423",
+    "SONAR-java-S4426",
+    "SONAR-java-S4433",
+    "SONAR-java-S4434",
+    "SONAR-java-S4502",
+    "SONAR-java-S4507",
+    "SONAR-java-S4544",
+    "SONAR-java-S4684",
+    "SONAR-java-S4790",
+    "SONAR-java-S4830",
+    "SONAR-java-S4925",
+    "SONAR-java-S5122",
+    "SONAR-java-S5131",
+    "SONAR-java-S5135",
+    "SONAR-java-S5147",
+    "SONAR-java-S5247",
+    "SONAR-java-S5301",
+    "SONAR-java-S5320",
+    "SONAR-java-S5322",
+    "SONAR-java-S5324",
+    "SONAR-java-S5332",
+    "SONAR-java-S5334",
+    "SONAR-java-S5344",
+    "SONAR-java-S5443",
+    "SONAR-java-S5445",
+    "SONAR-java-S5527",
+    "SONAR-java-S5542",
+    "SONAR-java-S5547",
+    "SONAR-java-S5659",
+    "SONAR-java-S5689",
+    "SONAR-java-S5842",
+    "SONAR-java-S5843",
+    "SONAR-java-S5850",
+    "SONAR-java-S5852",
+    "SONAR-java-S5856",
+    "SONAR-java-S5863",
+    "SONAR-java-S5866",
+    "SONAR-java-S5869",
+    "SONAR-java-S5883",
+    "SONAR-java-S5960",
+    "SONAR-java-S5998",
+    "SONAR-java-S6001",
+    "SONAR-java-S6002",
+    "SONAR-java-S6019",
+    "SONAR-java-S6035",
+    "SONAR-java-S6096",
+    "SONAR-java-S6173",
+    "SONAR-java-S6201",
+    "SONAR-java-S6219",
+    "SONAR-java-S6242",
+    "SONAR-java-S6287",
+    "SONAR-java-S6288",
+    "SONAR-java-S6326",
+    "SONAR-java-S6331",
+    "SONAR-java-S6384",
+    "SONAR-java-S6397",
+    "SONAR-java-S6399",
+    "SONAR-java-S6418",
+    "SONAR-java-S6432",
+    "SONAR-java-S6437",
+    "SONAR-java-S6804",
+    "SONAR-java-S6857",
+    "SONAR-java-S8469",
+    "SONAR-java-S8786",
+    "SONAR-java-S8912",
+    "SONAR-js-S1128",
+    "SONAR-js-S1134",
+    "SONAR-js-S1135",
+    "SONAR-js-S1313",
+    "SONAR-js-S1481",
+    "SONAR-js-S1523",
+    "SONAR-js-S2068",
+    "SONAR-js-S2076",
+    "SONAR-js-S2078",
+    "SONAR-js-S2083",
+    "SONAR-js-S2091",
+    "SONAR-js-S2092",
+    "SONAR-js-S2245",
+    "SONAR-js-S2612",
+    "SONAR-js-S2631",
+    "SONAR-js-S2755",
+    "SONAR-js-S2870",
+    "SONAR-js-S3330",
+    "SONAR-js-S3403",
+    "SONAR-js-S4036",
+    "SONAR-js-S4423",
+    "SONAR-js-S4426",
+    "SONAR-js-S4502",
+    "SONAR-js-S4507",
+    "SONAR-js-S4684",
+    "SONAR-js-S4790",
+    "SONAR-js-S4830",
+    "SONAR-js-S5122",
+    "SONAR-js-S5131",
+    "SONAR-js-S5147",
+    "SONAR-js-S5247",
+    "SONAR-js-S5332",
+    "SONAR-js-S5334",
+    "SONAR-js-S5443",
+    "SONAR-js-S5527",
+    "SONAR-js-S5542",
+    "SONAR-js-S5547",
+    "SONAR-js-S5659",
+    "SONAR-js-S5689",
+    "SONAR-js-S5696",
+    "SONAR-js-S5728",
+    "SONAR-js-S5736",
+    "SONAR-js-S5842",
+    "SONAR-js-S5843",
+    "SONAR-js-S5850",
+    "SONAR-js-S5852",
+    "SONAR-js-S5856",
+    "SONAR-js-S5863",
+    "SONAR-js-S5869",
+    "SONAR-js-S5883",
+    "SONAR-js-S5914",
+    "SONAR-js-S6019",
+    "SONAR-js-S6035",
+    "SONAR-js-S6096",
+    "SONAR-js-S6105",
+    "SONAR-js-S6109",
+    "SONAR-js-S6270",
+    "SONAR-js-S6287",
+    "SONAR-js-S6302",
+    "SONAR-js-S6323",
+    "SONAR-js-S6324",
+    "SONAR-js-S6326",
+    "SONAR-js-S6331",
+    "SONAR-js-S6397",
+    "SONAR-js-S6418",
+    "SONAR-js-S6437",
+    "SONAR-js-S6654",
+    "SONAR-js-S6761",
+    "SONAR-js-S6776",
+    "SONAR-js-S8348",
+    "SONAR-js-S8378",
+    "SONAR-js-S8701",
+    "SONAR-js-S8702",
+    "SONAR-js-S8703",
+    "SONAR-js-S8704",
+    "SONAR-js-S8707",
+    "SONAR-js-S8786",
+    "SONAR-js-S8985",
+    "SONAR-plsql-BackwardsGoto",
+    "SONAR-plsql-ExecuteImmediateTrapExceptionsCheck",
+    "SONAR-plsql-GotoInLoopCheck",
+    "SONAR-plsql-PlSql.Goto",
+    "SONAR-plsql-PreferExecuteImmediateToDbmsSqlCheck",
+    "SONAR-plsql-S1134",
+    "SONAR-plsql-S1135",
+    "SONAR-plsql-S1481",
+    "SONAR-plsql-S1523",
+    "SONAR-plsql-S4790",
+    "SONAR-plsql-S5547",
+    "SONAR-py-PrintStatementUsage",
+    "SONAR-py-S1045",
+    "SONAR-py-S1134",
+    "SONAR-py-S1135",
+    "SONAR-py-S1313",
+    "SONAR-py-S1481",
+    "SONAR-py-S2053",
+    "SONAR-py-S2068",
+    "SONAR-py-S2076",
+    "SONAR-py-S2078",
+    "SONAR-py-S2083",
+    "SONAR-py-S2091",
+    "SONAR-py-S2092",
+    "SONAR-py-S2115",
+    "SONAR-py-S2245",
+    "SONAR-py-S2612",
+    "SONAR-py-S2631",
+    "SONAR-py-S2755",
+    "SONAR-py-S3329",
+    "SONAR-py-S3330",
+    "SONAR-py-S3752",
+    "SONAR-py-S4423",
+    "SONAR-py-S4433",
+    "SONAR-py-S4502",
+    "SONAR-py-S4507",
+    "SONAR-py-S4790",
+    "SONAR-py-S4830",
+    "SONAR-py-S5122",
+    "SONAR-py-S5131",
+    "SONAR-py-S5135",
+    "SONAR-py-S5147",
+    "SONAR-py-S5247",
+    "SONAR-py-S5332",
+    "SONAR-py-S5334",
+    "SONAR-py-S5344",
+    "SONAR-py-S5443",
+    "SONAR-py-S5445",
+    "SONAR-py-S5527",
+    "SONAR-py-S5542",
+    "SONAR-py-S5547",
+    "SONAR-py-S5659",
+    "SONAR-py-S5779",
+    "SONAR-py-S5842",
+    "SONAR-py-S5843",
+    "SONAR-py-S5850",
+    "SONAR-py-S5852",
+    "SONAR-py-S5863",
+    "SONAR-py-S5869",
+    "SONAR-py-S5914",
+    "SONAR-py-S5915",
+    "SONAR-py-S6001",
+    "SONAR-py-S6002",
+    "SONAR-py-S6019",
+    "SONAR-py-S6035",
+    "SONAR-py-S6096",
+    "SONAR-py-S6270",
+    "SONAR-py-S6287",
+    "SONAR-py-S6302",
+    "SONAR-py-S6323",
+    "SONAR-py-S6326",
+    "SONAR-py-S6331",
+    "SONAR-py-S6397",
+    "SONAR-py-S6418",
+    "SONAR-py-S6437",
+    "SONAR-py-S6776",
+    "SONAR-py-S6779",
+    "SONAR-py-S6781",
+    "SONAR-py-S6886",
+    "SONAR-py-S6903",
+    "SONAR-py-S6982",
+    "SONAR-py-S6985",
+    "SONAR-py-S7484",
+    "SONAR-py-S7486",
+    "SONAR-py-S7487",
+    "SONAR-py-S7488",
+    "SONAR-py-S7491",
+    "SONAR-py-S7620",
+    "SONAR-py-S8508",
+    "SONAR-py-S8701",
+    "SONAR-py-S8702",
+    "SONAR-py-S8703",
+    "SONAR-py-S8704",
+    "SONAR-py-S8707",
+    "SONAR-py-S8786",
+    "SONAR-ts-S1128",
+    "SONAR-ts-S1134",
+    "SONAR-ts-S1135",
+    "SONAR-ts-S1313",
+    "SONAR-ts-S1523",
+    "SONAR-ts-S2068",
+    "SONAR-ts-S2076",
+    "SONAR-ts-S2078",
+    "SONAR-ts-S2083",
+    "SONAR-ts-S2091",
+    "SONAR-ts-S2092",
+    "SONAR-ts-S2245",
+    "SONAR-ts-S2612",
+    "SONAR-ts-S2631",
+    "SONAR-ts-S2755",
+    "SONAR-ts-S2870",
+    "SONAR-ts-S3330",
+    "SONAR-ts-S4036",
+    "SONAR-ts-S4423",
+    "SONAR-ts-S4426",
+    "SONAR-ts-S4502",
+    "SONAR-ts-S4507",
+    "SONAR-ts-S4684",
+    "SONAR-ts-S4790",
+    "SONAR-ts-S4830",
+    "SONAR-ts-S5122",
+    "SONAR-ts-S5131",
+    "SONAR-ts-S5147",
+    "SONAR-ts-S5247",
+    "SONAR-ts-S5332",
+    "SONAR-ts-S5334",
+    "SONAR-ts-S5443",
+    "SONAR-ts-S5527",
+    "SONAR-ts-S5542",
+    "SONAR-ts-S5547",
+    "SONAR-ts-S5659",
+    "SONAR-ts-S5689",
+    "SONAR-ts-S5696",
+    "SONAR-ts-S5728",
+    "SONAR-ts-S5736",
+    "SONAR-ts-S5842",
+    "SONAR-ts-S5843",
+    "SONAR-ts-S5850",
+    "SONAR-ts-S5852",
+    "SONAR-ts-S5856",
+    "SONAR-ts-S5863",
+    "SONAR-ts-S5869",
+    "SONAR-ts-S5883",
+    "SONAR-ts-S5914",
+    "SONAR-ts-S6019",
+    "SONAR-ts-S6035",
+    "SONAR-ts-S6096",
+    "SONAR-ts-S6105",
+    "SONAR-ts-S6109",
+    "SONAR-ts-S6270",
+    "SONAR-ts-S6287",
+    "SONAR-ts-S6302",
+    "SONAR-ts-S6323",
+    "SONAR-ts-S6324",
+    "SONAR-ts-S6326",
+    "SONAR-ts-S6331",
+    "SONAR-ts-S6397",
+    "SONAR-ts-S6418",
+    "SONAR-ts-S6437",
+    "SONAR-ts-S6568",
+    "SONAR-ts-S6654",
+    "SONAR-ts-S6761",
+    "SONAR-ts-S6776",
+    "SONAR-ts-S8348",
+    "SONAR-ts-S8378",
+    "SONAR-ts-S8701",
+    "SONAR-ts-S8702",
+    "SONAR-ts-S8703",
+    "SONAR-ts-S8704",
+    "SONAR-ts-S8707",
+    "SONAR-ts-S8786",
+    "SONAR-ts-S8985",
+    "SONAR-tsql-S1134",
+    "SONAR-tsql-S1135",
+    "SONAR-tsql-S1313",
+    "SONAR-tsql-S1481",
+    "SONAR-tsql-S1523",
+    "SONAR-tsql-S2068",
+    "SONAR-tsql-S4109",
+    "SONAR-tsql-S4790",
+    "SONAR-tsql-S907"
+  ],
+  "orfas": [],
+  "ajustes": {
+    "SONAR-cobol-S1134": {
+      "pattern": {
+        "regex": "(?i)\\b(TODO|FIXME|HACK)\\b",
+        "scope": "comments"
+      }
+    },
+    "SONAR-cobol-S1135": {
+      "pattern": {
+        "regex": "(?i)\\b(TODO|FIXME|HACK)\\b",
+        "scope": "comments"
+      }
+    },
+    "SONAR-cobol-S4507": {
+      "type": "SECURITY_HOTSPOT"
+    },
+    "SONAR-cobol-SQL.DynamicSqlCheck": {
+      "pattern": {
+        "regex": "(?i)(execute|executemany|query|rawQuery|createQuery|FromSqlRaw|SqlCommand)\\s*\\([^)]*(\\+|\\{\\s*0|`|\\$\\{)",
+        "scope": "any"
+      }
+    },
+    "SONAR-cs-S1075": {
+      "pattern": {
+        "regex": "(?i)(['\"])https?://[^'\"]+\\1",
+        "scope": "any"
+      }
+    },
+    "SONAR-cs-S1134": {
+      "pattern": {
+        "regex": "(?i)\\b(TODO|FIXME|HACK)\\b",
+        "scope": "comments"
+      }
+    },
+    "SONAR-cs-S1135": {
+      "pattern": {
+        "regex": "(?i)\\b(TODO|FIXME|HACK)\\b",
+        "scope": "comments"
+      }
+    },
+    "SONAR-cs-S2053": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-cs-S2068": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-cs-S2076": {
+      "pattern": {
+        "regex": "(?i)(?:(?:child_process|childProcess|cp)\\s*\\.\\s*)?(?:execSync|exec)\\s*\\([^)]*(?:\\$\\{|['\"]\\s*\\+|\\+\\s*['\"])|(?<![.\\w])(?:spawnSync|spawn|execFile|execFileSync|execSync|exec)\\s*\\([^)]*shell\\s*:\\s*true"
+      }
+    },
+    "SONAR-cs-S2115": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-cs-S2631": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\([^)]*(\\+|\\$\\{|`)",
+        "scope": "any"
+      }
+    },
+    "SONAR-cs-S4036": {
+      "pattern": {
+        "regex": "(?i)(?:(?:child_process|childProcess|cp)\\s*\\.\\s*)?(?:execSync|exec)\\s*\\([^)]*(?:\\$\\{|['\"]\\s*\\+|\\+\\s*['\"])|(?<![.\\w])(?:spawnSync|spawn|execFile|execFileSync|execSync|exec)\\s*\\([^)]*shell\\s*:\\s*true"
+      }
+    },
+    "SONAR-cs-S4507": {
+      "type": "SECURITY_HOTSPOT"
+    },
+    "SONAR-cs-S5122": {
+      "pattern": {
+        "regex": "(?i)Access-Control-Allow-Origin['\"\\s:]*\\*",
+        "scope": "any"
+      }
+    },
+    "SONAR-cs-S5131": {
+      "pattern": {
+        "regex": "(?i)(innerHTML|outerHTML|dangerouslySetInnerHTML|document\\.write)\\s*[=(]",
+        "unless": "(?i)(DOMPurify|sanitize|textContent|securityLevel)"
+      }
+    },
+    "SONAR-cs-S5332": {
+      "pattern": {
+        "regex": "(?i)(['\"])http://(?!localhost|127\\.0\\.0\\.1)",
+        "scope": "any"
+      }
+    },
+    "SONAR-cs-S5344": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-cs-S5659": {
+      "pattern": {
+        "regex": "(?i)(algorithm\\s*:\\s*['\"]none['\"]|jwt\\.(decode|verify)\\([^)]*algorithms\\s*:\\s*\\[\\s*\\])",
+        "scope": "any"
+      }
+    },
+    "SONAR-cs-S5753": {
+      "pattern": {
+        "regex": "(?i)(ValidateInput\\s*\\(\\s*false|requestValidationMode\\s*=\\s*['\"]?0)",
+        "scope": "any"
+      }
+    },
+    "SONAR-cs-S5856": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-cs-S5883": {
+      "pattern": {
+        "regex": "(?i)(?:(?:child_process|childProcess|cp)\\s*\\.\\s*)?(?:execSync|exec)\\s*\\([^)]*(?:\\$\\{|['\"]\\s*\\+|\\+\\s*['\"])|(?<![.\\w])(?:spawnSync|spawn|execFile|execFileSync|execSync|exec)\\s*\\([^)]*shell\\s*:\\s*true"
+      }
+    },
+    "SONAR-cs-S6173": {
+      "pattern": {
+        "regex": "(?i)(Class\\.forName|Activator\\.CreateInstance|require\\(\\s*[^'\"\\)]|import\\(\\s*[^'\"\\)])",
+        "scope": "any"
+      }
+    },
+    "SONAR-cs-S6418": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-cs-S6444": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-cs-S6781": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-cs-S7039": {
+      "pattern": {
+        "regex": "(?i)Content-Security-Policy['\"\\s:]*[^;]*(unsafe-inline|unsafe-eval|\\*)",
+        "scope": "any"
+      }
+    },
+    "SONAR-java-S1075": {
+      "pattern": {
+        "regex": "(?i)(['\"])https?://[^'\"]+\\1",
+        "scope": "any"
+      }
+    },
+    "SONAR-java-S1134": {
+      "pattern": {
+        "regex": "(?i)\\b(TODO|FIXME|HACK)\\b",
+        "scope": "comments"
+      }
+    },
+    "SONAR-java-S1135": {
+      "pattern": {
+        "regex": "(?i)\\b(TODO|FIXME|HACK)\\b",
+        "scope": "comments"
+      }
+    },
+    "SONAR-java-S2053": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-java-S2068": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-java-S2076": {
+      "pattern": {
+        "regex": "(?i)(?:(?:child_process|childProcess|cp)\\s*\\.\\s*)?(?:execSync|exec)\\s*\\([^)]*(?:\\$\\{|['\"]\\s*\\+|\\+\\s*['\"])|(?<![.\\w])(?:spawnSync|spawn|execFile|execFileSync|execSync|exec)\\s*\\([^)]*shell\\s*:\\s*true"
+      }
+    },
+    "SONAR-java-S2115": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-java-S2631": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\([^)]*(\\+|\\$\\{|`)",
+        "scope": "any"
+      }
+    },
+    "SONAR-java-S2639": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-java-S4036": {
+      "pattern": {
+        "regex": "(?i)(?:(?:child_process|childProcess|cp)\\s*\\.\\s*)?(?:execSync|exec)\\s*\\([^)]*(?:\\$\\{|['\"]\\s*\\+|\\+\\s*['\"])|(?<![.\\w])(?:spawnSync|spawn|execFile|execFileSync|execSync|exec)\\s*\\([^)]*shell\\s*:\\s*true"
+      }
+    },
+    "SONAR-java-S4507": {
+      "type": "SECURITY_HOTSPOT"
+    },
+    "SONAR-java-S4925": {
+      "pattern": {
+        "regex": "(?i)(Class\\.forName|Activator\\.CreateInstance|require\\(\\s*[^'\"\\)]|import\\(\\s*[^'\"\\)])",
+        "scope": "any"
+      }
+    },
+    "SONAR-java-S5122": {
+      "pattern": {
+        "regex": "(?i)Access-Control-Allow-Origin['\"\\s:]*\\*",
+        "scope": "any"
+      }
+    },
+    "SONAR-java-S5131": {
+      "pattern": {
+        "regex": "(?i)(innerHTML|outerHTML|dangerouslySetInnerHTML|document\\.write)\\s*[=(]",
+        "unless": "(?i)(DOMPurify|sanitize|textContent|securityLevel)"
+      }
+    },
+    "SONAR-java-S5332": {
+      "pattern": {
+        "regex": "(?i)(['\"])http://(?!localhost|127\\.0\\.0\\.1)",
+        "scope": "any"
+      }
+    },
+    "SONAR-java-S5344": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-java-S5659": {
+      "pattern": {
+        "regex": "(?i)(algorithm\\s*:\\s*['\"]none['\"]|jwt\\.(decode|verify)\\([^)]*algorithms\\s*:\\s*\\[\\s*\\])",
+        "scope": "any"
+      }
+    },
+    "SONAR-java-S5842": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-java-S5843": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-java-S5850": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-java-S5852": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-java-S5856": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-java-S5866": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-java-S5869": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-java-S5883": {
+      "pattern": {
+        "regex": "(?i)(?:(?:child_process|childProcess|cp)\\s*\\.\\s*)?(?:execSync|exec)\\s*\\([^)]*(?:\\$\\{|['\"]\\s*\\+|\\+\\s*['\"])|(?<![.\\w])(?:spawnSync|spawn|execFile|execFileSync|execSync|exec)\\s*\\([^)]*shell\\s*:\\s*true"
+      }
+    },
+    "SONAR-java-S5998": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-java-S6001": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-java-S6019": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-java-S6035": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-java-S6173": {
+      "pattern": {
+        "regex": "(?i)(Class\\.forName|Activator\\.CreateInstance|require\\(\\s*[^'\"\\)]|import\\(\\s*[^'\"\\)])",
+        "scope": "any"
+      }
+    },
+    "SONAR-java-S6242": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-java-S6326": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-java-S6331": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-java-S6397": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-java-S6418": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-java-S6437": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-java-S8786": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-java-S8912": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-js-S1134": {
+      "pattern": {
+        "regex": "(?i)\\b(TODO|FIXME|HACK)\\b",
+        "scope": "comments"
+      }
+    },
+    "SONAR-js-S1135": {
+      "pattern": {
+        "regex": "(?i)\\b(TODO|FIXME|HACK)\\b",
+        "scope": "comments"
+      }
+    },
+    "SONAR-js-S2068": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-js-S2076": {
+      "pattern": {
+        "regex": "(?i)(?:(?:child_process|childProcess|cp)\\s*\\.\\s*)?(?:execSync|exec)\\s*\\([^)]*(?:\\$\\{|['\"]\\s*\\+|\\+\\s*['\"])|(?<![.\\w])(?:spawnSync|spawn|execFile|execFileSync|execSync|exec)\\s*\\([^)]*shell\\s*:\\s*true"
+      }
+    },
+    "SONAR-js-S2631": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\([^)]*(\\+|\\$\\{|`)",
+        "scope": "any"
+      }
+    },
+    "SONAR-js-S4036": {
+      "pattern": {
+        "regex": "(?i)(?:(?:child_process|childProcess|cp)\\s*\\.\\s*)?(?:execSync|exec)\\s*\\([^)]*(?:\\$\\{|['\"]\\s*\\+|\\+\\s*['\"])|(?<![.\\w])(?:spawnSync|spawn|execFile|execFileSync|execSync|exec)\\s*\\([^)]*shell\\s*:\\s*true"
+      }
+    },
+    "SONAR-js-S4507": {
+      "type": "SECURITY_HOTSPOT"
+    },
+    "SONAR-js-S5122": {
+      "pattern": {
+        "regex": "(?i)Access-Control-Allow-Origin['\"\\s:]*\\*",
+        "scope": "any"
+      }
+    },
+    "SONAR-js-S5131": {
+      "pattern": {
+        "regex": "(?i)(innerHTML|outerHTML|dangerouslySetInnerHTML|document\\.write)\\s*[=(]",
+        "unless": "(?i)(DOMPurify|sanitize|textContent|securityLevel)"
+      }
+    },
+    "SONAR-js-S5332": {
+      "pattern": {
+        "regex": "(?i)(['\"])http://(?!localhost|127\\.0\\.0\\.1)",
+        "scope": "any"
+      }
+    },
+    "SONAR-js-S5659": {
+      "pattern": {
+        "regex": "(?i)(algorithm\\s*:\\s*['\"]none['\"]|jwt\\.(decode|verify)\\([^)]*algorithms\\s*:\\s*\\[\\s*\\])",
+        "scope": "any"
+      }
+    },
+    "SONAR-js-S5696": {
+      "pattern": {
+        "regex": "(?i)(innerHTML|outerHTML|dangerouslySetInnerHTML|document\\.write)\\s*[=(]",
+        "unless": "(?i)(DOMPurify|sanitize|textContent|securityLevel)"
+      }
+    },
+    "SONAR-js-S5728": {
+      "pattern": {
+        "regex": "(?i)Content-Security-Policy['\"\\s:]*[^;]*(unsafe-inline|unsafe-eval|\\*)",
+        "scope": "any"
+      }
+    },
+    "SONAR-js-S5842": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-js-S5843": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-js-S5850": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-js-S5852": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-js-S5856": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-js-S5869": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-js-S5883": {
+      "pattern": {
+        "regex": "(?i)(?:(?:child_process|childProcess|cp)\\s*\\.\\s*)?(?:execSync|exec)\\s*\\([^)]*(?:\\$\\{|['\"]\\s*\\+|\\+\\s*['\"])|(?<![.\\w])(?:spawnSync|spawn|execFile|execFileSync|execSync|exec)\\s*\\([^)]*shell\\s*:\\s*true"
+      }
+    },
+    "SONAR-js-S6019": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-js-S6035": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-js-S6323": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-js-S6324": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-js-S6326": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-js-S6331": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-js-S6397": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-js-S6418": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-js-S6437": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-js-S6761": {
+      "pattern": {
+        "regex": "(?i)(innerHTML|outerHTML|dangerouslySetInnerHTML|document\\.write)\\s*[=(]",
+        "unless": "(?i)(DOMPurify|sanitize|textContent|securityLevel)"
+      }
+    },
+    "SONAR-js-S8348": {
+      "pattern": {
+        "regex": "(?i)Access-Control-Allow-Origin['\"\\s:]*\\*",
+        "scope": "any"
+      }
+    },
+    "SONAR-js-S8701": {
+      "pattern": {
+        "regex": "(?i)(?:(?:child_process|childProcess|cp)\\s*\\.\\s*)?(?:execSync|exec)\\s*\\([^)]*(?:\\$\\{|['\"]\\s*\\+|\\+\\s*['\"])|(?<![.\\w])(?:spawnSync|spawn|execFile|execFileSync|execSync|exec)\\s*\\([^)]*shell\\s*:\\s*true"
+      }
+    },
+    "SONAR-js-S8702": {
+      "pattern": {
+        "regex": "(?i)(execute|executemany|query|rawQuery|createQuery|FromSqlRaw|SqlCommand)\\s*\\([^)]*(\\+|\\{\\s*0|`|\\$\\{)",
+        "scope": "any"
+      }
+    },
+    "SONAR-js-S8786": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-plsql-S1134": {
+      "pattern": {
+        "regex": "(?i)\\b(TODO|FIXME|HACK)\\b",
+        "scope": "comments"
+      }
+    },
+    "SONAR-plsql-S1135": {
+      "pattern": {
+        "regex": "(?i)\\b(TODO|FIXME|HACK)\\b",
+        "scope": "comments"
+      }
+    },
+    "SONAR-py-S1134": {
+      "pattern": {
+        "regex": "(?i)\\b(TODO|FIXME|HACK)\\b",
+        "scope": "comments"
+      }
+    },
+    "SONAR-py-S1135": {
+      "pattern": {
+        "regex": "(?i)\\b(TODO|FIXME|HACK)\\b",
+        "scope": "comments"
+      }
+    },
+    "SONAR-py-S2053": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-py-S2068": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-py-S2076": {
+      "pattern": {
+        "regex": "(?i)(?:(?:child_process|childProcess|cp)\\s*\\.\\s*)?(?:execSync|exec)\\s*\\([^)]*(?:\\$\\{|['\"]\\s*\\+|\\+\\s*['\"])|(?<![.\\w])(?:spawnSync|spawn|execFile|execFileSync|execSync|exec)\\s*\\([^)]*shell\\s*:\\s*true"
+      }
+    },
+    "SONAR-py-S2115": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-py-S2631": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\([^)]*(\\+|\\$\\{|`)",
+        "scope": "any"
+      }
+    },
+    "SONAR-py-S4507": {
+      "type": "SECURITY_HOTSPOT"
+    },
+    "SONAR-py-S5122": {
+      "pattern": {
+        "regex": "(?i)Access-Control-Allow-Origin['\"\\s:]*\\*",
+        "scope": "any"
+      }
+    },
+    "SONAR-py-S5131": {
+      "pattern": {
+        "regex": "(?i)(innerHTML|outerHTML|dangerouslySetInnerHTML|document\\.write)\\s*[=(]",
+        "unless": "(?i)(DOMPurify|sanitize|textContent|securityLevel)"
+      }
+    },
+    "SONAR-py-S5332": {
+      "pattern": {
+        "regex": "(?i)(['\"])http://(?!localhost|127\\.0\\.0\\.1)",
+        "scope": "any"
+      }
+    },
+    "SONAR-py-S5344": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-py-S5659": {
+      "pattern": {
+        "regex": "(?i)(algorithm\\s*:\\s*['\"]none['\"]|jwt\\.(decode|verify)\\([^)]*algorithms\\s*:\\s*\\[\\s*\\])",
+        "scope": "any"
+      }
+    },
+    "SONAR-py-S5842": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-py-S5843": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-py-S5850": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-py-S5852": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-py-S5869": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-py-S6001": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-py-S6019": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-py-S6035": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-py-S6323": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-py-S6326": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-py-S6331": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-py-S6397": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-py-S6418": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-py-S6437": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-py-S6779": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-py-S6781": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-py-S8701": {
+      "pattern": {
+        "regex": "(?i)(?:(?:child_process|childProcess|cp)\\s*\\.\\s*)?(?:execSync|exec)\\s*\\([^)]*(?:\\$\\{|['\"]\\s*\\+|\\+\\s*['\"])|(?<![.\\w])(?:spawnSync|spawn|execFile|execFileSync|execSync|exec)\\s*\\([^)]*shell\\s*:\\s*true"
+      }
+    },
+    "SONAR-py-S8702": {
+      "pattern": {
+        "regex": "(?i)(execute|executemany|query|rawQuery|createQuery|FromSqlRaw|SqlCommand)\\s*\\([^)]*(\\+|\\{\\s*0|`|\\$\\{)",
+        "scope": "any"
+      }
+    },
+    "SONAR-py-S8786": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-ts-S1134": {
+      "pattern": {
+        "regex": "(?i)\\b(TODO|FIXME|HACK)\\b",
+        "scope": "comments"
+      }
+    },
+    "SONAR-ts-S1135": {
+      "pattern": {
+        "regex": "(?i)\\b(TODO|FIXME|HACK)\\b",
+        "scope": "comments"
+      }
+    },
+    "SONAR-ts-S2068": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-ts-S2076": {
+      "pattern": {
+        "regex": "(?i)(?:(?:child_process|childProcess|cp)\\s*\\.\\s*)?(?:execSync|exec)\\s*\\([^)]*(?:\\$\\{|['\"]\\s*\\+|\\+\\s*['\"])|(?<![.\\w])(?:spawnSync|spawn|execFile|execFileSync|execSync|exec)\\s*\\([^)]*shell\\s*:\\s*true"
+      }
+    },
+    "SONAR-ts-S2631": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\([^)]*(\\+|\\$\\{|`)",
+        "scope": "any"
+      }
+    },
+    "SONAR-ts-S4036": {
+      "pattern": {
+        "regex": "(?i)(?:(?:child_process|childProcess|cp)\\s*\\.\\s*)?(?:execSync|exec)\\s*\\([^)]*(?:\\$\\{|['\"]\\s*\\+|\\+\\s*['\"])|(?<![.\\w])(?:spawnSync|spawn|execFile|execFileSync|execSync|exec)\\s*\\([^)]*shell\\s*:\\s*true"
+      }
+    },
+    "SONAR-ts-S4507": {
+      "type": "SECURITY_HOTSPOT"
+    },
+    "SONAR-ts-S5122": {
+      "pattern": {
+        "regex": "(?i)Access-Control-Allow-Origin['\"\\s:]*\\*",
+        "scope": "any"
+      }
+    },
+    "SONAR-ts-S5131": {
+      "pattern": {
+        "regex": "(?i)(innerHTML|outerHTML|dangerouslySetInnerHTML|document\\.write)\\s*[=(]",
+        "unless": "(?i)(DOMPurify|sanitize|textContent|securityLevel)"
+      }
+    },
+    "SONAR-ts-S5332": {
+      "pattern": {
+        "regex": "(?i)(['\"])http://(?!localhost|127\\.0\\.0\\.1)",
+        "scope": "any"
+      }
+    },
+    "SONAR-ts-S5659": {
+      "pattern": {
+        "regex": "(?i)(algorithm\\s*:\\s*['\"]none['\"]|jwt\\.(decode|verify)\\([^)]*algorithms\\s*:\\s*\\[\\s*\\])",
+        "scope": "any"
+      }
+    },
+    "SONAR-ts-S5696": {
+      "pattern": {
+        "regex": "(?i)(innerHTML|outerHTML|dangerouslySetInnerHTML|document\\.write)\\s*[=(]",
+        "unless": "(?i)(DOMPurify|sanitize|textContent|securityLevel)"
+      }
+    },
+    "SONAR-ts-S5728": {
+      "pattern": {
+        "regex": "(?i)Content-Security-Policy['\"\\s:]*[^;]*(unsafe-inline|unsafe-eval|\\*)",
+        "scope": "any"
+      }
+    },
+    "SONAR-ts-S5842": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-ts-S5843": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-ts-S5850": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-ts-S5852": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-ts-S5856": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-ts-S5869": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-ts-S5883": {
+      "pattern": {
+        "regex": "(?i)(?:(?:child_process|childProcess|cp)\\s*\\.\\s*)?(?:execSync|exec)\\s*\\([^)]*(?:\\$\\{|['\"]\\s*\\+|\\+\\s*['\"])|(?<![.\\w])(?:spawnSync|spawn|execFile|execFileSync|execSync|exec)\\s*\\([^)]*shell\\s*:\\s*true"
+      }
+    },
+    "SONAR-ts-S6019": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-ts-S6035": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-ts-S6323": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-ts-S6324": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-ts-S6326": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-ts-S6331": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-ts-S6397": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-ts-S6418": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-ts-S6437": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    },
+    "SONAR-ts-S6761": {
+      "pattern": {
+        "regex": "(?i)(innerHTML|outerHTML|dangerouslySetInnerHTML|document\\.write)\\s*[=(]",
+        "unless": "(?i)(DOMPurify|sanitize|textContent|securityLevel)"
+      }
+    },
+    "SONAR-ts-S8348": {
+      "pattern": {
+        "regex": "(?i)Access-Control-Allow-Origin['\"\\s:]*\\*",
+        "scope": "any"
+      }
+    },
+    "SONAR-ts-S8701": {
+      "pattern": {
+        "regex": "(?i)(?:(?:child_process|childProcess|cp)\\s*\\.\\s*)?(?:execSync|exec)\\s*\\([^)]*(?:\\$\\{|['\"]\\s*\\+|\\+\\s*['\"])|(?<![.\\w])(?:spawnSync|spawn|execFile|execFileSync|execSync|exec)\\s*\\([^)]*shell\\s*:\\s*true"
+      }
+    },
+    "SONAR-ts-S8702": {
+      "pattern": {
+        "regex": "(?i)(execute|executemany|query|rawQuery|createQuery|FromSqlRaw|SqlCommand)\\s*\\([^)]*(\\+|\\{\\s*0|`|\\$\\{)",
+        "scope": "any"
+      }
+    },
+    "SONAR-ts-S8786": {
+      "type": "SECURITY_HOTSPOT",
+      "pattern": {
+        "regex": "(?i)new\\s+RegExp\\s*\\(\\s*(?!['\"`/])|new\\s+RegExp\\s*\\(\\s*`[^`]*\\$\\{"
+      }
+    },
+    "SONAR-tsql-S1134": {
+      "pattern": {
+        "regex": "(?i)\\b(TODO|FIXME|HACK)\\b",
+        "scope": "comments"
+      }
+    },
+    "SONAR-tsql-S1135": {
+      "pattern": {
+        "regex": "(?i)\\b(TODO|FIXME|HACK)\\b",
+        "scope": "comments"
+      }
+    },
+    "SONAR-tsql-S2068": {
+      "pattern": {
+        "regex": "(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?token|private[_-]?key)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+        "scope": "any"
+      }
+    }
+  }
+}

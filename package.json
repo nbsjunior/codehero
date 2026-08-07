@@ -27,7 +27,7 @@
     "build:locksmith": "npm run build -w @codehero/locksmith",
     "locksmith": "node packages/locksmith/dist/cli.js",
     "test:engine": "npm run test -w @codehero/engine",
-    "test": "npm run test:contracts && npm run test:ranker && npm run test:code-embed && npm run test:scanner && npm run test:engine",
+    "test": "npm run sonar:check && npm run test:contracts && npm run test:ranker && npm run test:code-embed && npm run test:scanner && npm run test:engine",
     "emulators": "firebase emulators:start",
     "dev:web": "npm run dev -w @codehero/web",
     "ruleforge:evaluate": "npm run evaluate -w @codehero/ruleforge",
@@ -46,7 +46,10 @@
     "test:code-embed": "npm run test --workspace=@codehero/code-embed",
     "test:scanner": "npm run test --workspace=@codehero/scanner",
     "fp:train": "node packages/fp-ranker/scripts/train.mjs",
-    "cve:promote": "node scripts/cve-promote.mjs"
+    "cve:promote": "node scripts/cve-promote.mjs",
+    "sonar:curation": "node scripts/extract-sonar-curation.mjs",
+    "sonar:live": "node scripts/build-sonar-live.mjs",
+    "sonar:check": "node scripts/build-sonar-live.mjs --check"
   },
   "devDependencies": {
     "typescript": "^5.7.2"

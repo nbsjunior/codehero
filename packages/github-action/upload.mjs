@@ -200,8 +200,52 @@ const res = await fetch(`${HERO_URL}/ingestAnalysis`, {
 });
 
 if (!res.ok) {
-  console.error(`CodeHero ingest failed: ${res.status} ${await res.text()}`);
-  process.exit(1);
+  const corpo = await res.text();
+  // 401/403 com corpo HTML não vem da aplicação: é a borda do Google Cloud
+  // recusando antes de chegar na function. Token errado devolveria JSON da
+  // própria API. Distinguir os dois poupa horas de caça ao token certo.
+  const naBorda = (res.status === 401 || res.status === 403) && /<html|<title>/i.test(corpo);
+  console.error(`::error::CodeHero: envio da análise falhou com HTTP ${res.status}.`);
+  if (naBorda) {
+    console.error(
+      "::error::A resposta é uma página de erro do Google Cloud, não da API — " +
+        "a requisição foi recusada ANTES de chegar na function. Isso é permissão de " +
+        "invocação (IAM), não token: confira se `ingestAnalysis` aceita chamada não " +
+        "autenticada e se o rewrite de /api no Hosting aponta para ela.",
+    );
+  } else {
+    console.error(`::error::Resposta: ${corpo.slice(0, 400)}`);
+  }
+
+  // RECUO PARA O GATE LOCAL.
+  //
+  // O veredito oficial vem do servidor, mas o scan JÁ RODOU e os achados estão
+  // no SARIF. Reprovar o build por causa do envio faria uma indisponibilidade
+  // de plataforma parecer defeito de código — e, pior, ensinaria o time a
+  // ignorar o vermelho. Aqui o build continua reprovando por achado real,
+  // usando o mesmo limiar `fail-on`, e só isso.
+  const limiar = (process.env.FAIL_ON || "CRITICAL").toUpperCase();
+  const corte = SEVERITY_ORDER.indexOf(limiar);
+  if (corte < 0) {
+    console.error(`::error::fail-on inválido: ${limiar}. Esperado um de ${SEVERITY_ORDER.join("|")}.`);
+    process.exit(1);
+  }
+  const resultados = sarif.runs?.[0]?.results ?? [];
+  const reprovam = resultados.filter((r) => {
+    const i = SEVERITY_ORDER.indexOf((r.properties?.severity ?? "INFO").toUpperCase());
+    return i >= 0 && i <= corte;
+  });
+  console.error(
+    `::warning::Sem veredito do servidor. Aplicando o gate LOCAL sobre o SARIF ` +
+      `(fail-on=${limiar}): ${reprovam.length} apontamento(s) no limiar ou acima.`,
+  );
+  for (const r of reprovam.slice(0, 20)) {
+    const loc = r.locations?.[0]?.physicalLocation;
+    console.error(
+      `  [${r.properties?.severity}] ${r.ruleId} — ${loc?.artifactLocation?.uri ?? "?"}:${loc?.region?.startLine ?? "?"}`,
+    );
+  }
+  process.exit(reprovam.length > 0 ? 1 : 0);
 }
 
 const { analysisId, summary } = await res.json();

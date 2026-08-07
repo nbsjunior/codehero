@@ -204,6 +204,9 @@ runs:
         ORG_ID: ${{ inputs.org-id }}
         PROJECT_ID: ${{ inputs.project-id }}
         REPO_ID: ${{ inputs.repo-id }}
+        # Necessario para o recuo ao gate LOCAL quando o envio falha: sem o
+        # limiar, um envio indisponivel deixaria o build passar em silencio.
+        FAIL_ON: ${{ inputs.fail-on }}
       run: |
         node "${{ github.action_path }}/upload.mjs"
 
