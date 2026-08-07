@@ -104,7 +104,10 @@ const TEMPLATES = [
   {
     id: "insecure-random",
     re: /insecure random|pseudorandom|math\.random|predictable.*random/i,
-    regex: "(?i)(Math\\.random|java\\.util\\.Random|rand\\()",
+    // `rand\(` precisa da fronteira a esquerda: sem ela casa dentro de
+    // `seededRand(`, `expandRand(`, qualquer nome terminado em "rand".
+    // Medido em packages/code-embed/src/kmeans.ts (ver audit-detectors).
+    regex: "(?i)(Math\\.random|java\\.util\\.Random|(?<![\\w.])rand\\()",
     effort: 15,
   },
   {
@@ -134,7 +137,12 @@ const TEMPLATES = [
   {
     id: "debug-log",
     re: /debug(ging)? feature|console\.(log|debug)|System\.out|Debug\.Write|\bprint\s*\(/i,
-    regex: "(?i)(console\\.(log|debug|info)|System\\.out\\.print|Debug\\.Write(Line)?|print\\()",
+    // Mesma fronteira que a regra `print-statement-py` deste arquivo ja usava:
+    // sem ela, `print\(` casa dentro de `absorbFingerprint(` e de qualquer
+    // funcao terminada em "print". Medido em packages/locksmith (ver
+    // scripts/audit-detectors.mjs).
+    regex:
+      "(?i)(console\\.(log|debug|info)|System\\.out\\.print|Debug\\.Write(Line)?|(?<![\\w.])print\\()",
     effort: 5,
   },
   {
@@ -921,8 +929,7 @@ function assertDetectoresSaoEspecificos(templates) {
     throw new Error(
       `Geracao abortada: ${erros.length} detector(es) casariam substring dentro de palavra:
 ` +
-        erros.join("
-"),
+        erros.join("\n"),
     );
   }
 }
