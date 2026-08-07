@@ -2,6 +2,7 @@ import { STRUCTURAL_RULES, COBOL_ANALYSES, type StructuralRule, type CobolAnalys
 import {
   matchStructural,
   sqlcodeNaoChecado,
+  analisarDb2,
   camposMortos,
   candidatesFor,
   findDuplicates,
@@ -18,6 +19,7 @@ import {
   type DuplicateCandidate,
   type DuplicationSummary,
   type StructuralThresholds,
+  type AchadoDb2,
 } from "@codehero/engine";
 
 // ---------------------------------------------------------------------------
@@ -55,6 +57,14 @@ export interface StructuralSummary {
     commentDensity: number;
   };
 }
+
+/** Cada seam DB2 tem uma entrada propria no catalogo. */
+const ANALISE_DB2: Record<AchadoDb2["tipo"], string> = {
+  truncamento: "HERO-CBL-0197-truncamento-host-variable",
+  "cursor-sem-close": "HERO-CBL-0404-cursor-sem-close",
+  "sql-em-laco": "HERO-CBL-1049-sql-em-laco",
+  "commit-em-cursor": "HERO-CBL-0459-commit-em-cursor",
+};
 
 /** Achado de analise COBOL algoritmica (ver cobolAnalyses.ts). */
 export interface CobolFinding {
@@ -133,6 +143,17 @@ export async function collectStructural(
           startLine: d.linha + 1,
           detail: `${d.nome}${d.picture ? ` PIC ${d.picture}` : ""}`,
           snippet: `${String(d.nivel).padStart(2, "0")}  ${d.nome}`,
+        });
+      }
+      // A costura COBOL <-> DB2. Cada uma cruza a DATA DIVISION, o texto do SQL
+      // e o aninhamento do PERFORM — nenhuma cabe numa linha.
+      for (const d of analisarDb2(parsed.root as never)) {
+        cobolFindings.push({
+          analysis: COBOL_ANALYSES[ANALISE_DB2[d.tipo]]!,
+          file: m.file,
+          startLine: d.linha + 1,
+          detail: `${d.detalhe}${d.paragrafo ? ` em ${d.paragrafo}` : ""}`,
+          snippet: d.trecho,
         });
       }
     }

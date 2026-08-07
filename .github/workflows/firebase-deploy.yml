@@ -1,0 +1,130 @@
+name: Deploy CodeHero para Firebase
+
+# Restaurado depois da abertura do codigo, que removeu este workflow e trocou os
+# identificadores do .firebaserc por placeholders. Sem ele nao ha publicacao
+# automatica — a ultima subida foi manual.
+#
+# O repositorio permanece limpo: nenhum identificador de infraestrutura no YAML
+# nem no .firebaserc versionado. O CI materializa a configuracao real a partir
+# de secrets, e sem elas o job para com mensagem clara em vez de falhar no meio.
+#
+# Secrets necessarios:
+#   FIREBASE_SERVICE_ACCOUNT   json da conta de servico
+#   FIREBASE_PROJECT_ID        id do projeto (cai para NEXT_PUBLIC_FIREBASE_PROJECT_ID)
+#   FIREBASE_STORAGE_BUCKET    bucket do storage (cai para NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET)
+#   NEXT_PUBLIC_*              config do Firebase no cliente
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Falhar aqui, com mensagem, e melhor do que falhar no `firebase deploy`
+      # depois de dez minutos de build.
+      - name: Conferir configuracao
+        env:
+          PROJETO: ${{ secrets.FIREBASE_PROJECT_ID || secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET || secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+        run: |
+          faltando=""
+          [ -z "$PROJETO" ] && faltando="$faltando FIREBASE_PROJECT_ID"
+          [ -z "$BUCKET" ] && faltando="$faltando FIREBASE_STORAGE_BUCKET"
+          if [ -n "$faltando" ]; then
+            echo "::error::Secrets ausentes:$faltando — configure em Settings > Secrets and variables > Actions"
+            exit 1
+          fi
+
+      - name: Instalar dependencias do monorepo
+        run: npm ci
+
+      - name: Build dos contratos e das Functions
+        run: npm run build
+
+      - name: Build do dashboard (Next.js static export)
+        working-directory: apps/web
+        env:
+          NEXT_PUBLIC_USE_FIREBASE_EMULATORS: "false"
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          NEXT_PUBLIC_FIRESTORE_DATABASE_ID: ${{ secrets.NEXT_PUBLIC_FIRESTORE_DATABASE_ID }}
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+          NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}
+        run: npm run build
+
+      # O .firebaserc versionado tem placeholders de proposito (repo aberto).
+      # A configuracao real e montada aqui e nunca entra no historico.
+      - name: Montar .firebaserc
+        env:
+          PROJETO: ${{ secrets.FIREBASE_PROJECT_ID || secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET || secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+        run: |
+          node -e '
+            const fs = require("node:fs");
+            const projeto = process.env.PROJETO;
+            const bucket = process.env.BUCKET;
+            fs.writeFileSync(".firebaserc", JSON.stringify({
+              projects: { default: projeto },
+              targets: {
+                [projeto]: {
+                  hosting: { codehero: ["codehero"] },
+                  storage: { codehero: [bucket] },
+                },
+              },
+            }, null, 2));
+          '
+          echo "--- .firebaserc montado (projeto oculto no log) ---"
+
+      # Runtime env das Functions. O Firebase CLI le apps/functions/.env no
+      # deploy; o arquivo e gitignored, entao e montado aqui a partir de
+      # variables do repositorio. Ligar o Claude no Vertex vira uma mudanca de
+      # variable + re-run, sem editar codigo.
+      - name: Montar .env das Functions
+        run: |
+          cat > apps/functions/.env <<EOF
+          HERO_VERTEX_ENABLED=${{ vars.HERO_VERTEX_ENABLED || 'false' }}
+          HERO_VERTEX_REGION=${{ vars.HERO_VERTEX_REGION || 'global' }}
+          EOF
+          echo "--- apps/functions/.env ---"
+          cat apps/functions/.env
+
+      - name: Autenticar no Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Instalar Firebase CLI
+        run: npm install -g firebase-tools
+
+      # Hosting estatico (apps/web/out) + Firestore nomeado + storage +
+      # functions do CodeHero. A lista explicita evita que um deploy remova
+      # function de outro projeto que compartilhe o mesmo Google Cloud.
+      - name: Deploy (Hosting + Functions + Firestore + Storage)
+        env:
+          PROJETO: ${{ secrets.FIREBASE_PROJECT_ID || secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+        run: >-
+          firebase deploy
+          --only "hosting:codehero,firestore:codehero,storage,functions:ingestAnalysis,functions:processIngestJob,functions:purgeStaleDetail,functions:runDetailPurgeNow,functions:getPlatformOpsSettings,functions:setPlatformOpsSettings,functions:repairIngestQueues,functions:autoRepairIngestQueues,functions:listIssues,functions:sddSpec,functions:generateSddSpec,functions:provisionProject,functions:flagIssueFeedback,functions:submitFixResult,functions:exportRuleforgeFeedback,functions:applyOfflineTriage,functions:applyCodeEmbedClusters,functions:adminListAllProjects,functions:checkPlatformAdmin,functions:adminListAllIssues,functions:adminGetPlatformSummary,functions:adminListUsers,functions:adminSetPlatformAdmin,functions:adminUpdateUser,functions:adminResetUserPassword,functions:adminCreateProject,functions:getOrgQuotasCallable,functions:setOrgQuotas,functions:ruleforgeDaily,functions:runRuleforgeDaily,functions:listRuleforgeRuns,functions:submitDressCode,functions:listDressCodes,functions:listMotorRules,functions:deleteOverlayRule,functions:listRuleProposals,functions:reviewRuleProposal,functions:cveWatchlistSync,functions:runCveWatchlistSyncNow,functions:listCveWatchlist,functions:previewRepoScan,functions:registerAccount,functions:rotateIngestToken,functions:getActiveRules,functions:getActiveRulesCallable,functions:getRulesCatalog,functions:startGithubActionInstall,functions:githubOAuthCallback,functions:addRepoToProject,functions:listProjectRepos,functions:listFeatureFlags,functions:setFeatureFlag,functions:setRepoAutoScan,functions:runRepoAutoScanNow,functions:autoScanRepos"
+          --project "$PROJETO"
+          --non-interactive
+
+      - name: Restaurar package.json das Functions
+        if: always()
+        run: node scripts/restore-functions-package.mjs

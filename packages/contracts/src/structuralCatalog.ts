@@ -210,6 +210,7 @@ export const STRUCTURAL_RULES: StructuralRule[] = [
     sddTemplateId: "sdd.smell.remove-dead-code",
     category: "code-smell",
     spec: {
+      languages: ["cobol"],
       match: "call",
       textMatches: "^CALL\\b",
       argument: { index: 0, is: "non-literal" },
@@ -230,12 +231,39 @@ export const STRUCTURAL_RULES: StructuralRule[] = [
     sddTemplateId: "sdd.sqli.parametrize",
     category: "string-injection",
     spec: {
+      languages: ["tsql"],
       match: "call",
       callee: "^(EXEC|sp_executesql)$",
       argument: { index: "any", is: "assembled" },
     },
     whyNotRegex:
       "EXEC(@sql) e EXEC(N'SELECT 1') compartilham o token EXEC; a árvore distingue identificador/montagem de literal constante.",
+  },
+  {
+    id: "HERO-ST-sqlpl-dynamic-injection",
+    name: "SqlDinamicoRemendadoDb2",
+    message:
+      "EXECUTE IMMEDIATE/PREPARE de uma variável montada com `||`: o valor concatenado entra na query como código. É SQL Injection em SQL PL — e o PREPARE só adia a execução, não protege.",
+    severity: "CRITICAL",
+    type: "VULNERABILITY",
+    remediationEffortMin: 30,
+    cwe: ["CWE-89"],
+    owasp: ["A03:2021-Injection"],
+    sddTemplateId: "sdd.sqli.parametrize",
+    category: "string-injection",
+    spec: {
+      languages: ["sqlpl"],
+      match: "call",
+      callee: "^(EXECUTE IMMEDIATE|PREPARE)$",
+      // `assembled`, não `non-literal`: o parser de SQL PL propaga, DENTRO da
+      // rotina, quais variáveis nasceram de uma concatenação com literal.
+      // Executar uma variável não é o defeito — executar uma variável REMENDADA
+      // é. Sem essa distinção a regra apontaria todo `EXECUTE IMMEDIATE v_sql`,
+      // inclusive os montados só de literais.
+      argument: { index: "any", is: "assembled" },
+    },
+    whyNotRegex:
+      "A montagem e a execução estão em statements DIFERENTES: `SET v_sql = '...' || p_conta;` numa linha e `EXECUTE IMMEDIATE v_sql;` em outra. Uma regex por linha vê as duas como inofensivas — só ligando a atribuição à chamada o defeito aparece.",
   },
   // --- CobRA → HERO-ST (Presence Fase 3): árvore COBOL, não só L0 ---
   {
@@ -250,6 +278,7 @@ export const STRUCTURAL_RULES: StructuralRule[] = [
     sddTemplateId: "sdd.generic.smell",
     category: "security-misconfiguration",
     spec: {
+      languages: ["cobol"],
       match: "call",
       callee: "^STRING$",
       textMatches: "(?i)^STRING\\b(?![\\s\\S]*\\bON\\s+OVERFLOW\\b)",
@@ -269,6 +298,7 @@ export const STRUCTURAL_RULES: StructuralRule[] = [
     sddTemplateId: "sdd.generic.smell",
     category: "security-misconfiguration",
     spec: {
+      languages: ["cobol"],
       match: "call",
       callee: "^UNSTRING$",
       textMatches: "(?i)^UNSTRING\\b(?![\\s\\S]*\\bON\\s+OVERFLOW\\b)",
@@ -286,7 +316,9 @@ export const STRUCTURAL_RULES: StructuralRule[] = [
     owasp: [],
     sddTemplateId: "sdd.smell.remove-goto",
     category: "code-smell",
-    spec: { match: "call", callee: "^ALTER$" },
+    spec: {
+      languages: ["cobol"],
+match: "call", callee: "^ALTER$" },
     whyNotRegex: "ALTER é verbo de procedimento; o nó alter_statement evita confundir com DDL ALTER TABLE em comentários/SQL embutido.",
   },
   {
@@ -300,7 +332,9 @@ export const STRUCTURAL_RULES: StructuralRule[] = [
     owasp: ["A03:2021-Injection"],
     sddTemplateId: "sdd.generic.validate-input",
     category: "security-misconfiguration",
-    spec: { match: "call", callee: "^ACCEPT$" },
+    spec: {
+      languages: ["cobol"],
+match: "call", callee: "^ACCEPT$" },
     whyNotRegex: "ACCEPT aparece em DATA DIVISION e PROCEDURE; o parser só emite accept_statement no PROCEDURE.",
   },
   {
@@ -315,6 +349,7 @@ export const STRUCTURAL_RULES: StructuralRule[] = [
     sddTemplateId: "sdd.secret.remove-log",
     category: "sensitive-data-exposure",
     spec: {
+      languages: ["cobol"],
       match: "call",
       callee: "^DISPLAY$",
       textMatches: "(?i)\\b(PASSWORD|SENHA|SECRET|TOKEN|API-?KEY)\\b",

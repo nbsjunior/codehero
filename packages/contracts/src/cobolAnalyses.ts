@@ -62,6 +62,64 @@ export const COBOL_ANALYSES: Record<string, CobolAnalysis> = {
     whyNotPattern:
       "Cruza a DATA DIVISION com a PROCEDURE DIVISION do programa inteiro: a declaração está numa linha (às vezes em copybook) e a ausência de uso está espalhada por todas as outras.",
   },
+  "HERO-CBL-0197-truncamento-host-variable": {
+    id: "HERO-CBL-0197-truncamento-host-variable",
+    name: "TruncamentoHostVariable",
+    message:
+      "Host variable menor que a coluna do DB2: um INTEGER (10 dígitos) chegando num PIC S9(4) trunca o valor. Dependendo do compilador, sem erro — o programa segue e grava número errado.",
+    severity: "CRITICAL",
+    type: "BUG",
+    remediationEffortMin: 15,
+    cwe: ["CWE-197"],
+    owasp: [],
+    sddTemplateId: "sdd.db2.ajustar-host-variable",
+    category: "data-integrity",
+    whyNotPattern:
+      "Cruza dois lugares distantes: o PIC está na DATA DIVISION e o tipo da coluna está no SQL. Comparar as capacidades exige entender a correspondência posicional entre a lista do SELECT e a lista do INTO.",
+  },
+  "HERO-CBL-0404-cursor-sem-close": {
+    id: "HERO-CBL-0404-cursor-sem-close",
+    name: "CursorSemClose",
+    message:
+      "Cursor aberto e nunca fechado: segura bloqueio e recurso do plano até o fim da unidade de trabalho. Em batch longo é vazamento acumulativo.",
+    severity: "MAJOR",
+    type: "BUG",
+    remediationEffortMin: 10,
+    cwe: ["CWE-404"],
+    owasp: [],
+    sddTemplateId: "sdd.db2.fechar-cursor",
+    whyNotPattern:
+      "Emparelhar OPEN com CLOSE por nome de cursor ao longo do programa inteiro. Uma linha com OPEN não diz nada; o defeito é a AUSÊNCIA de outra linha em qualquer lugar do fonte.",
+  },
+  "HERO-CBL-1049-sql-em-laco": {
+    id: "HERO-CBL-1049-sql-em-laco",
+    name: "SqlEmLaco",
+    message:
+      "EXEC SQL dentro de PERFORM: uma ida e volta ao DB2 por iteração. No mainframe a CPU é faturada — o N+1 aqui tem preço direto na fatura, não só latência.",
+    severity: "MAJOR",
+    type: "CODE_SMELL",
+    remediationEffortMin: 60,
+    cwe: ["CWE-1049"],
+    owasp: [],
+    sddTemplateId: "sdd.db2.trocar-laco-por-cursor",
+    whyNotPattern:
+      "Exige saber se o EXEC SQL está DENTRO de um PERFORM — aninhamento, não texto. E precisa excluir FETCH e CLOSE, que em laço são a forma correta de consumir cursor.",
+  },
+  "HERO-CBL-0459-commit-em-cursor": {
+    id: "HERO-CBL-0459-commit-em-cursor",
+    name: "CommitEmLacoDeCursor",
+    message:
+      "COMMIT dentro de laço com cursor sem WITH HOLD: o commit fecha o cursor e a iteração seguinte falha com -501. O defeito só aparece quando o volume passa do ponto de commit — normalmente em produção.",
+    severity: "BLOCKER",
+    type: "BUG",
+    remediationEffortMin: 30,
+    cwe: ["CWE-459"],
+    owasp: [],
+    sddTemplateId: "sdd.db2.cursor-with-hold",
+    category: "data-integrity",
+    whyNotPattern:
+      "Três fatos em lugares diferentes: o COMMIT está dentro de um laço (aninhamento), existe um cursor aberto (outra linha) e esse cursor não foi declarado WITH HOLD (uma terceira linha, às vezes em copybook).",
+  },
 };
 
 export const COBOL_ANALYSIS_LIST: CobolAnalysis[] = Object.values(COBOL_ANALYSES);

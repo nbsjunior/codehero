@@ -117,6 +117,17 @@ export interface StructuralSpec {
   /** Tipo lógico do nó onde a regra ancora. */
   match: NodeKind;
   /**
+   * Dialetos em que a regra vale. Ausente = todos.
+   *
+   * Existe porque COBOL, T-SQL e SQL PL nao vem do tree-sitter: sao tres
+   * parsers escritos a mao que emitem os MESMOS nomes de no (`call_statement`,
+   * `procedure_definition`). Sem este filtro, a regra de CALL dinamico do
+   * COBOL disparava em `CALL AUDITORIA.REGISTRA(P_CONTA)` do DB2 — onde o
+   * alvo e literal e nao ha nada de dinamico. Falso positivo medido, nao
+   * hipotetico.
+   */
+  languages?: string[];
+  /**
    * Regex sobre o nome do callee (só faz sentido com `match: "call"`).
    *
    * Por padrão casa contra o texto INTEIRO e contra o último segmento, porque

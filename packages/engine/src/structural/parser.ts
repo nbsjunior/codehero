@@ -2,6 +2,7 @@ import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { parseCobolSource } from "./cobolParse.ts";
 import { parseTsqlSource } from "./tsqlParse.ts";
+import { parseSqlplSource } from "./sqlplParse.ts";
 import type { BuiltNode } from "./builtNode.ts";
 
 // ---------------------------------------------------------------------------
@@ -34,7 +35,9 @@ export type StructuralLanguage =
   | "go"
   | "csharp"
   | "cobol"
-  | "tsql";
+  | "tsql"
+  /** SQL PL: o dialeto procedural do DB2 (z/OS e LUW). */
+  | "sqlpl";
 
 const WASM_FILE: Partial<Record<StructuralLanguage, string>> = {
   javascript: "tree-sitter-javascript.wasm",
@@ -62,6 +65,9 @@ const EXT_TO_LANG: Record<string, StructuralLanguage> = {
   ".cob": "cobol",
   ".cpy": "cobol",
   ".sql": "tsql",
+  ".db2": "sqlpl",
+  ".sqlpl": "sqlpl",
+  ".spl": "sqlpl",
 };
 
 export function structuralLanguageFor(file: string): StructuralLanguage | null {
@@ -152,6 +158,7 @@ export async function parseStructural(file: string, source: string): Promise<Par
 
   if (lang === "cobol") return fromBuilt(lang, parseCobolSource(source));
   if (lang === "tsql") return fromBuilt(lang, parseTsqlSource(source));
+  if (lang === "sqlpl") return fromBuilt(lang, parseSqlplSource(source));
 
   try {
     const parser = await getParser(lang);

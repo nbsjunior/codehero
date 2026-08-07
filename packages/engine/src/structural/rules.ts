@@ -270,6 +270,8 @@ export function matchStructural(
 ): StructuralMatch[] {
   // Árvore com erro dá forma incompleta: um match daí seria artefato.
   if (parsed.hasError) return [];
+  // Regra restrita a dialeto: ver o porquê em `StructuralSpec.languages`.
+  if (spec.languages && !spec.languages.includes(parsed.language)) return [];
 
   const out: StructuralMatch[] = [];
   const stack: SyntaxNode[] = [parsed.root];
