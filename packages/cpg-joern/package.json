@@ -1,7 +1,6 @@
 {
   "name": "@codehero/cpg-joern",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,12 +13,30 @@
   "bin": {
     "hero-joern": "./dist/cli.js"
   },
-  "files": ["dist", "queries"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rimraf dist"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=20"
+  },
+  "description": "Adaptador do CodeHero para o Joern (code property graph), opcional e degradável.",
+  "license": "Apache-2.0",
+  "author": "nbsjunior",
+  "homepage": "https://github.com/nbsjunior/codehero#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nbsjunior/codehero.git",
+    "directory": "packages/cpg-joern"
+  },
+  "bugs": {
+    "url": "https://github.com/nbsjunior/codehero/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

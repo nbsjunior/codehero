@@ -22,15 +22,14 @@ jobs:
       - name: Install
         run: npm ci
 
+      # Usa o script da raiz em vez de repetir a lista aqui.
+      #
+      # A lista era mantida a mao e derivou: `build:cpg` nunca foi adicionado
+      # quando o pacote @codehero/cpg-joern entrou, entao o scanner compilava
+      # contra um dist que nao existia e a CI ficou vermelha em main por varios
+      # commits seguidos. Uma lista duplicada so precisa ser esquecida uma vez.
       - name: Build packages
-        run: |
-          npm run build:contracts
-          npm run build:engine
-          npm run build:fp-ranker
-          npm run build:code-embed
-          npm run build:scanner
-          npm run build:ruleforge
-          npm run build:mcp
+        run: npm run build
 
       - name: Test
         run: npm test

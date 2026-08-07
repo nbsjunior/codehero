@@ -1,5 +1,12 @@
 import { createHash } from "node:crypto";
-import { RULES, matchPattern, type HeroRule, type RuleLanguage } from "@codehero/contracts";
+import {
+  RULES,
+  matchPattern,
+  buildLexicalMask,
+  lexicalProfileFor,
+  type HeroRule,
+  type RuleLanguage,
+} from "@codehero/contracts";
 import { analyzeFileCached, ScanCache, supportsDeepAnalysis } from "@codehero/engine";
 
 export interface Finding {
@@ -32,6 +39,12 @@ const EXT_TO_LANG: Record<string, RuleLanguage> = {
   ".cob": "cobol",
   ".cpy": "cobol",
   ".sql": "tsql",
+  // SQL PL (DB2 z/OS e LUW). Sem estas três entradas o mapa não tinha NENHUMA
+  // extensão apontando para `db2sql`, e as 12 regras que declaram essa
+  // linguagem eram código morto: existiam no catálogo e não podiam disparar.
+  ".db2": "db2sql",
+  ".sqlpl": "db2sql",
+  ".spl": "db2sql",
 };
 
 export function languageForFile(path: string): RuleLanguage | null {
@@ -95,9 +108,20 @@ export function runRulesAgainstSource(
     return out;
   }
 
+  // Máscara léxica UMA vez por arquivo, com o perfil do próprio arquivo.
+  //
+  // Antes daqui a chamada era `matchPattern(rule.pattern, source)` — sem opções.
+  // Isso tinha dois efeitos, ambos ruins: o perfil caía no padrão `clike` para
+  // TODA linguagem que não é JS/TS (só elas passam pela rota de análise
+  // profunda, que já fazia certo), então `#` do Python, `--` do SQL e o `*` na
+  // coluna 7 do COBOL de formato fixo nunca eram reconhecidos como comentário;
+  // e a máscara era reconstruída uma vez POR REGRA, varrendo o arquivo inteiro
+  // centenas de vezes.
+  const mask = buildLexicalMask(source, lexicalProfileFor(file));
+
   const findings: Finding[] = [];
   for (const rule of rules) {
-    for (const m of matchPattern(rule.pattern, source)) {
+    for (const m of matchPattern(rule.pattern, source, { mask })) {
       findings.push({
         rule,
         file,

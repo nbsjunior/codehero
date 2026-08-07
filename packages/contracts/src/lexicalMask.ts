@@ -113,6 +113,10 @@ const EXT_PERFIL: Record<string, string> = {
   cpp: "clike", cc: "clike", hpp: "clike", kt: "clike", swift: "clike",
   py: "python", pyi: "python",
   sql: "sql",
+  // SQL PL do DB2. Sem estas três, `.db2` caía no padrão `clike`, onde `--`
+  // NÃO é comentário — e o motor apontava defeito dentro de comentário que
+  // apenas descrevia o defeito. Falso positivo medido em examples/legacy.
+  db2: "sql", sqlpl: "sql", spl: "sql",
   cbl: "cobol", cob: "cobol", cpy: "cobol",
   vb: "vbnet",
 };

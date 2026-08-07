@@ -1,7 +1,6 @@
 {
   "name": "@codehero/fp-ranker",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -16,7 +15,7 @@
   },
   "files": [
     "dist",
-    "models"
+    "README.md"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -24,5 +23,23 @@
     "eval": "node dist/cli.js eval",
     "clean": "rimraf dist",
     "test": "node test/ranker.mjs"
+  },
+  "description": "Ranqueador de falso positivo do CodeHero: modelo versionado em arquivo, sem inferência em tempo de scan.",
+  "license": "Apache-2.0",
+  "author": "nbsjunior",
+  "homepage": "https://github.com/nbsjunior/codehero#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nbsjunior/codehero.git",
+    "directory": "packages/fp-ranker"
+  },
+  "bugs": {
+    "url": "https://github.com/nbsjunior/codehero/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

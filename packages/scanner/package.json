@@ -1,7 +1,6 @@
 {
   "name": "@codehero/scanner",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "bin": {
     "hero-scan": "./dist/index.js"
@@ -10,12 +9,36 @@
     "build": "tsc -p tsconfig.json",
     "scan": "node src/index.ts",
     "clean": "rimraf dist",
-    "test": "node test/externalTools.mjs"
+    "test": "node test/externalTools.mjs && node test/lexicalProfile.mjs"
   },
   "dependencies": {
-    "@codehero/contracts": "*",
-    "@codehero/cpg-joern": "*",
-    "@codehero/engine": "*",
-    "@codehero/fp-ranker": "*"
-  }
+    "@codehero/contracts": "^0.1.0",
+    "@codehero/cpg-joern": "^0.1.0",
+    "@codehero/engine": "^0.1.0",
+    "@codehero/fp-ranker": "^0.1.0"
+  },
+  "description": "Scanner determinístico do CodeHero: análise estática L0/L1/L2 com gate de build, para JS/TS, Python, Java, C#, Go, COBOL e DB2 SQL PL.",
+  "license": "Apache-2.0",
+  "author": "nbsjunior",
+  "homepage": "https://github.com/nbsjunior/codehero#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nbsjunior/codehero.git",
+    "directory": "packages/scanner"
+  },
+  "bugs": {
+    "url": "https://github.com/nbsjunior/codehero/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts"
 }
