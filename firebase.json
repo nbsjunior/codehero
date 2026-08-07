@@ -51,8 +51,33 @@
         "headers": [{ "key": "Cache-Control", "value": "public,max-age=31536000,immutable" }]
       },
       {
-        "//": "HTML sempre revalida. Sem esta regra o Firebase aplica o padrao de 1 hora, e quem ja visitou continuava vendo a pagina antiga por ate 60 minutos depois de um deploy. Os assets acima tem hash no nome, entao podem ser imutaveis; o HTML nao tem, e e ele que aponta para a versao nova.",
-        "source": "**/*.@(html|json)",
+        "//": "HTML sempre revalida. Sem isto vale o padrao do Firebase, max-age=3600, e quem ja visitou continua vendo a pagina antiga por ate 60 minutos depois de um deploy. Os assets acima tem hash no nome e podem ser imutaveis; o HTML nao tem, e e ele que aponta para a versao nova.",
+        "//2": "Uma entrada por rota, de proposito. A primeira tentativa usou **/*.html sozinho e nao funcionou: o Firebase casa contra o CAMINHO DA REQUISICAO, e a home e pedida como / e nao como /index.html. A segunda tentativa usou extglob @(a|b) e nao casava nada. Estes padroes foram testados um a um, e nenhum deles atinge /_next/static.",
+        "source": "/",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache, must-revalidate" }]
+      },
+      {
+        "source": "**/*.html",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache, must-revalidate" }]
+      },
+      {
+        "source": "/admin",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache, must-revalidate" }]
+      },
+      {
+        "source": "/docs",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache, must-revalidate" }]
+      },
+      {
+        "source": "/projects",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache, must-revalidate" }]
+      },
+      {
+        "source": "/sitemap.xml",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache, must-revalidate" }]
+      },
+      {
+        "source": "/robots.txt",
         "headers": [{ "key": "Cache-Control", "value": "no-cache, must-revalidate" }]
       },
       {
