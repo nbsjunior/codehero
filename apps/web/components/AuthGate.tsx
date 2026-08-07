@@ -90,7 +90,27 @@ async function sendVerificationBestEffort(): Promise<void> {
   }
 }
 
-export default function AuthGate({ children }: { children: ReactNode }) {
+export default function AuthGate({
+  children,
+  landingDurantePreload = false,
+}: {
+  children: ReactNode;
+  /**
+   * Mostra a landing ENQUANTO o estado de login carrega, em vez da tela de
+   * espera.
+   *
+   * Existe por um defeito medido em producao: como o site e exportado
+   * estatico, o servidor nao sabe se ha sessao, entao o HTML publicado
+   * continha apenas a palavra "Carregando". A landing so aparecia depois do
+   * JavaScript rodar. Em carga lenta a pagina parecia vazia, e o Google
+   * indexava uma pagina sem conteudo, o que anulava o trabalho de SEO.
+   *
+   * Na home isso vem ligado: quem chega deslogado e a maioria, e a landing
+   * nao depende de sessao para nada. No painel fica desligado, senao a
+   * landing piscaria antes do conteudo de quem ja esta logado.
+   */
+  landingDurantePreload?: boolean;
+}) {
   const { user, loading } = useAuth();
   const [mode, setMode] = useState<Mode>("signup");
   const [email, setEmail] = useState("");
@@ -117,8 +137,8 @@ export default function AuthGate({ children }: { children: ReactNode }) {
     };
   }, [navOpen]);
 
-  if (loading) return <FullPageSplash>Carregando…</FullPageSplash>;
-  if (user) return <>{children}</>;
+  if (loading && !landingDurantePreload) return <FullPageSplash>Carregando…</FullPageSplash>;
+  if (user && !loading) return <>{children}</>;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();

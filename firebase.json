@@ -51,6 +51,11 @@
         "headers": [{ "key": "Cache-Control", "value": "public,max-age=31536000,immutable" }]
       },
       {
+        "//": "HTML sempre revalida. Sem esta regra o Firebase aplica o padrao de 1 hora, e quem ja visitou continuava vendo a pagina antiga por ate 60 minutos depois de um deploy. Os assets acima tem hash no nome, entao podem ser imutaveis; o HTML nao tem, e e ele que aponta para a versao nova.",
+        "source": "**/*.@(html|json)",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache, must-revalidate" }]
+      },
+      {
         "source": "**",
         "headers": [
           { "key": "X-Content-Type-Options", "value": "nosniff" },
