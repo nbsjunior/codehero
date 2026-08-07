@@ -11,7 +11,10 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist", "corpus"],
+  "files": [
+    "dist",
+    "corpus"
+  ],
   "bin": {
     "hero-ruleforge": "./dist/cli.js"
   },
@@ -19,7 +22,8 @@
     "build": "tsc -p tsconfig.json",
     "evaluate": "node src/cli.ts evaluate",
     "evolve": "node src/cli.ts evolve",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "test": "node test/characterization.mjs"
   },
   "dependencies": {
     "@codehero/contracts": "*"

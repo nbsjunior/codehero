@@ -1,0 +1,3210 @@
+{
+  "_porque": "Casos de CARACTERIZACAO, nao dourados. Cada um congela um apontamento que a regra produz hoje sobre codigo real. Serve para detectar a regra que PARA de achar o que achava. NAO afirma que o apontamento esta correto: para isso existe golden.json, onde uma pessoa decidiu caso a caso. Nunca some os dois numeros como se fossem a mesma coisa.",
+  "_geradoPor": "node scripts/mine-characterization.mjs",
+  "_acervo": {
+    "raiz": ".",
+    "arquivos": 249
+  },
+  "casos": [
+    {
+      "id": "car-HERO-SEC-0089-sql-injection",
+      "ruleId": "HERO-SEC-0089-sql-injection",
+      "expected": "match",
+      "code": "query = cursor.execute(\"SELECT * FROM users WHERE name = '\" + name + \"'\")",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:8. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-0327-weak-hash",
+      "ruleId": "HERO-SEC-0327-weak-hash",
+      "expected": "match",
+      "code": "return hashlib.md5(data.encode()).hexdigest()",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:12. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-0095-code-injection-eval",
+      "ruleId": "HERO-SEC-0095-code-injection-eval",
+      "expected": "match",
+      "code": "return eval(payload)",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-0079-xss-sink",
+      "ruleId": "HERO-SEC-0079-xss-sink",
+      "expected": "match",
+      "code": "document.getElementById(\"x\").innerHTML = q;",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de tmp/smoke/vuln.js:7. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-0078-os-command",
+      "ruleId": "HERO-SEC-0078-os-command",
+      "expected": "match",
+      "code": "message: \"Uso de eval()/exec() com entrada potencialmente controlada (code injection).\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/rules.ts:176. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-0918-ssrf",
+      "ruleId": "HERO-SEC-0918-ssrf",
+      "expected": "match",
+      "code": "fetch(`/mirror?u=${req.query.url}`);",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de tmp/smoke/vuln.js:9. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-0295-tls-verify-disabled",
+      "ruleId": "HERO-SEC-0295-tls-verify-disabled",
+      "expected": "match",
+      "code": "message: \"Verificação TLS desabilitada (NODE_TLS_REJECT_UNAUTHORIZED=0).\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/rules.ts:388. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-0506-pipe-to-shell",
+      "ruleId": "HERO-SEC-0506-pipe-to-shell",
+      "expected": "match",
+      "code": "// \"Sem curl | bash em scripts de setup\". Prosa não é comando.",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/rules.ts:435. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-0489-debug-statement",
+      "ruleId": "HERO-SMELL-0489-debug-statement",
+      "expected": "match",
+      "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:280. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-0546-todo-marker",
+      "ruleId": "HERO-SMELL-0546-todo-marker",
+      "expected": "match",
+      "code": "# TODO: add pagination",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:7. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-0089-dynamic-sql-tsql",
+      "ruleId": "HERO-SEC-0089-dynamic-sql-tsql",
+      "expected": "match",
+      "code": "SET @sql = 'SELECT * FROM Customers WHERE Name = ''' + @CustomerName + '''';",
+      "profile": "sql",
+      "note": "caracterizacao: extraido de examples/legacy/sample.sql:6. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-0089-adonet-sqli",
+      "ruleId": "HERO-SEC-0089-adonet-sqli",
+      "expected": "match",
+      "code": "var cmd = new SqlCommand(\"SELECT * FROM Customers WHERE Name = '\" + name + \"'\");",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de examples/legacy/Sample.cs:9. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-0089-jdbc-sqli",
+      "ruleId": "HERO-SEC-0089-jdbc-sqli",
+      "expected": "match",
+      "code": "query = cursor.execute(\"SELECT * FROM users WHERE name = '\" + name + \"'\")",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:8. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-0078-xp-cmdshell-tsql",
+      "ruleId": "HERO-SEC-0078-xp-cmdshell-tsql",
+      "expected": "match",
+      "code": "re: /os command|command injection|shell injection|processbuilder|runtime\\.exec|child_process|xp_cmdshell/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:69. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-cobol-accept-console",
+      "ruleId": "HERO-SEC-cobol-accept-console",
+      "expected": "match",
+      "code": "ACCEPT WS-TEMP-FLAG FROM CONSOLE",
+      "profile": "cobol",
+      "note": "caracterizacao: extraido de examples/legacy/sample.cbl:19. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-cobol-sql-select-star",
+      "ruleId": "HERO-SEC-cobol-sql-select-star",
+      "expected": "match",
+      "code": "SELECT * FROM CUSTOMERS",
+      "profile": "cobol",
+      "note": "caracterizacao: extraido de examples/legacy/sample.cbl:33. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-cobol-sql-no-where",
+      "ruleId": "HERO-SEC-cobol-sql-no-where",
+      "expected": "match",
+      "code": "* Update display name / email / disabled flag via Admin SDK.",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/adminUsers.ts:114. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-cobol-sql-ddl",
+      "ruleId": "HERO-SEC-cobol-sql-ddl",
+      "expected": "match",
+      "code": "re: /drop table|truncate table/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:588. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-cobol-sql-like-leading-wildcard",
+      "ruleId": "HERO-SEC-cobol-sql-like-leading-wildcard",
+      "expected": "match",
+      "code": "WHERE CUST_NAME LIKE '%SMITH%'",
+      "profile": "cobol",
+      "note": "caracterizacao: extraido de examples/legacy/sample.cbl:34. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-0goto-cobol",
+      "ruleId": "HERO-SMELL-0goto-cobol",
+      "expected": "match",
+      "code": "<li>Ex.: debug em produção, TODO abandonado, GO TO</li>",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:326. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-alter-cobol",
+      "ruleId": "HERO-SMELL-alter-cobol",
+      "expected": "match",
+      "code": "ALTER ERROR-PARA TO PROCEED TO DONE-PARA",
+      "profile": "cobol",
+      "note": "caracterizacao: extraido de examples/legacy/sample.cbl:28. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-next-sentence-cobol",
+      "ruleId": "HERO-SMELL-next-sentence-cobol",
+      "expected": "match",
+      "code": "NEXT SENTENCE",
+      "profile": "cobol",
+      "note": "caracterizacao: extraido de examples/legacy/sample.cbl:23. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-perform-thru-cobol",
+      "ruleId": "HERO-SMELL-perform-thru-cobol",
+      "expected": "match",
+      "code": "PERFORM LOOKUP-CUSTOMER THRU LOOKUP-EXIT",
+      "profile": "cobol",
+      "note": "caracterizacao: extraido de examples/legacy/sample.cbl:21. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-cancel-cobol",
+      "ruleId": "HERO-SMELL-cancel-cobol",
+      "expected": "match",
+      "code": "message: \"CANCEL de subprograma — estado compartilhado e ciclo de vida difíceis de raciocinar.\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/cobolRules.ts:290. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-stop-run-cobol",
+      "ruleId": "HERO-SMELL-stop-run-cobol",
+      "expected": "match",
+      "code": "STOP RUN.",
+      "profile": "cobol",
+      "note": "caracterizacao: extraido de examples/legacy/db2-batch.cbl:30. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-redefines-cobol",
+      "ruleId": "HERO-SMELL-redefines-cobol",
+      "expected": "match",
+      "code": "01  WS-BUFFER REDEFINES WS-TABLE PIC X(10).",
+      "profile": "cobol",
+      "note": "caracterizacao: extraido de examples/legacy/sample.cbl:14. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-occurs-one-cobol",
+      "ruleId": "HERO-SMELL-occurs-one-cobol",
+      "expected": "match",
+      "code": "05  WS-ENTRY OCCURS 1   PIC X(10).",
+      "profile": "cobol",
+      "note": "caracterizacao: extraido de examples/legacy/sample.cbl:13. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-display-console-cobol",
+      "ruleId": "HERO-SMELL-display-console-cobol",
+      "expected": "match",
+      "code": "DISPLAY 'STARTING LOOKUP' UPON CONSOLE",
+      "profile": "cobol",
+      "note": "caracterizacao: extraido de examples/legacy/sample.cbl:20. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-string-no-overflow-cobol",
+      "ruleId": "HERO-SMELL-string-no-overflow-cobol",
+      "expected": "match",
+      "code": "async function requirePlatformAdmin(uid: string): Promise<void> {",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/admin.ts:6. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-call-dynamic-cobol",
+      "ruleId": "HERO-SMELL-call-dynamic-cobol",
+      "expected": "match",
+      "code": "* repos) at a time. Fanning out to EVERY org/project/repo in one call breaks",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/admin.ts:15. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-exec-sql-no-sqlcode-hint-cobol",
+      "ruleId": "HERO-SMELL-exec-sql-no-sqlcode-hint-cobol",
+      "expected": "match",
+      "code": "EXEC SQL",
+      "profile": "cobol",
+      "note": "caracterizacao: extraido de examples/legacy/db2-batch.cbl:34. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-cobol-accept-unvalidated",
+      "ruleId": "HERO-SEC-cobol-accept-unvalidated",
+      "expected": "match",
+      "code": "ACCEPT WS-TEMP-FLAG FROM CONSOLE",
+      "profile": "cobol",
+      "note": "caracterizacao: extraido de examples/legacy/sample.cbl:19. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-cobol-string-no-overflow",
+      "ruleId": "HERO-SEC-cobol-string-no-overflow",
+      "expected": "match",
+      "code": "async function requirePlatformAdmin(uid: string): Promise<void> {",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/admin.ts:6. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-cobol-unstring-no-overflow",
+      "ruleId": "HERO-SEC-cobol-unstring-no-overflow",
+      "expected": "match",
+      "code": "if (/^UNSTRING\\b/i.test(line)) {",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/engine/src/structural/cobolParse.ts:272. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-cobol-alter",
+      "ruleId": "HERO-SMELL-cobol-alter",
+      "expected": "match",
+      "code": "ALTER ERROR-PARA TO PROCEED TO DONE-PARA",
+      "profile": "cobol",
+      "note": "caracterizacao: extraido de examples/legacy/sample.cbl:28. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-cobol-next-sentence",
+      "ruleId": "HERO-SMELL-cobol-next-sentence",
+      "expected": "match",
+      "code": "NEXT SENTENCE",
+      "profile": "cobol",
+      "note": "caracterizacao: extraido de examples/legacy/sample.cbl:23. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cobol-S4507",
+      "ruleId": "SONAR-cobol-S4507",
+      "expected": "match",
+      "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:280. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cobol-SQL.DynamicSqlCheck",
+      "ruleId": "SONAR-cobol-SQL.DynamicSqlCheck",
+      "expected": "match",
+      "code": "var cmd = new SqlCommand(\"SELECT * FROM Customers WHERE Name = '\" + name + \"'\");",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de examples/legacy/Sample.cs:9. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S1075",
+      "ruleId": "SONAR-cs-S1075",
+      "expected": "match",
+      "code": "\"http://localhost:3000\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/githubActionInstall.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S1206",
+      "ruleId": "SONAR-cs-S1206",
+      "expected": "match",
+      "code": "if (!lattice.equals(inFact[s] as F, joined)) {",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/engine/src/dataflow.ts:51. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S1481",
+      "ruleId": "SONAR-cs-S1481",
+      "expected": "match",
+      "code": "re: /unused import|unnecessary import|remove this unused/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:485. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S1696",
+      "ruleId": "SONAR-cs-S1696",
+      "expected": "match",
+      "code": "const snap = await db.doc(`platformAdmins/${uid}`).get();",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/admin.ts:7. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S2245",
+      "ruleId": "SONAR-cs-S2245",
+      "expected": "match",
+      "code": "Descreva a política em português (“sem console.log em produção”, “sem Math.random em token”). As Dress",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:1194. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S2259",
+      "ruleId": "SONAR-cs-S2259",
+      "expected": "match",
+      "code": "const snap = await db.doc(`platformAdmins/${uid}`).get();",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/admin.ts:7. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S2612",
+      "ruleId": "SONAR-cs-S2612",
+      "expected": "match",
+      "code": "re: /world-accessible|file permission|chmod\\s*777/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:246. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S2631",
+      "ruleId": "SONAR-cs-S2631",
+      "expected": "match",
+      "code": "return log.map((line) => line.replace(new RegExp(`^${side}:`), \"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/locksmith/src/runner.ts:191. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S3241",
+      "ruleId": "SONAR-cs-S3241",
+      "expected": "match",
+      "code": "re: /unused import|unnecessary import|remove this unused/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:485. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S3249",
+      "ruleId": "SONAR-cs-S3249",
+      "expected": "match",
+      "code": "if (!lattice.equals(inFact[s] as F, joined)) {",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/engine/src/dataflow.ts:51. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S3926",
+      "ruleId": "SONAR-cs-S3926",
+      "expected": "match",
+      "code": "re: /deserializ|ObjectInputStream|BinaryFormatter|pickle\\.loads|readObject/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:127. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S4423",
+      "ruleId": "SONAR-cs-S4423",
+      "expected": "match",
+      "code": "re: /hostname.*(verif|check)|setHostnameVerifier|Server hostnames should be verified/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:449. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S4507",
+      "ruleId": "SONAR-cs-S4507",
+      "expected": "match",
+      "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:280. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S4790",
+      "ruleId": "SONAR-cs-S4790",
+      "expected": "match",
+      "code": "return hashlib.md5(data.encode()).hexdigest()",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:12. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S4830",
+      "ruleId": "SONAR-cs-S4830",
+      "expected": "match",
+      "code": "re: /hostname.*(verif|check)|setHostnameVerifier|Server hostnames should be verified/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:449. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S5131",
+      "ruleId": "SONAR-cs-S5131",
+      "expected": "match",
+      "code": "dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/layout.tsx:166. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S5135",
+      "ruleId": "SONAR-cs-S5135",
+      "expected": "match",
+      "code": "re: /deserializ|ObjectInputStream|BinaryFormatter|pickle\\.loads|readObject/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:127. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S5147",
+      "ruleId": "SONAR-cs-S5147",
+      "expected": "match",
+      "code": "re: /nosql|mongodb.*inject|\\$where/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:389. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S5334",
+      "ruleId": "SONAR-cs-S5334",
+      "expected": "match",
+      "code": "return eval(payload)",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S5766",
+      "ruleId": "SONAR-cs-S5766",
+      "expected": "match",
+      "code": "re: /deserializ|ObjectInputStream|BinaryFormatter|pickle\\.loads|readObject/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:127. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S5773",
+      "ruleId": "SONAR-cs-S5773",
+      "expected": "match",
+      "code": "re: /deserializ|ObjectInputStream|BinaryFormatter|pickle\\.loads|readObject/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:127. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S5856",
+      "ruleId": "SONAR-cs-S5856",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S6173",
+      "ruleId": "SONAR-cs-S6173",
+      "expected": "match",
+      "code": "const require = createRequire(import.meta.url);",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/lib/githubApi.ts:6. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S6444",
+      "ruleId": "SONAR-cs-S6444",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S6561",
+      "ruleId": "SONAR-cs-S6561",
+      "expected": "match",
+      "code": "grantedAt: new Date().toISOString(),",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/adminUsers.ts:100. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S7039",
+      "ruleId": "SONAR-cs-S7039",
+      "expected": "match",
+      "code": "regex: \"(?i)Content-Security-Policy['\\\"\\\\s:]*[^;]*(unsafe-inline|unsafe-eval|\\\\*)\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:414. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S907",
+      "ruleId": "SONAR-cs-S907",
+      "expected": "match",
+      "code": "<li>Ex.: debug em produção, TODO abandonado, GO TO</li>",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:326. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S1075",
+      "ruleId": "SONAR-java-S1075",
+      "expected": "match",
+      "code": "\"http://localhost:3000\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/githubActionInstall.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S1206",
+      "ruleId": "SONAR-java-S1206",
+      "expected": "match",
+      "code": "if (!lattice.equals(inFact[s] as F, joined)) {",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/engine/src/dataflow.ts:51. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S1481",
+      "ruleId": "SONAR-java-S1481",
+      "expected": "match",
+      "code": "re: /unused import|unnecessary import|remove this unused/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:485. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S2112",
+      "ruleId": "SONAR-java-S2112",
+      "expected": "match",
+      "code": "if (!lattice.equals(inFact[s] as F, joined)) {",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/engine/src/dataflow.ts:51. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S2245",
+      "ruleId": "SONAR-java-S2245",
+      "expected": "match",
+      "code": "Descreva a política em português (“sem console.log em produção”, “sem Math.random em token”). As Dress",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:1194. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S2612",
+      "ruleId": "SONAR-java-S2612",
+      "expected": "match",
+      "code": "re: /world-accessible|file permission|chmod\\s*777/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:246. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S2631",
+      "ruleId": "SONAR-java-S2631",
+      "expected": "match",
+      "code": "return log.map((line) => line.replace(new RegExp(`^${side}:`), \"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/locksmith/src/runner.ts:191. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S2639",
+      "ruleId": "SONAR-java-S2639",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S2675",
+      "ruleId": "SONAR-java-S2675",
+      "expected": "match",
+      "code": "re: /deserializ|ObjectInputStream|BinaryFormatter|pickle\\.loads|readObject/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:127. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S4274",
+      "ruleId": "SONAR-java-S4274",
+      "expected": "match",
+      "code": "import assert from \"node:assert/strict\";",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/test/security-unit.test.mjs:1. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S4423",
+      "ruleId": "SONAR-java-S4423",
+      "expected": "match",
+      "code": "re: /hostname.*(verif|check)|setHostnameVerifier|Server hostnames should be verified/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:449. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S4434",
+      "ruleId": "SONAR-java-S4434",
+      "expected": "match",
+      "code": "re: /deserializ|ObjectInputStream|BinaryFormatter|pickle\\.loads|readObject/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:127. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S4507",
+      "ruleId": "SONAR-java-S4507",
+      "expected": "match",
+      "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:280. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S4544",
+      "ruleId": "SONAR-java-S4544",
+      "expected": "match",
+      "code": "re: /deserializ|ObjectInputStream|BinaryFormatter|pickle\\.loads|readObject/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:127. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S4790",
+      "ruleId": "SONAR-java-S4790",
+      "expected": "match",
+      "code": "return hashlib.md5(data.encode()).hexdigest()",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:12. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S4830",
+      "ruleId": "SONAR-java-S4830",
+      "expected": "match",
+      "code": "re: /hostname.*(verif|check)|setHostnameVerifier|Server hostnames should be verified/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:449. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S4925",
+      "ruleId": "SONAR-java-S4925",
+      "expected": "match",
+      "code": "const require = createRequire(import.meta.url);",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/lib/githubApi.ts:6. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S5131",
+      "ruleId": "SONAR-java-S5131",
+      "expected": "match",
+      "code": "dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/layout.tsx:166. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S5135",
+      "ruleId": "SONAR-java-S5135",
+      "expected": "match",
+      "code": "re: /deserializ|ObjectInputStream|BinaryFormatter|pickle\\.loads|readObject/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:127. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S5147",
+      "ruleId": "SONAR-java-S5147",
+      "expected": "match",
+      "code": "re: /nosql|mongodb.*inject|\\$where/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:389. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S5301",
+      "ruleId": "SONAR-java-S5301",
+      "expected": "match",
+      "code": "re: /deserializ|ObjectInputStream|BinaryFormatter|pickle\\.loads|readObject/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:127. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S5334",
+      "ruleId": "SONAR-java-S5334",
+      "expected": "match",
+      "code": "return eval(payload)",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S5527",
+      "ruleId": "SONAR-java-S5527",
+      "expected": "match",
+      "code": "re: /hostname.*(verif|check)|setHostnameVerifier|Server hostnames should be verified/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:449. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S5689",
+      "ruleId": "SONAR-java-S5689",
+      "expected": "match",
+      "code": "re: /disclose version|server version|x-powered-by/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:467. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S5842",
+      "ruleId": "SONAR-java-S5842",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S5843",
+      "ruleId": "SONAR-java-S5843",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S5850",
+      "ruleId": "SONAR-java-S5850",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S5852",
+      "ruleId": "SONAR-java-S5852",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S5856",
+      "ruleId": "SONAR-java-S5856",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S5866",
+      "ruleId": "SONAR-java-S5866",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S5869",
+      "ruleId": "SONAR-java-S5869",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S5998",
+      "ruleId": "SONAR-java-S5998",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S6001",
+      "ruleId": "SONAR-java-S6001",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S6019",
+      "ruleId": "SONAR-java-S6019",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S6035",
+      "ruleId": "SONAR-java-S6035",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S6173",
+      "ruleId": "SONAR-java-S6173",
+      "expected": "match",
+      "code": "const require = createRequire(import.meta.url);",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/lib/githubApi.ts:6. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S6201",
+      "ruleId": "SONAR-java-S6201",
+      "expected": "match",
+      "code": "if (err instanceof HttpsError) throw err;",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/adminUsers.ts:61. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S6219",
+      "ruleId": "SONAR-java-S6219",
+      "expected": "match",
+      "code": "re: /serialVersionUID/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:660. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S6326",
+      "ruleId": "SONAR-java-S6326",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S6331",
+      "ruleId": "SONAR-java-S6331",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S6397",
+      "ruleId": "SONAR-java-S6397",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S8469",
+      "ruleId": "SONAR-java-S8469",
+      "expected": "match",
+      "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:280. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S8786",
+      "ruleId": "SONAR-java-S8786",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S1481",
+      "ruleId": "SONAR-js-S1481",
+      "expected": "match",
+      "code": "re: /unused import|unnecessary import|remove this unused/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:485. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S1523",
+      "ruleId": "SONAR-js-S1523",
+      "expected": "match",
+      "code": "return eval(payload)",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S2245",
+      "ruleId": "SONAR-js-S2245",
+      "expected": "match",
+      "code": "Descreva a política em português (“sem console.log em produção”, “sem Math.random em token”). As Dress",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:1194. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S2612",
+      "ruleId": "SONAR-js-S2612",
+      "expected": "match",
+      "code": "re: /world-accessible|file permission|chmod\\s*777/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:246. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S2631",
+      "ruleId": "SONAR-js-S2631",
+      "expected": "match",
+      "code": "return log.map((line) => line.replace(new RegExp(`^${side}:`), \"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/locksmith/src/runner.ts:191. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S3403",
+      "ruleId": "SONAR-js-S3403",
+      "expected": "match",
+      "code": "ownPrecision: ownEval == null ? null : ownEval.precision,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/ruleProposals.ts:178. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S4423",
+      "ruleId": "SONAR-js-S4423",
+      "expected": "match",
+      "code": "re: /hostname.*(verif|check)|setHostnameVerifier|Server hostnames should be verified/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:449. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S4507",
+      "ruleId": "SONAR-js-S4507",
+      "expected": "match",
+      "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:280. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S4790",
+      "ruleId": "SONAR-js-S4790",
+      "expected": "match",
+      "code": "return hashlib.md5(data.encode()).hexdigest()",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:12. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S4830",
+      "ruleId": "SONAR-js-S4830",
+      "expected": "match",
+      "code": "re: /hostname.*(verif|check)|setHostnameVerifier|Server hostnames should be verified/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:449. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S5131",
+      "ruleId": "SONAR-js-S5131",
+      "expected": "match",
+      "code": "dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/layout.tsx:166. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S5147",
+      "ruleId": "SONAR-js-S5147",
+      "expected": "match",
+      "code": "re: /nosql|mongodb.*inject|\\$where/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:389. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S5334",
+      "ruleId": "SONAR-js-S5334",
+      "expected": "match",
+      "code": "return eval(payload)",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S5527",
+      "ruleId": "SONAR-js-S5527",
+      "expected": "match",
+      "code": "re: /hostname.*(verif|check)|setHostnameVerifier|Server hostnames should be verified/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:449. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S5689",
+      "ruleId": "SONAR-js-S5689",
+      "expected": "match",
+      "code": "re: /disclose version|server version|x-powered-by/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:467. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S5696",
+      "ruleId": "SONAR-js-S5696",
+      "expected": "match",
+      "code": "dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/layout.tsx:166. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S5728",
+      "ruleId": "SONAR-js-S5728",
+      "expected": "match",
+      "code": "regex: \"(?i)Content-Security-Policy['\\\"\\\\s:]*[^;]*(unsafe-inline|unsafe-eval|\\\\*)\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:414. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S5842",
+      "ruleId": "SONAR-js-S5842",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S5843",
+      "ruleId": "SONAR-js-S5843",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S5850",
+      "ruleId": "SONAR-js-S5850",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S5852",
+      "ruleId": "SONAR-js-S5852",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S5856",
+      "ruleId": "SONAR-js-S5856",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S5869",
+      "ruleId": "SONAR-js-S5869",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S6019",
+      "ruleId": "SONAR-js-S6019",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S6035",
+      "ruleId": "SONAR-js-S6035",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S6109",
+      "ruleId": "SONAR-js-S6109",
+      "expected": "match",
+      "code": "re: /prototype pollution|__proto__/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:133. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S6323",
+      "ruleId": "SONAR-js-S6323",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S6324",
+      "ruleId": "SONAR-js-S6324",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S6326",
+      "ruleId": "SONAR-js-S6326",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S6331",
+      "ruleId": "SONAR-js-S6331",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S6397",
+      "ruleId": "SONAR-js-S6397",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S6654",
+      "ruleId": "SONAR-js-S6654",
+      "expected": "match",
+      "code": "re: /prototype pollution|__proto__/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:133. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S6761",
+      "ruleId": "SONAR-js-S6761",
+      "expected": "match",
+      "code": "dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/layout.tsx:166. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S8702",
+      "ruleId": "SONAR-js-S8702",
+      "expected": "match",
+      "code": "var cmd = new SqlCommand(\"SELECT * FROM Customers WHERE Name = '\" + name + \"'\");",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de examples/legacy/Sample.cs:9. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S8704",
+      "ruleId": "SONAR-js-S8704",
+      "expected": "match",
+      "code": "return eval(payload)",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S8786",
+      "ruleId": "SONAR-js-S8786",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-plsql-BackwardsGoto",
+      "ruleId": "SONAR-plsql-BackwardsGoto",
+      "expected": "match",
+      "code": "<li>Ex.: debug em produção, TODO abandonado, GO TO</li>",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:326. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-plsql-ExecuteImmediateTrapExceptionsCheck",
+      "ruleId": "SONAR-plsql-ExecuteImmediateTrapExceptionsCheck",
+      "expected": "match",
+      "code": "EXECUTE IMMEDIATE V_SQL;",
+      "profile": "sql",
+      "note": "caracterizacao: extraido de examples/legacy/conta.db2:22. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-plsql-GotoInLoopCheck",
+      "ruleId": "SONAR-plsql-GotoInLoopCheck",
+      "expected": "match",
+      "code": "<li>Ex.: debug em produção, TODO abandonado, GO TO</li>",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:326. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-plsql-PlSql.Goto",
+      "ruleId": "SONAR-plsql-PlSql.Goto",
+      "expected": "match",
+      "code": "<li>Ex.: debug em produção, TODO abandonado, GO TO</li>",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:326. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-plsql-PreferExecuteImmediateToDbmsSqlCheck",
+      "ruleId": "SONAR-plsql-PreferExecuteImmediateToDbmsSqlCheck",
+      "expected": "match",
+      "code": "EXECUTE IMMEDIATE V_SQL;",
+      "profile": "sql",
+      "note": "caracterizacao: extraido de examples/legacy/conta.db2:22. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-plsql-S1481",
+      "ruleId": "SONAR-plsql-S1481",
+      "expected": "match",
+      "code": "re: /unused import|unnecessary import|remove this unused/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:485. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-plsql-S1523",
+      "ruleId": "SONAR-plsql-S1523",
+      "expected": "match",
+      "code": "return eval(payload)",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-plsql-S4790",
+      "ruleId": "SONAR-plsql-S4790",
+      "expected": "match",
+      "code": "return hashlib.md5(data.encode()).hexdigest()",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:12. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-PrintStatementUsage",
+      "ruleId": "SONAR-py-PrintStatementUsage",
+      "expected": "match",
+      "code": "print(\"running\")",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:15. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S1045",
+      "ruleId": "SONAR-py-S1045",
+      "expected": "match",
+      "code": "re: /bare except|catch Exception|except:/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:558. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S1481",
+      "ruleId": "SONAR-py-S1481",
+      "expected": "match",
+      "code": "re: /unused import|unnecessary import|remove this unused/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:485. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S2245",
+      "ruleId": "SONAR-py-S2245",
+      "expected": "match",
+      "code": "Descreva a política em português (“sem console.log em produção”, “sem Math.random em token”). As Dress",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:1194. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S2612",
+      "ruleId": "SONAR-py-S2612",
+      "expected": "match",
+      "code": "re: /world-accessible|file permission|chmod\\s*777/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:246. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S2631",
+      "ruleId": "SONAR-py-S2631",
+      "expected": "match",
+      "code": "return log.map((line) => line.replace(new RegExp(`^${side}:`), \"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/locksmith/src/runner.ts:191. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S4423",
+      "ruleId": "SONAR-py-S4423",
+      "expected": "match",
+      "code": "re: /hostname.*(verif|check)|setHostnameVerifier|Server hostnames should be verified/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:449. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S4507",
+      "ruleId": "SONAR-py-S4507",
+      "expected": "match",
+      "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:280. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S4790",
+      "ruleId": "SONAR-py-S4790",
+      "expected": "match",
+      "code": "return hashlib.md5(data.encode()).hexdigest()",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:12. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S4830",
+      "ruleId": "SONAR-py-S4830",
+      "expected": "match",
+      "code": "re: /hostname.*(verif|check)|setHostnameVerifier|Server hostnames should be verified/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:449. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S5131",
+      "ruleId": "SONAR-py-S5131",
+      "expected": "match",
+      "code": "dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/layout.tsx:166. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S5135",
+      "ruleId": "SONAR-py-S5135",
+      "expected": "match",
+      "code": "re: /deserializ|ObjectInputStream|BinaryFormatter|pickle\\.loads|readObject/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:127. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S5147",
+      "ruleId": "SONAR-py-S5147",
+      "expected": "match",
+      "code": "re: /nosql|mongodb.*inject|\\$where/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:389. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S5334",
+      "ruleId": "SONAR-py-S5334",
+      "expected": "match",
+      "code": "return eval(payload)",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S5527",
+      "ruleId": "SONAR-py-S5527",
+      "expected": "match",
+      "code": "re: /hostname.*(verif|check)|setHostnameVerifier|Server hostnames should be verified/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:449. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S5842",
+      "ruleId": "SONAR-py-S5842",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S5843",
+      "ruleId": "SONAR-py-S5843",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S5850",
+      "ruleId": "SONAR-py-S5850",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S5852",
+      "ruleId": "SONAR-py-S5852",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S5869",
+      "ruleId": "SONAR-py-S5869",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S6001",
+      "ruleId": "SONAR-py-S6001",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S6019",
+      "ruleId": "SONAR-py-S6019",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S6035",
+      "ruleId": "SONAR-py-S6035",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S6323",
+      "ruleId": "SONAR-py-S6323",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S6326",
+      "ruleId": "SONAR-py-S6326",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S6331",
+      "ruleId": "SONAR-py-S6331",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S6397",
+      "ruleId": "SONAR-py-S6397",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S6886",
+      "ruleId": "SONAR-py-S6886",
+      "expected": "match",
+      "code": "grantedAt: new Date().toISOString(),",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/adminUsers.ts:100. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S6903",
+      "ruleId": "SONAR-py-S6903",
+      "expected": "match",
+      "code": "grantedAt: new Date().toISOString(),",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/adminUsers.ts:100. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S6982",
+      "ruleId": "SONAR-py-S6982",
+      "expected": "match",
+      "code": "return eval(payload)",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S6985",
+      "ruleId": "SONAR-py-S6985",
+      "expected": "match",
+      "code": "re: /deserializ|ObjectInputStream|BinaryFormatter|pickle\\.loads|readObject/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:127. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S8702",
+      "ruleId": "SONAR-py-S8702",
+      "expected": "match",
+      "code": "var cmd = new SqlCommand(\"SELECT * FROM Customers WHERE Name = '\" + name + \"'\");",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de examples/legacy/Sample.cs:9. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S8704",
+      "ruleId": "SONAR-py-S8704",
+      "expected": "match",
+      "code": "return eval(payload)",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S8786",
+      "ruleId": "SONAR-py-S8786",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S1523",
+      "ruleId": "SONAR-ts-S1523",
+      "expected": "match",
+      "code": "return eval(payload)",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S2245",
+      "ruleId": "SONAR-ts-S2245",
+      "expected": "match",
+      "code": "Descreva a política em português (“sem console.log em produção”, “sem Math.random em token”). As Dress",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:1194. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S2612",
+      "ruleId": "SONAR-ts-S2612",
+      "expected": "match",
+      "code": "re: /world-accessible|file permission|chmod\\s*777/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:246. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S2631",
+      "ruleId": "SONAR-ts-S2631",
+      "expected": "match",
+      "code": "return log.map((line) => line.replace(new RegExp(`^${side}:`), \"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/locksmith/src/runner.ts:191. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S4423",
+      "ruleId": "SONAR-ts-S4423",
+      "expected": "match",
+      "code": "re: /hostname.*(verif|check)|setHostnameVerifier|Server hostnames should be verified/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:449. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S4507",
+      "ruleId": "SONAR-ts-S4507",
+      "expected": "match",
+      "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:280. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S4790",
+      "ruleId": "SONAR-ts-S4790",
+      "expected": "match",
+      "code": "return hashlib.md5(data.encode()).hexdigest()",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:12. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S4830",
+      "ruleId": "SONAR-ts-S4830",
+      "expected": "match",
+      "code": "re: /hostname.*(verif|check)|setHostnameVerifier|Server hostnames should be verified/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:449. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S5131",
+      "ruleId": "SONAR-ts-S5131",
+      "expected": "match",
+      "code": "dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/layout.tsx:166. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S5147",
+      "ruleId": "SONAR-ts-S5147",
+      "expected": "match",
+      "code": "re: /nosql|mongodb.*inject|\\$where/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:389. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S5334",
+      "ruleId": "SONAR-ts-S5334",
+      "expected": "match",
+      "code": "return eval(payload)",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S5527",
+      "ruleId": "SONAR-ts-S5527",
+      "expected": "match",
+      "code": "re: /hostname.*(verif|check)|setHostnameVerifier|Server hostnames should be verified/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:449. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S5689",
+      "ruleId": "SONAR-ts-S5689",
+      "expected": "match",
+      "code": "re: /disclose version|server version|x-powered-by/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:467. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S5696",
+      "ruleId": "SONAR-ts-S5696",
+      "expected": "match",
+      "code": "dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/layout.tsx:166. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S5728",
+      "ruleId": "SONAR-ts-S5728",
+      "expected": "match",
+      "code": "regex: \"(?i)Content-Security-Policy['\\\"\\\\s:]*[^;]*(unsafe-inline|unsafe-eval|\\\\*)\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:414. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S5842",
+      "ruleId": "SONAR-ts-S5842",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S5843",
+      "ruleId": "SONAR-ts-S5843",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S5850",
+      "ruleId": "SONAR-ts-S5850",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S5852",
+      "ruleId": "SONAR-ts-S5852",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S5856",
+      "ruleId": "SONAR-ts-S5856",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S5869",
+      "ruleId": "SONAR-ts-S5869",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S6019",
+      "ruleId": "SONAR-ts-S6019",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S6035",
+      "ruleId": "SONAR-ts-S6035",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S6109",
+      "ruleId": "SONAR-ts-S6109",
+      "expected": "match",
+      "code": "re: /prototype pollution|__proto__/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:133. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S6323",
+      "ruleId": "SONAR-ts-S6323",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S6324",
+      "ruleId": "SONAR-ts-S6324",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S6326",
+      "ruleId": "SONAR-ts-S6326",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S6331",
+      "ruleId": "SONAR-ts-S6331",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S6397",
+      "ruleId": "SONAR-ts-S6397",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S6568",
+      "ruleId": "SONAR-ts-S6568",
+      "expected": "match",
+      "code": "orgId: scope === \"project\" ? data.orgId! : null,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/dressCode.ts:167. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S6654",
+      "ruleId": "SONAR-ts-S6654",
+      "expected": "match",
+      "code": "re: /prototype pollution|__proto__/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:133. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S6761",
+      "ruleId": "SONAR-ts-S6761",
+      "expected": "match",
+      "code": "dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/layout.tsx:166. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S8702",
+      "ruleId": "SONAR-ts-S8702",
+      "expected": "match",
+      "code": "var cmd = new SqlCommand(\"SELECT * FROM Customers WHERE Name = '\" + name + \"'\");",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de examples/legacy/Sample.cs:9. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S8704",
+      "ruleId": "SONAR-ts-S8704",
+      "expected": "match",
+      "code": "return eval(payload)",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S8786",
+      "ruleId": "SONAR-ts-S8786",
+      "expected": "match",
+      "code": "return new RegExp(body, [...collected].join(\"\"));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-tsql-S1481",
+      "ruleId": "SONAR-tsql-S1481",
+      "expected": "match",
+      "code": "re: /unused import|unnecessary import|remove this unused/i,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:485. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-tsql-S1523",
+      "ruleId": "SONAR-tsql-S1523",
+      "expected": "match",
+      "code": "return eval(payload)",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-tsql-S4109",
+      "ruleId": "SONAR-tsql-S4109",
+      "expected": "match",
+      "code": "print(\"running\")",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:15. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-tsql-S4790",
+      "ruleId": "SONAR-tsql-S4790",
+      "expected": "match",
+      "code": "return hashlib.md5(data.encode()).hexdigest()",
+      "profile": "python",
+      "note": "caracterizacao: extraido de examples/vulnerable_sample.py:12. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-tsql-S907",
+      "ruleId": "SONAR-tsql-S907",
+      "expected": "match",
+      "code": "<li>Ex.: debug em produção, TODO abandonado, GO TO</li>",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:326. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    }
+  ],
+  "orcamentos": [
+    {
+      "ruleId": "HERO-SEC-cobol-string-no-overflow",
+      "acertos": 2198,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-string-no-overflow-cobol",
+      "acertos": 2196,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S1696",
+      "acertos": 994,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S2259",
+      "acertos": 994,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-cobol-S4507",
+      "acertos": 400,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S4507",
+      "acertos": 400,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-java-S4507",
+      "acertos": 400,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-java-S8469",
+      "acertos": 400,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-js-S4507",
+      "acertos": 400,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-py-S4507",
+      "acertos": 400,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S4507",
+      "acertos": 400,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-0489-debug-statement",
+      "acertos": 398,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-java-S6201",
+      "acertos": 54,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S1075",
+      "acertos": 53,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-java-S1075",
+      "acertos": 53,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S6561",
+      "acertos": 38,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S6886",
+      "acertos": 38,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-py-S6903",
+      "acertos": 38,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-cobol-S1134",
+      "acertos": 33,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-cobol-S1135",
+      "acertos": 33,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-cs-S1134",
+      "acertos": 33,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S1135",
+      "acertos": 33,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-java-S1134",
+      "acertos": 33,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S1135",
+      "acertos": 33,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-js-S1134",
+      "acertos": 33,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-js-S1135",
+      "acertos": 33,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-plsql-S1134",
+      "acertos": 33,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-plsql-S1135",
+      "acertos": 33,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-py-S1134",
+      "acertos": 33,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S1135",
+      "acertos": 33,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-ts-S1134",
+      "acertos": 33,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S1135",
+      "acertos": 33,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-tsql-S1134",
+      "acertos": 33,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-tsql-S1135",
+      "acertos": 33,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-ts-S6568",
+      "acertos": 27,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-call-dynamic-cobol",
+      "acertos": 22,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-todo-cobol",
+      "acertos": 16,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-js-S3403",
+      "acertos": 11,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-exec-sql-no-sqlcode-hint-cobol",
+      "acertos": 9,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-cobol-SQL.DynamicSqlCheck",
+      "acertos": 9,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-cs-S2245",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S5856",
+      "acertos": 9,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-cs-S6444",
+      "acertos": 9,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-java-S2245",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S2639",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S5842",
+      "acertos": 9,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-java-S5843",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S5850",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S5852",
+      "acertos": 9,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-java-S5856",
+      "acertos": 9,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-java-S5866",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S5869",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S5998",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S6001",
+      "acertos": 9,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-java-S6019",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S6035",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S6326",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S6331",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S6397",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S8786",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-js-S2245",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-js-S5842",
+      "acertos": 9,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-js-S5843",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-js-S5850",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-js-S5852",
+      "acertos": 9,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-js-S5856",
+      "acertos": 9,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-js-S5869",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-js-S6019",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-js-S6035",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-js-S6323",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-js-S6324",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-js-S6326",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-js-S6331",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-js-S6397",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-js-S8702",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-js-S8786",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S2245",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S5842",
+      "acertos": 9,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-py-S5843",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S5850",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S5852",
+      "acertos": 9,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-py-S5869",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S6001",
+      "acertos": 9,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-py-S6019",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S6035",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S6323",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S6326",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S6331",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S6397",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S8702",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S8786",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S2245",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S5842",
+      "acertos": 9,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S5843",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S5850",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S5852",
+      "acertos": 9,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-ts-S5856",
+      "acertos": 9,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-ts-S5869",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S6019",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S6035",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S6323",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S6324",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S6326",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S6331",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S6397",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S8702",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S8786",
+      "acertos": 9,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SEC-0327-weak-hash",
+      "acertos": 7,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SEC-0089-sql-injection",
+      "acertos": 6,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SMELL-display-cobol",
+      "acertos": 6,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-cs-S6173",
+      "acertos": 6,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S4925",
+      "acertos": 6,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S6173",
+      "acertos": 6,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SEC-0078-os-command",
+      "acertos": 5,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-cs-S907",
+      "acertos": 4,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S4274",
+      "acertos": 4,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-plsql-BackwardsGoto",
+      "acertos": 4,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-plsql-GotoInLoopCheck",
+      "acertos": 4,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-plsql-PlSql.Goto",
+      "acertos": 4,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-tsql-S907",
+      "acertos": 4,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SEC-0798-hardcoded-secret",
+      "acertos": 3,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "HERO-SEC-0095-code-injection-eval",
+      "acertos": 3,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SEC-cobol-sql-no-where",
+      "acertos": 3,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SMELL-0goto-cobol",
+      "acertos": 3,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-stop-run-cobol",
+      "acertos": 3,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S3926",
+      "acertos": 3,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S5135",
+      "acertos": 3,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-cs-S5334",
+      "acertos": 3,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-cs-S5766",
+      "acertos": 3,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S5773",
+      "acertos": 3,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S2675",
+      "acertos": 3,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S4434",
+      "acertos": 3,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S4544",
+      "acertos": 3,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-java-S5135",
+      "acertos": 3,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-java-S5301",
+      "acertos": 3,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-java-S5334",
+      "acertos": 3,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-js-S1523",
+      "acertos": 3,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-js-S5334",
+      "acertos": 3,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-js-S8704",
+      "acertos": 3,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-plsql-S1523",
+      "acertos": 3,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-py-S5135",
+      "acertos": 3,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-py-S5334",
+      "acertos": 3,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-py-S6982",
+      "acertos": 3,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S6985",
+      "acertos": 3,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-py-S8704",
+      "acertos": 3,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S1523",
+      "acertos": 3,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-ts-S5334",
+      "acertos": 3,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-ts-S8704",
+      "acertos": 3,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-tsql-S1523",
+      "acertos": 3,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SEC-0295-tls-verify-disabled",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "HERO-SEC-0506-pipe-to-shell",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "HERO-SMELL-0546-todo-marker",
+      "acertos": 2,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "HERO-SEC-0089-dynamic-sql-tsql",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SEC-0078-xp-cmdshell-tsql",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-cs-S1481",
+      "acertos": 2,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S2053",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-cs-S2068",
+      "acertos": 2,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S2115",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-cs-S2612",
+      "acertos": 2,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S2631",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-cs-S3241",
+      "acertos": 2,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S5131",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-cs-S5344",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-cs-S6418",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-cs-S6781",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-java-S1481",
+      "acertos": 2,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-java-S2053",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-java-S2068",
+      "acertos": 2,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S2115",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-java-S2612",
+      "acertos": 2,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S2631",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-java-S5131",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-java-S5344",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-java-S6242",
+      "acertos": 2,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S6418",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-java-S6437",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-java-S8912",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-js-S1481",
+      "acertos": 2,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-js-S2068",
+      "acertos": 2,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-js-S2612",
+      "acertos": 2,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-js-S2631",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-js-S5131",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-js-S5696",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-js-S6418",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-js-S6437",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-js-S6761",
+      "acertos": 2,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-plsql-S1481",
+      "acertos": 2,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-py-S1481",
+      "acertos": 2,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-py-S2053",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-py-S2068",
+      "acertos": 2,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S2115",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-py-S2612",
+      "acertos": 2,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S2631",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-py-S5131",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-py-S5344",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-py-S6418",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-py-S6437",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-py-S6779",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-py-S6781",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-ts-S2068",
+      "acertos": 2,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S2612",
+      "acertos": 2,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S2631",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-ts-S5131",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-ts-S5696",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-ts-S6418",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-ts-S6437",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-ts-S6761",
+      "acertos": 2,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-tsql-S1481",
+      "acertos": 2,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-tsql-S2068",
+      "acertos": 2,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SEC-0079-xss-sink",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SEC-0918-ssrf",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SEC-0532-secret-in-log",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SEC-0089-adonet-sqli",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SEC-0089-jdbc-sqli",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SEC-0798-cobol-value-secret",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "HERO-SEC-0798-cobol-hardcoded-secret",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "HERO-SEC-cobol-accept-console",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SEC-cobol-sql-select-star",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SEC-cobol-sql-ddl",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SEC-cobol-sql-like-leading-wildcard",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-alter-cobol",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SMELL-next-sentence-cobol",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-perform-thru-cobol",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-cancel-cobol",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-level77-cobol",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-redefines-cobol",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-occurs-one-cobol",
+      "acertos": 1,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "HERO-SMELL-display-console-cobol",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "HERO-SEC-cobol-accept-unvalidated",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SEC-cobol-unstring-no-overflow",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-cobol-alter",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SMELL-cobol-next-sentence",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S1206",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S3249",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S4423",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-cs-S4790",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-cs-S4830",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-cs-S5147",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-cs-S7039",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S1206",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-java-S2112",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S4423",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-java-S4790",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-java-S4830",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-java-S5147",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-java-S5527",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-java-S5689",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-java-S6219",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-js-S4423",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-js-S4790",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-js-S4830",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-js-S5147",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-js-S5527",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-js-S5689",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-js-S5728",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-js-S6109",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-js-S6654",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-plsql-ExecuteImmediateTrapExceptionsCheck",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-plsql-PreferExecuteImmediateToDbmsSqlCheck",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-plsql-S4790",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-py-PrintStatementUsage",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S1045",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S4423",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-py-S4790",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-py-S4830",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-py-S5147",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-py-S5527",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-ts-S4423",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-ts-S4790",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-ts-S4830",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-ts-S5147",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-ts-S5527",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-ts-S5689",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S5728",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S6109",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-ts-S6654",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-tsql-S4109",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-tsql-S4790",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    }
+  ]
+}
