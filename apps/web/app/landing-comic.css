@@ -1,0 +1,510 @@
+/* ===========================================================================
+   LANDING EM QUADRINHOS
+   ---------------------------------------------------------------------------
+   O sistema de design ja era quase isto: tinta, papel, sombra dura de 6px e um
+   unico vermelho autorizado a quebrar o preto e branco. Aqui esses tokens sao
+   levados ao limite em vez de trocados por uma paleta nova, entao a landing e
+   o painel continuam parecendo o mesmo produto.
+
+   Tudo usa var(--ink) / var(--paper), entao o modo escuro sai de graca.
+   Arquivo separado de proposito: o globals.css ja passa de 1500 linhas e esta
+   secao tem vida propria.
+   =========================================================================== */
+
+.hq {
+  --hq-borda: 3px;
+  --hq-gap: clamp(1.25rem, 4vw, 2.5rem);
+  color: var(--ink);
+}
+
+/* --- Capa ---------------------------------------------------------------- */
+
+.hq-capa {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(3rem, 12vw, 7rem) clamp(1.1rem, 5vw, 4rem) clamp(3rem, 10vw, 6rem);
+  border-bottom: var(--hq-borda) solid var(--line);
+  /* Meio tom: a trama de pontos da impressao em papel jornal. */
+  background-image: radial-gradient(var(--ink) 1px, transparent 1.4px);
+  background-size: 14px 14px;
+}
+
+.hq-capa::after {
+  /* Clareia o centro para o texto respirar sobre a trama. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 45%, var(--paper) 38%, transparent 78%);
+  pointer-events: none;
+}
+
+.hq-capa-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 62ch;
+}
+
+.hq-kicker {
+  font-family: "JetBrains Mono", monospace;
+  font-size: clamp(0.66rem, 1.6vw, 0.78rem);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  font-weight: 700;
+  margin: 0 0 0.9rem;
+}
+
+.hq-marca {
+  font-size: clamp(2.9rem, 13vw, 7rem);
+  line-height: 0.88;
+  letter-spacing: -0.03em;
+  margin: 0 0 1.1rem;
+  text-transform: uppercase;
+  /* Contorno grosso de letreiro. */
+  color: var(--paper);
+  -webkit-text-stroke: clamp(2px, 0.7vw, 4px) var(--ink);
+  text-shadow: var(--shadow-hard);
+}
+
+.hq-chamada {
+  font-size: clamp(1.25rem, 4.4vw, 2.1rem);
+  line-height: 1.18;
+  font-weight: 800;
+  margin: 0 0 1rem;
+  max-width: 22ch;
+}
+
+.hq-lede {
+  font-size: clamp(0.98rem, 2.4vw, 1.12rem);
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0 0 1.9rem;
+  max-width: 52ch;
+}
+
+/* Linhas de acao saindo do canto. So decoracao, por isso aria-hidden no TSX. */
+.hq-capa-arte {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hq-raio {
+  position: absolute;
+  right: -10%;
+  width: 62%;
+  height: var(--hq-borda);
+  background: var(--accent);
+  transform-origin: right center;
+}
+
+/* Idem: so somem se a animacao estiver ligada. */
+.hq-anima .hq-raio {
+  opacity: 0;
+}
+
+.hq-raio:nth-child(1) {
+  top: 22%;
+  transform: rotate(-14deg);
+}
+
+.hq-anima .hq-raio:nth-child(1) {
+  transform: rotate(-14deg) scaleX(0);
+}
+.hq-raio:nth-child(2) {
+  top: 46%;
+  transform: rotate(3deg);
+}
+
+.hq-anima .hq-raio:nth-child(2) {
+  transform: rotate(3deg) scaleX(0);
+}
+.hq-raio:nth-child(3) {
+  top: 68%;
+  transform: rotate(15deg);
+}
+
+.hq-anima .hq-raio:nth-child(3) {
+  transform: rotate(15deg) scaleX(0);
+}
+
+.hq-anima .hq-capa.is-in .hq-raio:nth-child(1) {
+  animation: hq-risca-a 0.55s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+.hq-anima .hq-capa.is-in .hq-raio:nth-child(2) {
+  animation: hq-risca-b 0.55s cubic-bezier(0.2, 0.8, 0.3, 1) 0.09s forwards;
+}
+.hq-anima .hq-capa.is-in .hq-raio:nth-child(3) {
+  animation: hq-risca-c 0.55s cubic-bezier(0.2, 0.8, 0.3, 1) 0.18s forwards;
+}
+
+/* Um keyframe por linha porque cada uma tem a propria rotacao, e animar
+   `transform` inteiro sobrescreveria o angulo. */
+@keyframes hq-risca-a {
+  to {
+    opacity: 1;
+    transform: rotate(-14deg) scaleX(1);
+  }
+}
+@keyframes hq-risca-b {
+  to {
+    opacity: 1;
+    transform: rotate(3deg) scaleX(1);
+  }
+}
+@keyframes hq-risca-c {
+  to {
+    opacity: 1;
+    transform: rotate(15deg) scaleX(1);
+  }
+}
+
+/* --- Botoes -------------------------------------------------------------- */
+
+.hq-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.hq-btn {
+  display: inline-block;
+  font: inherit;
+  font-weight: 800;
+  font-size: clamp(0.92rem, 2.2vw, 1rem);
+  padding: 0.8rem 1.4rem;
+  border: var(--hq-borda) solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-raised);
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-hard-sm);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.hq-btn--primario {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--ink);
+}
+
+.hq-btn:hover,
+.hq-btn:focus-visible {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+.hq-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+/* --- Tira de quadros ----------------------------------------------------- */
+
+.hq-tira {
+  display: grid;
+  gap: var(--hq-gap);
+  padding: var(--hq-gap) clamp(1.1rem, 5vw, 4rem);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.hq-quadro {
+  position: relative;
+  border: var(--hq-borda) solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-hard);
+  padding: clamp(1.6rem, 4.5vw, 2.6rem);
+}
+
+/* ANIMACAO E MELHORIA PROGRESSIVA, NUNCA REQUISITO.
+   -------------------------------------------------------------------------
+   A primeira versao disto escondia os quadros (opacity: 0) e deixava o
+   JavaScript revela los. Testando no navegador, o IntersectionObserver nao
+   disparou e a landing inteira ficou em branco: build verde, DOM correto,
+   pagina invisivel.
+   Agora o padrao e VISIVEL. A classe `hq-anima` so entra quando o script
+   confirma que consegue animar, e so ai o estado inicial some. Sem JavaScript,
+   sem observer ou com o script quebrado, a pagina simplesmente aparece. */
+.hq-anima .hq-quadro {
+  opacity: 0;
+  transform: translateY(26px) rotate(-0.35deg);
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.hq-anima .hq-quadro.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* O quadro da virada e o unico com fundo de tinta: e onde a historia muda. */
+.hq-quadro--virada {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--accent);
+}
+.hq-quadro--virada .hq-titulo {
+  color: var(--paper);
+}
+/* Especificidade maior que `.hq-corpo .hq-nota`, que vem depois no arquivo e
+   estava vencendo o empate: a nota saia em cinza (--muted) sobre o fundo de
+   tinta e caia para 2.33 de contraste, abaixo do minimo de 4.5 da WCAG.
+   Medido no navegador, nao suposto. */
+.hq-quadro--virada .hq-corpo .hq-nota {
+  color: var(--paper);
+  /* 0.85 mantem a hierarquia visual sem derrubar o contraste; a opacidade
+     antiga de 0.72 sobre cinza era o que quebrava. */
+  opacity: 0.85;
+}
+.hq-quadro--virada strong {
+  color: var(--accent);
+}
+
+.hq-quadro--calmo {
+  background: var(--paper);
+}
+
+.hq-num {
+  position: absolute;
+  top: calc(var(--hq-borda) * -1);
+  left: clamp(1.1rem, 4vw, 2.2rem);
+  transform: translateY(-50%);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 0.28rem 0.7rem;
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: var(--hq-borda) solid var(--ink);
+  border-radius: var(--radius);
+}
+
+.hq-titulo {
+  font-size: clamp(1.35rem, 4.2vw, 2.1rem);
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0.4rem 0 0.9rem;
+  max-width: 26ch;
+}
+
+.hq-corpo p {
+  font-size: clamp(0.98rem, 2.3vw, 1.08rem);
+  line-height: 1.65;
+  margin: 0 0 1rem;
+  max-width: 62ch;
+}
+
+.hq-corpo .hq-nota {
+  font-size: clamp(0.86rem, 2vw, 0.95rem);
+  color: var(--muted);
+  font-style: italic;
+}
+
+.hq-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.hq-lista li {
+  position: relative;
+  padding-left: 1.6rem;
+  line-height: 1.55;
+  font-size: clamp(0.95rem, 2.2vw, 1.04rem);
+}
+
+.hq-lista li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 0.7rem;
+  height: 0.7rem;
+  background: var(--accent);
+  border: 2px solid currentColor;
+}
+
+/* --- Balao de fala ------------------------------------------------------- */
+
+.hq-balao {
+  margin: 1.4rem 0 0;
+  max-width: 46ch;
+}
+
+.hq-balao blockquote {
+  position: relative;
+  margin: 0;
+  padding: 1rem 1.2rem;
+  border: var(--hq-borda) solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: clamp(1rem, 2.6vw, 1.2rem);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+/* Rabicho do balao: dois triangulos sobrepostos simulam a borda. O de tras faz
+   o contorno, o da frente preenche. */
+.hq-balao blockquote::before,
+.hq-balao blockquote::after {
+  content: "";
+  position: absolute;
+  bottom: calc(var(--hq-borda) * -1);
+  left: 2.2rem;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+.hq-balao blockquote::before {
+  border-width: 20px 16px 0 0;
+  border-color: var(--line) transparent transparent transparent;
+  transform: translateY(100%);
+}
+
+.hq-balao blockquote::after {
+  border-width: 15px 11px 0 0;
+  border-color: var(--paper) transparent transparent transparent;
+  transform: translate(3px, calc(100% - 4px));
+}
+
+.hq-balao figcaption {
+  margin: 1.5rem 0 0 2.6rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+/* --- Duas colunas: se destaca / ainda nao vai ---------------------------- */
+
+.hq-duas {
+  display: grid;
+  gap: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 720px) {
+  .hq-duas {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.hq-coluna {
+  border: var(--hq-borda) solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.25rem;
+  background: var(--paper-raised);
+}
+
+.hq-coluna h3 {
+  margin: 0 0 0.7rem;
+  font-size: clamp(1rem, 2.6vw, 1.15rem);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.hq-coluna--forte {
+  border-color: var(--accent);
+}
+.hq-coluna--forte h3 {
+  color: var(--accent);
+}
+.hq-coluna--fraco {
+  background: var(--paper);
+}
+.hq-coluna--fraco h3 {
+  color: var(--muted);
+}
+
+.hq-coluna ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.hq-coluna li {
+  line-height: 1.5;
+  font-size: clamp(0.92rem, 2.1vw, 1rem);
+}
+
+/* O diagrama de fluxo e largo: rola dentro do proprio quadro em vez de
+   empurrar a pagina para o lado no celular. */
+.hq-fluxo {
+  margin-top: 0.5rem;
+  overflow-x: auto;
+}
+
+/* --- Fecho --------------------------------------------------------------- */
+
+.hq-fim {
+  text-align: center;
+  padding: clamp(3rem, 10vw, 6rem) clamp(1.1rem, 5vw, 4rem);
+  border-top: var(--hq-borda) solid var(--line);
+  background-image: radial-gradient(var(--ink) 1px, transparent 1.4px);
+  background-size: 14px 14px;
+}
+
+.hq-fim h2 {
+  font-size: clamp(1.6rem, 6vw, 3rem);
+  line-height: 1.1;
+  margin: 0 0 0.9rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.hq-fim p {
+  max-width: 48ch;
+  margin: 0 auto 1.8rem;
+  font-size: clamp(0.98rem, 2.4vw, 1.1rem);
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.hq-fim .hq-ctas {
+  justify-content: center;
+}
+
+/* --- Acessibilidade ------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  .hq-anima .hq-quadro,
+  .hq-anima .hq-quadro.is-in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .hq-capa .hq-raio,
+  .hq-anima .hq-capa.is-in .hq-raio {
+    animation: none;
+    opacity: 1;
+  }
+  .hq-anima .hq-capa.is-in .hq-raio:nth-child(1) {
+    transform: rotate(-14deg) scaleX(1);
+  }
+  .hq-anima .hq-capa.is-in .hq-raio:nth-child(2) {
+    transform: rotate(3deg) scaleX(1);
+  }
+  .hq-anima .hq-capa.is-in .hq-raio:nth-child(3) {
+    transform: rotate(15deg) scaleX(1);
+  }
+  .hq-btn {
+    transition: none;
+  }
+  .hq-btn:hover,
+  .hq-btn:focus-visible,
+  .hq-btn:active {
+    transform: none;
+  }
+}

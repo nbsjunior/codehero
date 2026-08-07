@@ -8,26 +8,26 @@ const STEPS = [
   {
     id: "scan",
     label: "Scan",
-    sub: "Motores paralelos · SARIF",
-    out: "Findings normalizados",
+    sub: "Suas ferramentas rodam juntas",
+    out: "Uma lista só, sem repetidos",
   },
   {
     id: "gate",
     label: "Gate",
-    sub: "Política · suppress auditável",
-    out: "Veredito + escopo",
+    sub: "A sua regra, sempre igual",
+    out: "Passa ou não passa",
   },
   {
     id: "fix",
     label: "Correção",
-    sub: "Agentes pós-gate · diff no PR",
-    out: "Patch + telemetria",
+    sub: "Só no que o gate liberou",
+    out: "Sugestão de correção no PR",
   },
   {
     id: "learn",
     label: "Esteira",
-    sub: "FP · custo · próximo ciclo",
-    out: "Memória de regra",
+    sub: "O que o time marcou como falso",
+    out: "Regra ajustada para a próxima",
   },
 ] as const;
 
@@ -37,10 +37,10 @@ const EDGES: ReadonlyArray<{
   label: string;
   loop?: boolean;
 }> = [
-  { from: "Scan", to: "Gate", label: "envelope SARIF" },
-  { from: "Gate", to: "Correção", label: "só o que a política libera" },
-  { from: "Correção", to: "Esteira", label: "qualidade · custo · FP" },
-  { from: "Esteira", to: "Scan", label: "política atualizada", loop: true },
+  { from: "Scan", to: "Gate", label: "os achados" },
+  { from: "Gate", to: "Correção", label: "só o que passou" },
+  { from: "Correção", to: "Esteira", label: "o que deu certo" },
+  { from: "Esteira", to: "Scan", label: "regra melhor", loop: true },
 ];
 
 export default function LandingFlow({ detailed = false }: { detailed?: boolean }) {
@@ -96,8 +96,8 @@ export default function LandingFlow({ detailed = false }: { detailed?: boolean }
       ) : null}
 
       <p className="lx-flow__caption">
-        Cada seta é um contrato: o estágio seguinte só consome o que o anterior publicou. A Esteira
-        devolve memória ao Scan — o loop fecha.
+        Cada seta é uma promessa: a etapa seguinte só usa o que a anterior entregou. E o que o time
+        aprende volta para o começo, então o próximo scan já chega mais afiado.
       </p>
     </div>
   );
