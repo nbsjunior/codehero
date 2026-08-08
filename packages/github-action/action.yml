@@ -98,6 +98,40 @@ inputs:
       CPG é a decisão de arquitetura mais pesada (JVM no ambiente de scan).
     required: false
     default: "false"
+  profile:
+    description: >
+      Perfil de orquestração canônico (mesmo contrato CLI/MCP/IDE):
+      native | presence | java | full. Liga engines soft-fail; inputs
+      individuais (oxlint, eslint, …) continuam podendo OR por cima.
+    required: false
+    default: ""
+  eslint:
+    description: >
+      Roda ESLint (JSON → SARIF) → EXT:eslint:*. Soft-fail. Parte do Presence Pack.
+    required: false
+    default: "false"
+  pmd:
+    description: >
+      Roda PMD (Java source SARIF) → EXT:pmd:*. Soft-fail. Use profile=java ou full.
+    required: false
+    default: "false"
+  spotbugs:
+    description: >
+      Roda SpotBugs (bytecode SARIF) → EXT:spotbugs:*. Soft-fail. Requer spotbugs-classes.
+    required: false
+    default: "false"
+  spotbugs-classes:
+    description: >
+      Diretório ou jar com .class para SpotBugs (ex.: build/classes ou target/classes).
+    required: false
+    default: ""
+  llm-budget:
+    description: >
+      Teto de tokens para leitura assistida por modelo (estilo Alibaba OCR).
+      0 = desligado. Só recorta trecho alterado SEM apontamento determinístico;
+      a observação do modelo NUNCA entra no gate — vira candidata a regra.
+    required: false
+    default: "0"
 
 outputs:
   sarif-file:
@@ -154,10 +188,16 @@ runs:
         HERO_IMPORT_SARIF: ${{ inputs.import-sarif }}
         HERO_JOERN: ${{ inputs.joern }}
         HERO_OXLINT: ${{ inputs.oxlint }}
+        HERO_ESLINT: ${{ inputs.eslint }}
         HERO_SEMGREP: ${{ inputs.semgrep }}
         HERO_OPENGREP: ${{ inputs.opengrep }}
+        HERO_PMD: ${{ inputs.pmd }}
+        HERO_SPOTBUGS: ${{ inputs.spotbugs }}
+        HERO_SPOTBUGS_CLASSES: ${{ inputs.spotbugs-classes }}
         HERO_SCA: ${{ inputs.sca }}
         HERO_SCA_TOOL: ${{ inputs.sca-tool }}
+        HERO_PROFILE: ${{ inputs.profile }}
+        HERO_LLM_BUDGET: ${{ inputs.llm-budget }}
       run: |
         COV_ARGS=()
         while IFS= read -r p; do
@@ -165,15 +205,25 @@ runs:
         done <<< "$HERO_COVERAGE"
 
         EXTRA_ARGS=()
+        [ -n "$HERO_PROFILE" ] && EXTRA_ARGS+=(--profile "$HERO_PROFILE")
         [ "$HERO_METRICS" = "true" ] && EXTRA_ARGS+=(--metrics)
         [ "$HERO_SEMANTIC" = "true" ] && EXTRA_ARGS+=(--semantic)
         [ "$HERO_JOERN" = "true" ] && EXTRA_ARGS+=(--joern)
         [ "$HERO_OXLINT" = "true" ] && EXTRA_ARGS+=(--with-oxlint)
+        [ "$HERO_ESLINT" = "true" ] && EXTRA_ARGS+=(--with-eslint)
         [ "$HERO_OPENGREP" = "true" ] && EXTRA_ARGS+=(--with-opengrep)
         [ "$HERO_SEMGREP" = "true" ] && EXTRA_ARGS+=(--with-semgrep)
+        [ "$HERO_PMD" = "true" ] && EXTRA_ARGS+=(--with-pmd)
+        if [ "$HERO_SPOTBUGS" = "true" ]; then
+          EXTRA_ARGS+=(--with-spotbugs)
+          [ -n "$HERO_SPOTBUGS_CLASSES" ] && EXTRA_ARGS+=(--spotbugs-classes "$HERO_SPOTBUGS_CLASSES")
+        fi
         if [ "$HERO_SCA" = "true" ]; then
           EXTRA_ARGS+=(--with-sca)
           [ -n "$HERO_SCA_TOOL" ] && EXTRA_ARGS+=(--sca-tool "$HERO_SCA_TOOL")
+        fi
+        if [ -n "$HERO_LLM_BUDGET" ] && [ "$HERO_LLM_BUDGET" != "0" ]; then
+          EXTRA_ARGS+=(--llm-budget "$HERO_LLM_BUDGET")
         fi
         while IFS= read -r p; do
           [ -n "$p" ] && EXTRA_ARGS+=(--import "$p")

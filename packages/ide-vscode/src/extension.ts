@@ -132,6 +132,9 @@ async function scanPath(
           enableCache: cfg.enableCache,
           cwd: vscode.workspace.workspaceFolders?.[0]?.uri.fsPath,
           minSeverity: cfg.minSeverity,
+          scanProfile: cfg.scanProfile,
+          spotbugsClasses: cfg.spotbugsClasses || undefined,
+          forceNativeProfile: opts.singleFile,
           serverUrl: cfg.serverUrl || undefined,
           token: cfg.token || undefined,
           orgId: cfg.orgId || undefined,
@@ -141,6 +144,12 @@ async function scanPath(
     );
 
     applyResults(summary, opts);
+
+    if (!opts.singleFile && cfg.syncToPortal) {
+      const syncMsg = await syncSarifToPortal(summary, cfg);
+      if (syncMsg) void vscode.window.showInformationMessage(syncMsg);
+    }
+
     void vscode.commands.executeCommand("codehero.findings.focus");
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
@@ -253,18 +262,24 @@ async function showFindingFicha(item: FindingItem): Promise<void> {
 }
 
 function formatFichaMarkdown(f: ScanFinding): string {
+  const provenance = provenanceBits(f);
   const lines = [
     `# Ficha do apontamento`,
     ``,
     `**\`${f.ruleId}\`** · ${f.severity}${f.issueType ? ` · ${f.issueType}` : ""}`,
     `Local: \`${f.file}:${f.line}\``,
+  ];
+  if (provenance) {
+    lines.push(`Procedência: ${provenance}`);
+  }
+  lines.push(
     ``,
     `## Risco`,
     f.risk || `${f.severity}${f.issueType ? ` · ${f.issueType}` : ""}`,
     ``,
     `## Motivo do apontamento`,
     f.message || "_sem mensagem_",
-  ];
+  );
   if (f.snippet) {
     lines.push(``, "```", f.snippet, "```");
   }
@@ -276,14 +291,71 @@ function formatFichaMarkdown(f: ScanFinding): string {
   return lines.join("\n");
 }
 
+function provenanceBits(f: ScanFinding): string | null {
+  const bits: string[] = [];
+  if (f.findingSource === "imported" || f.ruleId.startsWith("EXT:")) {
+    bits.push(f.tool ? `via ${f.tool}` : "importado");
+    if (f.originalRuleId) bits.push(f.originalRuleId);
+    if (f.isDependency) bits.push("dependência");
+  } else if (f.engine) {
+    bits.push(f.engine);
+  } else if (f.tool) {
+    bits.push(f.tool);
+  }
+  if (f.alsoRuleIds?.length) {
+    bits.push(`também ${f.alsoRuleIds.slice(0, 3).join(", ")}`);
+  }
+  return bits.length ? bits.join(" · ") : null;
+}
+
 function formatFichaPlain(f: ScanFinding): string {
   return [
     `Regra: ${f.ruleId}`,
     `Local: ${f.file}:${f.line}`,
+    `Procedência: ${provenanceBits(f) || "nativo"}`,
     `Risco: ${f.risk || f.severity}`,
     `Motivo: ${f.message}`,
     `Como corrigir: ${f.howToFix || "(n/d)"}`,
   ].join("\n");
+}
+
+async function syncSarifToPortal(
+  summary: ScanSummary,
+  cfg: ReturnType<typeof getConfig>,
+): Promise<string | null> {
+  if (!cfg.token || !cfg.orgId || !cfg.projectId || !cfg.repoId) {
+    return "CodeHero: syncToPortal ligado, mas faltam token / orgId / projectId / repoId nas settings.";
+  }
+  if (!summary.sarif) return "CodeHero: SARIF ausente — sync pulado.";
+  const server = (cfg.serverUrl || "https://codehero.web.app/api").replace(/\/$/, "");
+  try {
+    const r = await fetch(`${server}/ingestAnalysis`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${cfg.token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        orgId: cfg.orgId,
+        projectId: cfg.projectId,
+        repoId: cfg.repoId,
+        branch: "ide",
+        linesOfCode: summary.linesOfCode,
+        newCodeFingerprints: [],
+        sarif: summary.sarif,
+      }),
+    });
+    const body = await r.text();
+    if (!r.ok) return `CodeHero: sync ao portal falhou (HTTP ${r.status}): ${body.slice(0, 200)}`;
+    try {
+      const j = JSON.parse(body) as { analysisId?: string; summary?: { qualityGate?: { status?: string } } };
+      return `CodeHero: sync ok · analysis ${j.analysisId ?? "?"} · gate ${j.summary?.qualityGate?.status ?? "?"}`;
+    } catch {
+      return "CodeHero: sync ao portal ok.";
+    }
+  } catch (e) {
+    return `CodeHero: sync erro — ${e instanceof Error ? e.message : String(e)}`;
+  }
 }
 
 async function showHowTo(): Promise<void> {
@@ -311,7 +383,9 @@ Abra Settings e busque \`CodeHero\`, ou rode o comando **CodeHero: Abrir configu
 
 | Setting | Para quê |
 |---|---|
-| \`codehero.scanOnSave\` | Escaneia o arquivo ao salvar |
+| \`codehero.scanOnSave\` | Escaneia o arquivo ao salvar (sempre perfil nativo) |
+| \`codehero.scanProfile\` | native / presence / java / full — **mesmo contrato** CLI, Action e MCP |
+| \`codehero.syncToPortal\` | Após scan do workspace, envia SARIF ao portal (paridade CI) |
 | \`codehero.enableCache\` | Cache incremental (mais rápido) |
 | \`codehero.minSeverity\` | Filtra findings abaixo deste nível no painel |
 | \`codehero.scannerCommand\` | Vazio = scanner embutido (recomendado). Só mude se souber o que faz. |

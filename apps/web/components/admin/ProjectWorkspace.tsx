@@ -95,6 +95,7 @@ interface RepoIssue {
   originalRuleId?: string | null;
   engine?: string | null;
   isDependency?: boolean;
+  alsoRuleIds?: string[];
   isNewCode?: boolean;
   assertiveness?: number | null;
   fpLikelihood?: number | null;
@@ -340,6 +341,7 @@ export default function ProjectWorkspace({
         originalRuleId: issue.originalRuleId ?? null,
         engine: issue.engine ?? null,
         isDependency: issue.isDependency === true,
+        alsoRuleIds: Array.isArray(issue.alsoRuleIds) ? issue.alsoRuleIds : [],
         isNewCode: issue.isNewCode === true,
         assertiveness: issue.assertiveness ?? null,
         fpLikelihood: issue.fpLikelihood ?? null,
@@ -776,6 +778,7 @@ export default function ProjectWorkspace({
             {(
               [
                 ["minNewCodeCoverage", "Cobertura mín. %"],
+                ["minBranchCoverage", "Branch mín. % (0=pula)"],
                 ["maxNewCodeDuplication", "Duplicação máx. %"],
                 ["maxNewBlockerIssues", "Blockers novos máx."],
               ] as const

@@ -37,7 +37,23 @@ export class FindingItem extends vscode.TreeItem {
       new DetailItem("Motivo", finding.message, "info"),
       new DetailItem("Como corrigir", finding.howToFix || "Ver ficha completa", "lightbulb"),
     ];
+    const provenance = findingProvenance(finding);
+    if (provenance) {
+      this.description = `${provenance} · ${finding.file}:${finding.line}`;
+      this.children.unshift(new DetailItem("Procedência", provenance, "extensions"));
+    }
   }
+}
+
+function findingProvenance(f: ScanFinding): string | null {
+  const bits: string[] = [];
+  if (f.findingSource === "imported" || f.ruleId.startsWith("EXT:")) {
+    bits.push(f.tool ? `via ${f.tool}` : "importado");
+  } else if (f.engine) {
+    bits.push(f.engine);
+  }
+  if (f.alsoRuleIds?.length) bits.push(`também ${f.alsoRuleIds[0]}`);
+  return bits.length ? bits.join(" · ") : null;
 }
 
 class SummaryItem extends vscode.TreeItem {

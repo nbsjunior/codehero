@@ -85,6 +85,8 @@ jobs:
           repo-id: "${repoId}"
           path: "."
           fail-on: CRITICAL
+          # Mesmo contrato CLI / MCP / IDE — presence = métricas + oxlint + opengrep + sca
+          profile: presence
 `;
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "codehero-mcp",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "CodeHero MCP server — plug-and-play for Cursor, Claude Desktop, and GitHub Copilot",
   "type": "module",
   "bin": {
@@ -39,6 +39,7 @@
     "access": "public"
   },
   "dependencies": {
+    "@codehero/contracts": "^0.1.0",
     "@modelcontextprotocol/sdk": "^1.30.0",
     "zod": "^3.24.1"
   }

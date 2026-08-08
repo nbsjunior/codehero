@@ -23,6 +23,13 @@ export interface ScanFinding {
   howToFix?: string;
   strategy?: string;
   constraints?: string[];
+  /** Provenance — same fields as portal FindingsBrowser */
+  findingSource?: "native" | "imported" | null;
+  tool?: string | null;
+  originalRuleId?: string | null;
+  engine?: string | null;
+  isDependency?: boolean;
+  alsoRuleIds?: string[];
 }
 
 export interface RuleCatalogEntry {
@@ -60,6 +67,8 @@ export interface ScanSummary {
    * scannable entries only; stubs are listed as catalog-only.
    */
   ruleCatalog: RuleCatalogEntry[];
+  /** Raw SARIF for optional portal sync (workspace scans). */
+  sarif?: unknown;
 }
 
 interface SarifResult {
@@ -89,6 +98,12 @@ interface SarifResult {
     howToFix?: string;
     strategy?: string;
     constraints?: string[];
+    source?: "imported";
+    tool?: string;
+    originalRuleId?: string;
+    engine?: string;
+    isDependency?: boolean;
+    alsoRuleIds?: string[];
   };
 }
 
@@ -101,6 +116,10 @@ export async function runScan(opts: {
   enableCache: boolean;
   cwd?: string;
   minSeverity?: string;
+  scanProfile?: string;
+  spotbugsClasses?: string;
+  /** Single-file save scans stay native-fast even if profile is presence. */
+  forceNativeProfile?: boolean;
   serverUrl?: string;
   token?: string;
   orgId?: string;
@@ -119,7 +138,12 @@ export async function runScan(opts: {
     fetchInformationalCatalog(auth),
   ]);
 
-  const args = [...inv.argsPrefix, opts.target, "--sarif"];
+  const profile =
+    opts.forceNativeProfile ? "native" : (opts.scanProfile || "native").toLowerCase();
+  const args = [...inv.argsPrefix, opts.target, "--sarif", ...profileToScannerArgs(profile)];
+  if (opts.spotbugsClasses && (profile === "java" || profile === "full")) {
+    args.push("--spotbugs-classes", opts.spotbugsClasses);
+  }
   if (rulesMeta.file) args.push("--rules-file", rulesMeta.file);
   else args.push("--no-fetch-rules");
   if (opts.enableCache) args.push("--cache");
@@ -140,27 +164,32 @@ export async function runScan(opts: {
     const uriPath = loc?.artifactLocation?.uri ?? opts.target;
     const absolutePath = toAbsolute(uriPath, cwd);
     const file = toRelative(absolutePath, cwd);
+    const p = result.properties;
     findings.push({
       ruleId: result.ruleId ?? "rule",
-      message: result.properties?.reason ?? result.message?.text ?? "",
+      message: p?.reason ?? result.message?.text ?? "",
       severity: sev,
       file,
       absolutePath,
       line: loc?.region?.startLine ?? 1,
       column: loc?.region?.startColumn ?? 1,
       endColumn: loc?.region?.endColumn ?? (loc?.region?.startColumn ?? 1) + 1,
-      snippet: result.properties?.snippet ?? loc?.region?.snippet?.text ?? "",
+      snippet: p?.snippet ?? loc?.region?.snippet?.text ?? "",
       fingerprint: result.partialFingerprints?.["heroHash/v1"],
-      issueType: result.properties?.issueType,
+      issueType: p?.issueType,
       remediationEffortMin:
-        typeof result.properties?.remediationEffortMin === "number"
-          ? result.properties.remediationEffortMin
-          : undefined,
-      sddTemplateId: result.properties?.sddTemplateId,
-      risk: result.properties?.risk,
-      howToFix: result.properties?.howToFix,
-      strategy: result.properties?.strategy,
-      constraints: result.properties?.constraints,
+        typeof p?.remediationEffortMin === "number" ? p.remediationEffortMin : undefined,
+      sddTemplateId: p?.sddTemplateId,
+      risk: p?.risk,
+      howToFix: p?.howToFix,
+      strategy: p?.strategy,
+      constraints: p?.constraints,
+      findingSource: p?.source === "imported" ? "imported" : "native",
+      tool: p?.tool ?? null,
+      originalRuleId: p?.originalRuleId ?? null,
+      engine: p?.engine ?? null,
+      isDependency: p?.isDependency === true,
+      alsoRuleIds: Array.isArray(p?.alsoRuleIds) ? p!.alsoRuleIds : [],
     });
   }
 
@@ -199,7 +228,31 @@ export async function runScan(opts: {
       overlayCount: 0,
     },
     ruleCatalog,
+    sarif,
   };
+}
+
+/** Same engines as contracts SCAN_PROFILES — expanded flags (no --profile) for older bundled CLIs. */
+function profileToScannerArgs(profile: string): string[] {
+  switch (profile) {
+    case "presence":
+      return ["--metrics", "--with-oxlint", "--with-opengrep", "--with-sca"];
+    case "java":
+      return ["--metrics", "--with-pmd", "--with-spotbugs"];
+    case "full":
+      return [
+        "--metrics",
+        "--with-oxlint",
+        "--with-eslint",
+        "--with-semgrep",
+        "--with-opengrep",
+        "--with-pmd",
+        "--with-spotbugs",
+        "--with-sca",
+      ];
+    default:
+      return [];
+  }
 }
 
 async function fetchLiveRulesForScan(opts: {

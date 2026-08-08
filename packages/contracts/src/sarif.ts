@@ -17,6 +17,8 @@ export interface SarifRun {
     };
   };
   results: SarifResult[];
+  /** Run-level CodeHero extensions (coverage, complexity, leitura assistida). */
+  properties?: Record<string, unknown>;
 }
 
 export interface SarifReportingDescriptor {
@@ -67,6 +69,11 @@ export interface SarifResult {
     isDependency?: boolean;
     /** Motor nativo: L0 pattern, Babel AST/taint, ou tree-sitter structural. */
     engine?: "pattern" | "ast" | "taint" | "structural" | "cpg";
+    /**
+     * Rule ids absorbed by cross-tool / native eco collapse (same line).
+     * Survives ingest so portal/MCP/IDE can show “also confirmed by …”.
+     */
+    alsoRuleIds?: string[];
     /** Score do ranqueador FP (0–1): alto = mais assertivo / provável TP. */
     assertiveness?: number;
     fpLikelihood?: number;

@@ -7,8 +7,14 @@ export interface CodeHeroConfig {
   enableCache: boolean;
   minSeverity: string;
   scannerCommand: string;
+  /** native | presence | java | full — same contract as CLI/Action/MCP */
+  scanProfile: string;
+  spotbugsClasses: string;
+  /** When true + token/ids, POST SARIF to ingestAnalysis after workspace scan */
+  syncToPortal: boolean;
   orgId: string;
   projectId: string;
+  repoId: string;
   serverUrl: string;
   token: string;
 }
@@ -20,8 +26,12 @@ export function getConfig(): CodeHeroConfig {
     enableCache: c.get<boolean>("enableCache", true),
     minSeverity: c.get<string>("minSeverity", "INFO"),
     scannerCommand: (c.get<string>("scannerCommand", "") ?? "").trim(),
+    scanProfile: (c.get<string>("scanProfile", "native") ?? "native").trim().toLowerCase(),
+    spotbugsClasses: (c.get<string>("spotbugsClasses", "") ?? "").trim(),
+    syncToPortal: c.get<boolean>("syncToPortal", false),
     orgId: (c.get<string>("orgId", "") ?? "").trim(),
     projectId: (c.get<string>("projectId", "") ?? "").trim(),
+    repoId: (c.get<string>("repoId", "") ?? "").trim(),
     serverUrl: (c.get<string>("serverUrl", "") ?? "").trim(),
     token: (c.get<string>("token", "") ?? "").trim(),
   };

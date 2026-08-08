@@ -54,6 +54,45 @@ export const listIssues = onRequest({ cors: httpCors, maxInstances: 100 }, async
 });
 
 /**
+ * Token-guarded repo summary for MCP / IDE (same surface as portal gate badge).
+ * GET /repoStatus?orgId=&projectId=&repoId=
+ */
+export const repoStatus = onRequest({ cors: httpCors, maxInstances: 100 }, async (req, res) => {
+  const orgId = String(req.query.orgId ?? "");
+  const projectId = String(req.query.projectId ?? "");
+  const repoId = String(req.query.repoId ?? "");
+  if (!orgId || !projectId || !repoId) {
+    res.status(400).json({ error: "orgId, projectId and repoId are required" });
+    return;
+  }
+  const auth = await authorizeRepo(orgId, projectId, repoId, req.headers.authorization);
+  if (!auth.ok) {
+    res.status(auth.status).json({ error: auth.error });
+    return;
+  }
+
+  const snap = await repoRef(orgId, projectId, repoId).get();
+  if (!snap.exists) {
+    res.status(404).json({ error: "repo_not_found" });
+    return;
+  }
+  const data = snap.data() ?? {};
+  res.status(200).json({
+    orgId,
+    projectId,
+    repoId,
+    qualityGateStatus: data.qualityGateStatus ?? "PASSED",
+    debtMinutes: data.debtMinutes ?? 0,
+    debtRatio: data.debtRatio ?? 0,
+    maintainabilityRating: data.maintainabilityRating ?? "A",
+    securityRating: data.securityRating ?? "A",
+    lastAnalyzedAt: data.lastAnalyzedAt ?? null,
+    lastAnalysisId: data.lastAnalysisId ?? null,
+    openIssues: data.openIssues ?? null,
+  });
+});
+
+/**
  * Token-guarded SDD spec builder for agents/CI.
  * POST /sddSpec { orgId, projectId, repoId, fingerprint }
  */

@@ -39,6 +39,8 @@ export interface PersistAnalysisInput {
   coveragePercent?: number | null;
   /** Duplicação medida (--metrics); `null`/ausente pula a condição. */
   duplicationPercent?: number | null;
+  /** Branch % (JaCoCo/JCov/lcov); null/0 pula a condição. */
+  branchCoveragePercent?: number | null;
   analysisId?: string;
   /** Per-project gate thresholds (merged with defaults when omitted). */
   qualityGateThresholds?: QualityGateThresholds | null;
@@ -78,6 +80,18 @@ export function coverageFromSarif(sarif: SarifLog): number | null {
   return coveragePct(raw);
 }
 
+/**
+ * Branch coverage % from SARIF run properties (JaCoCo/JCov/lcov BRF). Null
+ * when absent — the gate only applies minBranchCoverage when data exists.
+ */
+export function branchCoverageFromSarif(sarif: SarifLog): number | null {
+  const raw = (
+    sarif.runs?.[0] as { properties?: { coverage?: { branches?: CoverageCounter } } }
+  )?.properties?.coverage?.branches;
+  if (!raw || typeof raw.total !== "number" || raw.total <= 0) return null;
+  return coveragePct(raw);
+}
+
 export function computeAnalysisSummary(
   results: SarifResult[],
   linesOfCode: number,
@@ -90,6 +104,7 @@ export function computeAnalysisSummary(
   coveragePercent?: number | null,
   duplicationPercent?: number | null,
   qualityGateThresholds?: QualityGateThresholds | null,
+  branchCoveragePercent?: number | null,
 ): PersistAnalysisResult["summary"] {
   const newSet = new Set(newCodeFingerprints ?? []);
   const scopeToNewCode = newSet.size > 0;
@@ -126,6 +141,7 @@ export function computeAnalysisSummary(
   const gate = evaluateQualityGate(
     {
       newCodeCoverage: coveragePercent ?? null,
+      branchCoverage: branchCoveragePercent ?? null,
       newCodeDuplication: duplicationPercent ?? null,
       newBlockerIssues,
       securityRating,
@@ -223,6 +239,9 @@ export async function upsertIssuesFromResults(input: {
         originalRuleId: r.properties?.originalRuleId ?? null,
         isDependency: r.properties?.isDependency === true,
         engine: r.properties?.engine ?? null,
+        alsoRuleIds: Array.isArray(r.properties?.alsoRuleIds)
+          ? (r.properties!.alsoRuleIds as string[]).filter((x) => typeof x === "string").slice(0, 40)
+          : [],
         assertiveness: Math.round(rank.assertiveness * 1000) / 1000,
         fpLikelihood: Math.round(rank.fpLikelihood * 1000) / 1000,
         rankerModel: rank.modelVersion,
@@ -304,6 +323,7 @@ export async function persistAnalysisResults(input: PersistAnalysisInput): Promi
     input.coveragePercent,
     input.duplicationPercent,
     thresholds,
+    input.branchCoveragePercent,
   );
 
   if (!input.deferIssueWrites) {

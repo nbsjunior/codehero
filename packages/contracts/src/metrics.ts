@@ -56,7 +56,9 @@ export function ratingFromWorstSeverity(severities: Severity[]): Rating {
 }
 
 export interface QualityGateThresholds {
-  minNewCodeCoverage: number; // percent
+  minNewCodeCoverage: number; // percent (line)
+  /** Opcional — 0–100. Quando > 0 e o relatório tem branches (JaCoCo/JCov/lcov BRF), aplica. */
+  minBranchCoverage?: number;
   maxNewCodeDuplication: number; // percent
   maxNewBlockerIssues: number;
   maxSecurityRating: Rating;
@@ -65,6 +67,7 @@ export interface QualityGateThresholds {
 
 export const DEFAULT_QUALITY_GATE: QualityGateThresholds = {
   minNewCodeCoverage: 80,
+  minBranchCoverage: 0,
   maxNewCodeDuplication: 3,
   maxNewBlockerIssues: 0,
   maxSecurityRating: "A",
@@ -77,6 +80,7 @@ export function mergeQualityGate(
   if (!partial) return { ...DEFAULT_QUALITY_GATE };
   return {
     minNewCodeCoverage: partial.minNewCodeCoverage ?? DEFAULT_QUALITY_GATE.minNewCodeCoverage,
+    minBranchCoverage: partial.minBranchCoverage ?? DEFAULT_QUALITY_GATE.minBranchCoverage,
     maxNewCodeDuplication: partial.maxNewCodeDuplication ?? DEFAULT_QUALITY_GATE.maxNewCodeDuplication,
     maxNewBlockerIssues: partial.maxNewBlockerIssues ?? DEFAULT_QUALITY_GATE.maxNewBlockerIssues,
     maxSecurityRating: partial.maxSecurityRating ?? DEFAULT_QUALITY_GATE.maxSecurityRating,
@@ -92,6 +96,11 @@ export interface QualityGateInput {
    * 0, significa medido e é avaliado normalmente.
    */
   newCodeCoverage: number | null;
+  /**
+   * Branch coverage % (JaCoCo/JCov/lcov BRF). `null` = relatório sem branches
+   * ou threshold 0 — condição pulada, nunca reprova projeto sem branch data.
+   */
+  branchCoverage?: number | null;
   /** `null` = não medido; a condição é pulada, como em `newCodeCoverage`. */
   newCodeDuplication: number | null;
   newBlockerIssues: number;
@@ -155,6 +164,14 @@ export function evaluateQualityGate(
     failed.push(
       `Cobertura em código novo ${input.newCodeCoverage}% < ${thresholds.minNewCodeCoverage}%`,
     );
+  const minBranch = thresholds.minBranchCoverage ?? 0;
+  if (
+    minBranch > 0 &&
+    input.branchCoverage !== null &&
+    input.branchCoverage !== undefined &&
+    input.branchCoverage < minBranch
+  )
+    failed.push(`Cobertura de branch ${input.branchCoverage}% < ${minBranch}%`);
   if (input.newCodeDuplication !== null && input.newCodeDuplication > thresholds.maxNewCodeDuplication)
     failed.push(
       `Duplicação em código novo ${input.newCodeDuplication}% > ${thresholds.maxNewCodeDuplication}%`,

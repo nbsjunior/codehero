@@ -2,7 +2,7 @@
   "name": "codehero-ide",
   "displayName": "CodeHero",
   "description": "Scan determinístico no editor: regras padrão + AST + taint, painel de avaliação e Problems.",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "private": true,
   "publisher": "codehero",
   "engines": {
@@ -153,6 +153,28 @@
           "default": "",
           "markdownDescription": "Deixe **vazio** (recomendado) para o scanner embutido no VSIX. Não use `npx hero-scan` — esse pacote não existe no npm. Só preencha com um caminho absoluto a um CLI próprio que aceite `--sarif`."
         },
+        "codehero.scanProfile": {
+          "type": "string",
+          "default": "native",
+          "enum": ["native", "presence", "java", "full"],
+          "enumDescriptions": [
+            "Só motor CodeHero (rápido — default e scan ao salvar)",
+            "Métricas + Oxlint + Opengrep + SCA (mesmo pack da Action)",
+            "Métricas + PMD + SpotBugs (configure spotbugsClasses)",
+            "Todas as adapters soft-fail (exceto Joern)"
+          ],
+          "markdownDescription": "Perfil de orquestração **igual** ao CLI (`--profile`), Action e MCP. Scan ao salvar força `native` por velocidade."
+        },
+        "codehero.spotbugsClasses": {
+          "type": "string",
+          "default": "",
+          "description": "Diretório/jar com .class para SpotBugs (profiles java/full)."
+        },
+        "codehero.syncToPortal": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Após scan do **workspace**, envia o SARIF para `ingestAnalysis` (mesma API do CI). Requer token, orgId, projectId e repoId."
+        },
         "codehero.orgId": {
           "type": "string",
           "default": "",
@@ -163,6 +185,11 @@
           "default": "",
           "description": "ID do projeto no portal (opcional)."
         },
+        "codehero.repoId": {
+          "type": "string",
+          "default": "",
+          "description": "ID do repositório no portal (necessário para syncToPortal)."
+        },
         "codehero.serverUrl": {
           "type": "string",
           "default": "https://codehero.web.app/api",
@@ -171,7 +198,7 @@
         "codehero.token": {
           "type": "string",
           "default": "",
-          "description": "Token de ingestão do projeto (necessário para dress code / overlays do projeto)."
+          "description": "Token de ingestão do projeto (necessário para dress code / overlays e syncToPortal)."
         }
       }
     }

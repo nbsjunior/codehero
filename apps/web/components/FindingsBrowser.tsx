@@ -43,6 +43,8 @@ export type FindingsBrowserItem = {
   originalRuleId?: string | null;
   engine?: string | null;
   isDependency?: boolean;
+  /** Eco: outras regras/ferramentas que apontaram a mesma linha. */
+  alsoRuleIds?: string[];
   isNewCode?: boolean;
   assertiveness?: number | null;
   fpLikelihood?: number | null;
@@ -87,6 +89,14 @@ export function provenanceLabel(item: FindingsBrowserItem): string | null {
     bits.push(item.engine);
   } else if (item.tool) {
     bits.push(item.tool);
+  }
+  if (item.alsoRuleIds?.length) {
+    const also = item.alsoRuleIds.slice(0, 3).join(", ");
+    bits.push(
+      item.alsoRuleIds.length > 3
+        ? `também ${also} (+${item.alsoRuleIds.length - 3})`
+        : `também ${also}`,
+    );
   }
   if (item.isNewCode) bits.push("código novo");
   if (item.gateSuppressed) bits.push("fora do gate (FP local)");

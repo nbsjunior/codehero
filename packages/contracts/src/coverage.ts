@@ -10,7 +10,7 @@
 // onde a leitura de arquivo já acontece.
 // ---------------------------------------------------------------------------
 
-export type CoverageFormat = "lcov" | "cobertura" | "jacoco" | "go" | "unknown";
+export type CoverageFormat = "lcov" | "cobertura" | "jacoco" | "go" | "jcov" | "unknown";
 
 export interface CoverageCounter {
   covered: number;

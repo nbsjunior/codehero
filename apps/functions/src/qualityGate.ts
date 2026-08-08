@@ -22,6 +22,7 @@ function parseThresholds(raw: unknown): QualityGateThresholds {
     : DEFAULT_QUALITY_GATE.maxMaintainabilityRating;
   return mergeQualityGate({
     minNewCodeCoverage: Number(o.minNewCodeCoverage),
+    minBranchCoverage: Number(o.minBranchCoverage ?? 0),
     maxNewCodeDuplication: Number(o.maxNewCodeDuplication),
     maxNewBlockerIssues: Number(o.maxNewBlockerIssues),
     maxSecurityRating,
@@ -59,6 +60,8 @@ export const updateProjectQualityGate = onCall(portalCallableOpts, async (reques
   if (
     thresholds.minNewCodeCoverage < 0 ||
     thresholds.minNewCodeCoverage > 100 ||
+    (thresholds.minBranchCoverage ?? 0) < 0 ||
+    (thresholds.minBranchCoverage ?? 0) > 100 ||
     thresholds.maxNewCodeDuplication < 0 ||
     thresholds.maxNewCodeDuplication > 100 ||
     thresholds.maxNewBlockerIssues < 0 ||

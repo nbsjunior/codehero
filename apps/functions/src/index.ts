@@ -18,7 +18,7 @@ export {
 } from "./platformOps.ts";
 export { generateSddSpec } from "./sdd.ts";
 export { provisionProject } from "./provision.ts";
-export { listIssues, sddSpec } from "./query.ts";
+export { listIssues, sddSpec, repoStatus } from "./query.ts";
 export { flagIssueFeedback, submitFixResult } from "./feedback.ts";
 export { exportRuleforgeFeedback } from "./exportFeedback.ts";
 export { applyOfflineTriage } from "./applyOfflineTriage.ts";

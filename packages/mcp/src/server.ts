@@ -3,6 +3,12 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { spawnSync } from "node:child_process";
+import {
+  SCAN_PROFILE_IDS,
+  SCAN_PROFILES,
+  isScanProfileId,
+  scanProfileToCliArgs,
+} from "@codehero/contracts";
 
 // ---------------------------------------------------------------------------
 // hero-mcp — stdio MCP for Cursor / Claude / GitHub Copilot.
@@ -15,6 +21,7 @@ import { spawnSync } from "node:child_process";
 //   HERO_TOKEN      ingest token do repositório
 //   HERO_ORG_ID / HERO_PROJECT_ID / HERO_REPO_ID
 //   HERO_SCANNER_CMD  opcional — só para run_scan local
+//   HERO_SCAN_PROFILE  default native (presence|java|full)
 // ---------------------------------------------------------------------------
 
 const DEFAULT_CORE = "https://codehero.web.app/api";
@@ -28,16 +35,34 @@ const TOKEN = process.env.HERO_TOKEN ?? process.env.CODEHERO_TOKEN ?? "";
 const ORG_ID = process.env.HERO_ORG_ID ?? process.env.CODEHERO_ORG_ID ?? "";
 const PROJECT_ID = process.env.HERO_PROJECT_ID ?? process.env.CODEHERO_PROJECT_ID ?? "";
 const REPO_ID = process.env.HERO_REPO_ID ?? process.env.CODEHERO_REPO_ID ?? "";
+const DEFAULT_PROFILE = isScanProfileId(process.env.HERO_SCAN_PROFILE)
+  ? process.env.HERO_SCAN_PROFILE!
+  : "native";
 
 function authHeaders(): Record<string, string> {
   return { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" };
 }
 
-const server = new McpServer({ name: "hero-mcp", version: "0.2.0" });
+const server = new McpServer({ name: "hero-mcp", version: "0.3.0" });
+
+server.tool(
+  "list_scan_profiles",
+  "Lista os perfis de orquestração canônicos (native|presence|java|full) usados igualmente por CLI, Action, MCP e IDE.",
+  {},
+  async () => {
+    const body = SCAN_PROFILE_IDS.map((id) => ({
+      id,
+      label: SCAN_PROFILES[id].label,
+      summary: SCAN_PROFILES[id].summary,
+      engines: SCAN_PROFILES[id].engines,
+    }));
+    return { content: [{ type: "text", text: JSON.stringify(body, null, 2) }] };
+  },
+);
 
 server.tool(
   "get_issues",
-  "Lista as issues abertas de um repositório CodeHero (opcionalmente filtrando por severidade e código novo).",
+  "Lista as issues abertas de um repositório CodeHero (opcionalmente filtrando por severidade e código novo). Mesma fonte do portal.",
   {
     orgId: z.string().default(ORG_ID),
     projectId: z.string().default(PROJECT_ID),
@@ -66,6 +91,37 @@ server.tool(
     if (severity) url.searchParams.set("severity", severity);
     url.searchParams.set("newCodeOnly", String(newCodeOnly));
     url.searchParams.set("limit", String(limit));
+    const r = await fetch(url, { headers: authHeaders() });
+    const body = await r.text();
+    return { content: [{ type: "text", text: body }], isError: !r.ok };
+  },
+);
+
+server.tool(
+  "get_repo_status",
+  "Quality gate e métricas do repositório (mesma superfície do portal). GET /repoStatus.",
+  {
+    orgId: z.string().default(ORG_ID),
+    projectId: z.string().default(PROJECT_ID),
+    repoId: z.string().default(REPO_ID),
+  },
+  async ({ orgId, projectId, repoId }) => {
+    if (!TOKEN) {
+      return {
+        content: [{ type: "text", text: "HERO_TOKEN ausente. Cole o mcp.json do painel CodeHero." }],
+        isError: true,
+      };
+    }
+    if (!repoId) {
+      return {
+        content: [{ type: "text", text: "repoId é obrigatório (defina HERO_REPO_ID ou passe repoId)." }],
+        isError: true,
+      };
+    }
+    const url = new URL(`${CORE_URL}/repoStatus`);
+    url.searchParams.set("orgId", orgId);
+    url.searchParams.set("projectId", projectId);
+    url.searchParams.set("repoId", repoId);
     const r = await fetch(url, { headers: authHeaders() });
     const body = await r.text();
     return { content: [{ type: "text", text: body }], isError: !r.ok };
@@ -140,9 +196,17 @@ server.tool(
 
 server.tool(
   "run_scan",
-  "Roda o scanner CodeHero localmente (opcional). Requer HERO_SCANNER_CMD. Sem isso, use get_issues / get_active_rules via API.",
-  { path: z.string().default(".") },
-  async ({ path }) => {
+  "Roda o scanner CodeHero localmente com o mesmo --profile da Action/IDE. Requer HERO_SCANNER_CMD. Sem isso, use get_issues / get_repo_status via API.",
+  {
+    path: z.string().default("."),
+    profile: z.enum(["native", "presence", "java", "full"]).default(DEFAULT_PROFILE as "native"),
+    ingest: z
+      .boolean()
+      .default(false)
+      .describe("Se true e HERO_TOKEN+ids estiverem setados, envia o SARIF para ingestAnalysis (paridade com CI)."),
+    spotbugsClasses: z.string().optional(),
+  },
+  async ({ path, profile, ingest, spotbugsClasses }) => {
     const cmd = (process.env.HERO_SCANNER_CMD ?? "").trim();
     if (!cmd) {
       return {
@@ -151,8 +215,9 @@ server.tool(
             type: "text",
             text: [
               "run_scan precisa de HERO_SCANNER_CMD (opcional no plug-and-play).",
-              "Modo API: use get_issues / get_sdd_spec / get_active_rules — não exigem scanner local.",
+              "Modo API: use get_issues / get_repo_status / get_sdd_spec / get_active_rules — não exigem scanner local.",
               "Avançado: HERO_SCANNER_CMD=\"node caminho/packages/scanner/dist/index.js\"",
+              `Perfis: ${SCAN_PROFILE_IDS.join("|")} (default env HERO_SCAN_PROFILE=${DEFAULT_PROFILE})`,
             ].join("\n"),
           },
         ],
@@ -162,7 +227,9 @@ server.tool(
     const parts = cmd.split(/\s+/).filter(Boolean);
     const bin = parts[0]!;
     const prefix = parts.slice(1);
-    const args = [...prefix, path, "--sarif"];
+    const profileArgs = scanProfileToCliArgs(profile);
+    const args = [...prefix, path, "--sarif", "--out", "codehero.sarif", ...profileArgs];
+    if (spotbugsClasses) args.push("--spotbugs-classes", spotbugsClasses);
     if (CORE_URL) args.push("--server", CORE_URL);
     if (TOKEN) args.push("--token", TOKEN);
     if (ORG_ID) args.push("--org", ORG_ID);
@@ -175,7 +242,43 @@ server.tool(
     if (result.error) {
       return { content: [{ type: "text", text: `scanner error: ${result.error.message}` }], isError: true };
     }
-    return { content: [{ type: "text", text: result.stdout || result.stderr }] };
+
+    let ingestNote = "";
+    if (ingest) {
+      if (!TOKEN || !ORG_ID || !PROJECT_ID || !REPO_ID) {
+        ingestNote =
+          "\n[ingest pulado] Defina HERO_TOKEN, HERO_ORG_ID, HERO_PROJECT_ID, HERO_REPO_ID para sync ao portal.";
+      } else {
+        try {
+          const { readFileSync } = await import("node:fs");
+          const sarif = JSON.parse(readFileSync("codehero.sarif", "utf8"));
+          const loc = Number(sarif?.runs?.[0]?.properties?.linesOfCode ?? 1) || 1;
+          const r = await fetch(`${CORE_URL}/ingestAnalysis`, {
+            method: "POST",
+            headers: authHeaders(),
+            body: JSON.stringify({
+              orgId: ORG_ID,
+              projectId: PROJECT_ID,
+              repoId: REPO_ID,
+              branch: "local-mcp",
+              linesOfCode: loc,
+              newCodeFingerprints: [],
+              sarif,
+              source: "mcp",
+            }),
+          });
+          const body = await r.text();
+          ingestNote = r.ok
+            ? `\n[ingest ok] ${body.slice(0, 500)}`
+            : `\n[ingest falhou HTTP ${r.status}] ${body.slice(0, 400)}`;
+        } catch (e) {
+          ingestNote = `\n[ingest erro] ${e instanceof Error ? e.message : String(e)}`;
+        }
+      }
+    }
+
+    const out = (result.stdout || result.stderr || "") + ingestNote;
+    return { content: [{ type: "text", text: out || "(scan sem stdout — veja codehero.sarif)" }] };
   },
 );
 
@@ -191,12 +294,14 @@ server.tool(
       "1. get_issues — pick a fingerprint" + (fingerprint ? ` (suggested: ${fingerprint})` : ""),
       "2. get_sdd_spec — obtain the verifiable remediation contract",
       "3. Edit code with a unified_diff scoped to the SDD location",
-      "4. run_scan — se HERO_SCANNER_CMD estiver definido; senão peça evidência via get_issues",
+      "4. run_scan(profile=presence|native, ingest=true) — se HERO_SCANNER_CMD; senão get_issues + get_repo_status",
       "5. submit_fix_result — status=applied|rejected|failed",
       "Never claim a fix is done without scan/API evidence.",
       "",
       "Before generating new code, call get_generation_context with entry describing the guardrails needed",
       '(e.g. "regras de avaliação de código CodeHero").',
+      "",
+      "Provenance: cada issue pode ter tool/engine/alsoRuleIds — trate EXT:* e “também …” como a mesma superfície do portal.",
     ].join("\n");
     return { content: [{ type: "text", text }] };
   },
@@ -360,6 +465,59 @@ server.tool(
   },
 );
 
+// Resources mirror the portal API so agents can subscribe without inventing a second model.
+server.resource("issues", "codehero://issues", { description: "Issues abertas do repo (HERO_* env)" }, async (uri) => {
+  if (!TOKEN || !REPO_ID) {
+    return {
+      contents: [
+        {
+          uri: uri.href,
+          text: "Configure HERO_TOKEN e HERO_REPO_ID (mcp.json do painel).",
+          mimeType: "text/plain",
+        },
+      ],
+    };
+  }
+  const url = new URL(`${CORE_URL}/listIssues`);
+  url.searchParams.set("orgId", ORG_ID);
+  url.searchParams.set("projectId", PROJECT_ID);
+  url.searchParams.set("repoId", REPO_ID);
+  url.searchParams.set("limit", "100");
+  const r = await fetch(url, { headers: authHeaders() });
+  const text = await r.text();
+  return {
+    contents: [{ uri: uri.href, text, mimeType: "application/json" }],
+  };
+});
+
+server.resource(
+  "quality-gate",
+  "codehero://quality-gate",
+  { description: "Status do quality gate do repositório" },
+  async (uri) => {
+    if (!TOKEN || !REPO_ID) {
+      return {
+        contents: [
+          {
+            uri: uri.href,
+            text: "Configure HERO_TOKEN e HERO_REPO_ID.",
+            mimeType: "text/plain",
+          },
+        ],
+      };
+    }
+    const url = new URL(`${CORE_URL}/repoStatus`);
+    url.searchParams.set("orgId", ORG_ID);
+    url.searchParams.set("projectId", PROJECT_ID);
+    url.searchParams.set("repoId", REPO_ID);
+    const r = await fetch(url, { headers: authHeaders() });
+    const text = await r.text();
+    return {
+      contents: [{ uri: uri.href, text, mimeType: "application/json" }],
+    };
+  },
+);
+
 const transport = new StdioServerTransport();
 await server.connect(transport);
-console.error(`hero-mcp ready (stdio) · api=${CORE_URL}`);
+console.error(`hero-mcp ready (stdio) · api=${CORE_URL} · profile=${DEFAULT_PROFILE}`);

@@ -10,6 +10,7 @@ export * from "./githubAction.ts";
 export * from "./findingFicha.ts";
 export * from "./lintKnowledgeBase.ts";
 export * from "./coverage.ts";
+export * from "./scanProfile.ts";
 export * from "./lexicalMask.ts";
 export * from "./cobolAnalyses.ts";
 export * from "./structuralRules.ts";

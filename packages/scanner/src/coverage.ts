@@ -85,7 +85,14 @@ export function parseLcov(text: string): CoverageReport {
   return summarize("lcov", files);
 }
 
-/** Cobertura XML — coverage.py, pytest-cov, .NET (coverlet), Jest cobertura. */
+/**
+ * Cobertura XML — coverage.py, pytest-cov, .NET (coverlet), Jest cobertura.
+ *
+ * OpenCppCoverage não tem formato próprio: exporta o MESMO schema Cobertura
+ * (`<coverage><packages><class filename>…<line number hits branch…`), então o
+ * caminho para C++ no Windows é o que já existe aqui — detecção por conteúdo
+ * cobre os dois.
+ */
 export function parseCobertura(text: string): CoverageReport {
   const files: FileCoverage[] = [];
   // <class filename="..."> ... <line number="N" hits="H" [branch="true" condition-coverage="x% (a/b)"]/>
@@ -170,6 +177,55 @@ export function parseJacoco(text: string): CoverageReport {
 }
 
 /**
+ * JCov (OpenJDK Code Tools) — XML com `<method>…<bl s= e= c=/>` e classe com
+ * `source="…"` (ou `name` como fallback de path). Cobertura de método/bloco é
+ * o que o JCov instrumenta em bytecode; aqui projetamos bloco → linhas.
+ */
+export function parseJcov(text: string): CoverageReport {
+  const byFile = new Map<string, { covered: Set<number>; uncovered: Set<number> }>();
+  const blockRe = /<(?:bl|block)\b([^>]*)\/?>/g;
+
+  const pushLine = (
+    map: Map<string, { covered: Set<number>; uncovered: Set<number> }>,
+    file: string,
+    line: number,
+    hit: boolean,
+  ) => {
+    const entry = map.get(file) ?? { covered: new Set<number>(), uncovered: new Set<number>() };
+    if (hit) {
+      entry.covered.add(line);
+      entry.uncovered.delete(line);
+    } else if (!entry.covered.has(line)) {
+      entry.uncovered.add(line);
+    }
+    map.set(file, entry);
+  };
+
+  const classRe = /<class\b([^>]*)>([\s\S]*?)<\/class>/g;
+  for (const cls of text.matchAll(classRe)) {
+    const attrs = cls[1] ?? "";
+    const src = /\bsource="([^"]+)"/.exec(attrs)?.[1];
+    const name = (/\bname="([^"]+)"/.exec(attrs)?.[1] ?? "").replace(/\./g, "/");
+    const file = src ? src.replace(/\\/g, "/") : name ? `${name}.java` : "";
+    if (!file) continue;
+    const body = cls[2] ?? "";
+    for (const b of body.matchAll(blockRe)) {
+      const a = b[1] ?? "";
+      const s = Number(/\bs="(\d+)"/.exec(a)?.[1]);
+      const e = Number(/\be="(\d+)"/.exec(a)?.[1] ?? s);
+      const c = Number(/\bc="(\d+)"/.exec(a)?.[1] ?? "0");
+      if (!Number.isFinite(s)) continue;
+      for (let n = s; n <= e; n++) pushLine(byFile, file, n, c > 0);
+    }
+  }
+
+  const files = [...byFile.entries()].map(([path, e]) =>
+    fileFrom(path, [...e.covered], [...e.uncovered]),
+  );
+  return summarize("jcov", files);
+}
+
+/**
  * Go coverprofile (`go test -coverprofile`).
  *
  * Formato: `arquivo:linhaIni.colIni,linhaFim.colFim numStmts count`. É por
@@ -213,6 +269,9 @@ export function detectCoverageFormat(text: string): CoverageFormat {
   const head = text.slice(0, 4096);
   if (/^mode:\s/m.test(head)) return "go";
   if (/^SF:/m.test(head)) return "lcov";
+  if (/<jcov\b|<coverage\b[^>]*\bversion="[^"]*"[^>]*\bjcov\b/i.test(head)) return "jcov";
+  // OpenCppCoverage + gcov/VS exportam Cobertura; JaCoCo é o caso especial com
+  // <report><package><sourcefile>. A ordem importa: jcov antes de jacoco.
   if (/<report\b[^>]*>|<\/report>/.test(head) || /<sourcefile\b/.test(text)) return "jacoco";
   if (/<coverage\b/.test(head)) return "cobertura";
   return "unknown";
@@ -228,6 +287,8 @@ export function parseCoverageText(text: string): CoverageReport | null {
       return parseJacoco(text);
     case "go":
       return parseGoCoverProfile(text);
+    case "jcov":
+      return parseJcov(text);
     default:
       return null;
   }

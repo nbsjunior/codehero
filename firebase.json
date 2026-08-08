@@ -38,6 +38,7 @@
       { "source": "/api/getActiveRules", "function": { "functionId": "getActiveRules", "region": "us-central1" } },
       { "source": "/api/getRulesCatalog", "function": { "functionId": "getRulesCatalog", "region": "us-central1" } },
       { "source": "/api/listIssues", "function": { "functionId": "listIssues", "region": "us-central1" } },
+      { "source": "/api/repoStatus", "function": { "functionId": "repoStatus", "region": "us-central1" } },
       { "source": "/api/sddSpec", "function": { "functionId": "sddSpec", "region": "us-central1" } },
       { "source": "/api/submitFixResult", "function": { "functionId": "submitFixResult", "region": "us-central1" } }
     ],

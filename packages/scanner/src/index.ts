@@ -10,6 +10,11 @@ export type {
   SelecaoDeLeitura,
   ObservacaoDeLeitura,
 } from "./leituraAssistida.ts";
+import {
+  selecionarParaLeitura,
+  type HunkAlterado,
+  type LinhaJaApontada,
+} from "./leituraAssistida.ts";
 import { readFileSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { relative, resolve } from "node:path";
@@ -63,6 +68,12 @@ interface CliOptions {
   coverage: string[];
   /** Named orchestration profile (native|presence|java|full). */
   profile: ScanProfileId | null;
+  /**
+   * Leitura assistida por modelo (Alibaba open-code-review): teto de tokens da
+   * execução. 0/ausente = desligado. Só recorta o que o determinístico NÃO
+   * cobriu; observações NUNCA entram no gate.
+   */
+  llmBudget: number;
   metrics: boolean;
   semantic: boolean;
   copybooks: string[];
@@ -96,6 +107,7 @@ function parseArgs(argv: string[]): CliOptions {
     ignore: [],
     coverage: [],
     profile: null,
+    llmBudget: 0,
     metrics: false,
     semantic: false,
     copybooks: [],
@@ -126,6 +138,9 @@ function parseArgs(argv: string[]): CliOptions {
           `CodeHero: --profile desconhecido "${v}" (use: native|presence|java|full)\n`,
         );
       }
+    }
+    else if (a === "--llm-budget") {
+      opts.llmBudget = Math.max(0, Number(argv[++i] ?? 0) || 0);
     }
     else if (a === "--metrics") opts.metrics = true;
     else if (a === "--semantic") { opts.semantic = true; opts.metrics = true; }
@@ -213,8 +228,11 @@ async function main(): Promise<void> {
   let linesOfCode = 0;
 
   // Guardado só quando --metrics: manter o fonte de todo o repo na memória sem
-  // necessidade seria desperdício num scan de 20 mil arquivos.
+  // necessidade seria desperdício num scan de 20 mil arquivos. Com
+  // --llm-budget a leitura precisa do fonte ORIGINAL (não expandido), guardado
+  // em `fontesParaLeitura` separadamente.
   const paraMetricas: Array<{ path: string; source: string }> = [];
+  const fontesParaLeitura = new Map<string, string>();
 
   // Copybook: sem expandir, o analisador ve `COPY CLIENTE.` e mais nada. Ele
   // nao esta analisando o programa, esta analisando um pedaco — e nao sabe qual
@@ -228,6 +246,8 @@ async function main(): Promise<void> {
     findings: Finding[];
     loc: number;
     metric?: { path: string; source: string };
+    /** Fonte original para leitura assistida (quando --llm-budget > 0). */
+    leitura?: { path: string; source: string };
     copy?: {
       resolved: number;
       missing: string[];
@@ -262,6 +282,9 @@ async function main(): Promise<void> {
         findings: out,
         loc,
         metric: opts.metrics ? { path: rel, source: exp.source } : undefined,
+        // A leitura assistida precisa do fonte ORIGINAL (nao expandido), mesmo
+        // quando --metrics esta desligado — senao o recorte desloca.
+        leitura: opts.llmBudget > 0 ? { path: rel, source } : undefined,
         copy: {
           resolved: exp.resolved.length,
           missing: exp.missing,
@@ -277,6 +300,7 @@ async function main(): Promise<void> {
       findings: analyzeSource(rel, source, rules),
       loc,
       metric: opts.metrics ? { path: rel, source } : undefined,
+      leitura: opts.llmBudget > 0 ? { path: rel, source } : undefined,
     };
   });
 
@@ -284,6 +308,7 @@ async function main(): Promise<void> {
     linesOfCode += fr.loc;
     for (const f of fr.findings) findings.push(f);
     if (fr.metric) paraMetricas.push(fr.metric);
+    if (fr.leitura) fontesParaLeitura.set(fr.leitura.path.split("\\").join("/"), fr.leitura.source);
     if (fr.copy) {
       copyStats.arquivos++;
       copyStats.resolvidos += fr.copy.resolved;
@@ -510,6 +535,49 @@ async function main(): Promise<void> {
     if (opts.out) writeFileSync(opts.out, JSON.stringify(sarif, null, 2));
   }
 
+  // Leitura assistida (Alibaba open-code-review): RECORTE + ORÇAMENTO, antes
+  // de qualquer modelo existir. Só trecho alterado e sobre o qual NENHUMA
+  // regra determinística apontou. A observação de um modelo nunca vira gate.
+  if (opts.llmBudget > 0) {
+    const hunks = hunksDoDiff(cwd);
+    const jaApontadas = findings.map((f) => ({
+      arquivo: f.file.split("\\").join("/"),
+      linha: f.startLine,
+    }));
+    const fonteDoArquivo = (arquivo: string): string | null => {
+      const rel = arquivo.replace(/\\/g, "/");
+      const hit = fontesParaLeitura.get(rel);
+      if (hit !== undefined) return hit;
+      try {
+        return readFileSync(resolve(cwd, arquivo), "utf8");
+      } catch {
+        return null;
+      }
+    };
+    const selecao = selecionarParaLeitura(hunks, jaApontadas, fonteDoArquivo, {
+      tetoDeTokens: opts.llmBudget,
+    });
+    if (selecao.trechos.length > 0 || selecao.jaCobertosPorRegra > 0) {
+      // Sem isto a propriedade ainda não existe no SARIF que subiu para a
+      // plataforma: quem consome só o arquivo nao saberia o que foi cortado.
+      sarif.runs[0]!.properties = {
+        ...(sarif.runs[0]!.properties ?? {}),
+        leituraAssistida: {
+          modelo: "planejado (sem chamada)",
+          orcamentoTokens: opts.llmBudget,
+          tokensEstimados: selecao.tokensEstimados,
+          trechos: selecao.trechos.length,
+          descartadosPorOrcamento: selecao.descartadosPorOrcamento,
+          jaCobertosPorRegra: selecao.jaCobertosPorRegra,
+        },
+      };
+      process.stderr.write(
+        `CodeHero: leitura assistida — ${selecao.trechos.length} trecho(s) (~${selecao.tokensEstimados} tokens, ` +
+          `teto ${opts.llmBudget}) · ${selecao.jaCobertosPorRegra} hunk(s) ja cobertos por regra\n`,
+      );
+    }
+  }
+
   if (opts.failOn) {
     const threshold = SEV_ORDER.indexOf(opts.failOn);
     // Achado importado PARTICIPA do gate: ingerir CodeQL sem deixar o
@@ -542,6 +610,41 @@ async function main(): Promise<void> {
  * git (tarball, container sem .git), devolve vazio e o atributo fica em zero —
  * degradar e melhor que falhar o scan por causa de metrica auxiliar.
  */
+function hunksDoDiff(cwd: string): HunkAlterado[] {
+  const out: HunkAlterado[] = [];
+  const bases = ["HEAD~1", "origin/main", "main"];
+  let diff = "";
+  for (const base of bases) {
+    try {
+      diff = spawnSync("git", ["diff", "-U0", `${base}...HEAD`], {
+        cwd,
+        encoding: "utf8",
+        maxBuffer: 64 * 1024 * 1024,
+      }).stdout;
+      if (diff) break;
+    } catch {
+      /* try next base */
+    }
+  }
+  if (!diff) return out;
+
+  let arquivo = "";
+  for (const linha of diff.split("\n")) {
+    const af = linha.match(/^\+\+\+ b\/(.+)$/);
+    if (af?.[1]) {
+      arquivo = af[1].replace(/\\/g, "/");
+      continue;
+    }
+    const h = linha.match(/^@@\s+-\d+(?:,\d+)?\s+\+(\d+)(?:,(\d+))?\s+@@/);
+    if (h && arquivo) {
+      const start = Number(h[1]);
+      const count = h[2] !== undefined ? Number(h[2]) : 1;
+      out.push({ arquivo, linhaInicial: start, linhaFinal: start + Math.max(1, count) - 1 });
+    }
+  }
+  return out;
+}
+
 function fileChurn(cwd: string): Map<string, number> {
   const out = new Map<string, number>();
   try {
