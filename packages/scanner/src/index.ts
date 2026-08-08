@@ -27,6 +27,7 @@ import {
   formatDebt,
   type HeroRule,
   type Severity,
+  cruzarComplexidadeComCobertura,
 } from "@codehero/contracts";
 import { analyzeSource, enableScanCache, type Finding } from "./engine.ts";
 import { collectFilesAsync } from "./walk.ts";
@@ -533,6 +534,37 @@ async function main(): Promise<void> {
       copyStats,
     );
     if (opts.out) writeFileSync(opts.out, JSON.stringify(sarif, null, 2));
+  }
+
+  // Complexidade COBERTA vs NÃO COBERTA (JaCoCo). Só quando --metrics e
+  // cobertura coexistem: sem o tree-sitter não há ciclomática por função;
+  // sem cobertura não há o que cruzar. O resultado vai no SARIF run-level,
+  // junto ao resto do que a plataforma lê.
+  if (structural && coverage && coverage.files.length > 0) {
+    const estrutura = structural.files
+      .filter((f) => f.functions.length > 0)
+      .map((f) => ({
+        file: f.file,
+        functions: f.functions.map((fn) => ({
+          startLine: fn.startLine,
+          endLine: fn.endLine ?? fn.startLine + fn.lines - 1,
+          cyclomatic: fn.cyclomatic,
+        })),
+      }));
+    const cruzamento = cruzarComplexidadeComCobertura(estrutura, coverage);
+    sarif.runs[0]!.properties = {
+      ...(sarif.runs[0]!.properties ?? {}),
+      complexidadeCoberta: {
+        coberta: cruzamento.coberta,
+        naoCoberta: cruzamento.naoCoberta,
+        percentual: cruzamento.percentual,
+        porArquivo: cruzamento.porArquivo.slice(0, 50),
+      },
+    };
+    process.stderr.write(
+      `CodeHero: complexidade coberta ${cruzamento.coberta} · nao coberta ${cruzamento.naoCoberta} ` +
+        `(${cruzamento.percentual}% coberta)\n`,
+    );
   }
 
   // Leitura assistida (Alibaba open-code-review): RECORTE + ORÇAMENTO, antes

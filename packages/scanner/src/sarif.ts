@@ -29,7 +29,7 @@ export interface StructuralForSarif {
     cyclomatic: number;
     cognitive: number;
     maxNesting: number;
-    functions: Array<{ startLine: number; cyclomatic: number; cognitive: number; lines: number }>;
+    functions: Array<{ startLine: number; endLine?: number; cyclomatic: number; cognitive: number; lines: number }>;
   }>;
   duplication: {
     percent: number;

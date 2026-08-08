@@ -39,6 +39,18 @@ O CodeHero **não instrumenta** bytecode — isso é decisão de produto, igual 
 - **OpenCppCoverage**: não tem formato próprio — exporta **Cobertura XML**, então o mesmo `parseCobertura` cobre C++ no Windows.
 - **Gate**: `minNewCodeCoverage` (linha, em código novo) + opcional `minBranchCoverage` (% branch global). Branch só aplica quando o relatório tem dados — nunca reprova projeto sem branch instrumentada.
 
+## Complexidade coberta vs não coberta (JaCoCo)
+
+O CodeHero separa o que JaCoCo chama de `covered` e `missed` **por complexidade**, não só por linha. Duas suítes com 70% de cobertura podem ter risco oposto: uma cobre o caminho feliz, outra cobre os `catch`. Só a soma de linhas não distingue — a **ciclomática** sim, porque cada `if` é uma aresta do grafo.
+
+```
+CodeHero: complexidade coberta 42 · nao coberta 18 (70.0% coberta)
+```
+
+- `--metrics` fornece a ciclomática por função (tree-sitter).
+- `--coverage` fornece as linhas cobertas (JaCoCo/JCov/lcov/Cobertura).
+- O cruzamento vai no SARIF (`properties.complexidadeCoberta`) e no portal.
+
 ## Leitura assistida por modelo barato (Alibaba OCR)
 
 `--llm-budget <tokens>` ativa o recorte **antes** de qualquer modelo existir: só o trecho do diff onde o determinístico não teve nada a dizer. Três propriedades que mantêm o custo baixo e o gate reproduzível:
