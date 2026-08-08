@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "node --import tsx src/selftest.ts && node test/semantic.mjs && node test/dedupe.mjs && node test/copybook.mjs && node test/cobolData.mjs && node test/cobolDeadData.mjs && node test/cobolSqlcode.mjs && node test/cobolDb2.mjs && node test/cobolDados.mjs && node test/sqlpl.mjs && node test/clustering.mjs && node test/taintCoverage.mjs",
+    "test": "node --import tsx src/selftest.ts && node test/semantic.mjs && node test/dedupe.mjs && node test/copybook.mjs && node test/picture.mjs && node test/cobolData.mjs && node test/cobolDeadData.mjs && node test/cobolSqlcode.mjs && node test/cobolDb2.mjs && node test/cobolDados.mjs && node test/sqlpl.mjs && node test/clustering.mjs && node test/taintCoverage.mjs",
     "clean": "rimraf dist"
   },
   "dependencies": {

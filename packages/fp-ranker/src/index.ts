@@ -299,3 +299,5 @@ export function accuracy(model: RankerModel, examples: LabeledExample[], thresho
 }
 
 export { DEFAULT_MODEL, SEED_MODEL } from "./defaultModel.ts";
+export { analisarRotulos } from "./labelQuality.ts";
+export type { QualidadeDosRotulos, RotuloSuspeito } from "./labelQuality.ts";

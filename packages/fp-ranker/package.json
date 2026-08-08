@@ -22,7 +22,7 @@
     "train": "node dist/cli.js train",
     "eval": "node dist/cli.js eval",
     "clean": "rimraf dist",
-    "test": "node test/ranker.mjs"
+    "test": "node test/ranker.mjs && node test/labelQuality.mjs"
   },
   "description": "Ranqueador de falso positivo do CodeHero: modelo versionado em arquivo, sem inferência em tempo de scan.",
   "license": "Apache-2.0",

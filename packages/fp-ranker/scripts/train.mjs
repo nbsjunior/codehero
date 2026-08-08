@@ -1,7 +1,14 @@
 import fs from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { extractFeatures, trainRanker, accuracy, precisionAtK } from "../dist/index.js";
+import {
+  extractFeatures,
+  trainRanker,
+  accuracy,
+  precisionAtK,
+  scoreFeatures,
+  analisarRotulos,
+} from "../dist/index.js";
 
 // ---------------------------------------------------------------------------
 // Treina o ranqueador a partir de rótulos REAIS e grava o artefato versionado.
@@ -49,10 +56,16 @@ const positivos = exemplos.filter((e) => e.label === 1).length;
 console.log(`  verdadeiros: ${positivos} | falsos: ${exemplos.length - positivos}`);
 
 // --- validação leave-one-out: o unico jeito honesto com conjunto deste tamanho
+//
+// De quebra, a predicao de cada exemplo por um modelo que NAO o viu e
+// exatamente a predicao fora da amostra que a analise de qualidade de rotulo
+// exige. Guardar isso aqui evita treinar tudo de novo depois.
 let acertos = 0;
+const probForaDaAmostra = [];
 for (let i = 0; i < exemplos.length; i++) {
   const treino = exemplos.filter((_, j) => j !== i);
   const m = trainRanker(treino, { rounds: 30, version: "loo" });
+  probForaDaAmostra.push(scoreFeatures(m, exemplos[i].features).assertiveness);
   const previsto = accuracy(m, [exemplos[i]]) === 1 ? exemplos[i].label : 1 - exemplos[i].label;
   if (previsto === exemplos[i].label) acertos++;
 }
@@ -63,6 +76,32 @@ console.log(`\nacuracia leave-one-out: ${(loo * 100).toFixed(1)}%`);
 const base = Math.max(positivos, exemplos.length - positivos) / exemplos.length;
 console.log(`linha de base (classe majoritaria): ${(base * 100).toFixed(1)}%`);
 console.log(loo > base ? "  o modelo aprende algo alem da frequencia" : "  NAO supera a linha de base");
+
+// --- qualidade dos ROTULOS, antes de treinar em cima deles
+//
+// Metodo do cleanlab (aprendizado confiante): um modelo que nao viu o exemplo
+// discorda dos rotulos errados com mais confianca do que discorda dos certos.
+// Nao prova que o rotulo esta errado; produz uma fila de revisao ordenada por
+// suspeita, e quem decide continua sendo gente.
+const qualidade = analisarRotulos(exemplos, probForaDaAmostra);
+console.log(`
+qualidade dos rotulos`);
+console.log(
+  `  limiar por classe: falso ${qualidade.limiar.falso.toFixed(2)} | verdadeiro ${qualidade.limiar.verdadeiro.toFixed(2)}`,
+);
+const cj = qualidade.conjuntoConfiante;
+console.log(`  conjunto confiante  rotulado falso     -> [falso ${cj.rotuladoFalso[0]}, verdadeiro ${cj.rotuladoFalso[1]}]`);
+console.log(`                      rotulado verdadeiro-> [falso ${cj.rotuladoVerdadeiro[0]}, verdadeiro ${cj.rotuladoVerdadeiro[1]}]`);
+console.log(`  taxa de ruido estimada: ${(qualidade.taxaDeRuido * 100).toFixed(1)}%`);
+console.log(`  rotulos a revisar: ${qualidade.suspeitos.length} de ${exemplos.length}`);
+for (const s of qualidade.suspeitos.slice(0, 8)) {
+  console.log(
+    `    ${s.discordanciaConfiante ? "DISCORDA " : "confianca"} ${s.ruleId.padEnd(34)} rotulo=${s.rotulo} ${s.porque}`,
+  );
+}
+if (qualidade.suspeitos.length > 8) {
+  console.log(`    ... e mais ${qualidade.suspeitos.length - 8}`);
+}
 
 // --- modelo final, treinado em tudo
 const modelo = trainRanker(exemplos, {
