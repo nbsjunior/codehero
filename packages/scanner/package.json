@@ -9,7 +9,7 @@
     "build": "tsc -p tsconfig.json",
     "scan": "node src/index.ts",
     "clean": "rimraf dist",
-    "test": "node test/externalTools.mjs && node test/lexicalProfile.mjs"
+    "test": "node test/externalTools.mjs && node test/lexicalProfile.mjs && node test/leituraAssistida.mjs"
   },
   "dependencies": {
     "@codehero/contracts": "^0.1.0",

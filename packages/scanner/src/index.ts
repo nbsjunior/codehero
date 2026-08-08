@@ -1,4 +1,15 @@
 #!/usr/bin/env node
+export {
+  selecionarParaLeitura,
+  estimarTokens,
+  observacoesNaoEntramNoGate,
+} from "./leituraAssistida.ts";
+export type {
+  TrechoParaLeitura,
+  OrcamentoLeitura,
+  SelecaoDeLeitura,
+  ObservacaoDeLeitura,
+} from "./leituraAssistida.ts";
 import { readFileSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { relative, resolve } from "node:path";
@@ -26,6 +37,12 @@ import { loadRulesFile, resolveActiveRules } from "./fetchRules.ts";
 import { runJoernScan } from "@codehero/cpg-joern";
 import { scoreFinding, DEFAULT_MODEL } from "@codehero/fp-ranker";
 import { collectExternalSarifs } from "./externalTools.ts";
+import {
+  isScanProfileId,
+  mergeScanEngines,
+  resolveScanProfile,
+  type ScanProfileId,
+} from "@codehero/contracts";
 import { colapsaEcoEntreFerramentas } from "./dedupeCrossTool.ts";
 
 const SCAN_CONCURRENCY = Math.max(1, Number(process.env.CODEHERO_SCAN_CONCURRENCY ?? 8) || 8);
@@ -44,6 +61,8 @@ interface CliOptions {
   projectId: string | null;
   ignore: string[];
   coverage: string[];
+  /** Named orchestration profile (native|presence|java|full). */
+  profile: ScanProfileId | null;
   metrics: boolean;
   semantic: boolean;
   copybooks: string[];
@@ -76,6 +95,7 @@ function parseArgs(argv: string[]): CliOptions {
     projectId: null,
     ignore: [],
     coverage: [],
+    profile: null,
     metrics: false,
     semantic: false,
     copybooks: [],
@@ -98,6 +118,15 @@ function parseArgs(argv: string[]): CliOptions {
     else if (a === "--fail-on") opts.failOn = (argv[++i] as Severity) ?? null;
     else if (a === "--sarif") opts.format = "sarif";
     else if (a === "--cache") opts.cache = true;
+    else if (a === "--profile") {
+      const v = (argv[++i] ?? "").toLowerCase();
+      if (isScanProfileId(v)) opts.profile = v;
+      else {
+        process.stderr.write(
+          `CodeHero: --profile desconhecido "${v}" (use: native|presence|java|full)\n`,
+        );
+      }
+    }
     else if (a === "--metrics") opts.metrics = true;
     else if (a === "--semantic") { opts.semantic = true; opts.metrics = true; }
     else if (a === "--joern") opts.joern = true;
@@ -147,6 +176,33 @@ const SEV_ORDER: Severity[] = ["INFO", "MINOR", "MAJOR", "CRITICAL", "BLOCKER"];
 async function main(): Promise<void> {
   const opts = parseArgs(process.argv.slice(2));
   if (opts.cache) enableScanCache();
+
+  // Named profile OR explicit --with-* / --metrics (explicit always adds).
+  if (opts.profile) {
+    const engines = mergeScanEngines(resolveScanProfile(opts.profile).engines, {
+      metrics: opts.metrics,
+      semantic: opts.semantic,
+      joern: opts.joern,
+      oxlint: opts.withOxlint,
+      eslint: opts.withEslint,
+      semgrep: opts.withSemgrep,
+      opengrep: opts.withOpengrep,
+      pmd: opts.withPmd,
+      spotbugs: opts.withSpotbugs,
+      sca: opts.withSca,
+    });
+    opts.metrics = engines.metrics;
+    opts.semantic = engines.semantic;
+    opts.joern = engines.joern;
+    opts.withOxlint = engines.oxlint;
+    opts.withEslint = engines.eslint;
+    opts.withSemgrep = engines.semgrep;
+    opts.withOpengrep = engines.opengrep;
+    opts.withPmd = engines.pmd;
+    opts.withSpotbugs = engines.spotbugs;
+    opts.withSca = engines.sca;
+    process.stderr.write(`CodeHero: profile=${opts.profile}\n`);
+  }
 
   const { rules, meta } = await loadRules(opts);
   const cwd = process.cwd();
