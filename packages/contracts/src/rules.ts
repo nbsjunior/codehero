@@ -280,7 +280,7 @@ const _CORE_BASE: HeroRule[] = (
     category: "ssrf",
     pattern: {
       scope: "any",
-      regex: "(?i)fetch\\s*\\(\\s*`[^`]*\\$\\{",
+      regex: "(?:fetch|axios\\.get|axios\\.post|http\\.get|https\\.get|request)\\s*\\(\\s*[`'\"]?[^`'\"]*\\$\\{",
       // SCREAMING_CASE é constante de módulo por convenção universal em JS —
       // não é valor vindo do usuário. Sem esta exclusão a regra acusa todo
       // `fetch(`${API_BASE}/x`)`: foram 5 falsos positivos e zero verdadeiros
@@ -305,8 +305,10 @@ const _CORE_BASE: HeroRule[] = (
     sddTemplateId: "sdd.path.normalize-allowlist",
     category: "broken-access-control",
     pattern: {
-      regex: "(?i)(readFile|writeFile|createReadStream|path\\.join)\\s*\\([^)]*(req\\.(query|params|body)|params\\.)",
+      regex: "(?:readFileSync|writeFileSync|readFile|writeFile|createReadStream|createWriteStream|path\\.join|path\\.resolve|fs\\.(?:readFileSync|writeFileSync|readFile|writeFile|createReadStream|createWriteStream))\\s*\\([^)]*(?:req\\.|query\\.|params\\.|body\\.|argv|user|input|path)",
     },
+    // O pattern exige fonte de input (req, argv, etc.) — sem isso nao ha
+    // path traversal. O taint (L2) cobre o fluxo indireto.
     taint: {
       sources: ["http.param", "http.body", "process.argv"],
       sinks: ["fs.path"],
@@ -327,7 +329,7 @@ const _CORE_BASE: HeroRule[] = (
     category: "broken-access-control",
     pattern: {
       scope: "any",
-      regex: "(?i)\\.redirect\\s*\\(\\s*[`$].*\\$\\{",
+      regex: "(?:\\.redirect|window\\.location|location\\.href|location\\.assign|location\\.replace)\\s*[\\(=]\\s*[`'\"]?[^\\)`'\"]*\\$\\{",
     },
     taint: {
       sources: ["http.param", "http.body"],
@@ -347,7 +349,7 @@ const _CORE_BASE: HeroRule[] = (
     sddTemplateId: "sdd.merge.safe-assign",
     category: "data-integrity",
     pattern: {
-      regex: "(?i)Object\\.assign\\s*\\([^,]+,\\s*(req\\.(body|query)|JSON\\.parse)",
+      regex: "(?i)(Object\\.assign|_\\.merge|_\\.extend|_\\.defaultsDeep|merge|extend)\\s*\\([^,]+,\\s*(req\\.(body|query|params)|JSON\\.parse|user|input|data|body)",
     },
     taint: {
       sources: ["http.param", "http.body"],
@@ -367,7 +369,7 @@ const _CORE_BASE: HeroRule[] = (
     sddTemplateId: "sdd.crypto.secure-random",
     category: "weak-crypto",
     pattern: {
-      regex: "(?i)(token|secret|password|api[_-]?key|nonce|session).{0,40}Math\\.random\\s*\\(|Math\\.random\\s*\\(.{0,40}(token|secret|password)",
+      regex: "(?i)(token|secret|password|api[_-]?key|nonce|session|salt|iv|key).{0,60}(Math\\.random|crypto\\.pseudoRandomBytes)",
     },
     // Presence Fase 3: L0 contextual + AST call (reduz FP de Math.random em jogos/UI).
     ast: {
@@ -500,7 +502,7 @@ const _CORE_BASE: HeroRule[] = (
     // (forma segura) não contém "+" após a string, então não dispara.
     pattern: {
       scope: "any",
-      regex: "(?i)(set\\s+@\\w+\\s*=|exec(ute)?\\s*\\()\\s*n?['\"].*(select|insert|update|delete).*['\"]\\s*\\+",
+      regex: "(?i)(set\\s+@\\w+\\s*=|exec(ute)?\\s*\\(|sp_executesql)\\s*n?['\"].*(select|insert|update|delete).*['\"].*(\\+|concat|\\|\\|)",
     },
   },
   {
