@@ -30,3 +30,5 @@ credentials.json
 reports/
 ops/
 .firebaserc.local
+
+.tmp/
