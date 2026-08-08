@@ -9,10 +9,16 @@ import { parseDataDivision } from "./cobolData.ts";
  * NodeKind unions. Fixed-form and free-form both accepted best-effort.
  */
 
+// Nome de paragrafo pode COMECAR COM DIGITO, e no COBOL corporativo quase
+// sempre comeca: `0000-MAIN`, `100-MOVE-DATA`, `1260-EDIT-US-PHONE-NUM-EXIT`.
+// Exigir letra inicial fazia o parser pular todos esses rotulos, e o paragrafo
+// anterior engolia tudo ate o proximo nome que comecasse com letra. Encontrado
+// no CardDemo: um `EDIT-US-PHONE-EXIT` de duas linhas aparecia com 364
+// comandos. Isso deslocava TODA analise por paragrafo.
 const PARA =
-  /^\s{0,7}([A-Z][A-Z0-9-]{0,29})\s*\.\s*(?:\*.*)?$/i;
+  /^\s{0,7}([A-Z0-9][A-Z0-9-]{0,29})\s*\.\s*(?:\*.*)?$/i;
 const SECTION =
-  /^\s{0,7}([A-Z][A-Z0-9-]{0,29})\s+SECTION\s*\.\s*(?:\*.*)?$/i;
+  /^\s{0,7}([A-Z0-9][A-Z0-9-]{0,29})\s+SECTION\s*\.\s*(?:\*.*)?$/i;
 const PROC_DIV = /PROCEDURE\s+DIVISION/i;
 const COMMENT = /^\s{0,6}\*/;
 
@@ -64,10 +70,19 @@ export function parseCobolSource(source: string): BuiltNode {
     const para = line.match(PARA);
     const name = sec?.[1] ?? para?.[1];
     if (!name) continue;
-    // Skip COBOL reserved that look like labels when alone.
-    if (/^(END-IF|END-EVALUATE|END-PERFORM|END-EXEC|END-STRING|END-SEARCH|EXIT|STOP|GOBACK|CONTINUE)$/i.test(name)) {
-      continue;
-    }
+    // Palavra reservada sozinha na linha PARECE rotulo de paragrafo, e nao e.
+    //
+    // A lista anterior tinha seis terminadores de escopo; o COBOL-85 tem 28. A
+    // relacao completa veio do `cobc/reserved.c` do GnuCOBOL, que e quem decide
+    // o que e reservado de verdade. Faltavam END-READ, END-WRITE, END-CALL e
+    // mais dezenove, e cada um deles quebrava a fronteira do paragrafo:
+    // encontrado em COBOL real, `END-READ` virava um paragrafo com 63 comandos
+    // porque engolia tudo ate o proximo rotulo. Isso corrompia TODA analise por
+    // paragrafo, inclusive a de SQLCODE.
+    if (/^END-[A-Z0-9]+$/i.test(name)) continue;
+    // So digitos e literal numerico terminado em ponto, nao rotulo.
+    if (/^\d+$/.test(name)) continue;
+    if (/^(EXIT|STOP|GOBACK|CONTINUE|NEXT|SENTENCE)$/i.test(name)) continue;
     if (paras.length) paras[paras.length - 1]!.end = i;
     paras.push({ name: name.toUpperCase(), start: i, end: lines.length });
   }

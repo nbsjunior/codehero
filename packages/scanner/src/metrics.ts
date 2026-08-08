@@ -4,6 +4,7 @@ import {
   sqlcodeNaoChecado,
   analisarDb2,
   analisarDados,
+  analisarTestabilidade,
   camposMortos,
   candidatesFor,
   findDuplicates,
@@ -22,6 +23,7 @@ import {
   type StructuralThresholds,
   type AchadoDb2,
   type AchadoDados,
+  type AchadoTestabilidade,
 } from "@codehero/engine";
 
 // ---------------------------------------------------------------------------
@@ -75,6 +77,12 @@ const ANALISE_DADOS: Record<AchadoDados["tipo"], string> = {
   "move-alfa-para-num": "HERO-CBL-0704-move-classe-trocada",
   "indicador-nulo-ausente": "HERO-CBL-0305-indicador-nulo-ausente",
   "cursor-nunca-usado": "HERO-CBL-0561-cursor-nunca-usado",
+};
+
+/** Testabilidade, na linha do que o COBOL Check precisa para testar (ver cobolTestabilidade.ts). */
+const ANALISE_TESTE: Record<AchadoTestabilidade["tipo"], string> = {
+  "paragrafo-intestavel": "HERO-CBL-1120-paragrafo-intestavel",
+  "perform-thru-fragil": "HERO-CBL-1121-perform-thru-fragil",
 };
 
 /** Achado de analise COBOL algoritmica (ver cobolAnalyses.ts). */
@@ -175,6 +183,15 @@ export async function collectStructural(
       for (const d of analisarDados(parsed.root as never)) {
         cobolFindings.push({
           analysis: COBOL_ANALYSES[ANALISE_DADOS[d.tipo]]!,
+          file: m.file,
+          startLine: d.linha + 1,
+          detail: `${d.detalhe}${d.paragrafo ? ` em ${d.paragrafo}` : ""}`,
+          snippet: d.trecho,
+        });
+      }
+      for (const d of analisarTestabilidade(parsed.root as never)) {
+        cobolFindings.push({
+          analysis: COBOL_ANALYSES[ANALISE_TESTE[d.tipo]]!,
           file: m.file,
           startLine: d.linha + 1,
           detail: `${d.detalhe}${d.paragrafo ? ` em ${d.paragrafo}` : ""}`,

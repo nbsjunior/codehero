@@ -195,6 +195,34 @@ export const COBOL_ANALYSES: Record<string, CobolAnalysis> = {
     whyNotPattern:
       "O defeito é a AUSÊNCIA de um OPEN em qualquer lugar do programa. Nenhuma linha isolada mostra isso.",
   },
+  "HERO-CBL-1120-paragrafo-intestavel": {
+    id: "HERO-CBL-1120-paragrafo-intestavel",
+    name: "ParagrafoIntestavel",
+    message:
+      "Parágrafo que mistura cálculo com várias naturezas de dependência externa: para testar a regra é preciso simular banco, arquivo e chamada ao mesmo tempo. Na prática ninguém testa, e o que não se testa não se refatora com segurança.",
+    severity: "MAJOR",
+    type: "CODE_SMELL",
+    remediationEffortMin: 45,
+    cwe: ["CWE-1120"],
+    owasp: [],
+    sddTemplateId: "sdd.cobol.extrair-calculo",
+    whyNotPattern:
+      "Exige contar, dentro do corpo do parágrafo, quantos comandos são cálculo e quantas naturezas distintas de dependência externa existem. Uma linha isolada não diz nem onde o parágrafo começa.",
+  },
+  "HERO-CBL-1121-perform-thru-fragil": {
+    id: "HERO-CBL-1121-perform-thru-fragil",
+    name: "PerformThruFragil",
+    message:
+      "PERFORM THRU sobre um intervalo largo: executa todos os parágrafos entre os dois, na ordem do fonte. Quem inserir um parágrafo no meio o coloca em execução sem escrever nenhuma chamada, e nada no código indica isso.",
+    severity: "MAJOR",
+    type: "CODE_SMELL",
+    remediationEffortMin: 30,
+    cwe: ["CWE-1120"],
+    owasp: [],
+    sddTemplateId: "sdd.cobol.trocar-thru-por-perform",
+    whyNotPattern:
+      "O risco depende de QUANTOS parágrafos existem entre os dois nomes, que só se sabe tendo a ordem de todos eles. A linha do PERFORM é idêntica no caso seguro e no perigoso.",
+  },
 };
 
 export const COBOL_ANALYSIS_LIST: CobolAnalysis[] = Object.values(COBOL_ANALYSES);
