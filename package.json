@@ -57,7 +57,7 @@
     "corpus:check": "node scripts/mine-characterization.mjs . --check"
   },
   "devDependencies": {
-    "typescript": "^5.7.2"
+    "typescript": "^7.0.2"
   },
   "overrides": {
     "hono": "4.13.0",
