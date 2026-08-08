@@ -20,12 +20,16 @@ const check = (ok, msg) => { if (!ok) { falhas++; console.log("  FALHA: " + msg)
 /** Lacunas conhecidas e aceitas, com o motivo. */
 const LACUNAS_CONHECIDAS = {
   "HERO-SEC-0089-sql-injection": {
-    python: "L0 (regex) roda em Python; o rastreamento de fluxo é só JS/TS — o motor L2 usa Babel.",
+    python: "L0 (regex) roda em Python; o rastreamento de fluxo completo é só JS/TS — Python usa o lineTaint (L2 sem parser).",
   },
   "HERO-SEC-0095-code-injection-eval": {
-    python: "idem: a regra vale em Python no nível L0, sem análise de fluxo.",
+    python: "idem: a regra vale em Python no nível L0/lineTaint, sem análise de fluxo Babel.",
   },
 };
+
+// Linguagens com motor L2: JS/TS usam o taint completo (Babel); Java, Python,
+// C# e Go usam o lineTaint (rastreador de variável sem parser, lineTaint.ts).
+const LINGUAGENS_COM_L2 = new Set(["javascript", "typescript", "java", "python", "csharp", "go"]);
 
 console.log("=== regras com taint x linguagens que o motor analisa a fundo");
 
@@ -35,6 +39,8 @@ console.log(`  ${comTaint.length} regra(s) com bloco taint`);
 const naoDeclaradas = [];
 for (const r of comTaint) {
   for (const lang of r.languages ?? []) {
+    // Linguagem com motor L2 (profundo OU lineTaint) não é lacuna.
+    if (LINGUAGENS_COM_L2.has(lang)) continue;
     if (supportsDeepAnalysis(lang)) continue;
     const motivo = LACUNAS_CONHECIDAS[r.id]?.[lang];
     if (motivo) {

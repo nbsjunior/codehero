@@ -33,4 +33,7 @@ export type TaintSinkKind =
   | "fs.path"
   | "http.redirect"
   | "object.merge"
-  | "log.write";
+  | "log.write"
+  | "ldap.search"
+  | "xpath.evaluate"
+  | "session.setAttribute";

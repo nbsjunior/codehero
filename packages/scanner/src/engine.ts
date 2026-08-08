@@ -7,7 +7,7 @@ import {
   type HeroRule,
   type RuleLanguage,
 } from "@codehero/contracts";
-import { analyzeFileCached, ScanCache, supportsDeepAnalysis } from "@codehero/engine";
+import { analyzeFileCached, ScanCache, supportsDeepAnalysis, runLineTaintRules } from "@codehero/engine";
 
 export interface Finding {
   rule: HeroRule;
@@ -133,6 +133,27 @@ export function runRulesAgainstSource(
         engine: "pattern",
       });
     }
+  }
+
+  // L2 sem parser: rastreia variável por linha (Java, Python, C#, Go...).
+  // Resgata o padrão concat-em-variável + sink-depois que a regex L0
+  // single-line não casa — era o que zerava o recall do OWASP Benchmark.
+  const { findings: taintFindings } = runLineTaintRules(file, source, rules, lang);
+  for (const f of taintFindings) {
+    const rule = rules.find((r) => r.id === f.ruleId) ?? RULES.find((r) => r.id === f.ruleId);
+    if (!rule) continue;
+    findings.push({
+      rule,
+      file,
+      startLine: f.startLine,
+      startColumn: f.startColumn,
+      endColumn: f.endColumn,
+      snippet: f.snippet,
+      fingerprint: fingerprint(rule.id, f.file, f.snippet),
+      engine: "taint",
+      taintPath: f.taintPath,
+      alsoRuleIds: f.alsoRuleIds,
+    });
   }
   return findings;
 }

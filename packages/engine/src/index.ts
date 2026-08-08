@@ -5,6 +5,8 @@ export { ScanCache, rulesetHash } from "./cache.ts";
 export { parseSource, supportsDeepAnalysis } from "./parse.ts";
 export { runAstRules } from "./astRules.ts";
 export { runTaintRules } from "./taint.ts";
+export { runLineTaintRules } from "./lineTaint.ts";
+export type { LineTaintResult } from "./lineTaint.ts";
 export { buildCfg } from "./cfg.ts";
 export { runForwardWorklist } from "./dataflow.ts";
 
