@@ -3,7 +3,7 @@
     "id": "secret-01",
     "ruleId": "HERO-SEC-0798-hardcoded-secret",
     "expected": "match",
-    "code": "API_KEY = \"sk_live_9f8a7b6c5d4e3f2a1b0c9d8e\""
+    "code": "API_KEY = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\""
   },
   {
     "id": "secret-02",
@@ -413,7 +413,7 @@
     "ruleId": "HERO-SEC-0798-cobol-value-secret",
     "expected": "match",
     "profile": "cobol",
-    "code": "           05  WS-API-KEY    PIC X(32) VALUE \"sk_live_9f8a7b6c\"."
+    "code": "           05  WS-API-KEY    PIC X(32) VALUE \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\"."
   },
   {
     "id": "cobol-value-secret-03",
@@ -561,5 +561,2391 @@
     "expected": "no_match",
     "code": "placeholder={`Ex.: \"Sem curl | bash em scripts de setup.\"`}",
     "note": "texto de interface, nao comando"
+  },
+  {
+    "id": "grave-segredo-m",
+    "ruleId": "SONAR-cs-S2053",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-segredo-n",
+    "ruleId": "SONAR-cs-S2053",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo"
+  },
+  {
+    "id": "grave-cripto-fraca-m",
+    "ruleId": "SONAR-cs-S5542",
+    "expected": "match",
+    "code": "Cipher c = Cipher.getInstance(\"DES/CBC/PKCS5Padding\");",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-cripto-fraca-n",
+    "ruleId": "SONAR-cs-S5542",
+    "expected": "no_match",
+    "code": "const DESCRICAO = \"modo de operacao\";",
+    "note": "caso dourado quase-certo: DES dentro de DESCRICAO nao e o algoritmo"
+  },
+  {
+    "id": "grave-travessia-m",
+    "ruleId": "SONAR-cs-S2083",
+    "expected": "match",
+    "code": "var caminho = base + \"../../etc/passwd\";",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-travessia-n",
+    "ruleId": "SONAR-cs-S2083",
+    "expected": "no_match",
+    "code": "import { util } from \"./util\";",
+    "note": "caso dourado quase-certo: um ponto so e caminho relativo normal"
+  },
+  {
+    "id": "grave-ldap-m",
+    "ruleId": "SONAR-cs-S2078",
+    "expected": "match",
+    "code": "ldap.search(baseDn, \"(uid=\" + user + \")\");",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-ldap-n",
+    "ruleId": "SONAR-cs-S2078",
+    "expected": "no_match",
+    "code": "const ldapConfigurado = false;",
+    "note": "caso dourado quase-certo: mencionar ldap num nome de variavel nao e chamada"
+  },
+  {
+    "id": "grave-temp-m",
+    "ruleId": "SONAR-cs-S5443",
+    "expected": "match",
+    "code": "File f = File.createTempFile(\"dados\", \".tmp\");",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-temp-n",
+    "ruleId": "SONAR-cs-S5443",
+    "expected": "no_match",
+    "code": "const dir = \"/var/tmp-cache/app\";",
+    "note": "caso dourado quase-certo: /tmp/ exige a barra final; /var/tmp-cache nao e o diretorio compartilhado"
+  },
+  {
+    "id": "grave-grant-public-m",
+    "ruleId": "SONAR-js-S6270",
+    "expected": "match",
+    "code": "GRANT ALL ON contas TO PUBLIC;",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-grant-public-n",
+    "ruleId": "SONAR-js-S6270",
+    "expected": "no_match",
+    "code": "GRANT SELECT ON contas TO app_leitura;",
+    "note": "caso dourado quase-certo: conceder a um papel nomeado e o uso correto"
+  },
+  {
+    "id": "grave-xpath-m",
+    "ruleId": "SONAR-cs-S2091",
+    "expected": "match",
+    "code": "doc.SelectNodes(\"//user[@id='\" + id + \"']\");",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-xpath-n",
+    "ruleId": "SONAR-cs-S2091",
+    "expected": "no_match",
+    "code": "doc.SelectNodes(\"//user[@ativo='true']\");",
+    "note": "caso dourado quase-certo: consulta constante nao concatena entrada"
+  },
+  {
+    "id": "grave-xxe-m",
+    "ruleId": "SONAR-cs-S2755",
+    "expected": "match",
+    "code": "DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-xxe-n",
+    "ruleId": "SONAR-cs-S2755",
+    "expected": "no_match",
+    "code": "var fabrica = criarFabricaSegura();",
+    "note": "caso dourado quase-certo: sem o nome da classe nao ha o que apontar"
+  },
+  {
+    "id": "grave-csrf-m",
+    "ruleId": "SONAR-cs-S4502",
+    "expected": "match",
+    "code": "app.use(session({ csrf: false }));",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-csrf-n",
+    "ruleId": "SONAR-cs-S4502",
+    "expected": "no_match",
+    "code": "app.use(session({ csrf: true }));",
+    "note": "caso dourado quase-certo: csrf ligado e o oposto do defeito"
+  },
+  {
+    "id": "grave-jwt-none-m",
+    "ruleId": "SONAR-cs-S5659",
+    "expected": "match",
+    "code": "jwt.sign(payload, key, { algorithm: \"none\" });",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-jwt-none-n",
+    "ruleId": "SONAR-cs-S5659",
+    "expected": "no_match",
+    "code": "jwt.sign(payload, key, { algorithm: \"HS256\" });",
+    "note": "caso dourado quase-certo: algoritmo declarado e o uso correto"
+  },
+  {
+    "id": "grave-assert-m",
+    "ruleId": "SONAR-java-S2186",
+    "expected": "match",
+    "code": "assert (saldo > 0);",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-assert-n",
+    "ruleId": "SONAR-java-S2186",
+    "expected": "no_match",
+    "code": "verificarAssert(saldo);",
+    "note": "caso dourado quase-certo: o lookbehind existe para nao pegar nome que TERMINA em assert"
+  },
+  {
+    "id": "grave-os-command-m",
+    "ruleId": "SONAR-cs-S2076",
+    "expected": "match",
+    "code": "execSync(\"git checkout \" + branch);",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-os-command-n",
+    "ruleId": "SONAR-cs-S2076",
+    "expected": "no_match",
+    "code": "execSync(\"git status --short\");",
+    "note": "caso dourado quase-certo: comando constante nao carrega entrada"
+  },
+  {
+    "id": "grave-iv-fixo-m",
+    "ruleId": "SONAR-cs-S3329",
+    "expected": "match",
+    "code": "var enc = aes.CreateEncryptor();",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-iv-fixo-n",
+    "ruleId": "SONAR-cs-S3329",
+    "expected": "no_match",
+    "code": "var enc = aes.CreateEncryptor(chave, ivAleatorio);",
+    "note": "caso dourado quase-certo: passar IV explicito e a correcao do defeito"
+  },
+  {
+    "id": "grave-chave-curta-m",
+    "ruleId": "SONAR-cs-S4426",
+    "expected": "match",
+    "code": "var rsa = new RSACryptoServiceProvider { KeySize = 1024 };",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-chave-curta-n",
+    "ruleId": "SONAR-cs-S4426",
+    "expected": "no_match",
+    "code": "var rsa = new RSACryptoServiceProvider { KeySize = 4096 };",
+    "note": "caso dourado quase-certo: 4096 esta acima do minimo recomendado"
+  },
+  {
+    "id": "grave-finalize-m",
+    "ruleId": "SONAR-java-S1113",
+    "expected": "match",
+    "code": "protected void finalize() { liberar(); }",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-finalize-n",
+    "ruleId": "SONAR-java-S1113",
+    "expected": "no_match",
+    "code": "public void finalizarPedido() { salvar(); }",
+    "note": "caso dourado quase-certo: metodo cujo nome comeca com finaliz nao e o finalize da JVM"
+  },
+  {
+    "id": "grave-mass-assign-m",
+    "ruleId": "SONAR-java-S4684",
+    "expected": "match",
+    "code": "Object.assign(usuario, req.body);",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-mass-assign-n",
+    "ruleId": "SONAR-java-S4684",
+    "expected": "no_match",
+    "code": "Object.assign(usuario, { nome: req.body.nome });",
+    "note": "caso dourado quase-certo: copiar campo a campo e a correcao"
+  },
+  {
+    "id": "grave-broadcast-m",
+    "ruleId": "SONAR-java-S5322",
+    "expected": "match",
+    "code": "sendBroadcast(intent);",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-broadcast-n",
+    "ruleId": "SONAR-java-S5322",
+    "expected": "no_match",
+    "code": "sendBroadcastSeguro(intent);",
+    "note": "caso dourado quase-certo: o parenteses tem de vir logo apos o nome exato"
+  },
+  {
+    "id": "grave-recurso-m",
+    "ruleId": "SONAR-cobol-S1725",
+    "expected": "match",
+    "code": "InputStream in = new FileInputStream(arquivo);",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-recurso-n",
+    "ruleId": "SONAR-cobol-S1725",
+    "expected": "no_match",
+    "code": "InputStream in = abrirFileInputStream(arquivo);",
+    "note": "caso dourado quase-certo: sem o new nao ha criacao direta do recurso"
+  },
+  {
+    "id": "grave-redirect-m",
+    "ruleId": "SONAR-js-S6105",
+    "expected": "match",
+    "code": "res.redirect(req.query.proximo);",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-redirect-n",
+    "ruleId": "SONAR-js-S6105",
+    "expected": "no_match",
+    "code": "res.redirect(\"/painel\");",
+    "note": "caso dourado quase-certo: destino constante nao vem do usuario"
+  },
+  {
+    "id": "grave-process-start-m",
+    "ruleId": "HERO-SEC-0078-cmd-injection-dotnet",
+    "expected": "match",
+    "code": "Process.Start(\"cmd.exe /c \" + comando);",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-process-start-n",
+    "ruleId": "HERO-SEC-0078-cmd-injection-dotnet",
+    "expected": "no_match",
+    "code": "Process.Start(\"notepad.exe\");",
+    "note": "caso dourado quase-certo: sem concatenacao nao ha injecao"
+  },
+  {
+    "id": "grave-runtime-exec-m",
+    "ruleId": "HERO-SEC-0078-cmd-injection-java",
+    "expected": "match",
+    "code": "Runtime.getRuntime().exec(\"ls \" + dir);",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-runtime-exec-n",
+    "ruleId": "HERO-SEC-0078-cmd-injection-java",
+    "expected": "no_match",
+    "code": "Runtime.getRuntime().exec(\"ls -la\");",
+    "note": "caso dourado quase-certo: comando constante nao carrega entrada"
+  },
+  {
+    "id": "grave-binaryformatter-m",
+    "ruleId": "HERO-SEC-0502-insecure-deserialization-dotnet",
+    "expected": "match",
+    "code": "var bf = new BinaryFormatter();",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-binaryformatter-n",
+    "ruleId": "HERO-SEC-0502-insecure-deserialization-dotnet",
+    "expected": "no_match",
+    "code": "var js = new JsonSerializer();",
+    "note": "caso dourado quase-certo: serializador seguro nao e o defeito"
+  },
+  {
+    "id": "grave-objectinputstream-m",
+    "ruleId": "HERO-SEC-0502-insecure-deserialization-java",
+    "expected": "match",
+    "code": "var ois = new ObjectInputStream(entrada);",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-objectinputstream-n",
+    "ruleId": "HERO-SEC-0502-insecure-deserialization-java",
+    "expected": "no_match",
+    "code": "var bis = new ByteArrayInputStream(bytes);",
+    "note": "caso dourado quase-certo: outro stream nao desserializa objeto"
+  },
+  {
+    "id": "grave-cobol-debug-m",
+    "ruleId": "HERO-SMELL-debug-mode-cobol",
+    "expected": "match",
+    "code": "           READY TRACE.",
+    "note": "caso dourado: a regra DEVE pegar isto",
+    "profile": "cobol"
+  },
+  {
+    "id": "grave-cobol-debug-n",
+    "ruleId": "HERO-SMELL-debug-mode-cobol",
+    "expected": "no_match",
+    "code": "           MOVE TRACE-FLAG TO WS-CONTROLE.",
+    "note": "caso dourado quase-certo: TRACE num nome de campo nao liga a depuracao",
+    "profile": "cobol"
+  },
+  {
+    "id": "grave-switch-default-m",
+    "ruleId": "SONAR-java-S131",
+    "expected": "match",
+    "code": "switch (tipo) { case 1: tratar(); break; }",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-switch-default-n",
+    "ruleId": "SONAR-java-S131",
+    "expected": "no_match",
+    "code": "switch (tipo) { case 1: tratar(); break; default: erro(); }",
+    "note": "caso dourado quase-certo: com default o caso nao tratado tem saida"
+  },
+  {
+    "id": "grave-double-checked-m",
+    "ruleId": "SONAR-java-S2168",
+    "expected": "match",
+    "code": "if (instancia == null) synchronized (this) { criar(); }",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-double-checked-n",
+    "ruleId": "SONAR-java-S2168",
+    "expected": "no_match",
+    "code": "if (instancia == null) { criar(); }",
+    "note": "caso dourado quase-certo: sem synchronized nao ha o padrao quebrado"
+  },
+  {
+    "id": "grave-sleep-m",
+    "ruleId": "SONAR-java-S2276",
+    "expected": "match",
+    "code": "SLEEP(5000);",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-sleep-n",
+    "ruleId": "SONAR-java-S2276",
+    "expected": "no_match",
+    "code": "modoSleep = true;",
+    "note": "caso dourado quase-certo: sem parenteses nao e chamada de espera"
+  },
+  {
+    "id": "grave-spel-m",
+    "ruleId": "SONAR-java-S6857",
+    "expected": "match",
+    "code": "parser.parseExpression(entradaDoUsuario);",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "grave-spel-n",
+    "ruleId": "SONAR-java-S6857",
+    "expected": "no_match",
+    "code": "parser.parseJson(entradaDoUsuario);",
+    "note": "caso dourado quase-certo: outro parser nao avalia expressao"
+  },
+  {
+    "id": "grave-py-subprocess-m",
+    "ruleId": "SONAR-py-S2076",
+    "expected": "match",
+    "code": "os.system(\"rm -rf \" + caminho)",
+    "note": "caso dourado: a regra DEVE pegar isto",
+    "profile": "python"
+  },
+  {
+    "id": "grave-py-subprocess-n",
+    "ruleId": "SONAR-py-S2076",
+    "expected": "no_match",
+    "code": "os.system(\"ls -la\")",
+    "note": "caso dourado quase-certo: comando constante nao carrega entrada",
+    "profile": "python"
+  },
+  {
+    "id": "grave-py-mutavel-m",
+    "ruleId": "SONAR-py-S8508",
+    "expected": "match",
+    "code": "def registrar(itens=[]):",
+    "note": "caso dourado: a regra DEVE pegar isto",
+    "profile": "python"
+  },
+  {
+    "id": "grave-py-mutavel-n",
+    "ruleId": "SONAR-py-S8508",
+    "expected": "no_match",
+    "code": "def registrar(itens=None):",
+    "note": "caso dourado quase-certo: None e o idioma correto para padrao mutavel",
+    "profile": "python"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-cs-S2068",
+    "ruleId": "SONAR-cs-S2068",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-cs-S2115",
+    "ruleId": "SONAR-cs-S2115",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-cs-S5344",
+    "ruleId": "SONAR-cs-S5344",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-cs-S6418",
+    "ruleId": "SONAR-cs-S6418",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-cs-S6781",
+    "ruleId": "SONAR-cs-S6781",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-java-S2053",
+    "ruleId": "SONAR-java-S2053",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-java-S2068",
+    "ruleId": "SONAR-java-S2068",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-java-S2115",
+    "ruleId": "SONAR-java-S2115",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-java-S5344",
+    "ruleId": "SONAR-java-S5344",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-java-S6242",
+    "ruleId": "SONAR-java-S6242",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-java-S6418",
+    "ruleId": "SONAR-java-S6418",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-java-S6437",
+    "ruleId": "SONAR-java-S6437",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-java-S8912",
+    "ruleId": "SONAR-java-S8912",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-js-S2068",
+    "ruleId": "SONAR-js-S2068",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-js-S6418",
+    "ruleId": "SONAR-js-S6418",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-js-S6437",
+    "ruleId": "SONAR-js-S6437",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-py-S2053",
+    "ruleId": "SONAR-py-S2053",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-py-S2068",
+    "ruleId": "SONAR-py-S2068",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-py-S2115",
+    "ruleId": "SONAR-py-S2115",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-py-S5344",
+    "ruleId": "SONAR-py-S5344",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-py-S6418",
+    "ruleId": "SONAR-py-S6418",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-py-S6437",
+    "ruleId": "SONAR-py-S6437",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-py-S6779",
+    "ruleId": "SONAR-py-S6779",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-py-S6781",
+    "ruleId": "SONAR-py-S6781",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-ts-S2068",
+    "ruleId": "SONAR-ts-S2068",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-ts-S6418",
+    "ruleId": "SONAR-ts-S6418",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-ts-S6437",
+    "ruleId": "SONAR-ts-S6437",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-m--SONAR-tsql-S2068",
+    "ruleId": "SONAR-tsql-S2068",
+    "expected": "match",
+    "code": "var apiKey = \"CHAVE_DE_EXEMPLO_NAO_E_SEGREDO\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-cs-S2068",
+    "ruleId": "SONAR-cs-S2068",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-cs-S2115",
+    "ruleId": "SONAR-cs-S2115",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-cs-S5344",
+    "ruleId": "SONAR-cs-S5344",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-cs-S6418",
+    "ruleId": "SONAR-cs-S6418",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-cs-S6781",
+    "ruleId": "SONAR-cs-S6781",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-java-S2053",
+    "ruleId": "SONAR-java-S2053",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-java-S2068",
+    "ruleId": "SONAR-java-S2068",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-java-S2115",
+    "ruleId": "SONAR-java-S2115",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-java-S5344",
+    "ruleId": "SONAR-java-S5344",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-java-S6242",
+    "ruleId": "SONAR-java-S6242",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-java-S6418",
+    "ruleId": "SONAR-java-S6418",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-java-S6437",
+    "ruleId": "SONAR-java-S6437",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-java-S8912",
+    "ruleId": "SONAR-java-S8912",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-js-S2068",
+    "ruleId": "SONAR-js-S2068",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-js-S6418",
+    "ruleId": "SONAR-js-S6418",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-js-S6437",
+    "ruleId": "SONAR-js-S6437",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-py-S2053",
+    "ruleId": "SONAR-py-S2053",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-py-S2068",
+    "ruleId": "SONAR-py-S2068",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-py-S2115",
+    "ruleId": "SONAR-py-S2115",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-py-S5344",
+    "ruleId": "SONAR-py-S5344",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-py-S6418",
+    "ruleId": "SONAR-py-S6418",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-py-S6437",
+    "ruleId": "SONAR-py-S6437",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-py-S6779",
+    "ruleId": "SONAR-py-S6779",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-py-S6781",
+    "ruleId": "SONAR-py-S6781",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-ts-S2068",
+    "ruleId": "SONAR-ts-S2068",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-ts-S6418",
+    "ruleId": "SONAR-ts-S6418",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-ts-S6437",
+    "ruleId": "SONAR-ts-S6437",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-segredo-n--SONAR-tsql-S2068",
+    "ruleId": "SONAR-tsql-S2068",
+    "expected": "no_match",
+    "code": "var password = \"curto\";",
+    "note": "caso dourado quase-certo: menos de 8 caracteres nao caracteriza segredo (mesmo padrao exato de SONAR-cs-S2053: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-m--SONAR-cs-S5547",
+    "ruleId": "SONAR-cs-S5547",
+    "expected": "match",
+    "code": "Cipher c = Cipher.getInstance(\"DES/CBC/PKCS5Padding\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-m--SONAR-java-S5542",
+    "ruleId": "SONAR-java-S5542",
+    "expected": "match",
+    "code": "Cipher c = Cipher.getInstance(\"DES/CBC/PKCS5Padding\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-m--SONAR-java-S5547",
+    "ruleId": "SONAR-java-S5547",
+    "expected": "match",
+    "code": "Cipher c = Cipher.getInstance(\"DES/CBC/PKCS5Padding\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-m--SONAR-js-S5542",
+    "ruleId": "SONAR-js-S5542",
+    "expected": "match",
+    "code": "Cipher c = Cipher.getInstance(\"DES/CBC/PKCS5Padding\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-m--SONAR-js-S5547",
+    "ruleId": "SONAR-js-S5547",
+    "expected": "match",
+    "code": "Cipher c = Cipher.getInstance(\"DES/CBC/PKCS5Padding\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-m--SONAR-plsql-S5547",
+    "ruleId": "SONAR-plsql-S5547",
+    "expected": "match",
+    "code": "Cipher c = Cipher.getInstance(\"DES/CBC/PKCS5Padding\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-m--SONAR-py-S5542",
+    "ruleId": "SONAR-py-S5542",
+    "expected": "match",
+    "code": "Cipher c = Cipher.getInstance(\"DES/CBC/PKCS5Padding\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-m--SONAR-py-S5547",
+    "ruleId": "SONAR-py-S5547",
+    "expected": "match",
+    "code": "Cipher c = Cipher.getInstance(\"DES/CBC/PKCS5Padding\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-m--SONAR-ts-S5542",
+    "ruleId": "SONAR-ts-S5542",
+    "expected": "match",
+    "code": "Cipher c = Cipher.getInstance(\"DES/CBC/PKCS5Padding\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-m--SONAR-ts-S5547",
+    "ruleId": "SONAR-ts-S5547",
+    "expected": "match",
+    "code": "Cipher c = Cipher.getInstance(\"DES/CBC/PKCS5Padding\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-n--SONAR-cs-S5547",
+    "ruleId": "SONAR-cs-S5547",
+    "expected": "no_match",
+    "code": "const DESCRICAO = \"modo de operacao\";",
+    "note": "caso dourado quase-certo: DES dentro de DESCRICAO nao e o algoritmo (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-n--SONAR-java-S5542",
+    "ruleId": "SONAR-java-S5542",
+    "expected": "no_match",
+    "code": "const DESCRICAO = \"modo de operacao\";",
+    "note": "caso dourado quase-certo: DES dentro de DESCRICAO nao e o algoritmo (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-n--SONAR-java-S5547",
+    "ruleId": "SONAR-java-S5547",
+    "expected": "no_match",
+    "code": "const DESCRICAO = \"modo de operacao\";",
+    "note": "caso dourado quase-certo: DES dentro de DESCRICAO nao e o algoritmo (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-n--SONAR-js-S5542",
+    "ruleId": "SONAR-js-S5542",
+    "expected": "no_match",
+    "code": "const DESCRICAO = \"modo de operacao\";",
+    "note": "caso dourado quase-certo: DES dentro de DESCRICAO nao e o algoritmo (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-n--SONAR-js-S5547",
+    "ruleId": "SONAR-js-S5547",
+    "expected": "no_match",
+    "code": "const DESCRICAO = \"modo de operacao\";",
+    "note": "caso dourado quase-certo: DES dentro de DESCRICAO nao e o algoritmo (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-n--SONAR-plsql-S5547",
+    "ruleId": "SONAR-plsql-S5547",
+    "expected": "no_match",
+    "code": "const DESCRICAO = \"modo de operacao\";",
+    "note": "caso dourado quase-certo: DES dentro de DESCRICAO nao e o algoritmo (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-n--SONAR-py-S5542",
+    "ruleId": "SONAR-py-S5542",
+    "expected": "no_match",
+    "code": "const DESCRICAO = \"modo de operacao\";",
+    "note": "caso dourado quase-certo: DES dentro de DESCRICAO nao e o algoritmo (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-n--SONAR-py-S5547",
+    "ruleId": "SONAR-py-S5547",
+    "expected": "no_match",
+    "code": "const DESCRICAO = \"modo de operacao\";",
+    "note": "caso dourado quase-certo: DES dentro de DESCRICAO nao e o algoritmo (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-n--SONAR-ts-S5542",
+    "ruleId": "SONAR-ts-S5542",
+    "expected": "no_match",
+    "code": "const DESCRICAO = \"modo de operacao\";",
+    "note": "caso dourado quase-certo: DES dentro de DESCRICAO nao e o algoritmo (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-cripto-fraca-n--SONAR-ts-S5547",
+    "ruleId": "SONAR-ts-S5547",
+    "expected": "no_match",
+    "code": "const DESCRICAO = \"modo de operacao\";",
+    "note": "caso dourado quase-certo: DES dentro de DESCRICAO nao e o algoritmo (mesmo padrao exato de SONAR-cs-S5542: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-m--SONAR-cs-S6096",
+    "ruleId": "SONAR-cs-S6096",
+    "expected": "match",
+    "code": "var caminho = base + \"../../etc/passwd\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-m--SONAR-java-S2083",
+    "ruleId": "SONAR-java-S2083",
+    "expected": "match",
+    "code": "var caminho = base + \"../../etc/passwd\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-m--SONAR-java-S6096",
+    "ruleId": "SONAR-java-S6096",
+    "expected": "match",
+    "code": "var caminho = base + \"../../etc/passwd\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-m--SONAR-js-S2083",
+    "ruleId": "SONAR-js-S2083",
+    "expected": "match",
+    "code": "var caminho = base + \"../../etc/passwd\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-m--SONAR-js-S6096",
+    "ruleId": "SONAR-js-S6096",
+    "expected": "match",
+    "code": "var caminho = base + \"../../etc/passwd\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-m--SONAR-js-S8707",
+    "ruleId": "SONAR-js-S8707",
+    "expected": "match",
+    "code": "var caminho = base + \"../../etc/passwd\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-m--SONAR-py-S2083",
+    "ruleId": "SONAR-py-S2083",
+    "expected": "match",
+    "code": "var caminho = base + \"../../etc/passwd\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-m--SONAR-py-S6096",
+    "ruleId": "SONAR-py-S6096",
+    "expected": "match",
+    "code": "var caminho = base + \"../../etc/passwd\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-m--SONAR-py-S8707",
+    "ruleId": "SONAR-py-S8707",
+    "expected": "match",
+    "code": "var caminho = base + \"../../etc/passwd\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-m--SONAR-ts-S2083",
+    "ruleId": "SONAR-ts-S2083",
+    "expected": "match",
+    "code": "var caminho = base + \"../../etc/passwd\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-m--SONAR-ts-S6096",
+    "ruleId": "SONAR-ts-S6096",
+    "expected": "match",
+    "code": "var caminho = base + \"../../etc/passwd\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-m--SONAR-ts-S8707",
+    "ruleId": "SONAR-ts-S8707",
+    "expected": "match",
+    "code": "var caminho = base + \"../../etc/passwd\";",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-n--SONAR-cs-S6096",
+    "ruleId": "SONAR-cs-S6096",
+    "expected": "no_match",
+    "code": "import { util } from \"./util\";",
+    "note": "caso dourado quase-certo: um ponto so e caminho relativo normal (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-n--SONAR-java-S2083",
+    "ruleId": "SONAR-java-S2083",
+    "expected": "no_match",
+    "code": "import { util } from \"./util\";",
+    "note": "caso dourado quase-certo: um ponto so e caminho relativo normal (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-n--SONAR-java-S6096",
+    "ruleId": "SONAR-java-S6096",
+    "expected": "no_match",
+    "code": "import { util } from \"./util\";",
+    "note": "caso dourado quase-certo: um ponto so e caminho relativo normal (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-n--SONAR-js-S2083",
+    "ruleId": "SONAR-js-S2083",
+    "expected": "no_match",
+    "code": "import { util } from \"./util\";",
+    "note": "caso dourado quase-certo: um ponto so e caminho relativo normal (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-n--SONAR-js-S6096",
+    "ruleId": "SONAR-js-S6096",
+    "expected": "no_match",
+    "code": "import { util } from \"./util\";",
+    "note": "caso dourado quase-certo: um ponto so e caminho relativo normal (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-n--SONAR-js-S8707",
+    "ruleId": "SONAR-js-S8707",
+    "expected": "no_match",
+    "code": "import { util } from \"./util\";",
+    "note": "caso dourado quase-certo: um ponto so e caminho relativo normal (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-n--SONAR-py-S2083",
+    "ruleId": "SONAR-py-S2083",
+    "expected": "no_match",
+    "code": "import { util } from \"./util\";",
+    "note": "caso dourado quase-certo: um ponto so e caminho relativo normal (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-n--SONAR-py-S6096",
+    "ruleId": "SONAR-py-S6096",
+    "expected": "no_match",
+    "code": "import { util } from \"./util\";",
+    "note": "caso dourado quase-certo: um ponto so e caminho relativo normal (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-n--SONAR-py-S8707",
+    "ruleId": "SONAR-py-S8707",
+    "expected": "no_match",
+    "code": "import { util } from \"./util\";",
+    "note": "caso dourado quase-certo: um ponto so e caminho relativo normal (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-n--SONAR-ts-S2083",
+    "ruleId": "SONAR-ts-S2083",
+    "expected": "no_match",
+    "code": "import { util } from \"./util\";",
+    "note": "caso dourado quase-certo: um ponto so e caminho relativo normal (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-n--SONAR-ts-S6096",
+    "ruleId": "SONAR-ts-S6096",
+    "expected": "no_match",
+    "code": "import { util } from \"./util\";",
+    "note": "caso dourado quase-certo: um ponto so e caminho relativo normal (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-travessia-n--SONAR-ts-S8707",
+    "ruleId": "SONAR-ts-S8707",
+    "expected": "no_match",
+    "code": "import { util } from \"./util\";",
+    "note": "caso dourado quase-certo: um ponto so e caminho relativo normal (mesmo padrao exato de SONAR-cs-S2083: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-ldap-m--SONAR-cs-S4433",
+    "ruleId": "SONAR-cs-S4433",
+    "expected": "match",
+    "code": "ldap.search(baseDn, \"(uid=\" + user + \")\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2078: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-ldap-m--SONAR-java-S2078",
+    "ruleId": "SONAR-java-S2078",
+    "expected": "match",
+    "code": "ldap.search(baseDn, \"(uid=\" + user + \")\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2078: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-ldap-m--SONAR-java-S4433",
+    "ruleId": "SONAR-java-S4433",
+    "expected": "match",
+    "code": "ldap.search(baseDn, \"(uid=\" + user + \")\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2078: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-ldap-m--SONAR-js-S2078",
+    "ruleId": "SONAR-js-S2078",
+    "expected": "match",
+    "code": "ldap.search(baseDn, \"(uid=\" + user + \")\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2078: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-ldap-m--SONAR-py-S2078",
+    "ruleId": "SONAR-py-S2078",
+    "expected": "match",
+    "code": "ldap.search(baseDn, \"(uid=\" + user + \")\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2078: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-ldap-m--SONAR-py-S4433",
+    "ruleId": "SONAR-py-S4433",
+    "expected": "match",
+    "code": "ldap.search(baseDn, \"(uid=\" + user + \")\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2078: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-ldap-m--SONAR-ts-S2078",
+    "ruleId": "SONAR-ts-S2078",
+    "expected": "match",
+    "code": "ldap.search(baseDn, \"(uid=\" + user + \")\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2078: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-ldap-n--SONAR-cs-S4433",
+    "ruleId": "SONAR-cs-S4433",
+    "expected": "no_match",
+    "code": "const ldapConfigurado = false;",
+    "note": "caso dourado quase-certo: mencionar ldap num nome de variavel nao e chamada (mesmo padrao exato de SONAR-cs-S2078: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-ldap-n--SONAR-java-S2078",
+    "ruleId": "SONAR-java-S2078",
+    "expected": "no_match",
+    "code": "const ldapConfigurado = false;",
+    "note": "caso dourado quase-certo: mencionar ldap num nome de variavel nao e chamada (mesmo padrao exato de SONAR-cs-S2078: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-ldap-n--SONAR-java-S4433",
+    "ruleId": "SONAR-java-S4433",
+    "expected": "no_match",
+    "code": "const ldapConfigurado = false;",
+    "note": "caso dourado quase-certo: mencionar ldap num nome de variavel nao e chamada (mesmo padrao exato de SONAR-cs-S2078: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-ldap-n--SONAR-js-S2078",
+    "ruleId": "SONAR-js-S2078",
+    "expected": "no_match",
+    "code": "const ldapConfigurado = false;",
+    "note": "caso dourado quase-certo: mencionar ldap num nome de variavel nao e chamada (mesmo padrao exato de SONAR-cs-S2078: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-ldap-n--SONAR-py-S2078",
+    "ruleId": "SONAR-py-S2078",
+    "expected": "no_match",
+    "code": "const ldapConfigurado = false;",
+    "note": "caso dourado quase-certo: mencionar ldap num nome de variavel nao e chamada (mesmo padrao exato de SONAR-cs-S2078: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-ldap-n--SONAR-py-S4433",
+    "ruleId": "SONAR-py-S4433",
+    "expected": "no_match",
+    "code": "const ldapConfigurado = false;",
+    "note": "caso dourado quase-certo: mencionar ldap num nome de variavel nao e chamada (mesmo padrao exato de SONAR-cs-S2078: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-ldap-n--SONAR-ts-S2078",
+    "ruleId": "SONAR-ts-S2078",
+    "expected": "no_match",
+    "code": "const ldapConfigurado = false;",
+    "note": "caso dourado quase-certo: mencionar ldap num nome de variavel nao e chamada (mesmo padrao exato de SONAR-cs-S2078: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-temp-m--SONAR-cs-S5445",
+    "ruleId": "SONAR-cs-S5445",
+    "expected": "match",
+    "code": "File f = File.createTempFile(\"dados\", \".tmp\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5443: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-temp-m--SONAR-java-S5443",
+    "ruleId": "SONAR-java-S5443",
+    "expected": "match",
+    "code": "File f = File.createTempFile(\"dados\", \".tmp\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5443: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-temp-m--SONAR-java-S5445",
+    "ruleId": "SONAR-java-S5445",
+    "expected": "match",
+    "code": "File f = File.createTempFile(\"dados\", \".tmp\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5443: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-temp-m--SONAR-js-S5443",
+    "ruleId": "SONAR-js-S5443",
+    "expected": "match",
+    "code": "File f = File.createTempFile(\"dados\", \".tmp\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5443: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-temp-m--SONAR-py-S5443",
+    "ruleId": "SONAR-py-S5443",
+    "expected": "match",
+    "code": "File f = File.createTempFile(\"dados\", \".tmp\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5443: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-temp-m--SONAR-py-S5445",
+    "ruleId": "SONAR-py-S5445",
+    "expected": "match",
+    "code": "File f = File.createTempFile(\"dados\", \".tmp\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5443: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-temp-m--SONAR-py-S7620",
+    "ruleId": "SONAR-py-S7620",
+    "expected": "match",
+    "code": "File f = File.createTempFile(\"dados\", \".tmp\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5443: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-temp-m--SONAR-ts-S5443",
+    "ruleId": "SONAR-ts-S5443",
+    "expected": "match",
+    "code": "File f = File.createTempFile(\"dados\", \".tmp\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5443: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-temp-n--SONAR-cs-S5445",
+    "ruleId": "SONAR-cs-S5445",
+    "expected": "no_match",
+    "code": "const dir = \"/var/tmp-cache/app\";",
+    "note": "caso dourado quase-certo: /tmp/ exige a barra final; /var/tmp-cache nao e o diretorio compartilhado (mesmo padrao exato de SONAR-cs-S5443: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-temp-n--SONAR-java-S5443",
+    "ruleId": "SONAR-java-S5443",
+    "expected": "no_match",
+    "code": "const dir = \"/var/tmp-cache/app\";",
+    "note": "caso dourado quase-certo: /tmp/ exige a barra final; /var/tmp-cache nao e o diretorio compartilhado (mesmo padrao exato de SONAR-cs-S5443: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-temp-n--SONAR-java-S5445",
+    "ruleId": "SONAR-java-S5445",
+    "expected": "no_match",
+    "code": "const dir = \"/var/tmp-cache/app\";",
+    "note": "caso dourado quase-certo: /tmp/ exige a barra final; /var/tmp-cache nao e o diretorio compartilhado (mesmo padrao exato de SONAR-cs-S5443: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-temp-n--SONAR-js-S5443",
+    "ruleId": "SONAR-js-S5443",
+    "expected": "no_match",
+    "code": "const dir = \"/var/tmp-cache/app\";",
+    "note": "caso dourado quase-certo: /tmp/ exige a barra final; /var/tmp-cache nao e o diretorio compartilhado (mesmo padrao exato de SONAR-cs-S5443: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-temp-n--SONAR-py-S5443",
+    "ruleId": "SONAR-py-S5443",
+    "expected": "no_match",
+    "code": "const dir = \"/var/tmp-cache/app\";",
+    "note": "caso dourado quase-certo: /tmp/ exige a barra final; /var/tmp-cache nao e o diretorio compartilhado (mesmo padrao exato de SONAR-cs-S5443: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-temp-n--SONAR-py-S5445",
+    "ruleId": "SONAR-py-S5445",
+    "expected": "no_match",
+    "code": "const dir = \"/var/tmp-cache/app\";",
+    "note": "caso dourado quase-certo: /tmp/ exige a barra final; /var/tmp-cache nao e o diretorio compartilhado (mesmo padrao exato de SONAR-cs-S5443: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-temp-n--SONAR-py-S7620",
+    "ruleId": "SONAR-py-S7620",
+    "expected": "no_match",
+    "code": "const dir = \"/var/tmp-cache/app\";",
+    "note": "caso dourado quase-certo: /tmp/ exige a barra final; /var/tmp-cache nao e o diretorio compartilhado (mesmo padrao exato de SONAR-cs-S5443: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-temp-n--SONAR-ts-S5443",
+    "ruleId": "SONAR-ts-S5443",
+    "expected": "no_match",
+    "code": "const dir = \"/var/tmp-cache/app\";",
+    "note": "caso dourado quase-certo: /tmp/ exige a barra final; /var/tmp-cache nao e o diretorio compartilhado (mesmo padrao exato de SONAR-cs-S5443: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-grant-public-m--SONAR-js-S6302",
+    "ruleId": "SONAR-js-S6302",
+    "expected": "match",
+    "code": "GRANT ALL ON contas TO PUBLIC;",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-js-S6270: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-grant-public-m--SONAR-py-S6270",
+    "ruleId": "SONAR-py-S6270",
+    "expected": "match",
+    "code": "GRANT ALL ON contas TO PUBLIC;",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-js-S6270: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-grant-public-m--SONAR-py-S6302",
+    "ruleId": "SONAR-py-S6302",
+    "expected": "match",
+    "code": "GRANT ALL ON contas TO PUBLIC;",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-js-S6270: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-grant-public-m--SONAR-ts-S6270",
+    "ruleId": "SONAR-ts-S6270",
+    "expected": "match",
+    "code": "GRANT ALL ON contas TO PUBLIC;",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-js-S6270: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-grant-public-m--SONAR-ts-S6302",
+    "ruleId": "SONAR-ts-S6302",
+    "expected": "match",
+    "code": "GRANT ALL ON contas TO PUBLIC;",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-js-S6270: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-grant-public-n--SONAR-js-S6302",
+    "ruleId": "SONAR-js-S6302",
+    "expected": "no_match",
+    "code": "GRANT SELECT ON contas TO app_leitura;",
+    "note": "caso dourado quase-certo: conceder a um papel nomeado e o uso correto (mesmo padrao exato de SONAR-js-S6270: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-grant-public-n--SONAR-py-S6270",
+    "ruleId": "SONAR-py-S6270",
+    "expected": "no_match",
+    "code": "GRANT SELECT ON contas TO app_leitura;",
+    "note": "caso dourado quase-certo: conceder a um papel nomeado e o uso correto (mesmo padrao exato de SONAR-js-S6270: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-grant-public-n--SONAR-py-S6302",
+    "ruleId": "SONAR-py-S6302",
+    "expected": "no_match",
+    "code": "GRANT SELECT ON contas TO app_leitura;",
+    "note": "caso dourado quase-certo: conceder a um papel nomeado e o uso correto (mesmo padrao exato de SONAR-js-S6270: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-grant-public-n--SONAR-ts-S6270",
+    "ruleId": "SONAR-ts-S6270",
+    "expected": "no_match",
+    "code": "GRANT SELECT ON contas TO app_leitura;",
+    "note": "caso dourado quase-certo: conceder a um papel nomeado e o uso correto (mesmo padrao exato de SONAR-js-S6270: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-grant-public-n--SONAR-ts-S6302",
+    "ruleId": "SONAR-ts-S6302",
+    "expected": "no_match",
+    "code": "GRANT SELECT ON contas TO app_leitura;",
+    "note": "caso dourado quase-certo: conceder a um papel nomeado e o uso correto (mesmo padrao exato de SONAR-js-S6270: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xpath-m--SONAR-java-S2091",
+    "ruleId": "SONAR-java-S2091",
+    "expected": "match",
+    "code": "doc.SelectNodes(\"//user[@id='\" + id + \"']\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2091: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xpath-m--SONAR-js-S2091",
+    "ruleId": "SONAR-js-S2091",
+    "expected": "match",
+    "code": "doc.SelectNodes(\"//user[@id='\" + id + \"']\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2091: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xpath-m--SONAR-js-S8378",
+    "ruleId": "SONAR-js-S8378",
+    "expected": "match",
+    "code": "doc.SelectNodes(\"//user[@id='\" + id + \"']\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2091: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xpath-m--SONAR-py-S2091",
+    "ruleId": "SONAR-py-S2091",
+    "expected": "match",
+    "code": "doc.SelectNodes(\"//user[@id='\" + id + \"']\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2091: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xpath-m--SONAR-ts-S2091",
+    "ruleId": "SONAR-ts-S2091",
+    "expected": "match",
+    "code": "doc.SelectNodes(\"//user[@id='\" + id + \"']\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2091: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xpath-m--SONAR-ts-S8378",
+    "ruleId": "SONAR-ts-S8378",
+    "expected": "match",
+    "code": "doc.SelectNodes(\"//user[@id='\" + id + \"']\");",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2091: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xpath-n--SONAR-java-S2091",
+    "ruleId": "SONAR-java-S2091",
+    "expected": "no_match",
+    "code": "doc.SelectNodes(\"//user[@ativo='true']\");",
+    "note": "caso dourado quase-certo: consulta constante nao concatena entrada (mesmo padrao exato de SONAR-cs-S2091: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xpath-n--SONAR-js-S2091",
+    "ruleId": "SONAR-js-S2091",
+    "expected": "no_match",
+    "code": "doc.SelectNodes(\"//user[@ativo='true']\");",
+    "note": "caso dourado quase-certo: consulta constante nao concatena entrada (mesmo padrao exato de SONAR-cs-S2091: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xpath-n--SONAR-js-S8378",
+    "ruleId": "SONAR-js-S8378",
+    "expected": "no_match",
+    "code": "doc.SelectNodes(\"//user[@ativo='true']\");",
+    "note": "caso dourado quase-certo: consulta constante nao concatena entrada (mesmo padrao exato de SONAR-cs-S2091: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xpath-n--SONAR-py-S2091",
+    "ruleId": "SONAR-py-S2091",
+    "expected": "no_match",
+    "code": "doc.SelectNodes(\"//user[@ativo='true']\");",
+    "note": "caso dourado quase-certo: consulta constante nao concatena entrada (mesmo padrao exato de SONAR-cs-S2091: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xpath-n--SONAR-ts-S2091",
+    "ruleId": "SONAR-ts-S2091",
+    "expected": "no_match",
+    "code": "doc.SelectNodes(\"//user[@ativo='true']\");",
+    "note": "caso dourado quase-certo: consulta constante nao concatena entrada (mesmo padrao exato de SONAR-cs-S2091: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xpath-n--SONAR-ts-S8378",
+    "ruleId": "SONAR-ts-S8378",
+    "expected": "no_match",
+    "code": "doc.SelectNodes(\"//user[@ativo='true']\");",
+    "note": "caso dourado quase-certo: consulta constante nao concatena entrada (mesmo padrao exato de SONAR-cs-S2091: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xxe-m--SONAR-java-S2755",
+    "ruleId": "SONAR-java-S2755",
+    "expected": "match",
+    "code": "DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2755: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xxe-m--SONAR-js-S2755",
+    "ruleId": "SONAR-js-S2755",
+    "expected": "match",
+    "code": "DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2755: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xxe-m--SONAR-py-S2755",
+    "ruleId": "SONAR-py-S2755",
+    "expected": "match",
+    "code": "DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2755: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xxe-m--SONAR-ts-S2755",
+    "ruleId": "SONAR-ts-S2755",
+    "expected": "match",
+    "code": "DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2755: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xxe-n--SONAR-java-S2755",
+    "ruleId": "SONAR-java-S2755",
+    "expected": "no_match",
+    "code": "var fabrica = criarFabricaSegura();",
+    "note": "caso dourado quase-certo: sem o nome da classe nao ha o que apontar (mesmo padrao exato de SONAR-cs-S2755: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xxe-n--SONAR-js-S2755",
+    "ruleId": "SONAR-js-S2755",
+    "expected": "no_match",
+    "code": "var fabrica = criarFabricaSegura();",
+    "note": "caso dourado quase-certo: sem o nome da classe nao ha o que apontar (mesmo padrao exato de SONAR-cs-S2755: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xxe-n--SONAR-py-S2755",
+    "ruleId": "SONAR-py-S2755",
+    "expected": "no_match",
+    "code": "var fabrica = criarFabricaSegura();",
+    "note": "caso dourado quase-certo: sem o nome da classe nao ha o que apontar (mesmo padrao exato de SONAR-cs-S2755: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-xxe-n--SONAR-ts-S2755",
+    "ruleId": "SONAR-ts-S2755",
+    "expected": "no_match",
+    "code": "var fabrica = criarFabricaSegura();",
+    "note": "caso dourado quase-certo: sem o nome da classe nao ha o que apontar (mesmo padrao exato de SONAR-cs-S2755: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-csrf-m--SONAR-java-S4502",
+    "ruleId": "SONAR-java-S4502",
+    "expected": "match",
+    "code": "app.use(session({ csrf: false }));",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S4502: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-csrf-m--SONAR-js-S4502",
+    "ruleId": "SONAR-js-S4502",
+    "expected": "match",
+    "code": "app.use(session({ csrf: false }));",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S4502: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-csrf-m--SONAR-py-S4502",
+    "ruleId": "SONAR-py-S4502",
+    "expected": "match",
+    "code": "app.use(session({ csrf: false }));",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S4502: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-csrf-m--SONAR-ts-S4502",
+    "ruleId": "SONAR-ts-S4502",
+    "expected": "match",
+    "code": "app.use(session({ csrf: false }));",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S4502: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-csrf-n--SONAR-java-S4502",
+    "ruleId": "SONAR-java-S4502",
+    "expected": "no_match",
+    "code": "app.use(session({ csrf: true }));",
+    "note": "caso dourado quase-certo: csrf ligado e o oposto do defeito (mesmo padrao exato de SONAR-cs-S4502: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-csrf-n--SONAR-js-S4502",
+    "ruleId": "SONAR-js-S4502",
+    "expected": "no_match",
+    "code": "app.use(session({ csrf: true }));",
+    "note": "caso dourado quase-certo: csrf ligado e o oposto do defeito (mesmo padrao exato de SONAR-cs-S4502: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-csrf-n--SONAR-py-S4502",
+    "ruleId": "SONAR-py-S4502",
+    "expected": "no_match",
+    "code": "app.use(session({ csrf: true }));",
+    "note": "caso dourado quase-certo: csrf ligado e o oposto do defeito (mesmo padrao exato de SONAR-cs-S4502: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-csrf-n--SONAR-ts-S4502",
+    "ruleId": "SONAR-ts-S4502",
+    "expected": "no_match",
+    "code": "app.use(session({ csrf: true }));",
+    "note": "caso dourado quase-certo: csrf ligado e o oposto do defeito (mesmo padrao exato de SONAR-cs-S4502: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-jwt-none-m--SONAR-java-S5659",
+    "ruleId": "SONAR-java-S5659",
+    "expected": "match",
+    "code": "jwt.sign(payload, key, { algorithm: \"none\" });",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5659: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-jwt-none-m--SONAR-js-S5659",
+    "ruleId": "SONAR-js-S5659",
+    "expected": "match",
+    "code": "jwt.sign(payload, key, { algorithm: \"none\" });",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5659: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-jwt-none-m--SONAR-py-S5659",
+    "ruleId": "SONAR-py-S5659",
+    "expected": "match",
+    "code": "jwt.sign(payload, key, { algorithm: \"none\" });",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5659: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-jwt-none-m--SONAR-ts-S5659",
+    "ruleId": "SONAR-ts-S5659",
+    "expected": "match",
+    "code": "jwt.sign(payload, key, { algorithm: \"none\" });",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S5659: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-jwt-none-n--SONAR-java-S5659",
+    "ruleId": "SONAR-java-S5659",
+    "expected": "no_match",
+    "code": "jwt.sign(payload, key, { algorithm: \"HS256\" });",
+    "note": "caso dourado quase-certo: algoritmo declarado e o uso correto (mesmo padrao exato de SONAR-cs-S5659: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-jwt-none-n--SONAR-js-S5659",
+    "ruleId": "SONAR-js-S5659",
+    "expected": "no_match",
+    "code": "jwt.sign(payload, key, { algorithm: \"HS256\" });",
+    "note": "caso dourado quase-certo: algoritmo declarado e o uso correto (mesmo padrao exato de SONAR-cs-S5659: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-jwt-none-n--SONAR-py-S5659",
+    "ruleId": "SONAR-py-S5659",
+    "expected": "no_match",
+    "code": "jwt.sign(payload, key, { algorithm: \"HS256\" });",
+    "note": "caso dourado quase-certo: algoritmo declarado e o uso correto (mesmo padrao exato de SONAR-cs-S5659: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-jwt-none-n--SONAR-ts-S5659",
+    "ruleId": "SONAR-ts-S5659",
+    "expected": "no_match",
+    "code": "jwt.sign(payload, key, { algorithm: \"HS256\" });",
+    "note": "caso dourado quase-certo: algoritmo declarado e o uso correto (mesmo padrao exato de SONAR-cs-S5659: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-m--SONAR-java-S5863",
+    "ruleId": "SONAR-java-S5863",
+    "expected": "match",
+    "code": "assert (saldo > 0);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-m--SONAR-java-S5960",
+    "ruleId": "SONAR-java-S5960",
+    "expected": "match",
+    "code": "assert (saldo > 0);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-m--SONAR-java-S6002",
+    "ruleId": "SONAR-java-S6002",
+    "expected": "match",
+    "code": "assert (saldo > 0);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-m--SONAR-js-S5863",
+    "ruleId": "SONAR-js-S5863",
+    "expected": "match",
+    "code": "assert (saldo > 0);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-m--SONAR-js-S5914",
+    "ruleId": "SONAR-js-S5914",
+    "expected": "match",
+    "code": "assert (saldo > 0);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-m--SONAR-py-S5779",
+    "ruleId": "SONAR-py-S5779",
+    "expected": "match",
+    "code": "assert (saldo > 0);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-m--SONAR-py-S5863",
+    "ruleId": "SONAR-py-S5863",
+    "expected": "match",
+    "code": "assert (saldo > 0);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-m--SONAR-py-S5914",
+    "ruleId": "SONAR-py-S5914",
+    "expected": "match",
+    "code": "assert (saldo > 0);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-m--SONAR-py-S5915",
+    "ruleId": "SONAR-py-S5915",
+    "expected": "match",
+    "code": "assert (saldo > 0);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-m--SONAR-py-S6002",
+    "ruleId": "SONAR-py-S6002",
+    "expected": "match",
+    "code": "assert (saldo > 0);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-m--SONAR-ts-S5863",
+    "ruleId": "SONAR-ts-S5863",
+    "expected": "match",
+    "code": "assert (saldo > 0);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-m--SONAR-ts-S5914",
+    "ruleId": "SONAR-ts-S5914",
+    "expected": "match",
+    "code": "assert (saldo > 0);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-n--SONAR-java-S5863",
+    "ruleId": "SONAR-java-S5863",
+    "expected": "no_match",
+    "code": "verificarAssert(saldo);",
+    "note": "caso dourado quase-certo: o lookbehind existe para nao pegar nome que TERMINA em assert (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-n--SONAR-java-S5960",
+    "ruleId": "SONAR-java-S5960",
+    "expected": "no_match",
+    "code": "verificarAssert(saldo);",
+    "note": "caso dourado quase-certo: o lookbehind existe para nao pegar nome que TERMINA em assert (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-n--SONAR-java-S6002",
+    "ruleId": "SONAR-java-S6002",
+    "expected": "no_match",
+    "code": "verificarAssert(saldo);",
+    "note": "caso dourado quase-certo: o lookbehind existe para nao pegar nome que TERMINA em assert (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-n--SONAR-js-S5863",
+    "ruleId": "SONAR-js-S5863",
+    "expected": "no_match",
+    "code": "verificarAssert(saldo);",
+    "note": "caso dourado quase-certo: o lookbehind existe para nao pegar nome que TERMINA em assert (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-n--SONAR-js-S5914",
+    "ruleId": "SONAR-js-S5914",
+    "expected": "no_match",
+    "code": "verificarAssert(saldo);",
+    "note": "caso dourado quase-certo: o lookbehind existe para nao pegar nome que TERMINA em assert (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-n--SONAR-py-S5779",
+    "ruleId": "SONAR-py-S5779",
+    "expected": "no_match",
+    "code": "verificarAssert(saldo);",
+    "note": "caso dourado quase-certo: o lookbehind existe para nao pegar nome que TERMINA em assert (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-n--SONAR-py-S5863",
+    "ruleId": "SONAR-py-S5863",
+    "expected": "no_match",
+    "code": "verificarAssert(saldo);",
+    "note": "caso dourado quase-certo: o lookbehind existe para nao pegar nome que TERMINA em assert (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-n--SONAR-py-S5914",
+    "ruleId": "SONAR-py-S5914",
+    "expected": "no_match",
+    "code": "verificarAssert(saldo);",
+    "note": "caso dourado quase-certo: o lookbehind existe para nao pegar nome que TERMINA em assert (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-n--SONAR-py-S5915",
+    "ruleId": "SONAR-py-S5915",
+    "expected": "no_match",
+    "code": "verificarAssert(saldo);",
+    "note": "caso dourado quase-certo: o lookbehind existe para nao pegar nome que TERMINA em assert (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-n--SONAR-py-S6002",
+    "ruleId": "SONAR-py-S6002",
+    "expected": "no_match",
+    "code": "verificarAssert(saldo);",
+    "note": "caso dourado quase-certo: o lookbehind existe para nao pegar nome que TERMINA em assert (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-n--SONAR-ts-S5863",
+    "ruleId": "SONAR-ts-S5863",
+    "expected": "no_match",
+    "code": "verificarAssert(saldo);",
+    "note": "caso dourado quase-certo: o lookbehind existe para nao pegar nome que TERMINA em assert (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-assert-n--SONAR-ts-S5914",
+    "ruleId": "SONAR-ts-S5914",
+    "expected": "no_match",
+    "code": "verificarAssert(saldo);",
+    "note": "caso dourado quase-certo: o lookbehind existe para nao pegar nome que TERMINA em assert (mesmo padrao exato de SONAR-java-S2186: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-m--SONAR-cs-S4036",
+    "ruleId": "SONAR-cs-S4036",
+    "expected": "match",
+    "code": "execSync(\"git checkout \" + branch);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-m--SONAR-cs-S5883",
+    "ruleId": "SONAR-cs-S5883",
+    "expected": "match",
+    "code": "execSync(\"git checkout \" + branch);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-m--SONAR-java-S2076",
+    "ruleId": "SONAR-java-S2076",
+    "expected": "match",
+    "code": "execSync(\"git checkout \" + branch);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-m--SONAR-java-S4036",
+    "ruleId": "SONAR-java-S4036",
+    "expected": "match",
+    "code": "execSync(\"git checkout \" + branch);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-m--SONAR-java-S5883",
+    "ruleId": "SONAR-java-S5883",
+    "expected": "match",
+    "code": "execSync(\"git checkout \" + branch);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-m--SONAR-js-S2076",
+    "ruleId": "SONAR-js-S2076",
+    "expected": "match",
+    "code": "execSync(\"git checkout \" + branch);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-m--SONAR-js-S4036",
+    "ruleId": "SONAR-js-S4036",
+    "expected": "match",
+    "code": "execSync(\"git checkout \" + branch);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-m--SONAR-js-S5883",
+    "ruleId": "SONAR-js-S5883",
+    "expected": "match",
+    "code": "execSync(\"git checkout \" + branch);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-m--SONAR-js-S8701",
+    "ruleId": "SONAR-js-S8701",
+    "expected": "match",
+    "code": "execSync(\"git checkout \" + branch);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-m--SONAR-ts-S2076",
+    "ruleId": "SONAR-ts-S2076",
+    "expected": "match",
+    "code": "execSync(\"git checkout \" + branch);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-m--SONAR-ts-S4036",
+    "ruleId": "SONAR-ts-S4036",
+    "expected": "match",
+    "code": "execSync(\"git checkout \" + branch);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-m--SONAR-ts-S5883",
+    "ruleId": "SONAR-ts-S5883",
+    "expected": "match",
+    "code": "execSync(\"git checkout \" + branch);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-m--SONAR-ts-S8701",
+    "ruleId": "SONAR-ts-S8701",
+    "expected": "match",
+    "code": "execSync(\"git checkout \" + branch);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-n--SONAR-cs-S4036",
+    "ruleId": "SONAR-cs-S4036",
+    "expected": "no_match",
+    "code": "execSync(\"git status --short\");",
+    "note": "caso dourado quase-certo: comando constante nao carrega entrada (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-n--SONAR-cs-S5883",
+    "ruleId": "SONAR-cs-S5883",
+    "expected": "no_match",
+    "code": "execSync(\"git status --short\");",
+    "note": "caso dourado quase-certo: comando constante nao carrega entrada (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-n--SONAR-java-S2076",
+    "ruleId": "SONAR-java-S2076",
+    "expected": "no_match",
+    "code": "execSync(\"git status --short\");",
+    "note": "caso dourado quase-certo: comando constante nao carrega entrada (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-n--SONAR-java-S4036",
+    "ruleId": "SONAR-java-S4036",
+    "expected": "no_match",
+    "code": "execSync(\"git status --short\");",
+    "note": "caso dourado quase-certo: comando constante nao carrega entrada (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-n--SONAR-java-S5883",
+    "ruleId": "SONAR-java-S5883",
+    "expected": "no_match",
+    "code": "execSync(\"git status --short\");",
+    "note": "caso dourado quase-certo: comando constante nao carrega entrada (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-n--SONAR-js-S2076",
+    "ruleId": "SONAR-js-S2076",
+    "expected": "no_match",
+    "code": "execSync(\"git status --short\");",
+    "note": "caso dourado quase-certo: comando constante nao carrega entrada (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-n--SONAR-js-S4036",
+    "ruleId": "SONAR-js-S4036",
+    "expected": "no_match",
+    "code": "execSync(\"git status --short\");",
+    "note": "caso dourado quase-certo: comando constante nao carrega entrada (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-n--SONAR-js-S5883",
+    "ruleId": "SONAR-js-S5883",
+    "expected": "no_match",
+    "code": "execSync(\"git status --short\");",
+    "note": "caso dourado quase-certo: comando constante nao carrega entrada (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-n--SONAR-js-S8701",
+    "ruleId": "SONAR-js-S8701",
+    "expected": "no_match",
+    "code": "execSync(\"git status --short\");",
+    "note": "caso dourado quase-certo: comando constante nao carrega entrada (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-n--SONAR-ts-S2076",
+    "ruleId": "SONAR-ts-S2076",
+    "expected": "no_match",
+    "code": "execSync(\"git status --short\");",
+    "note": "caso dourado quase-certo: comando constante nao carrega entrada (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-n--SONAR-ts-S4036",
+    "ruleId": "SONAR-ts-S4036",
+    "expected": "no_match",
+    "code": "execSync(\"git status --short\");",
+    "note": "caso dourado quase-certo: comando constante nao carrega entrada (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-n--SONAR-ts-S5883",
+    "ruleId": "SONAR-ts-S5883",
+    "expected": "no_match",
+    "code": "execSync(\"git status --short\");",
+    "note": "caso dourado quase-certo: comando constante nao carrega entrada (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-os-command-n--SONAR-ts-S8701",
+    "ruleId": "SONAR-ts-S8701",
+    "expected": "no_match",
+    "code": "execSync(\"git status --short\");",
+    "note": "caso dourado quase-certo: comando constante nao carrega entrada (mesmo padrao exato de SONAR-cs-S2076: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-iv-fixo-m--SONAR-java-S3329",
+    "ruleId": "SONAR-java-S3329",
+    "expected": "match",
+    "code": "var enc = aes.CreateEncryptor();",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S3329: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-iv-fixo-m--SONAR-java-S6432",
+    "ruleId": "SONAR-java-S6432",
+    "expected": "match",
+    "code": "var enc = aes.CreateEncryptor();",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S3329: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-iv-fixo-m--SONAR-py-S3329",
+    "ruleId": "SONAR-py-S3329",
+    "expected": "match",
+    "code": "var enc = aes.CreateEncryptor();",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S3329: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-iv-fixo-n--SONAR-java-S3329",
+    "ruleId": "SONAR-java-S3329",
+    "expected": "no_match",
+    "code": "var enc = aes.CreateEncryptor(chave, ivAleatorio);",
+    "note": "caso dourado quase-certo: passar IV explicito e a correcao do defeito (mesmo padrao exato de SONAR-cs-S3329: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-iv-fixo-n--SONAR-java-S6432",
+    "ruleId": "SONAR-java-S6432",
+    "expected": "no_match",
+    "code": "var enc = aes.CreateEncryptor(chave, ivAleatorio);",
+    "note": "caso dourado quase-certo: passar IV explicito e a correcao do defeito (mesmo padrao exato de SONAR-cs-S3329: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-iv-fixo-n--SONAR-py-S3329",
+    "ruleId": "SONAR-py-S3329",
+    "expected": "no_match",
+    "code": "var enc = aes.CreateEncryptor(chave, ivAleatorio);",
+    "note": "caso dourado quase-certo: passar IV explicito e a correcao do defeito (mesmo padrao exato de SONAR-cs-S3329: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-chave-curta-m--SONAR-java-S4426",
+    "ruleId": "SONAR-java-S4426",
+    "expected": "match",
+    "code": "var rsa = new RSACryptoServiceProvider { KeySize = 1024 };",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S4426: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-chave-curta-m--SONAR-js-S4426",
+    "ruleId": "SONAR-js-S4426",
+    "expected": "match",
+    "code": "var rsa = new RSACryptoServiceProvider { KeySize = 1024 };",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S4426: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-chave-curta-m--SONAR-ts-S4426",
+    "ruleId": "SONAR-ts-S4426",
+    "expected": "match",
+    "code": "var rsa = new RSACryptoServiceProvider { KeySize = 1024 };",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cs-S4426: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-chave-curta-n--SONAR-java-S4426",
+    "ruleId": "SONAR-java-S4426",
+    "expected": "no_match",
+    "code": "var rsa = new RSACryptoServiceProvider { KeySize = 4096 };",
+    "note": "caso dourado quase-certo: 4096 esta acima do minimo recomendado (mesmo padrao exato de SONAR-cs-S4426: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-chave-curta-n--SONAR-js-S4426",
+    "ruleId": "SONAR-js-S4426",
+    "expected": "no_match",
+    "code": "var rsa = new RSACryptoServiceProvider { KeySize = 4096 };",
+    "note": "caso dourado quase-certo: 4096 esta acima do minimo recomendado (mesmo padrao exato de SONAR-cs-S4426: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-chave-curta-n--SONAR-ts-S4426",
+    "ruleId": "SONAR-ts-S4426",
+    "expected": "no_match",
+    "code": "var rsa = new RSACryptoServiceProvider { KeySize = 4096 };",
+    "note": "caso dourado quase-certo: 4096 esta acima do minimo recomendado (mesmo padrao exato de SONAR-cs-S4426: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-finalize-m--SONAR-java-S1111",
+    "ruleId": "SONAR-java-S1111",
+    "expected": "match",
+    "code": "protected void finalize() { liberar(); }",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S1113: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-finalize-m--SONAR-java-S1174",
+    "ruleId": "SONAR-java-S1174",
+    "expected": "match",
+    "code": "protected void finalize() { liberar(); }",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S1113: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-finalize-m--SONAR-java-S1175",
+    "ruleId": "SONAR-java-S1175",
+    "expected": "match",
+    "code": "protected void finalize() { liberar(); }",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S1113: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-finalize-n--SONAR-java-S1111",
+    "ruleId": "SONAR-java-S1111",
+    "expected": "no_match",
+    "code": "public void finalizarPedido() { salvar(); }",
+    "note": "caso dourado quase-certo: metodo cujo nome comeca com finaliz nao e o finalize da JVM (mesmo padrao exato de SONAR-java-S1113: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-finalize-n--SONAR-java-S1174",
+    "ruleId": "SONAR-java-S1174",
+    "expected": "no_match",
+    "code": "public void finalizarPedido() { salvar(); }",
+    "note": "caso dourado quase-certo: metodo cujo nome comeca com finaliz nao e o finalize da JVM (mesmo padrao exato de SONAR-java-S1113: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-finalize-n--SONAR-java-S1175",
+    "ruleId": "SONAR-java-S1175",
+    "expected": "no_match",
+    "code": "public void finalizarPedido() { salvar(); }",
+    "note": "caso dourado quase-certo: metodo cujo nome comeca com finaliz nao e o finalize da JVM (mesmo padrao exato de SONAR-java-S1113: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-mass-assign-m--SONAR-js-S4684",
+    "ruleId": "SONAR-js-S4684",
+    "expected": "match",
+    "code": "Object.assign(usuario, req.body);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S4684: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-mass-assign-m--SONAR-ts-S4684",
+    "ruleId": "SONAR-ts-S4684",
+    "expected": "match",
+    "code": "Object.assign(usuario, req.body);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S4684: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-mass-assign-n--SONAR-js-S4684",
+    "ruleId": "SONAR-js-S4684",
+    "expected": "no_match",
+    "code": "Object.assign(usuario, { nome: req.body.nome });",
+    "note": "caso dourado quase-certo: copiar campo a campo e a correcao (mesmo padrao exato de SONAR-java-S4684: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-mass-assign-n--SONAR-ts-S4684",
+    "ruleId": "SONAR-ts-S4684",
+    "expected": "no_match",
+    "code": "Object.assign(usuario, { nome: req.body.nome });",
+    "note": "caso dourado quase-certo: copiar campo a campo e a correcao (mesmo padrao exato de SONAR-java-S4684: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-broadcast-m--SONAR-java-S5320",
+    "ruleId": "SONAR-java-S5320",
+    "expected": "match",
+    "code": "sendBroadcast(intent);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S5322: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-broadcast-m--SONAR-java-S5324",
+    "ruleId": "SONAR-java-S5324",
+    "expected": "match",
+    "code": "sendBroadcast(intent);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S5322: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-broadcast-m--SONAR-java-S6288",
+    "ruleId": "SONAR-java-S6288",
+    "expected": "match",
+    "code": "sendBroadcast(intent);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S5322: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-broadcast-m--SONAR-java-S6384",
+    "ruleId": "SONAR-java-S6384",
+    "expected": "match",
+    "code": "sendBroadcast(intent);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S5322: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-broadcast-n--SONAR-java-S5320",
+    "ruleId": "SONAR-java-S5320",
+    "expected": "no_match",
+    "code": "sendBroadcastSeguro(intent);",
+    "note": "caso dourado quase-certo: o parenteses tem de vir logo apos o nome exato (mesmo padrao exato de SONAR-java-S5322: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-broadcast-n--SONAR-java-S5324",
+    "ruleId": "SONAR-java-S5324",
+    "expected": "no_match",
+    "code": "sendBroadcastSeguro(intent);",
+    "note": "caso dourado quase-certo: o parenteses tem de vir logo apos o nome exato (mesmo padrao exato de SONAR-java-S5322: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-broadcast-n--SONAR-java-S6288",
+    "ruleId": "SONAR-java-S6288",
+    "expected": "no_match",
+    "code": "sendBroadcastSeguro(intent);",
+    "note": "caso dourado quase-certo: o parenteses tem de vir logo apos o nome exato (mesmo padrao exato de SONAR-java-S5322: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-broadcast-n--SONAR-java-S6384",
+    "ruleId": "SONAR-java-S6384",
+    "expected": "no_match",
+    "code": "sendBroadcastSeguro(intent);",
+    "note": "caso dourado quase-certo: o parenteses tem de vir logo apos o nome exato (mesmo padrao exato de SONAR-java-S5322: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-recurso-m--SONAR-java-S2095",
+    "ruleId": "SONAR-java-S2095",
+    "expected": "match",
+    "code": "InputStream in = new FileInputStream(arquivo);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-cobol-S1725: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-recurso-n--SONAR-java-S2095",
+    "ruleId": "SONAR-java-S2095",
+    "expected": "no_match",
+    "code": "InputStream in = abrirFileInputStream(arquivo);",
+    "note": "caso dourado quase-certo: sem o new nao ha criacao direta do recurso (mesmo padrao exato de SONAR-cobol-S1725: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-redirect-m--SONAR-ts-S6105",
+    "ruleId": "SONAR-ts-S6105",
+    "expected": "match",
+    "code": "res.redirect(req.query.proximo);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-js-S6105: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-redirect-n--SONAR-ts-S6105",
+    "ruleId": "SONAR-ts-S6105",
+    "expected": "no_match",
+    "code": "res.redirect(\"/painel\");",
+    "note": "caso dourado quase-certo: destino constante nao vem do usuario (mesmo padrao exato de SONAR-js-S6105: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-double-checked-m--SONAR-java-S3064",
+    "ruleId": "SONAR-java-S3064",
+    "expected": "match",
+    "code": "if (instancia == null) synchronized (this) { criar(); }",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2168: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-double-checked-n--SONAR-java-S3064",
+    "ruleId": "SONAR-java-S3064",
+    "expected": "no_match",
+    "code": "if (instancia == null) { criar(); }",
+    "note": "caso dourado quase-certo: sem synchronized nao ha o padrao quebrado (mesmo padrao exato de SONAR-java-S2168: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-sleep-m--SONAR-cs-S2925",
+    "ruleId": "SONAR-cs-S2925",
+    "expected": "match",
+    "code": "SLEEP(5000);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2276: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-sleep-m--SONAR-java-S2925",
+    "ruleId": "SONAR-java-S2925",
+    "expected": "match",
+    "code": "SLEEP(5000);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2276: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-sleep-m--SONAR-js-S8985",
+    "ruleId": "SONAR-js-S8985",
+    "expected": "match",
+    "code": "SLEEP(5000);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2276: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-sleep-m--SONAR-py-S7484",
+    "ruleId": "SONAR-py-S7484",
+    "expected": "match",
+    "code": "SLEEP(5000);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2276: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-sleep-m--SONAR-py-S7486",
+    "ruleId": "SONAR-py-S7486",
+    "expected": "match",
+    "code": "SLEEP(5000);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2276: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-sleep-m--SONAR-py-S7488",
+    "ruleId": "SONAR-py-S7488",
+    "expected": "match",
+    "code": "SLEEP(5000);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2276: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-sleep-m--SONAR-py-S7491",
+    "ruleId": "SONAR-py-S7491",
+    "expected": "match",
+    "code": "SLEEP(5000);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2276: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-sleep-m--SONAR-ts-S8985",
+    "ruleId": "SONAR-ts-S8985",
+    "expected": "match",
+    "code": "SLEEP(5000);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S2276: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-sleep-n--SONAR-cs-S2925",
+    "ruleId": "SONAR-cs-S2925",
+    "expected": "no_match",
+    "code": "modoSleep = true;",
+    "note": "caso dourado quase-certo: sem parenteses nao e chamada de espera (mesmo padrao exato de SONAR-java-S2276: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-sleep-n--SONAR-java-S2925",
+    "ruleId": "SONAR-java-S2925",
+    "expected": "no_match",
+    "code": "modoSleep = true;",
+    "note": "caso dourado quase-certo: sem parenteses nao e chamada de espera (mesmo padrao exato de SONAR-java-S2276: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-sleep-n--SONAR-js-S8985",
+    "ruleId": "SONAR-js-S8985",
+    "expected": "no_match",
+    "code": "modoSleep = true;",
+    "note": "caso dourado quase-certo: sem parenteses nao e chamada de espera (mesmo padrao exato de SONAR-java-S2276: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-sleep-n--SONAR-py-S7484",
+    "ruleId": "SONAR-py-S7484",
+    "expected": "no_match",
+    "code": "modoSleep = true;",
+    "note": "caso dourado quase-certo: sem parenteses nao e chamada de espera (mesmo padrao exato de SONAR-java-S2276: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-sleep-n--SONAR-py-S7486",
+    "ruleId": "SONAR-py-S7486",
+    "expected": "no_match",
+    "code": "modoSleep = true;",
+    "note": "caso dourado quase-certo: sem parenteses nao e chamada de espera (mesmo padrao exato de SONAR-java-S2276: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-sleep-n--SONAR-py-S7488",
+    "ruleId": "SONAR-py-S7488",
+    "expected": "no_match",
+    "code": "modoSleep = true;",
+    "note": "caso dourado quase-certo: sem parenteses nao e chamada de espera (mesmo padrao exato de SONAR-java-S2276: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-sleep-n--SONAR-py-S7491",
+    "ruleId": "SONAR-py-S7491",
+    "expected": "no_match",
+    "code": "modoSleep = true;",
+    "note": "caso dourado quase-certo: sem parenteses nao e chamada de espera (mesmo padrao exato de SONAR-java-S2276: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-sleep-n--SONAR-ts-S8985",
+    "ruleId": "SONAR-ts-S8985",
+    "expected": "no_match",
+    "code": "modoSleep = true;",
+    "note": "caso dourado quase-certo: sem parenteses nao e chamada de espera (mesmo padrao exato de SONAR-java-S2276: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-spel-m--SONAR-java-S6804",
+    "ruleId": "SONAR-java-S6804",
+    "expected": "match",
+    "code": "parser.parseExpression(entradaDoUsuario);",
+    "note": "caso dourado: a regra DEVE pegar isto (mesmo padrao exato de SONAR-java-S6857: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "grave-spel-n--SONAR-java-S6804",
+    "ruleId": "SONAR-java-S6804",
+    "expected": "no_match",
+    "code": "parser.parseJson(entradaDoUsuario);",
+    "note": "caso dourado quase-certo: outro parser nao avalia expressao (mesmo padrao exato de SONAR-java-S6857: matchPattern depende so do padrao, entao o caso vale identicamente)"
   }
 ]

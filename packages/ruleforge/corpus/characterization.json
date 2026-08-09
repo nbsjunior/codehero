@@ -3,7 +3,7 @@
   "_geradoPor": "node scripts/mine-characterization.mjs",
   "_acervo": {
     "raiz": ".",
-    "arquivos": 249
+    "arquivos": 289
   },
   "casos": [
     {
@@ -50,9 +50,25 @@
       "id": "car-HERO-SEC-0918-ssrf",
       "ruleId": "HERO-SEC-0918-ssrf",
       "expected": "match",
-      "code": "fetch(`/mirror?u=${req.query.url}`);",
+      "code": "const r = await fetch(`${server}/ingestAnalysis`, {",
       "profile": "clike",
-      "note": "caracterizacao: extraido de tmp/smoke/vuln.js:9. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/ide-vscode/src/extension.ts:332. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-0601-open-redirect",
+      "ruleId": "HERO-SEC-0601-open-redirect",
+      "expected": "match",
+      "code": "code: \"res.redirect(`https://${userUrl}`)\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/scanner/test/debugRules.mjs:12. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-0330-insecure-random",
+      "ruleId": "HERO-SEC-0330-insecure-random",
+      "expected": "match",
+      "code": "const parts = keys.map((k) => keyPart(k, k.domain[Math.floor(Math.random() * k.domain.length)]!));",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/locksmith/src/witness.ts:91. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-HERO-SEC-0295-tls-verify-disabled",
@@ -60,7 +76,7 @@
       "expected": "match",
       "code": "message: \"Verificação TLS desabilitada (NODE_TLS_REJECT_UNAUTHORIZED=0).\",",
       "profile": "clike",
-      "note": "caracterizacao: extraido de packages/contracts/src/rules.ts:388. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/contracts/src/rules.ts:390. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-HERO-SEC-0506-pipe-to-shell",
@@ -68,7 +84,7 @@
       "expected": "match",
       "code": "// \"Sem curl | bash em scripts de setup\". Prosa não é comando.",
       "profile": "clike",
-      "note": "caracterizacao: extraido de packages/contracts/src/rules.ts:435. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/contracts/src/rules.ts:437. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-HERO-SMELL-0489-debug-statement",
@@ -76,7 +92,7 @@
       "expected": "match",
       "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:280. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:307. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-HERO-SMELL-0546-todo-marker",
@@ -109,6 +125,38 @@
       "code": "query = cursor.execute(\"SELECT * FROM users WHERE name = '\" + name + \"'\")",
       "profile": "python",
       "note": "caracterizacao: extraido de examples/vulnerable_sample.py:8. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-0078-cmd-injection-java",
+      "ruleId": "HERO-SEC-0078-cmd-injection-java",
+      "expected": "match",
+      "code": "code: 'Runtime.getRuntime().exec(\"cmd \" + userInput)',",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/scanner/test/evalSecRules.mjs:77. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-0079-xss-java",
+      "ruleId": "HERO-SEC-0079-xss-java",
+      "expected": "match",
+      "code": "else process.stdout.write(json + \"\\n\");",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/scanner/src/index.ts:522. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-0327-weak-hash-java",
+      "ruleId": "HERO-SEC-0327-weak-hash-java",
+      "expected": "match",
+      "code": "[\"SONAR-java-S2070\", 'MessageDigest.getInstance(\"MD5\");', C.java],",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/scanner/test/evalSonarV2.mjs:52. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-0090-ldap-injection-java",
+      "ruleId": "HERO-SEC-0090-ldap-injection-java",
+      "expected": "match",
+      "code": "[\"SONAR-js-S2078\", 'ldap.search(\"(uid=\" + userInput + \")\");', C.js],",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/scanner/test/evalSonarV2.mjs:28. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-HERO-SEC-0078-xp-cmdshell-tsql",
@@ -204,7 +252,7 @@
       "expected": "match",
       "code": "STOP RUN.",
       "profile": "cobol",
-      "note": "caracterizacao: extraido de examples/legacy/db2-batch.cbl:30. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de examples/legacy/conciliacao.cbl:37. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-HERO-SMELL-redefines-cobol",
@@ -252,7 +300,7 @@
       "expected": "match",
       "code": "EXEC SQL",
       "profile": "cobol",
-      "note": "caracterizacao: extraido de examples/legacy/db2-batch.cbl:34. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de examples/legacy/conciliacao.cbl:41. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-HERO-SEC-cobol-accept-unvalidated",
@@ -276,7 +324,7 @@
       "expected": "match",
       "code": "if (/^UNSTRING\\b/i.test(line)) {",
       "profile": "clike",
-      "note": "caracterizacao: extraido de packages/engine/src/structural/cobolParse.ts:272. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/engine/src/structural/cobolParse.ts:287. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-HERO-SMELL-cobol-alter",
@@ -300,7 +348,7 @@
       "expected": "match",
       "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:280. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:307. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-cobol-SQL.DynamicSqlCheck",
@@ -327,6 +375,14 @@
       "note": "caracterizacao: extraido de packages/engine/src/dataflow.ts:51. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
+      "id": "car-SONAR-cs-S1313",
+      "ruleId": "SONAR-cs-S1313",
+      "expected": "match",
+      "code": "\"http://127.0.0.1:3000\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/githubActionInstall.ts:26. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
       "id": "car-SONAR-cs-S1481",
       "ruleId": "SONAR-cs-S1481",
       "expected": "match",
@@ -341,6 +397,14 @@
       "code": "const snap = await db.doc(`platformAdmins/${uid}`).get();",
       "profile": "clike",
       "note": "caracterizacao: extraido de apps/functions/src/admin.ts:7. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S2083",
+      "ruleId": "SONAR-cs-S2083",
+      "expected": "match",
+      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-cs-S2245",
@@ -370,9 +434,9 @@
       "id": "car-SONAR-cs-S2631",
       "ruleId": "SONAR-cs-S2631",
       "expected": "match",
-      "code": "return log.map((line) => line.replace(new RegExp(`^${side}:`), \"\"));",
+      "code": "const guardaNull = new RegExp(`if\\\\s*\\\\(\\\\s*${v}\\\\s*[=!]=\\\\s*null`).test(linha);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de packages/locksmith/src/runner.ts:191. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/engine/src/lineTaint.ts:283. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-cs-S3241",
@@ -412,7 +476,7 @@
       "expected": "match",
       "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:280. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:307. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-cs-S4790",
@@ -463,6 +527,22 @@
       "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
+      "id": "car-SONAR-cs-S5542",
+      "ruleId": "SONAR-cs-S5542",
+      "expected": "match",
+      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S5547",
+      "ruleId": "SONAR-cs-S5547",
+      "expected": "match",
+      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
       "id": "car-SONAR-cs-S5766",
       "ruleId": "SONAR-cs-S5766",
       "expected": "match",
@@ -485,6 +565,14 @@
       "code": "return new RegExp(body, [...collected].join(\"\"));",
       "profile": "clike",
       "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S6096",
+      "ruleId": "SONAR-cs-S6096",
+      "expected": "match",
+      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-cs-S6173",
@@ -543,12 +631,28 @@
       "note": "caracterizacao: extraido de packages/engine/src/dataflow.ts:51. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
+      "id": "car-SONAR-java-S1313",
+      "ruleId": "SONAR-java-S1313",
+      "expected": "match",
+      "code": "\"http://127.0.0.1:3000\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/githubActionInstall.ts:26. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
       "id": "car-SONAR-java-S1481",
       "ruleId": "SONAR-java-S1481",
       "expected": "match",
       "code": "re: /unused import|unnecessary import|remove this unused/i,",
       "profile": "clike",
       "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:485. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S2083",
+      "ruleId": "SONAR-java-S2083",
+      "expected": "match",
+      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-java-S2112",
@@ -578,9 +682,9 @@
       "id": "car-SONAR-java-S2631",
       "ruleId": "SONAR-java-S2631",
       "expected": "match",
-      "code": "return log.map((line) => line.replace(new RegExp(`^${side}:`), \"\"));",
+      "code": "const guardaNull = new RegExp(`if\\\\s*\\\\(\\\\s*${v}\\\\s*[=!]=\\\\s*null`).test(linha);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de packages/locksmith/src/runner.ts:191. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/engine/src/lineTaint.ts:283. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-java-S2639",
@@ -628,7 +732,7 @@
       "expected": "match",
       "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:280. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:307. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-java-S4544",
@@ -709,6 +813,22 @@
       "code": "re: /hostname.*(verif|check)|setHostnameVerifier|Server hostnames should be verified/i,",
       "profile": "clike",
       "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:449. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S5542",
+      "ruleId": "SONAR-java-S5542",
+      "expected": "match",
+      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-java-S5547",
+      "ruleId": "SONAR-java-S5547",
+      "expected": "match",
+      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-java-S5689",
@@ -807,6 +927,14 @@
       "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
+      "id": "car-SONAR-java-S6096",
+      "ruleId": "SONAR-java-S6096",
+      "expected": "match",
+      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
       "id": "car-SONAR-java-S6173",
       "ruleId": "SONAR-java-S6173",
       "expected": "match",
@@ -860,7 +988,7 @@
       "expected": "match",
       "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:280. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:307. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-java-S8786",
@@ -869,6 +997,14 @@
       "code": "return new RegExp(body, [...collected].join(\"\"));",
       "profile": "clike",
       "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S1313",
+      "ruleId": "SONAR-js-S1313",
+      "expected": "match",
+      "code": "\"http://127.0.0.1:3000\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/githubActionInstall.ts:26. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-js-S1481",
@@ -885,6 +1021,14 @@
       "code": "return eval(payload)",
       "profile": "python",
       "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S2083",
+      "ruleId": "SONAR-js-S2083",
+      "expected": "match",
+      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-js-S2245",
@@ -906,9 +1050,9 @@
       "id": "car-SONAR-js-S2631",
       "ruleId": "SONAR-js-S2631",
       "expected": "match",
-      "code": "return log.map((line) => line.replace(new RegExp(`^${side}:`), \"\"));",
+      "code": "const guardaNull = new RegExp(`if\\\\s*\\\\(\\\\s*${v}\\\\s*[=!]=\\\\s*null`).test(linha);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de packages/locksmith/src/runner.ts:191. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/engine/src/lineTaint.ts:283. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-js-S3403",
@@ -932,7 +1076,7 @@
       "expected": "match",
       "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:280. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:307. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-js-S4790",
@@ -981,6 +1125,22 @@
       "code": "re: /hostname.*(verif|check)|setHostnameVerifier|Server hostnames should be verified/i,",
       "profile": "clike",
       "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:449. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S5542",
+      "ruleId": "SONAR-js-S5542",
+      "expected": "match",
+      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S5547",
+      "ruleId": "SONAR-js-S5547",
+      "expected": "match",
+      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-js-S5689",
@@ -1071,6 +1231,14 @@
       "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
+      "id": "car-SONAR-js-S6096",
+      "ruleId": "SONAR-js-S6096",
+      "expected": "match",
+      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
       "id": "car-SONAR-js-S6109",
       "ruleId": "SONAR-js-S6109",
       "expected": "match",
@@ -1151,6 +1319,14 @@
       "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
+      "id": "car-SONAR-js-S8707",
+      "ruleId": "SONAR-js-S8707",
+      "expected": "match",
+      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
       "id": "car-SONAR-js-S8786",
       "ruleId": "SONAR-js-S8786",
       "expected": "match",
@@ -1223,6 +1399,14 @@
       "note": "caracterizacao: extraido de examples/vulnerable_sample.py:12. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
+      "id": "car-SONAR-plsql-S5547",
+      "ruleId": "SONAR-plsql-S5547",
+      "expected": "match",
+      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
       "id": "car-SONAR-py-PrintStatementUsage",
       "ruleId": "SONAR-py-PrintStatementUsage",
       "expected": "match",
@@ -1239,12 +1423,28 @@
       "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:558. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
+      "id": "car-SONAR-py-S1313",
+      "ruleId": "SONAR-py-S1313",
+      "expected": "match",
+      "code": "\"http://127.0.0.1:3000\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/githubActionInstall.ts:26. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
       "id": "car-SONAR-py-S1481",
       "ruleId": "SONAR-py-S1481",
       "expected": "match",
       "code": "re: /unused import|unnecessary import|remove this unused/i,",
       "profile": "clike",
       "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:485. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S2083",
+      "ruleId": "SONAR-py-S2083",
+      "expected": "match",
+      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-py-S2245",
@@ -1266,9 +1466,9 @@
       "id": "car-SONAR-py-S2631",
       "ruleId": "SONAR-py-S2631",
       "expected": "match",
-      "code": "return log.map((line) => line.replace(new RegExp(`^${side}:`), \"\"));",
+      "code": "const guardaNull = new RegExp(`if\\\\s*\\\\(\\\\s*${v}\\\\s*[=!]=\\\\s*null`).test(linha);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de packages/locksmith/src/runner.ts:191. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/engine/src/lineTaint.ts:283. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-py-S4423",
@@ -1284,7 +1484,7 @@
       "expected": "match",
       "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:280. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:307. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-py-S4790",
@@ -1341,6 +1541,22 @@
       "code": "re: /hostname.*(verif|check)|setHostnameVerifier|Server hostnames should be verified/i,",
       "profile": "clike",
       "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:449. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S5542",
+      "ruleId": "SONAR-py-S5542",
+      "expected": "match",
+      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S5547",
+      "ruleId": "SONAR-py-S5547",
+      "expected": "match",
+      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-py-S5842",
@@ -1405,6 +1621,14 @@
       "code": "return new RegExp(body, [...collected].join(\"\"));",
       "profile": "clike",
       "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S6096",
+      "ruleId": "SONAR-py-S6096",
+      "expected": "match",
+      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-py-S6323",
@@ -1487,6 +1711,14 @@
       "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
+      "id": "car-SONAR-py-S8707",
+      "ruleId": "SONAR-py-S8707",
+      "expected": "match",
+      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
       "id": "car-SONAR-py-S8786",
       "ruleId": "SONAR-py-S8786",
       "expected": "match",
@@ -1495,12 +1727,28 @@
       "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
+      "id": "car-SONAR-ts-S1313",
+      "ruleId": "SONAR-ts-S1313",
+      "expected": "match",
+      "code": "\"http://127.0.0.1:3000\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/githubActionInstall.ts:26. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
       "id": "car-SONAR-ts-S1523",
       "ruleId": "SONAR-ts-S1523",
       "expected": "match",
       "code": "return eval(payload)",
       "profile": "python",
       "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S2083",
+      "ruleId": "SONAR-ts-S2083",
+      "expected": "match",
+      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-ts-S2245",
@@ -1522,9 +1770,9 @@
       "id": "car-SONAR-ts-S2631",
       "ruleId": "SONAR-ts-S2631",
       "expected": "match",
-      "code": "return log.map((line) => line.replace(new RegExp(`^${side}:`), \"\"));",
+      "code": "const guardaNull = new RegExp(`if\\\\s*\\\\(\\\\s*${v}\\\\s*[=!]=\\\\s*null`).test(linha);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de packages/locksmith/src/runner.ts:191. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/engine/src/lineTaint.ts:283. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-ts-S4423",
@@ -1540,7 +1788,7 @@
       "expected": "match",
       "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:280. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:307. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-ts-S4790",
@@ -1589,6 +1837,22 @@
       "code": "re: /hostname.*(verif|check)|setHostnameVerifier|Server hostnames should be verified/i,",
       "profile": "clike",
       "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:449. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S5542",
+      "ruleId": "SONAR-ts-S5542",
+      "expected": "match",
+      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S5547",
+      "ruleId": "SONAR-ts-S5547",
+      "expected": "match",
+      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-ts-S5689",
@@ -1679,6 +1943,14 @@
       "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
+      "id": "car-SONAR-ts-S6096",
+      "ruleId": "SONAR-ts-S6096",
+      "expected": "match",
+      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
       "id": "car-SONAR-ts-S6109",
       "ruleId": "SONAR-ts-S6109",
       "expected": "match",
@@ -1767,12 +2039,28 @@
       "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
+      "id": "car-SONAR-ts-S8707",
+      "ruleId": "SONAR-ts-S8707",
+      "expected": "match",
+      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
       "id": "car-SONAR-ts-S8786",
       "ruleId": "SONAR-ts-S8786",
       "expected": "match",
       "code": "return new RegExp(body, [...collected].join(\"\"));",
       "profile": "clike",
       "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-tsql-S1313",
+      "ruleId": "SONAR-tsql-S1313",
+      "expected": "match",
+      "code": "\"http://127.0.0.1:3000\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/githubActionInstall.ts:26. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-tsql-S1481",
@@ -1818,78 +2106,223 @@
   "orcamentos": [
     {
       "ruleId": "HERO-SEC-cobol-string-no-overflow",
-      "acertos": 2198,
+      "acertos": 2379,
       "severidade": "MAJOR"
     },
     {
       "ruleId": "HERO-SMELL-string-no-overflow-cobol",
-      "acertos": 2196,
+      "acertos": 2378,
       "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-cs-S1696",
-      "acertos": 994,
+      "acertos": 1125,
       "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-cs-S2259",
-      "acertos": 994,
+      "acertos": 1125,
       "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-cobol-S4507",
-      "acertos": 400,
+      "acertos": 616,
       "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-cs-S4507",
-      "acertos": 400,
+      "acertos": 616,
       "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-java-S4507",
-      "acertos": 400,
+      "acertos": 616,
       "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-java-S8469",
-      "acertos": 400,
+      "acertos": 616,
       "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-js-S4507",
-      "acertos": 400,
+      "acertos": 616,
       "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-py-S4507",
-      "acertos": 400,
+      "acertos": 616,
       "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-ts-S4507",
-      "acertos": 400,
+      "acertos": 616,
       "severidade": "MINOR"
     },
     {
       "ruleId": "HERO-SMELL-0489-debug-statement",
-      "acertos": 398,
+      "acertos": 614,
       "severidade": "MINOR"
     },
     {
+      "ruleId": "SONAR-cs-S2083",
+      "acertos": 62,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-cs-S6096",
+      "acertos": 62,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-java-S2083",
+      "acertos": 62,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-java-S6096",
+      "acertos": 62,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-js-S2083",
+      "acertos": 62,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-js-S6096",
+      "acertos": 62,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-js-S8707",
+      "acertos": 62,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S2083",
+      "acertos": 62,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-py-S6096",
+      "acertos": 62,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-py-S8707",
+      "acertos": 62,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S2083",
+      "acertos": 62,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-ts-S6096",
+      "acertos": 62,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-ts-S8707",
+      "acertos": 62,
+      "severidade": "MAJOR"
+    },
+    {
       "ruleId": "SONAR-java-S6201",
-      "acertos": 54,
+      "acertos": 60,
       "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-cs-S1075",
-      "acertos": 53,
+      "acertos": 54,
       "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-java-S1075",
-      "acertos": 53,
+      "acertos": 54,
       "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-cobol-S1134",
+      "acertos": 47,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-cobol-S1135",
+      "acertos": 47,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-cs-S1134",
+      "acertos": 47,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S1135",
+      "acertos": 47,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-java-S1134",
+      "acertos": 47,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S1135",
+      "acertos": 47,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-js-S1134",
+      "acertos": 47,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-js-S1135",
+      "acertos": 47,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-plsql-S1134",
+      "acertos": 47,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-plsql-S1135",
+      "acertos": 47,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-py-S1134",
+      "acertos": 47,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S1135",
+      "acertos": 47,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-ts-S1134",
+      "acertos": 47,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S1135",
+      "acertos": 47,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-tsql-S1134",
+      "acertos": 47,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-tsql-S1135",
+      "acertos": 47,
+      "severidade": "INFO"
     },
     {
       "ruleId": "SONAR-cs-S6561",
@@ -1907,99 +2340,204 @@
       "severidade": "CRITICAL"
     },
     {
-      "ruleId": "SONAR-cobol-S1134",
-      "acertos": 33,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-cobol-S1135",
-      "acertos": 33,
-      "severidade": "INFO"
-    },
-    {
-      "ruleId": "SONAR-cs-S1134",
-      "acertos": 33,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-cs-S1135",
-      "acertos": 33,
-      "severidade": "INFO"
-    },
-    {
-      "ruleId": "SONAR-java-S1134",
-      "acertos": 33,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-java-S1135",
-      "acertos": 33,
-      "severidade": "INFO"
-    },
-    {
-      "ruleId": "SONAR-js-S1134",
-      "acertos": 33,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-js-S1135",
-      "acertos": 33,
-      "severidade": "INFO"
-    },
-    {
-      "ruleId": "SONAR-plsql-S1134",
-      "acertos": 33,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-plsql-S1135",
-      "acertos": 33,
-      "severidade": "INFO"
-    },
-    {
-      "ruleId": "SONAR-py-S1134",
-      "acertos": 33,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-py-S1135",
-      "acertos": 33,
-      "severidade": "INFO"
-    },
-    {
-      "ruleId": "SONAR-ts-S1134",
-      "acertos": 33,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-ts-S1135",
-      "acertos": 33,
-      "severidade": "INFO"
-    },
-    {
-      "ruleId": "SONAR-tsql-S1134",
-      "acertos": 33,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-tsql-S1135",
-      "acertos": 33,
-      "severidade": "INFO"
-    },
-    {
       "ruleId": "SONAR-ts-S6568",
-      "acertos": 27,
+      "acertos": 32,
       "severidade": "MINOR"
     },
     {
       "ruleId": "HERO-SMELL-call-dynamic-cobol",
-      "acertos": 22,
+      "acertos": 23,
       "severidade": "MAJOR"
     },
     {
       "ruleId": "HERO-SMELL-todo-cobol",
-      "acertos": 16,
+      "acertos": 22,
       "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-cobol-SQL.DynamicSqlCheck",
+      "acertos": 14,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-js-S8702",
+      "acertos": 14,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S8702",
+      "acertos": 14,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S8702",
+      "acertos": 14,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-exec-sql-no-sqlcode-hint-cobol",
+      "acertos": 12,
+      "severidade": "INFO"
+    },
+    {
+      "ruleId": "SONAR-cs-S2053",
+      "acertos": 12,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-cs-S2068",
+      "acertos": 12,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S2115",
+      "acertos": 12,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-cs-S5344",
+      "acertos": 12,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-cs-S6418",
+      "acertos": 12,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-cs-S6781",
+      "acertos": 12,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-java-S2053",
+      "acertos": 12,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-java-S2068",
+      "acertos": 12,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S2115",
+      "acertos": 12,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-java-S5344",
+      "acertos": 12,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-java-S6242",
+      "acertos": 12,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S6418",
+      "acertos": 12,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-java-S6437",
+      "acertos": 12,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-java-S8912",
+      "acertos": 12,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-js-S2068",
+      "acertos": 12,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-js-S6418",
+      "acertos": 12,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-js-S6437",
+      "acertos": 12,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-py-S2053",
+      "acertos": 12,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-py-S2068",
+      "acertos": 12,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S2115",
+      "acertos": 12,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-py-S5344",
+      "acertos": 12,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-py-S6418",
+      "acertos": 12,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-py-S6437",
+      "acertos": 12,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-py-S6779",
+      "acertos": 12,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-py-S6781",
+      "acertos": 12,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-ts-S2068",
+      "acertos": 12,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S6418",
+      "acertos": 12,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-ts-S6437",
+      "acertos": 12,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-tsql-S2068",
+      "acertos": 12,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S1313",
+      "acertos": 11,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-java-S1313",
+      "acertos": 11,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-js-S1313",
+      "acertos": 11,
+      "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-js-S3403",
@@ -2007,13 +2545,23 @@
       "severidade": "MAJOR"
     },
     {
-      "ruleId": "HERO-SMELL-exec-sql-no-sqlcode-hint-cobol",
-      "acertos": 9,
-      "severidade": "INFO"
+      "ruleId": "SONAR-py-S1313",
+      "acertos": 11,
+      "severidade": "MINOR"
     },
     {
-      "ruleId": "SONAR-cobol-SQL.DynamicSqlCheck",
-      "acertos": 9,
+      "ruleId": "SONAR-ts-S1313",
+      "acertos": 11,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-tsql-S1313",
+      "acertos": 11,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "HERO-SEC-0798-hardcoded-secret",
+      "acertos": 10,
       "severidade": "BLOCKER"
     },
     {
@@ -2187,11 +2735,6 @@
       "severidade": "MAJOR"
     },
     {
-      "ruleId": "SONAR-js-S8702",
-      "acertos": 9,
-      "severidade": "MAJOR"
-    },
-    {
       "ruleId": "SONAR-js-S8786",
       "acertos": 9,
       "severidade": "MAJOR"
@@ -2258,11 +2801,6 @@
     },
     {
       "ruleId": "SONAR-py-S6397",
-      "acertos": 9,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-py-S8702",
       "acertos": 9,
       "severidade": "MAJOR"
     },
@@ -2342,29 +2880,29 @@
       "severidade": "MAJOR"
     },
     {
-      "ruleId": "SONAR-ts-S8702",
-      "acertos": 9,
-      "severidade": "MAJOR"
-    },
-    {
       "ruleId": "SONAR-ts-S8786",
       "acertos": 9,
       "severidade": "MAJOR"
     },
     {
-      "ruleId": "HERO-SEC-0327-weak-hash",
-      "acertos": 7,
-      "severidade": "MAJOR"
-    },
-    {
       "ruleId": "HERO-SEC-0089-sql-injection",
-      "acertos": 6,
+      "acertos": 8,
       "severidade": "CRITICAL"
     },
     {
+      "ruleId": "HERO-SEC-0327-weak-hash",
+      "acertos": 8,
+      "severidade": "MAJOR"
+    },
+    {
       "ruleId": "HERO-SMELL-display-cobol",
-      "acertos": 6,
+      "acertos": 8,
       "severidade": "INFO"
+    },
+    {
+      "ruleId": "HERO-SEC-0078-os-command",
+      "acertos": 7,
+      "severidade": "BLOCKER"
     },
     {
       "ruleId": "SONAR-cs-S6173",
@@ -2382,9 +2920,29 @@
       "severidade": "MAJOR"
     },
     {
-      "ruleId": "HERO-SEC-0078-os-command",
+      "ruleId": "HERO-SEC-0089-dynamic-sql-tsql",
       "acertos": 5,
-      "severidade": "BLOCKER"
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-java-S4274",
+      "acertos": 5,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SEC-0918-ssrf",
+      "acertos": 4,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SMELL-stop-run-cobol",
+      "acertos": 4,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S2631",
+      "acertos": 4,
+      "severidade": "CRITICAL"
     },
     {
       "ruleId": "SONAR-cs-S907",
@@ -2392,9 +2950,14 @@
       "severidade": "MAJOR"
     },
     {
-      "ruleId": "SONAR-java-S4274",
+      "ruleId": "SONAR-java-S2631",
       "acertos": 4,
-      "severidade": "MAJOR"
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-js-S2631",
+      "acertos": 4,
+      "severidade": "CRITICAL"
     },
     {
       "ruleId": "SONAR-plsql-BackwardsGoto",
@@ -2412,19 +2975,39 @@
       "severidade": "MAJOR"
     },
     {
+      "ruleId": "SONAR-py-S2631",
+      "acertos": 4,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-ts-S2631",
+      "acertos": 4,
+      "severidade": "CRITICAL"
+    },
+    {
       "ruleId": "SONAR-tsql-S907",
       "acertos": 4,
       "severidade": "MAJOR"
     },
     {
-      "ruleId": "HERO-SEC-0798-hardcoded-secret",
+      "ruleId": "HERO-SEC-0095-code-injection-eval",
+      "acertos": 3,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SEC-0295-tls-verify-disabled",
       "acertos": 3,
       "severidade": "BLOCKER"
     },
     {
-      "ruleId": "HERO-SEC-0095-code-injection-eval",
+      "ruleId": "HERO-SEC-0506-pipe-to-shell",
       "acertos": 3,
-      "severidade": "CRITICAL"
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "HERO-SMELL-0546-todo-marker",
+      "acertos": 3,
+      "severidade": "INFO"
     },
     {
       "ruleId": "HERO-SEC-cobol-sql-no-where",
@@ -2435,11 +3018,6 @@
       "ruleId": "HERO-SMELL-0goto-cobol",
       "acertos": 3,
       "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "HERO-SMELL-stop-run-cobol",
-      "acertos": 3,
-      "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-cs-S3926",
@@ -2562,24 +3140,34 @@
       "severidade": "CRITICAL"
     },
     {
-      "ruleId": "HERO-SEC-0295-tls-verify-disabled",
+      "ruleId": "HERO-SEC-0601-open-redirect",
       "acertos": 2,
-      "severidade": "BLOCKER"
+      "severidade": "MAJOR"
     },
     {
-      "ruleId": "HERO-SEC-0506-pipe-to-shell",
+      "ruleId": "HERO-SEC-0330-insecure-random",
       "acertos": 2,
-      "severidade": "BLOCKER"
+      "severidade": "MAJOR"
     },
     {
-      "ruleId": "HERO-SMELL-0546-todo-marker",
-      "acertos": 2,
-      "severidade": "INFO"
-    },
-    {
-      "ruleId": "HERO-SEC-0089-dynamic-sql-tsql",
+      "ruleId": "HERO-SEC-0089-adonet-sqli",
       "acertos": 2,
       "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SEC-0089-jdbc-sqli",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SEC-0078-cmd-injection-java",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SEC-0079-xss-java",
+      "acertos": 2,
+      "severidade": "MAJOR"
     },
     {
       "ruleId": "HERO-SEC-0078-xp-cmdshell-tsql",
@@ -2587,34 +3175,24 @@
       "severidade": "BLOCKER"
     },
     {
+      "ruleId": "HERO-SEC-0798-cobol-value-secret",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "HERO-SEC-cobol-unstring-no-overflow",
+      "acertos": 2,
+      "severidade": "MAJOR"
+    },
+    {
       "ruleId": "SONAR-cs-S1481",
       "acertos": 2,
       "severidade": "MINOR"
     },
     {
-      "ruleId": "SONAR-cs-S2053",
-      "acertos": 2,
-      "severidade": "CRITICAL"
-    },
-    {
-      "ruleId": "SONAR-cs-S2068",
-      "acertos": 2,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-cs-S2115",
-      "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
       "ruleId": "SONAR-cs-S2612",
       "acertos": 2,
       "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-cs-S2631",
-      "acertos": 2,
-      "severidade": "CRITICAL"
     },
     {
       "ruleId": "SONAR-cs-S3241",
@@ -2627,19 +3205,14 @@
       "severidade": "BLOCKER"
     },
     {
-      "ruleId": "SONAR-cs-S5344",
+      "ruleId": "SONAR-cs-S5542",
       "acertos": 2,
       "severidade": "CRITICAL"
     },
     {
-      "ruleId": "SONAR-cs-S6418",
+      "ruleId": "SONAR-cs-S5547",
       "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-cs-S6781",
-      "acertos": 2,
-      "severidade": "BLOCKER"
+      "severidade": "CRITICAL"
     },
     {
       "ruleId": "SONAR-java-S1481",
@@ -2647,29 +3220,9 @@
       "severidade": "MINOR"
     },
     {
-      "ruleId": "SONAR-java-S2053",
-      "acertos": 2,
-      "severidade": "CRITICAL"
-    },
-    {
-      "ruleId": "SONAR-java-S2068",
-      "acertos": 2,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-java-S2115",
-      "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
       "ruleId": "SONAR-java-S2612",
       "acertos": 2,
       "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-java-S2631",
-      "acertos": 2,
-      "severidade": "CRITICAL"
     },
     {
       "ruleId": "SONAR-java-S5131",
@@ -2677,27 +3230,12 @@
       "severidade": "BLOCKER"
     },
     {
-      "ruleId": "SONAR-java-S5344",
+      "ruleId": "SONAR-java-S5542",
       "acertos": 2,
       "severidade": "CRITICAL"
     },
     {
-      "ruleId": "SONAR-java-S6242",
-      "acertos": 2,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-java-S6418",
-      "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-java-S6437",
-      "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-java-S8912",
+      "ruleId": "SONAR-java-S5547",
       "acertos": 2,
       "severidade": "CRITICAL"
     },
@@ -2707,19 +3245,9 @@
       "severidade": "MINOR"
     },
     {
-      "ruleId": "SONAR-js-S2068",
-      "acertos": 2,
-      "severidade": "MAJOR"
-    },
-    {
       "ruleId": "SONAR-js-S2612",
       "acertos": 2,
       "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-js-S2631",
-      "acertos": 2,
-      "severidade": "CRITICAL"
     },
     {
       "ruleId": "SONAR-js-S5131",
@@ -2727,17 +3255,17 @@
       "severidade": "BLOCKER"
     },
     {
+      "ruleId": "SONAR-js-S5542",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-js-S5547",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
       "ruleId": "SONAR-js-S5696",
-      "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-js-S6418",
-      "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-js-S6437",
       "acertos": 2,
       "severidade": "BLOCKER"
     },
@@ -2752,24 +3280,14 @@
       "severidade": "MINOR"
     },
     {
-      "ruleId": "SONAR-py-S1481",
-      "acertos": 2,
-      "severidade": "MINOR"
-    },
-    {
-      "ruleId": "SONAR-py-S2053",
+      "ruleId": "SONAR-plsql-S5547",
       "acertos": 2,
       "severidade": "CRITICAL"
     },
     {
-      "ruleId": "SONAR-py-S2068",
+      "ruleId": "SONAR-py-S1481",
       "acertos": 2,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-py-S2115",
-      "acertos": 2,
-      "severidade": "BLOCKER"
+      "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-py-S2612",
@@ -2777,44 +3295,19 @@
       "severidade": "MAJOR"
     },
     {
-      "ruleId": "SONAR-py-S2631",
-      "acertos": 2,
-      "severidade": "CRITICAL"
-    },
-    {
       "ruleId": "SONAR-py-S5131",
       "acertos": 2,
       "severidade": "BLOCKER"
     },
     {
-      "ruleId": "SONAR-py-S5344",
+      "ruleId": "SONAR-py-S5542",
       "acertos": 2,
       "severidade": "CRITICAL"
     },
     {
-      "ruleId": "SONAR-py-S6418",
+      "ruleId": "SONAR-py-S5547",
       "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-py-S6437",
-      "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-py-S6779",
-      "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-py-S6781",
-      "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-ts-S2068",
-      "acertos": 2,
-      "severidade": "MAJOR"
+      "severidade": "CRITICAL"
     },
     {
       "ruleId": "SONAR-ts-S2612",
@@ -2822,27 +3315,22 @@
       "severidade": "MAJOR"
     },
     {
-      "ruleId": "SONAR-ts-S2631",
-      "acertos": 2,
-      "severidade": "CRITICAL"
-    },
-    {
       "ruleId": "SONAR-ts-S5131",
       "acertos": 2,
       "severidade": "BLOCKER"
     },
     {
+      "ruleId": "SONAR-ts-S5542",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-ts-S5547",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
       "ruleId": "SONAR-ts-S5696",
-      "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-ts-S6418",
-      "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-ts-S6437",
       "acertos": 2,
       "severidade": "BLOCKER"
     },
@@ -2857,17 +3345,7 @@
       "severidade": "MINOR"
     },
     {
-      "ruleId": "SONAR-tsql-S2068",
-      "acertos": 2,
-      "severidade": "MAJOR"
-    },
-    {
       "ruleId": "HERO-SEC-0079-xss-sink",
-      "acertos": 1,
-      "severidade": "CRITICAL"
-    },
-    {
-      "ruleId": "HERO-SEC-0918-ssrf",
       "acertos": 1,
       "severidade": "CRITICAL"
     },
@@ -2877,19 +3355,14 @@
       "severidade": "MAJOR"
     },
     {
-      "ruleId": "HERO-SEC-0089-adonet-sqli",
+      "ruleId": "HERO-SEC-0327-weak-hash-java",
       "acertos": 1,
-      "severidade": "CRITICAL"
+      "severidade": "MAJOR"
     },
     {
-      "ruleId": "HERO-SEC-0089-jdbc-sqli",
+      "ruleId": "HERO-SEC-0090-ldap-injection-java",
       "acertos": 1,
       "severidade": "CRITICAL"
-    },
-    {
-      "ruleId": "HERO-SEC-0798-cobol-value-secret",
-      "acertos": 1,
-      "severidade": "BLOCKER"
     },
     {
       "ruleId": "HERO-SEC-0798-cobol-hardcoded-secret",
@@ -2958,11 +3431,6 @@
     },
     {
       "ruleId": "HERO-SEC-cobol-accept-unvalidated",
-      "acertos": 1,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "HERO-SEC-cobol-unstring-no-overflow",
       "acertos": 1,
       "severidade": "MAJOR"
     },

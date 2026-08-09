@@ -80,6 +80,10 @@ const EXTS = new Set([
 const IGNORA = new Set([
   "node_modules", ".git", "dist", "out", "build", ".next", ".firebase",
   "_next", "coverage", "vendor", "reports", ".codehero-cache",
+  // Rascunho de trabalho: acervo baixado para medicao (OWASP Benchmark e
+  // afins). Medir o orcamento sobre ele faria o numero variar conforme o que
+  // esta baixado no momento, e o orcamento so serve se for estavel.
+  ".tmp",
 ]);
 
 function varre(dir, acc = []) {

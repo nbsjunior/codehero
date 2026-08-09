@@ -23,7 +23,7 @@
     "evaluate": "node src/cli.ts evaluate",
     "evolve": "node src/cli.ts evolve",
     "clean": "rimraf dist",
-    "test": "node test/characterization.mjs"
+    "test": "node test/golden.mjs && node test/characterization.mjs"
   },
   "dependencies": {
     "@codehero/contracts": "*"
