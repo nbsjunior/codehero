@@ -35,6 +35,7 @@ rmSync(vendorDir, { recursive: true, force: true });
 mkdirSync(vendorDir, { recursive: true });
 
 copyPkg("contracts");
+copyPkg("engine");
 copyPkg("ruleforge");
 copyPkg("fp-ranker");
 
@@ -42,7 +43,17 @@ const ruleforgePkgPath = join(vendorDir, "ruleforge", "package.json");
 const ruleforgePkg = JSON.parse(readFileSync(ruleforgePkgPath, "utf8"));
 if (ruleforgePkg.dependencies?.["@codehero/contracts"]) {
   ruleforgePkg.dependencies["@codehero/contracts"] = "file:../contracts";
-  writeFileSync(ruleforgePkgPath, JSON.stringify(ruleforgePkg, null, 2) + "\n");
+}
+if (ruleforgePkg.dependencies?.["@codehero/engine"]) {
+  ruleforgePkg.dependencies["@codehero/engine"] = "file:../engine";
+}
+writeFileSync(ruleforgePkgPath, JSON.stringify(ruleforgePkg, null, 2) + "\n");
+
+const enginePkgPath = join(vendorDir, "engine", "package.json");
+const enginePkg = JSON.parse(readFileSync(enginePkgPath, "utf8"));
+if (enginePkg.dependencies?.["@codehero/contracts"]) {
+  enginePkg.dependencies["@codehero/contracts"] = "file:../contracts";
+  writeFileSync(enginePkgPath, JSON.stringify(enginePkg, null, 2) + "\n");
 }
 
 const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
@@ -52,9 +63,10 @@ if (!existsSync(bakPath)) {
 pkg.dependencies = {
   ...pkg.dependencies,
   "@codehero/contracts": "file:./vendor/contracts",
+  "@codehero/engine": "file:./vendor/engine",
   "@codehero/ruleforge": "file:./vendor/ruleforge",
   "@codehero/fp-ranker": "file:./vendor/fp-ranker",
 };
 writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
 
-console.log("prepared apps/functions/vendor (contracts + ruleforge + fp-ranker)");
+console.log("prepared apps/functions/vendor (contracts + engine + ruleforge + fp-ranker)");
