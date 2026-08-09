@@ -129,8 +129,9 @@ const SINKS: Record<string, RegExp[]> = {
     /\bxp\.(evaluate|compile)\s*\(/, // variável XPath comum no benchmark
   ],
   "session.setAttribute": [
-    /\b(session|getSession\s*\(\s*\)|request\.getSession)\b[\s\S]{0,40}?\.setAttribute\s*\(/,
-    /\.\s*setAttribute\s*\(\s*[^)]*(user|param|input|name|value)/i,
+    /\b(session|getSession\s*\(\s*\)|request\.getSession)\b[\s\S]{0,40}?\.(setAttribute|putValue)\s*\(/,
+    /\.\s*(setAttribute|putValue)\s*\(\s*[^)]*(user|param|input|name|value)/i,
+    /\bgetSession\s*\(\s*\)\s*\.(setAttribute|putValue)\s*\(/,
   ],
   eval: [
     /\b(eval|exec)\s*\(/,
@@ -276,7 +277,14 @@ export function runLineTaintRules(
     if (atrib && CHAMADA.test(linha)) {
       const v = atrib[1] ?? "";
       const rhs = atrib[2] ?? "";
-      if (sanitizado(rhs) || [...ruleSanitizers].some((s) => rhs.includes(s))) {
+      // Guarda de fallback condicional: `if (param == null) param = "";` só roda
+      // quando param É null — e null não é tainted. Se a linha reatribui a var a
+      // uma constante DENTRO de um guarda `if (v == null)`, o taint deve SOBREVIVER
+      // (senão perdemos o caso real: fonte tainted → if-null → sink).
+      const guardaNull = new RegExp(`if\\s*\\(\\s*${v}\\s*[=!]=\\s*null`).test(linha);
+      if (guardaNull) {
+        // mantém o taint existente de v — não propaga nem limpa
+      } else if (sanitizado(rhs) || [...ruleSanitizers].some((s) => rhs.includes(s))) {
         tainted.delete(v);
       } else {
         const fonte = extraiFonte(rhs, fontes);
@@ -288,6 +296,25 @@ export function runLineTaintRules(
           else tainted.delete(v);
         }
       }
+    }
+
+    // 1b) Coleções: `col.add(tainted)` → col fica tainted; `list[0] = tainted` idem.
+    // O benchmark usa `argList.add("echo " + param)` antes de `pb.command(argList)`.
+    const colAdd = /\b(\w+)\.(add|put|addAll|set|push|append|offer|putValue)\s*\(\s*(.+?)\s*\);?\s*$/.exec(linha);
+    if (colAdd) {
+      const alvo = colAdd[1] ?? "";
+      const arg = colAdd[3] ?? "";
+      const pathArg = refsDo(arg).map((r) => tainted.get(r)).find(Boolean);
+      const fonteArg = extraiFonte(arg, fontes);
+      if (pathArg) tainted.set(alvo, pathArg);
+      else if (fonteArg) tainted.set(alvo, [fonteArg]);
+    }
+    const colIdx = /\b(\w+)\s*\[\s*[^\]]*\]\s*=\s*(.+?);?\s*$/.exec(linha);
+    if (colIdx) {
+      const alvo = colIdx[1] ?? "";
+      const arg = colIdx[2] ?? "";
+      const pathArg = refsDo(arg).map((r) => tainted.get(r)).find(Boolean);
+      if (pathArg) tainted.set(alvo, pathArg);
     }
 
     // 2) Sinks: dispara se algum argumento estiver tainted.
