@@ -52,8 +52,13 @@ service cloud.firestore {
     // orgs am I a member of" via collectionGroup("members").where("uid","==",uid).
     // Reading a SPECIFIC known member doc (`get`) is unaffected and stays
     // governed by the richer rule nested under orgs/{orgId}/members below.
-    match /{path=**}/members/{uid} {
-      allow list: if isSignedIn() && request.auth.uid == uid;
+    match /{path=**}/members/{memberId} {
+      // O painel lista memberships com
+      // collectionGroup("members").where("uid","==",auth.uid). A regra precisa
+      // casar o FILTRO do campo `uid` (não só o id do documento), senão o
+      // Firestore nega o list mesmo quando o docId == auth.uid.
+      allow list: if isSignedIn()
+        && (request.auth.uid == memberId || resource.data.uid == request.auth.uid);
     }
 
     // Daily Genkit ruleforge reports — platform admins may read; writes via Admin SDK only.
