@@ -32,3 +32,4 @@ ops/
 .firebaserc.local
 
 .tmp/
+packages/ruleforge/corpus/estado-votantes.json

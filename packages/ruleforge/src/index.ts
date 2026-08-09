@@ -11,3 +11,42 @@ export {
   type MutationKind,
 } from "./mutationSpec.ts";
 export { noopGenerator, type RuleCandidateGenerator, type CandidateGenerationInput } from "./llmGenerator.ts";
+
+// --- indução de corpus por acordo (não supervisionada, online) -------------
+export {
+  rotularPorAcordo,
+  estadoVazio,
+  qualidadeDosVotantes,
+  DECAIMENTO_PADRAO,
+  type Voto,
+  type CandidatoVotado,
+  type EstadoSupervisao,
+  type Rotulo,
+  type ResultadoRotulagem,
+} from "./supervisaoFraca.ts";
+export {
+  montarContexto,
+  normalizarTrecho,
+  votanteDeVotosGravados,
+  VOTANTES_DETERMINISTICOS,
+  type Candidato,
+  type ContextoArquivo,
+  type Votante,
+} from "./votantes.ts";
+export {
+  induzirCorpus,
+  type AchadoBruto,
+  type ArquivoAnalisado,
+  type VeredictoRegra,
+  type ResultadoInducao,
+  type OpcoesInducao,
+} from "./corpusOnline.ts";
+export {
+  coletarVotosDeModelo,
+  interpretarResposta,
+  INSTRUCAO_DE_VOTO,
+  type ChamadaDeModelo,
+  type PerguntaAoModelo,
+  type OpcoesColeta,
+  type ResultadoColeta,
+} from "./votoDeModelo.ts";
