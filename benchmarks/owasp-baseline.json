@@ -3,24 +3,24 @@
   "_medidoEm": "2026-08-09",
   "casos": 2740,
   "total": {
-    "tp": 1065,
-    "fp": 484,
-    "tn": 841,
-    "fn": 350,
-    "recall": 75.3,
-    "precisao": 68.8,
-    "f1": 71.9,
-    "escoreOwasp": 38.8
+    "tp": 1057,
+    "fp": 407,
+    "tn": 918,
+    "fn": 358,
+    "recall": 74.7,
+    "precisao": 72.2,
+    "f1": 73.4,
+    "escoreOwasp": 44
   },
   "porCategoria": {
     "cmdi": {
       "tp": 79,
-      "fp": 59,
-      "tn": 66,
+      "fp": 44,
+      "tn": 81,
       "fn": 47,
       "recall": 62.7,
-      "precisao": 57.2,
-      "f1": 59.8
+      "precisao": 64.2,
+      "f1": 63.5
     },
     "crypto": {
       "tp": 130,
@@ -41,22 +41,22 @@
       "f1": 81.7
     },
     "ldapi": {
-      "tp": 27,
-      "fp": 32,
-      "tn": 0,
-      "fn": 0,
-      "recall": 100,
-      "precisao": 45.8,
-      "f1": 62.8
+      "tp": 19,
+      "fp": 15,
+      "tn": 17,
+      "fn": 8,
+      "recall": 70.4,
+      "precisao": 55.9,
+      "f1": 62.3
     },
     "pathtraver": {
       "tp": 76,
-      "fp": 67,
-      "tn": 68,
+      "fp": 60,
+      "tn": 75,
       "fn": 57,
       "recall": 57.1,
-      "precisao": 53.1,
-      "f1": 55.1
+      "precisao": 55.9,
+      "f1": 56.5
     },
     "securecookie": {
       "tp": 36,
@@ -69,21 +69,21 @@
     },
     "sqli": {
       "tp": 184,
-      "fp": 116,
-      "tn": 116,
+      "fp": 97,
+      "tn": 135,
       "fn": 88,
       "recall": 67.6,
-      "precisao": 61.3,
-      "f1": 64.3
+      "precisao": 65.5,
+      "f1": 66.5
     },
     "trustbound": {
       "tp": 49,
-      "fp": 26,
-      "tn": 17,
+      "fp": 21,
+      "tn": 22,
       "fn": 34,
       "recall": 59,
-      "precisao": 65.3,
-      "f1": 62
+      "precisao": 70,
+      "f1": 64.1
     },
     "weakrand": {
       "tp": 218,
@@ -96,21 +96,21 @@
     },
     "xpathi": {
       "tp": 13,
-      "fp": 11,
-      "tn": 9,
+      "fp": 8,
+      "tn": 12,
       "fn": 2,
       "recall": 86.7,
-      "precisao": 54.2,
-      "f1": 66.7
+      "precisao": 61.9,
+      "f1": 72.2
     },
     "xss": {
       "tp": 164,
-      "fp": 94,
-      "tn": 115,
+      "fp": 83,
+      "tn": 126,
       "fn": 82,
       "recall": 66.7,
-      "precisao": 63.6,
-      "f1": 65.1
+      "precisao": 66.4,
+      "f1": 66.5
     }
   }
 }
