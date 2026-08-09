@@ -33,3 +33,5 @@ ops/
 
 .tmp/
 packages/ruleforge/corpus/estado-votantes.json
+packages/ruleforge/corpus/votos-modelo.json
+packages/ruleforge/corpus/pendencias-inducao.json

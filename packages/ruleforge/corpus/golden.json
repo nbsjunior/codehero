@@ -3031,5 +3031,83 @@
     "expected": "no_match",
     "code": "Signature.getInstance(\"ML-DSA-65\")",
     "note": "caso dourado quase-certo: assinatura pos-quantica e a correcao"
+  },
+  {
+    "id": "ind-ljv5uw",
+    "ruleId": "HERO-SEC-0501-trust-boundary-java",
+    "code": "request.getSession().setAttribute(param, \"10340\");",
+    "expected": "match",
+    "note": "[corroborado por gabarito OWASP] induzido por acordo (p=0.92, 3 votantes) — .tmp\\benchmark-java\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00004.java:68",
+    "profile": "clike"
+  },
+  {
+    "id": "ind-ljv5uw",
+    "ruleId": "HERO-SEC-0501-trust-boundary-java",
+    "code": "        userCookie.setPath(request.getRequestURI());\n        userCookie.setDomain(new java.net.URL(request.getRequestURL().toString()).getHost());\n        response.addCookie(userCookie);\n        javax.servlet.RequestDispatcher rd =\n                request.getRequestDispatcher(\"/trustbound-00/BenchmarkTest00004.html\");\n        rd.include(request, response);\n    }\n\n    @Override\n    public void doPost(HttpServletRequest request, HttpServletResponse response)\n            throws ServletException, IOException {\n        // some code\n        response.setContentType(\"text/html;charset=UTF-8\");\n\n        javax.servlet.http.Cookie[] theCookies = request.getCookies();\n\n        String param = \"noCookieValueSupplied\";\n        if (theCookies != null) {\n            for (javax.servlet.http.Cookie theCookie : theCookies) {\n                if (theCookie.getName().equals(\"BenchmarkTest00004\")) {\n                    param = java.net.URLDecoder.decode(theCookie.getValue(), \"UTF-8\");\n                    break;\n                }\n            }\n        }\n\n        // javax.servlet.http.HttpSession.setAttribute(java.lang.String^,java.lang.Object)\n        request.getSession().setAttribute(param, \"10340\");",
+    "expected": "match",
+    "note": "[corroborado por gabarito OWASP] induzido por acordo (p=0.92, 3 votantes) — .tmp\\benchmark-java\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00004.java:68",
+    "profile": "clike",
+    "avaliacao": "fluxo",
+    "language": "java"
+  },
+  {
+    "id": "ind-1jastsw",
+    "ruleId": "HERO-SEC-0022-path-traversal-java",
+    "code": "        String param = \"\";\n        java.util.Enumeration<String> headers = request.getHeaders(\"BenchmarkTest00011\");\n\n        if (headers != null && headers.hasMoreElements()) {\n            param = headers.nextElement(); // just grab first element\n        }\n\n        // URL Decode the header value since req.getHeaders() doesn't. Unlike req.getParameters().\n        param = java.net.URLDecoder.decode(param, \"UTF-8\");\n\n        java.io.File fileTarget = new java.io.File(param, \"/Test.txt\");",
+    "expected": "match",
+    "note": "[corroborado por gabarito OWASP] induzido por acordo (p=0.92, 2 votantes) — .tmp\\benchmark-java\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00011.java:54",
+    "profile": "clike",
+    "avaliacao": "fluxo",
+    "language": "java"
+  },
+  {
+    "id": "ind-vq07lc",
+    "ruleId": "HERO-SEC-0079-xss-java",
+    "code": "    public void doGet(HttpServletRequest request, HttpServletResponse response)\n            throws ServletException, IOException {\n        doPost(request, response);\n    }\n\n    @Override\n    public void doPost(HttpServletRequest request, HttpServletResponse response)\n            throws ServletException, IOException {\n        // some code\n        response.setContentType(\"text/html;charset=UTF-8\");\n\n        String param = \"\";\n        java.util.Enumeration<String> headers = request.getHeaders(\"Referer\");\n\n        if (headers != null && headers.hasMoreElements()) {\n            param = headers.nextElement(); // just grab first element\n        }\n\n        // URL Decode the header value since req.getHeaders() doesn't. Unlike req.getParameters().\n        param = java.net.URLDecoder.decode(param, \"UTF-8\");\n\n        response.setHeader(\"X-XSS-Protection\", \"0\");\n        Object[] obj = {\"a\", \"b\"};\n        response.getWriter().format(java.util.Locale.US, param, obj);",
+    "expected": "match",
+    "note": "[corroborado por gabarito OWASP] induzido por acordo (p=0.92, 2 votantes) — .tmp\\benchmark-java\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00013.java:56",
+    "profile": "clike",
+    "avaliacao": "fluxo",
+    "language": "java"
+  },
+  {
+    "id": "ind-19hrxun",
+    "ruleId": "HERO-SEC-0078-cmd-injection-java",
+    "code": "        String param = \"\";\n        java.util.Enumeration<String> headers = request.getHeaders(\"BenchmarkTest00017\");\n\n        if (headers != null && headers.hasMoreElements()) {\n            param = headers.nextElement(); // just grab first element\n        }\n\n        // URL Decode the header value since req.getHeaders() doesn't. Unlike req.getParameters().\n        param = java.net.URLDecoder.decode(param, \"UTF-8\");\n\n        String cmd = \"\";\n        String osName = System.getProperty(\"os.name\");\n        if (osName.indexOf(\"Windows\") != -1) {\n            cmd = org.owasp.benchmark.helpers.Utils.getOSCommandString(\"echo\");\n        }\n\n        Runtime r = Runtime.getRuntime();\n\n        try {\n            Process p = r.exec(cmd + param);",
+    "expected": "match",
+    "note": "[corroborado por gabarito OWASP] induzido por acordo (p=0.92, 2 votantes) — .tmp\\benchmark-java\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00017.java:63",
+    "profile": "clike",
+    "avaliacao": "fluxo",
+    "language": "java"
+  },
+  {
+    "id": "ind-e0d75g",
+    "ruleId": "HERO-SEC-0079-xss-java",
+    "code": "    public void doGet(HttpServletRequest request, HttpServletResponse response)\n            throws ServletException, IOException {\n        doPost(request, response);\n    }\n\n    @Override\n    public void doPost(HttpServletRequest request, HttpServletResponse response)\n            throws ServletException, IOException {\n        // some code\n        response.setContentType(\"text/html;charset=UTF-8\");\n\n        java.util.Map<String, String[]> map = request.getParameterMap();\n        String param = \"\";\n        if (!map.isEmpty()) {\n            String[] values = map.get(\"BenchmarkTest00030\");\n            if (values != null) param = values[0];\n        }\n\n        response.setHeader(\"X-XSS-Protection\", \"0\");\n        Object[] obj = {\"a\", \"b\"};\n        response.getWriter().printf(param, obj);",
+    "expected": "match",
+    "note": "[corroborado por gabarito OWASP] induzido por acordo (p=0.92, 2 votantes) — .tmp\\benchmark-java\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00030.java:53",
+    "profile": "clike",
+    "avaliacao": "fluxo",
+    "language": "java"
+  },
+  {
+    "id": "ind-1kvj2pl",
+    "ruleId": "HERO-SEC-0501-trust-boundary-java",
+    "code": "    public void doGet(HttpServletRequest request, HttpServletResponse response)\n            throws ServletException, IOException {\n        doPost(request, response);\n    }\n\n    @Override\n    public void doPost(HttpServletRequest request, HttpServletResponse response)\n            throws ServletException, IOException {\n        // some code\n        response.setContentType(\"text/html;charset=UTF-8\");\n\n        java.util.Map<String, String[]> map = request.getParameterMap();\n        String param = \"\";\n        if (!map.isEmpty()) {\n            String[] values = map.get(\"BenchmarkTest00031\");\n            if (values != null) param = values[0];\n        }\n\n        // javax.servlet.http.HttpSession.putValue(java.lang.String,java.lang.Object^)\n        request.getSession().putValue(\"userid\", param);",
+    "expected": "match",
+    "note": "[corroborado por gabarito OWASP] induzido por acordo (p=0.92, 3 votantes) — .tmp\\benchmark-java\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00031.java:52",
+    "profile": "clike",
+    "avaliacao": "fluxo",
+    "language": "java"
+  },
+  {
+    "id": "ind-11rwh",
+    "ruleId": "HERO-SEC-0079-xss-java",
+    "code": "    public void doPost(HttpServletRequest request, HttpServletResponse response)\n            throws ServletException, IOException {\n        // some code\n        response.setContentType(\"text/html;charset=UTF-8\");\n\n        String param = \"\";\n        boolean flag = true;\n        java.util.Enumeration<String> names = request.getParameterNames();\n        while (names.hasMoreElements() && flag) {\n            String name = (String) names.nextElement();\n            String[] values = request.getParameterValues(name);\n            if (values != null) {\n                for (int i = 0; i < values.length && flag; i++) {\n                    String value = values[i];\n                    if (value.equals(\"BenchmarkTest00036\")) {\n                        param = name;\n                        flag = false;\n                    }\n                }\n            }\n        }\n\n        response.setHeader(\"X-XSS-Protection\", \"0\");\n        int length = 1;\n        if (param != null) {\n            length = param.length();\n            response.getWriter().write(param.toCharArray(), 0, length);",
+    "expected": "match",
+    "note": "[corroborado por gabarito OWASP] induzido por acordo (p=0.92, 2 votantes) — .tmp\\benchmark-java\\src\\main\\java\\org\\owasp\\benchmark\\testcode\\BenchmarkTest00036.java:65",
+    "profile": "clike",
+    "avaliacao": "fluxo",
+    "language": "java"
   }
 ]

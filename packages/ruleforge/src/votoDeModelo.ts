@@ -53,7 +53,23 @@ export interface OpcoesColeta {
   faixaDuvida?: [number, number];
   /** Votos já coletados antes, para não pagar duas vezes. */
   cache?: Map<string, Voto>;
-  /** Quantas linhas de contexto mandar em volta do apontamento. */
+  /**
+   * Linhas de contexto ANTES do apontamento. Muito maior que o depois, e a
+   * assimetria é o ponto.
+   *
+   * A entrada perigosa está ACIMA do uso: é ali que `request.getParameter`
+   * aparece, e é a distância entre os dois que o modelo precisa enxergar para
+   * responder qualquer coisa.
+   *
+   * Medido: com 4 linhas antes, o voto do modelo deu 50.3% de acurácia
+   * balanceada contra o gabarito do OWASP — moeda. E errava para o lado caro,
+   * dizendo AUSENTE em 35 casos realmente vulneráveis. Não era o modelo sendo
+   * ruim, era eu perguntando sobre um trecho onde a resposta não estava: ele
+   * via uma variável sem origem visível e concluía, razoavelmente, que não
+   * dava para afirmar defeito.
+   */
+  contextoAntes?: number;
+  /** Linhas depois. Poucas: o que vem depois do uso raramente muda o veredito. */
   contexto?: number;
 }
 
@@ -84,7 +100,8 @@ export async function coletarVotosDeModelo(
 ): Promise<ResultadoColeta> {
   const orcamento = opts.orcamento ?? ORCAMENTO_PADRAO;
   const [baixo, alto] = opts.faixaDuvida ?? FAIXA_DUVIDA;
-  const contexto = opts.contexto ?? 4;
+  const contexto = opts.contexto ?? 3;
+  const antes = opts.contextoAntes ?? 35;
   const votos = new Map<string, Voto>(opts.cache ?? []);
   let perguntados = 0;
   let reaproveitados = 0;
@@ -117,7 +134,7 @@ export async function coletarVotosDeModelo(
     if (!regra || fonte === undefined) continue;
 
     const linhas = fonte.split(/\r?\n/);
-    const ini = Math.max(0, c.linha - 1 - contexto);
+    const ini = Math.max(0, c.linha - 1 - antes);
     const fim = Math.min(linhas.length, c.linha + contexto);
 
     try {

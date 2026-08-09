@@ -1,6 +1,7 @@
 export type { CorpusCase, EvalResult, Mutation, Individual } from "./types.ts";
 export { loadCorpus, casesForRule } from "./corpus.ts";
 export { evaluateRule } from "./evaluate.ts";
+export { casaNoCaso, recortarFluxo } from "./avaliarCaso.ts";
 export { evolveRule, type EvolveOutcome, type EvolveOptions } from "./evolve.ts";
 export { evolveAllRules, daySeed, type BatchEvolutionReport, type RuleEvolutionReport } from "./batch.ts";
 export { poolFor, MUTATION_POOL } from "./mutations.ts";

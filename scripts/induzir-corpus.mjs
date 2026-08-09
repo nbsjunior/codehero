@@ -117,8 +117,20 @@ if (tem("--validar")) {
   // Se com um leitor de 80% a indução ganha do carimbo, vale contratar a
   // leitura; se nem com 95% ganha, o problema é dos outros votantes e gastar
   // com modelo seria dinheiro fora.
-  const simular = arg("--simular-leitor", null);
+  // --- votos REAIS de modelo, gravados por coletar-votos-modelo.mjs -------
+  const arqVotos = arg("--votos", null);
   let votantesExtras = [];
+  if (arqVotos && existsSync(arqVotos)) {
+    const mapa = new Map(Object.entries(JSON.parse(readFileSync(arqVotos, "utf8"))));
+    votantesExtras = [votanteDeVotosGravados("leitura-de-modelo", mapa)];
+    const d = { match: 0, no_match: 0, abst: 0 };
+    for (const v of mapa.values()) d[v ?? "abst"]++;
+    console.log(
+      `\n[MODELO] ${mapa.size} votos gravados: PRESENTE=${d.match} AUSENTE=${d.no_match} INCERTO=${d.abst}`,
+    );
+  }
+
+  const simular = arg("--simular-leitor", null);
   if (simular) {
     const acc = Number(simular);
     let s = 987654321;

@@ -1,5 +1,5 @@
 import { RULES, matchPattern, buildLexicalMask } from "@codehero/contracts";
-import { loadCorpus } from "../dist/index.js";
+import { loadCorpus, casaNoCaso } from "../dist/index.js";
 
 // ---------------------------------------------------------------------------
 // Avalia o corpus DOURADO contra as regras de verdade.
@@ -34,9 +34,11 @@ for (const c of casos) {
   }
   let casa = false;
   try {
-    casa = matchPattern(regra.pattern, c.code, {
-      mask: buildLexicalMask(c.code, c.profile ?? "clike"),
-    }).length > 0;
+    // `casaNoCaso` reproduz o pipeline do scanner: casamento lexico OU fluxo
+    // de dados, conforme o caso declara. Testar so o lexico daria garantia
+    // sobre metade do produto, e era o que deixava as regras de taint — as
+    // mais graves do catalogo — sem poder ter caso nenhum.
+    casa = casaNoCaso(regra, c);
   } catch (e) {
     falsoNegativo.push({ id: c.id, ruleId: c.ruleId, code: `regex invalida: ${e.message}` });
     continue;

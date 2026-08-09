@@ -142,7 +142,11 @@ for (const caso of r.casos) {
     pendencias.push(caso);
     continue;
   }
-  if (m && motorDe.get(`${arquivo}:${m[2]}:${caso.ruleId}`) !== "pattern") {
+  // O filtro de formato foi REMOVIDO: o corpus aprendeu a representar fluxo.
+  // Caso de taint agora traz o caminho recortado e `avaliacao: "fluxo"`, e o
+  // avaliador roda o mesmo motor do scanner. Antes disto, achado de fluxo era
+  // impossível de promover e as regras mais graves ficavam de fora.
+  if (m && motorDe.get(`${arquivo}:${m[2]}:${caso.ruleId}`) === "ast") {
     semFormato++;
     continue;
   }

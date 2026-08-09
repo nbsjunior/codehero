@@ -9,6 +9,7 @@ import {
   type CandidatoVotado,
   type Voto,
 } from "./supervisaoFraca.ts";
+import { recortarFluxo } from "./avaliarCaso.ts";
 import {
   montarContexto,
   normalizarTrecho,
@@ -132,6 +133,10 @@ export function induzirCorpus(
   }
 
   // --- candidatos e votos ------------------------------------------------
+  // Linhas por arquivo, para recortar o caminho do fluxo sem reler nada.
+  const linhasPorArquivo = new Map<string, string[]>();
+  for (const a of arquivos) linhasPorArquivo.set(a.caminho, a.fonte.split(/\r?\n/));
+
   const candidatos: Candidato[] = [];
   const votados: CandidatoVotado[] = [];
 
@@ -195,26 +200,39 @@ export function induzirCorpus(
       acc.inc++;
       continue;
     }
+    // Apontamento de fluxo carrega o CAMINHO, não a linha. A linha do uso
+    // final, sozinha, não reproduz o defeito nem para o motor que o encontrou.
+    const ehFluxo = c.motor === "taint" && c.temCaminhoDeTaint;
+    const linhasArq = linhasPorArquivo.get(c.arquivo) ?? [];
+    const corpo = ehFluxo
+      ? recortarFluxo(linhasArq, c.linha).code
+      : c.trecho.trim();
+    const extras = ehFluxo
+      ? { avaliacao: "fluxo" as const, language: linguagemDe(c.arquivo) }
+      : {};
     const ctxPerfil = perfilDe(c.arquivo);
+
     if (l.probabilidade >= limiarAlto) {
       acc.conf++;
       casos.push({
         id: `ind-${hash(c.id)}`,
         ruleId: c.ruleId,
-        code: c.trecho.trim(),
+        code: corpo,
         expected: "match",
         note: `induzido por acordo (p=${l.probabilidade.toFixed(2)}, ${l.votantesQueOpinaram} votantes) — ${c.arquivo}:${c.linha}`,
         profile: ctxPerfil,
+        ...extras,
       });
     } else if (l.probabilidade <= limiarBaixo) {
       acc.ref++;
       casos.push({
         id: `ind-${hash(c.id)}`,
         ruleId: c.ruleId,
-        code: c.trecho.trim(),
+        code: corpo,
         expected: "no_match",
         note: `refutado por acordo (p=${l.probabilidade.toFixed(2)}, ${l.votantesQueOpinaram} votantes) — ${c.arquivo}:${c.linha}`,
         profile: ctxPerfil,
+        ...extras,
       });
     } else {
       acc.inc++;
@@ -262,6 +280,14 @@ export function induzirCorpus(
     candidatosTotais: candidatos.length,
     iteracoes: r.iteracoes,
   };
+}
+
+/** Familia de linguagem para o motor de fluxo. */
+function linguagemDe(caminho: string): string {
+  if (/.py$/i.test(caminho)) return "python";
+  if (/.cs$/i.test(caminho)) return "csharp";
+  if (/.(ts|tsx|js|jsx|mjs|cjs)$/i.test(caminho)) return "any";
+  return "java";
 }
 
 function perfilDe(caminho: string): string {
