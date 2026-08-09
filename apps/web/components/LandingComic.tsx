@@ -138,7 +138,7 @@ export default function LandingComic({
       {/* Capa */}
       <section data-anima className="hq-capa" aria-labelledby="hq-capa-titulo">
         <div className="hq-capa-inner">
-          <p className="hq-kicker">Qualidade de código com prova — não só mais um SAST</p>
+          <p className="hq-kicker">Qualidade de código com prova — sem custo, open source</p>
           <h1 id="hq-capa-titulo" className="hq-marca">
             CodeHero
           </h1>
@@ -148,16 +148,21 @@ export default function LandingComic({
           <p className="hq-lede">
             Motor determinístico competitivo em segurança, regras que evoluem offline com portão F1,
             correção com contrato verificável e agentes via MCP — sem IA no quality gate. Junta o
-            sinal das ferramentas que você já paga e decide o merge sempre do mesmo jeito.
+            sinal das ferramentas que você já usa e decide o merge sempre do mesmo jeito. Sem
+            assinatura, sem cartão, sem SKU escondido.
           </p>
           <div className="hq-ctas">
             <button type="button" className="hq-btn hq-btn--primario" onClick={onSignup}>
-              Criar conta
+              Criar conta — sem custo
             </button>
             <a className="hq-btn hq-btn--fantasma" href="#historia">
               Ver como funciona
             </a>
           </div>
+          <p className="hq-preco">
+            Apache-2.0 · portal e Action grátis · você só paga a infraestrutura que já tem (CI, GitHub,
+            agentes).
+          </p>
         </div>
         {/*
           O lado direito da capa mostrava só linhas decorativas, e no desktop
@@ -349,7 +354,8 @@ export default function LandingComic({
             </div>
           </div>
           <p className="hq-nota">
-            Preferimos dizer isso agora a você descobrir depois da assinatura.
+            Preferimos dizer isso agora a você descobrir depois de criar a conta — e a conta é sem
+            custo.
           </p>
         </Quadro>
       </div>
@@ -358,11 +364,11 @@ export default function LandingComic({
         <h2 id="hq-fim-titulo">Rode no seu pior repositório.</h2>
         <p>
           Aquele que ninguém quer abrir. É onde a diferença aparece mais rápido, e é o único teste que
-          vale alguma coisa.
+          vale alguma coisa. Conta gratuita — sem cartão.
         </p>
         <div className="hq-ctas">
           <button type="button" className="hq-btn hq-btn--primario" onClick={onSignup}>
-            Criar conta
+            Criar conta — sem custo
           </button>
           <button type="button" className="hq-btn hq-btn--fantasma" onClick={onLogin}>
             Já tenho acesso

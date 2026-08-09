@@ -228,6 +228,13 @@ export default function AuthGate({
           <button type="button" className="lx-nav-cta" onClick={() => goAuth("login")}>
             Entrar
           </button>
+          <button
+            type="button"
+            className="lx-nav-cta lx-nav-cta--primary"
+            onClick={() => goAuth("signup")}
+          >
+            Criar conta — sem custo
+          </button>
         </nav>
       </header>
 
@@ -241,7 +248,7 @@ export default function AuthGate({
                 Entrar
               </TabButton>
               <TabButton active={mode === "signup"} onClick={() => setMode("signup")}>
-                Criar conta
+                Criar conta — sem custo
               </TabButton>
               <TabButton active={mode === "forgot"} onClick={() => setMode("forgot")}>
                 Recuperar
@@ -250,13 +257,15 @@ export default function AuthGate({
 
             <h2 id="auth-title" className="lx-auth-title">
               {mode === "login" && "Acesso à plataforma"}
-              {mode === "signup" && "Criar conta CodeHero"}
+              {mode === "signup" && "Criar conta CodeHero — sem custo"}
               {mode === "forgot" && "Recuperar senha"}
             </h2>
             <p className="lx-auth-sub">
               {mode === "forgot"
                 ? "Enviamos um link de redefinição se o email existir na base."
-                : "Email corporativo. Google SSO disponível."}
+                : mode === "signup"
+                  ? "Grátis. Sem cartão. Open source (Apache-2.0). Google SSO disponível."
+                  : "Email corporativo. Google SSO disponível."}
             </p>
 
             <form onSubmit={handleSubmit} className="lx-auth-form">
@@ -304,7 +313,7 @@ export default function AuthGate({
                   : mode === "login"
                     ? "Entrar"
                     : mode === "signup"
-                      ? "Criar conta"
+                      ? "Criar conta — sem custo"
                       : "Enviar link"}
               </button>
             </form>

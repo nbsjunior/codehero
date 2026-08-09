@@ -378,6 +378,16 @@
   gap: 0.7rem;
 }
 
+.hq-preco {
+  margin: 1rem 0 0;
+  max-width: 48ch;
+  font-family: "JetBrains Mono", monospace;
+  font-size: clamp(0.72rem, 1.8vw, 0.82rem);
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
 .hq-btn {
   display: inline-block;
   font: inherit;
@@ -914,20 +924,33 @@
 .lx-nav-cta {
   margin-left: 0.25rem;
   padding: 0.45rem 1rem;
-  background: var(--lx-red);
-  border: none;
-  color: #fff;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--lx-text) 28%, transparent);
+  color: var(--lx-text);
   font-family: var(--lx-sans);
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .lx-nav-cta:hover {
+  border-color: var(--lx-text);
+  background: color-mix(in srgb, var(--lx-text) 6%, transparent);
+}
+
+.lx-nav-cta--primary {
+  background: var(--lx-red);
+  border-color: var(--lx-red);
+  color: #fff;
+}
+
+.lx-nav-cta--primary:hover {
   background: var(--lx-red-bright);
+  border-color: var(--lx-red-bright);
+  color: #fff;
 }
 
 .lx-kicker {
