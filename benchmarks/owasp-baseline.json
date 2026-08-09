@@ -1,0 +1,116 @@
+{
+  "_porque": "Linha de base do OWASP BenchmarkJava v1.2. Regravar e ato deliberado: so faca depois de conferir que a mudanca de numero e melhoria, e diga no commit por que.",
+  "_medidoEm": "2026-08-09",
+  "casos": 2740,
+  "total": {
+    "tp": 1065,
+    "fp": 515,
+    "tn": 810,
+    "fn": 350,
+    "recall": 75.3,
+    "precisao": 67.4,
+    "f1": 71.1,
+    "escoreOwasp": 36.4
+  },
+  "porCategoria": {
+    "cmdi": {
+      "tp": 79,
+      "fp": 59,
+      "tn": 66,
+      "fn": 47,
+      "recall": 62.7,
+      "precisao": 57.2,
+      "f1": 59.8
+    },
+    "crypto": {
+      "tp": 130,
+      "fp": 27,
+      "tn": 89,
+      "fn": 0,
+      "recall": 100,
+      "precisao": 82.8,
+      "f1": 90.6
+    },
+    "hash": {
+      "tp": 89,
+      "fp": 0,
+      "tn": 107,
+      "fn": 40,
+      "recall": 69,
+      "precisao": 100,
+      "f1": 81.7
+    },
+    "ldapi": {
+      "tp": 27,
+      "fp": 32,
+      "tn": 0,
+      "fn": 0,
+      "recall": 100,
+      "precisao": 45.8,
+      "f1": 62.8
+    },
+    "pathtraver": {
+      "tp": 76,
+      "fp": 67,
+      "tn": 68,
+      "fn": 57,
+      "recall": 57.1,
+      "precisao": 53.1,
+      "f1": 55.1
+    },
+    "securecookie": {
+      "tp": 36,
+      "fp": 31,
+      "tn": 0,
+      "fn": 0,
+      "recall": 100,
+      "precisao": 53.7,
+      "f1": 69.9
+    },
+    "sqli": {
+      "tp": 184,
+      "fp": 116,
+      "tn": 116,
+      "fn": 88,
+      "recall": 67.6,
+      "precisao": 61.3,
+      "f1": 64.3
+    },
+    "trustbound": {
+      "tp": 49,
+      "fp": 26,
+      "tn": 17,
+      "fn": 34,
+      "recall": 59,
+      "precisao": 65.3,
+      "f1": 62
+    },
+    "weakrand": {
+      "tp": 218,
+      "fp": 52,
+      "tn": 223,
+      "fn": 0,
+      "recall": 100,
+      "precisao": 80.7,
+      "f1": 89.3
+    },
+    "xpathi": {
+      "tp": 13,
+      "fp": 11,
+      "tn": 9,
+      "fn": 2,
+      "recall": 86.7,
+      "precisao": 54.2,
+      "f1": 66.7
+    },
+    "xss": {
+      "tp": 164,
+      "fp": 94,
+      "tn": 115,
+      "fn": 82,
+      "recall": 66.7,
+      "precisao": 63.6,
+      "f1": 65.1
+    }
+  }
+}

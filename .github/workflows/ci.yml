@@ -33,3 +33,18 @@ jobs:
 
       - name: Test
         run: npm test
+
+      # Verdade conhecida: 2740 casos com gabarito, em ~30s.
+      #
+      # Ate isto existir, toda mudanca de regra era feita no escuro: apertar um
+      # detector para matar um falso positivo levava junto verdadeiros
+      # positivos que ninguem contava. O acervo e clonado aqui porque e de
+      # terceiros e nao entra no repositorio.
+      - name: Baixar OWASP BenchmarkJava
+        run: git clone --depth 1 --quiet https://github.com/OWASP-Benchmark/BenchmarkJava.git .tmp/benchmark-java
+
+      # `--exige-acervo` faz o passo REPROVAR se o clone falhar, em vez de
+      # passar em silencio. Gate que pula sozinho quando o dado some deixa de
+      # ser gate no primeiro problema de rede.
+      - name: Precisao e recall contra a linha de base
+        run: node scripts/benchmark-gate.mjs --exige-acervo
