@@ -648,7 +648,7 @@ const _CORE_BASE: HeroRule[] = (
     // L0 por linha não vê o bloco; o taint não se aplica. Fica como hotspot.
     pattern: {
       scope: "any",
-      regex: "(?i)new\\s+javax\\.servlet\\.http\\.Cookie\\s*\\(",
+      regex: "(?i)(?:set)?Secure\\s*[(=]\\s*false|secure\\s*:\\s*false",
     },
   },
   {
