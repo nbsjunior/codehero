@@ -211,8 +211,36 @@ export function interpretarResposta(texto: string): Voto {
 //   - a tarefa é mais fácil para o modelo. Localizar `request.getParameter`
 //     num trecho é leitura, não julgamento de segurança;
 //   - o erro que sobra é o silencioso — apontar uma fonte que existe mas não
-//     alimenta AQUELA linha. Menos frequente, e é o que o EM ainda tem de
-//     descontar medindo a confiabilidade dele.
+//     alimenta AQUELA linha.
+//
+// E foi exatamente esse erro que sobrou. O resultado, medido
+// ---------------------------------------------------------------------------
+// Três formulações, todas conferidas contra o gabarito do OWASP:
+//
+//   veredito, 4 linhas de contexto    50.3% balanceada,  35 erros caros
+//   veredito, 35 linhas de contexto   53.1% balanceada,   2 erros caros
+//   origem verificável                50.0% balanceada,   0 erros caros
+//
+// Todas em cima da moeda. Na última, 236 respostas "PRESENTE" contra 5
+// "AUSENTE" e ZERO acertos em caso seguro: o modelo nunca reconhece um trecho
+// que a regra apontou por engano. Os 89.9% de acerto BRUTO são só a taxa-base
+// do acervo, e é por isso que a acurácia balanceada é o único número que se
+// pode olhar aqui.
+//
+// A razão de fundo, e ela não se resolve com prompt
+// ---------------------------------------------------------------------------
+// O que separa acerto de erro neste acervo é a LAVAGEM entre a entrada e o
+// uso: o ramo constante, a troca de chave no mapa, a aritmética de índice na
+// lista. Descobrir isso é precisamente o trabalho do motor de fluxo. Perguntar
+// ao modelo é pedir que ele refaça esse trabalho com menos informação, e ele
+// não tem como acrescentar sinal que o motor já não tenha.
+//
+// O que FICA de valor, porque o mecanismo funcionou
+// ---------------------------------------------------------------------------
+// 22% do que o modelo afirmou não se sustentou na conferência e foi
+// descartado. Na pergunta de opinião, essas 70 respostas teriam entrado na
+// urna com o mesmo peso das corretas. A verificação vale mesmo quando o sinal
+// verificado não presta — e vale mais ainda no dia em que prestar.
 // ---------------------------------------------------------------------------
 
 export const INSTRUCAO_DE_ORIGEM = `Você recebe um trecho de código numerado e a LINHA ALVO onde uma regra
