@@ -4,23 +4,23 @@
   "casos": 2740,
   "total": {
     "tp": 1055,
-    "fp": 390,
-    "tn": 935,
+    "fp": 341,
+    "tn": 984,
     "fn": 360,
     "recall": 74.6,
-    "precisao": 73,
-    "f1": 73.8,
-    "escoreOwasp": 45.2
+    "precisao": 75.6,
+    "f1": 75.1,
+    "escoreOwasp": 48.9
   },
   "porCategoria": {
     "cmdi": {
       "tp": 79,
-      "fp": 44,
-      "tn": 81,
+      "fp": 35,
+      "tn": 90,
       "fn": 47,
       "recall": 62.7,
-      "precisao": 64.2,
-      "f1": 63.5
+      "precisao": 69.3,
+      "f1": 65.8
     },
     "crypto": {
       "tp": 130,
@@ -42,21 +42,21 @@
     },
     "ldapi": {
       "tp": 19,
-      "fp": 15,
-      "tn": 17,
+      "fp": 13,
+      "tn": 19,
       "fn": 8,
       "recall": 70.4,
-      "precisao": 55.9,
-      "f1": 62.3
+      "precisao": 59.4,
+      "f1": 64.4
     },
     "pathtraver": {
       "tp": 76,
-      "fp": 60,
-      "tn": 75,
+      "fp": 52,
+      "tn": 83,
       "fn": 57,
       "recall": 57.1,
-      "precisao": 55.9,
-      "f1": 56.5
+      "precisao": 59.4,
+      "f1": 58.2
     },
     "securecookie": {
       "tp": 36,
@@ -69,21 +69,21 @@
     },
     "sqli": {
       "tp": 184,
-      "fp": 97,
-      "tn": 135,
+      "fp": 84,
+      "tn": 148,
       "fn": 88,
       "recall": 67.6,
-      "precisao": 65.5,
-      "f1": 66.5
+      "precisao": 68.7,
+      "f1": 68.1
     },
     "trustbound": {
       "tp": 47,
-      "fp": 21,
-      "tn": 22,
+      "fp": 17,
+      "tn": 26,
       "fn": 36,
       "recall": 56.6,
-      "precisao": 69.1,
-      "f1": 62.3
+      "precisao": 73.4,
+      "f1": 63.9
     },
     "weakrand": {
       "tp": 218,
@@ -96,21 +96,21 @@
     },
     "xpathi": {
       "tp": 13,
-      "fp": 8,
-      "tn": 12,
+      "fp": 5,
+      "tn": 15,
       "fn": 2,
       "recall": 86.7,
-      "precisao": 61.9,
-      "f1": 72.2
+      "precisao": 72.2,
+      "f1": 78.8
     },
     "xss": {
       "tp": 164,
-      "fp": 66,
-      "tn": 143,
+      "fp": 56,
+      "tn": 153,
       "fn": 82,
       "recall": 66.7,
-      "precisao": 71.3,
-      "f1": 68.9
+      "precisao": 74.5,
+      "f1": 70.4
     }
   }
 }

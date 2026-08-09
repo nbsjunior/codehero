@@ -393,14 +393,39 @@ function comandos(corpo: string): string[] {
  * 158 achados verdadeiros perdidos contra 97 falsos eliminados: a medição
  * reprovou a versão que apagava.
  *
- * Decidir qual ramo vale é trabalho do rastreador principal, que tem o valor
- * dos inteiros locais. Aqui só respondo "o retorno PODE vir do parâmetro?", e
- * para essa pergunta a união dos ramos é a resposta certa.
+ * A união dos ramos é a resposta certa SALVO quando um ramo é comprovadamente
+ * morto. O rastreador principal já sabia disso e o resumo não sabia, o que
+ * fazia os dois discordarem sobre o mesmo código:
+ *
+ *     int num = 86;
+ *     if ((7 * 42) - num > 200) bar = "This_should_always_happen";
+ *     else bar = param;
+ *
+ * 294 menos 86 dá 208, que é maior que 200: o `else` nunca roda. Isto aqui não
+ * é regra nova, é a MESMA que o rastreador aplica, agora aplicada nos dois
+ * lugares. Enquanto só um dos passes sabia avaliar a condição, o resumo
+ * respondia "pode vir do parâmetro" para um método que devolve literal.
  */
 function retornoDerivaDeParams(corpo: string, params: string[]): boolean {
   const derivado = new Set(params);
+  const seladas = new Set<string>();
+  const envInt = new Map<string, number>();
   let viuReturn = false;
   for (const st of comandos(corpo)) {
+    const intLocal = capturaIntLocal(st + ";");
+    if (intLocal) envInt.set(intLocal[0], intLocal[1]);
+
+    // `if (CONST_VERDADEIRO) v = "literal"` — o ramo do literal sempre roda.
+    const selada = ifConstanteAtribuiLiteral(st, envInt);
+    if (selada) {
+      seladas.add(selada);
+      derivado.delete(selada);
+      continue;
+    }
+    // ...e o `else` correspondente é código morto.
+    const elseAtrib = /^else\s+(?:[\w<>\[\],.?]+\s+)?(\w+)\s*=/.exec(st);
+    if (elseAtrib && seladas.has(elseAtrib[1] ?? "")) continue;
+
     // `sb.append(param); ... return sb.toString();` — o acumulador herda.
     const col =
       /\b(\w+)\s*\.\s*(?:add|put|addAll|set|push|append|offer|putValue|insert|write)\s*\(\s*(.+?)\s*\)\s*$/.exec(st);
