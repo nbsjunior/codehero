@@ -252,6 +252,240 @@ function argsDaChamada(linha: string, sinkRe: RegExp): string {
 }
 
 // ---------------------------------------------------------------------------
+// Resumo de método local.
+//
+// O motor assumia que todo método devolve sujo se recebe sujo. É seguro e é
+// caro: helper privado que valida, normaliza ou troca a entrada por um valor
+// próprio é rotina em código real, e cada um deles virava falso positivo em
+// cadeia até o sink.
+//
+// Quando o método está NO MESMO ARQUIVO dá para parar de supor e ler. Se o
+// valor devolvido não deriva de nenhum parâmetro, chamar com argumento sujo
+// não suja o resultado. Fora isso nada muda: método de biblioteca, de outro
+// arquivo ou que a leitura não decide seguem propagando como antes. Ou seja, a
+// precisão só sobe onde há prova, nunca por palpite.
+//
+// Não cobre Python: as definições procuradas aqui exigem chaves. Ficou de fora
+// de propósito, porque não tenho acervo com gabarito em Python para medir se a
+// mudança ajuda ou atrapalha, e mexer no escuro foi justamente o problema que
+// o benchmark veio resolver.
+// ---------------------------------------------------------------------------
+
+/**
+ * Zera literais e comentários PRESERVANDO posições, para casar chave e
+ * parêntese sem tropeçar em `"}"` dentro de string.
+ */
+function mascaraTexto(s: string): string {
+  let out = "";
+  let i = 0;
+  while (i < s.length) {
+    const c = s[i]!;
+    if (c === '"' || c === "'" || c === "`") {
+      out += " ";
+      i++;
+      while (i < s.length && s[i] !== c) {
+        if (s[i] === "\\") {
+          out += "  ";
+          i += 2;
+          continue;
+        }
+        out += s[i] === "\n" ? "\n" : " ";
+        i++;
+      }
+      if (i < s.length) {
+        out += " ";
+        i++;
+      }
+      continue;
+    }
+    if (c === "/" && s[i + 1] === "/") {
+      while (i < s.length && s[i] !== "\n") {
+        out += " ";
+        i++;
+      }
+      continue;
+    }
+    if (c === "/" && s[i + 1] === "*") {
+      out += "  ";
+      i += 2;
+      while (i < s.length && !(s[i] === "*" && s[i + 1] === "/")) {
+        out += s[i] === "\n" ? "\n" : " ";
+        i++;
+      }
+      out += i < s.length ? "  " : "";
+      i += i < s.length ? 2 : 0;
+      continue;
+    }
+    out += c;
+    i++;
+  }
+  return out;
+}
+
+/** Java/C#: modificadores + tipo + nome(. Go/JS: `func`/`function` + nome(. */
+const DEF_COM_MODIFICADOR =
+  /^[ \t]*(?:@\w+(?:\([^)]*\))?[ \t]*)*(?:(?:public|private|protected|internal|static|final|abstract|synchronized|virtual|override|sealed|native|strictfp|async)[ \t]+)+[\w<>\[\].,?][\w<>\[\].,? \t]*?\b(\w+)[ \t]*\(/gm;
+const DEF_FUNCAO = /^[ \t]*(?:export[ \t]+)?(?:async[ \t]+)?(?:function|func)[ \t]+(\w+)[ \t]*\(/gm;
+
+/**
+ * Nome do método cuja chamada PRODUZ o valor da expressão.
+ *
+ * `new Test().doSomething(req, param)` devolve `doSomething`, não `Test`: o
+ * valor da expressão é o retorno da última chamada, e é o retorno dela que
+ * decide se o resultado é sujo.
+ */
+function chamadaResultante(rhs: string): string | null {
+  const t = rhs.trim();
+  const m = mascaraTexto(t);
+  if (!m.endsWith(")")) return null;
+  let d = 0;
+  let abre = -1;
+  for (let i = m.length - 1; i >= 0; i--) {
+    if (m[i] === ")") d++;
+    else if (m[i] === "(") {
+      d--;
+      if (d === 0) {
+        abre = i;
+        break;
+      }
+    }
+  }
+  if (abre <= 0) return null;
+  return /([A-Za-z_$][\w$]*)\s*$/.exec(t.slice(0, abre))?.[1] ?? null;
+}
+
+/**
+ * Quebra o corpo em COMANDOS, não em linhas.
+ *
+ * Linha não é unidade de sentido em Java. `bar =` sozinho numa linha, com a
+ * expressão descendo por mais quatro, fazia o resumo ler uma atribuição vazia e
+ * concluir que `bar` não vinha de lugar nenhum.
+ */
+function comandos(corpo: string): string[] {
+  const m = mascaraTexto(corpo);
+  const out: string[] = [];
+  let ini = 0;
+  let par = 0;
+  for (let i = 0; i < m.length; i++) {
+    const c = m[i];
+    if (c === "(" || c === "[") par++;
+    else if (c === ")" || c === "]") par--;
+    else if ((c === ";" || c === "{" || c === "}") && par === 0) {
+      out.push(corpo.slice(ini, i).replace(/\s+/g, " ").trim());
+      ini = i + 1;
+    }
+  }
+  out.push(corpo.slice(ini).replace(/\s+/g, " ").trim());
+  return out.filter(Boolean);
+}
+
+/**
+ * O valor devolvido deriva de algum parâmetro? Na dúvida, sim.
+ *
+ * A derivação é MONOTÔNICA: um comando pode marcar uma variável como derivada,
+ * nunca desmarcar. Parece exagero e não é. O acervo tem, aos montes:
+ *
+ *     if ((500 / 42) + num > 200) bar = param;
+ *     else bar = "This should never happen";
+ *
+ * Lendo em ordem, a segunda linha apagava a derivação que a primeira criou, e
+ * o resumo declarava inofensivo um método que devolve a entrada crua. Foram
+ * 158 achados verdadeiros perdidos contra 97 falsos eliminados: a medição
+ * reprovou a versão que apagava.
+ *
+ * Decidir qual ramo vale é trabalho do rastreador principal, que tem o valor
+ * dos inteiros locais. Aqui só respondo "o retorno PODE vir do parâmetro?", e
+ * para essa pergunta a união dos ramos é a resposta certa.
+ */
+function retornoDerivaDeParams(corpo: string, params: string[]): boolean {
+  const derivado = new Set(params);
+  let viuReturn = false;
+  for (const st of comandos(corpo)) {
+    // `sb.append(param); ... return sb.toString();` — o acumulador herda.
+    const col =
+      /\b(\w+)\s*\.\s*(?:add|put|addAll|set|push|append|offer|putValue|insert|write)\s*\(\s*(.+?)\s*\)\s*$/.exec(st);
+    if (col && refsDo(col[2] ?? "").some((r) => derivado.has(r))) derivado.add(col[1] ?? "");
+
+    const atrib = ATRIB.exec(st);
+    if (atrib && CHAMADA.test(st)) {
+      const rhs = atrib[2] ?? "";
+      if (!sanitizado(rhs) && refsDo(rhs).some((r) => derivado.has(r))) derivado.add(atrib[1] ?? "");
+    }
+
+    const ret = /^return\b\s*(.*)$/.exec(st);
+    if (ret) {
+      viuReturn = true;
+      if (refsDo(ret[1] ?? "").some((r) => derivado.has(r))) return true;
+    }
+  }
+  // Sem `return` legível não há o que afirmar: mantém o comportamento antigo.
+  return !viuReturn;
+}
+
+/**
+ * nome do método -> propaga sujeira do argumento para o retorno?
+ *
+ * Sobrecarga com o mesmo nome resolve pelo pior caso: se QUALQUER definição
+ * propaga, o nome inteiro propaga. Sem isso a leitura de uma sobrecarga
+ * inofensiva calaria a outra, que é o erro caro.
+ */
+export function resumoDeMetodosLocais(source: string): Map<string, boolean> {
+  const mapa = new Map<string, boolean>();
+  const mask = mascaraTexto(source);
+
+  for (const re of [DEF_COM_MODIFICADOR, DEF_FUNCAO]) {
+    re.lastIndex = 0;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(mask))) {
+      const nome = m[1] ?? "";
+      const abre = m.index + m[0].length - 1;
+
+      let d = 0;
+      let fimParams = -1;
+      for (let i = abre; i < mask.length; i++) {
+        if (mask[i] === "(") d++;
+        else if (mask[i] === ")") {
+          d--;
+          if (d === 0) {
+            fimParams = i;
+            break;
+          }
+        }
+      }
+      if (fimParams < 0) continue;
+
+      const chave = mask.indexOf("{", fimParams);
+      // Entre `)` e `{` só cabe `throws X, Y`. Qualquer outra coisa (um `;` de
+      // método abstrato, um `=>`) quer dizer que isto não é o corpo.
+      if (chave < 0 || !/^[\s\w.,<>[\]]*$/.test(mask.slice(fimParams + 1, chave))) continue;
+
+      let e = 0;
+      let fim = -1;
+      for (let i = chave; i < mask.length; i++) {
+        if (mask[i] === "{") e++;
+        else if (mask[i] === "}") {
+          e--;
+          if (e === 0) {
+            fim = i;
+            break;
+          }
+        }
+      }
+      if (fim < 0) continue;
+
+      const params = source
+        .slice(abre + 1, fimParams)
+        .split(",")
+        .map((p) => /([A-Za-z_$][\w$]*)\s*$/.exec(p.trim())?.[1] ?? "")
+        .filter(Boolean);
+      const propaga = retornoDerivaDeParams(source.slice(chave + 1, fim), params);
+      mapa.set(nome, (mapa.get(nome) ?? false) || propaga);
+    }
+  }
+  return mapa;
+}
+
+// ---------------------------------------------------------------------------
 // Rastreador principal.
 // ---------------------------------------------------------------------------
 
@@ -285,6 +519,10 @@ export function runLineTaintRules(
     for (const re of SINKS[kind] ?? []) sinkRes.push({ kind, re });
   }
   const ruleSanitizers = new Set(taintRules.flatMap((r) => r.taint!.sanitizers ?? []));
+
+  // Uma passada só, antes do rastreio: o resumo vale para o arquivo inteiro e
+  // o método costuma estar declarado DEPOIS de quem o chama.
+  const metodosLocais = resumoDeMetodosLocais(source);
 
   const linhas = source.split(/\r?\n/);
   const tainted = new Map<string, string[]>(); // var -> path
@@ -366,6 +604,12 @@ export function runLineTaintRules(
         tainted.delete(v);
         seladas.add(v);
       } else if (sanitizado(rhs) || [...ruleSanitizers].some((s) => rhs.includes(s))) {
+        tainted.delete(v);
+      } else if (metodosLocais.get(chamadaResultante(rhs) ?? "") === false) {
+        // Método deste arquivo cujo retorno NÃO deriva dos parâmetros. Vem
+        // antes de `extraiFonte` de propósito: mesmo em
+        // `x = helper(request.getParameter("a"))` o que chega em `x` é o
+        // retorno de `helper`, e ele já foi lido.
         tainted.delete(v);
       } else {
         const fonte = extraiFonte(rhs, fontes);

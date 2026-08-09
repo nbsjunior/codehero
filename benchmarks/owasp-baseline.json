@@ -3,14 +3,14 @@
   "_medidoEm": "2026-08-09",
   "casos": 2740,
   "total": {
-    "tp": 1057,
-    "fp": 407,
-    "tn": 918,
-    "fn": 358,
-    "recall": 74.7,
-    "precisao": 72.2,
-    "f1": 73.4,
-    "escoreOwasp": 44
+    "tp": 1055,
+    "fp": 390,
+    "tn": 935,
+    "fn": 360,
+    "recall": 74.6,
+    "precisao": 73,
+    "f1": 73.8,
+    "escoreOwasp": 45.2
   },
   "porCategoria": {
     "cmdi": {
@@ -77,13 +77,13 @@
       "f1": 66.5
     },
     "trustbound": {
-      "tp": 49,
+      "tp": 47,
       "fp": 21,
       "tn": 22,
-      "fn": 34,
-      "recall": 59,
-      "precisao": 70,
-      "f1": 64.1
+      "fn": 36,
+      "recall": 56.6,
+      "precisao": 69.1,
+      "f1": 62.3
     },
     "weakrand": {
       "tp": 218,
@@ -105,12 +105,12 @@
     },
     "xss": {
       "tp": 164,
-      "fp": 83,
-      "tn": 126,
+      "fp": 66,
+      "tn": 143,
       "fn": 82,
       "recall": 66.7,
-      "precisao": 66.4,
-      "f1": 66.5
+      "precisao": 71.3,
+      "f1": 68.9
     }
   }
 }
