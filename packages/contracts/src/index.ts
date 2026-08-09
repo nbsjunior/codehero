@@ -17,6 +17,7 @@ export * from "./cobolAnalyses.ts";
 export * from "./structuralRules.ts";
 export * from "./structuralCatalog.ts";
 export * from "./sonarWayLive.ts";
+export * from "./quantumSafe.ts";
 export * from "./gateSuppress.ts";
 // Full Sonar catalog + SARIF normalize: import `@codehero/contracts/catalog` (Node).
 

@@ -19,7 +19,19 @@ const severityTone: Record<string, string> = {
   INFO: "var(--rating-a)",
 };
 
-type SourceFilter = "all" | "core" | "structural" | "sonar" | "sonar-live" | "sonar-stub" | "custom";
+type SourceFilter =
+  | "all"
+  | "core"
+  | "structural"
+  | "sonar"
+  | "sonar-live"
+  | "sonar-stub"
+  | "custom"
+  // Filtra por CATEGORIA, nao por origem. Fica no mesmo controle porque e assim
+  // que a pessoa procura: ela quer ver "o que tenho de pos-quantico", nao "o que
+  // veio do core". Separar em dois controles obrigaria a combinar filtros para
+  // responder a pergunta mais comum.
+  | "quantum-safe";
 
 export default function RulesCatalog() {
   const [groups, setGroups] = useState<MotorRuleGroup[]>([]);
@@ -67,6 +79,7 @@ export default function RulesCatalog() {
           if (sourceFilter === "sonar-live" && r.implementation !== "sonar-port") return false;
           if (sourceFilter === "sonar-stub" && r.implementation !== "stub") return false;
           if (sourceFilter === "custom" && r.source === "core") return false;
+          if (sourceFilter === "quantum-safe" && r.category !== "quantum-safe") return false;
           if (!q) return true;
           return (
             r.id.toLowerCase().includes(q) ||
@@ -230,6 +243,7 @@ export default function RulesCatalog() {
               ["sonar-live", "Sonar L0 (live)"],
               ["sonar-stub", "Sonar stub (não dispara)"],
               ["custom", "Criadas (dress code)"],
+              ["quantum-safe", "Pós-quântico"],
             ] as const
           ).map(([id, label]) => (
             <button

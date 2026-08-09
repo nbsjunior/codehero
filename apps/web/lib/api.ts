@@ -1023,6 +1023,15 @@ function formatCallableError(err: unknown, fallback: string): string {
 
 export interface QualityGateThresholdsDto {
   minNewCodeCoverage: number;
+  /**
+   * Cobertura de RAMO, nao de linha.
+   *
+   * O backend ja devolve este campo (`qualityGate.ts`) e o painel ja o
+   * apresenta, mas a declaracao do cliente tinha ficado para tras e o build do
+   * apps/web quebrava. Linha coberta com ramo nao coberto e o caso classico de
+   * cobertura que engana: o teste passa pelo `if` e nunca pelo `else`.
+   */
+  minBranchCoverage: number;
   maxNewCodeDuplication: number;
   maxNewBlockerIssues: number;
   maxSecurityRating: string;

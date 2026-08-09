@@ -2947,5 +2947,89 @@
     "expected": "no_match",
     "code": "parser.parseJson(entradaDoUsuario);",
     "note": "caso dourado quase-certo: outro parser nao avalia expressao (mesmo padrao exato de SONAR-java-S6857: matchPattern depende so do padrao, entao o caso vale identicamente)"
+  },
+  {
+    "id": "pqc-quebrado-m",
+    "ruleId": "HERO-PQC-0327-algoritmo-quebrado",
+    "expected": "match",
+    "code": "OQS_KEM *kem = OQS_KEM_new(\"SIKE-p434\");",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "pqc-quebrado-n",
+    "ruleId": "HERO-PQC-0327-algoritmo-quebrado",
+    "expected": "no_match",
+    "code": "OQS_KEM *kem = OQS_KEM_new(\"ML-KEM-768\");",
+    "note": "caso dourado quase-certo: ML-KEM e o padronizado; so o quebrado deve ser apontado"
+  },
+  {
+    "id": "pqc-nome-antigo-m",
+    "ruleId": "HERO-PQC-0327-nome-pre-padronizacao",
+    "expected": "match",
+    "code": "kem = OQS_KEM_new(\"Kyber768\");",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "pqc-nome-antigo-n",
+    "ruleId": "HERO-PQC-0327-nome-pre-padronizacao",
+    "expected": "no_match",
+    "code": "kem = OQS_KEM_new(\"ML-KEM-768\");",
+    "note": "caso dourado quase-certo: quem ja migrou nao pode ser cobrado de novo"
+  },
+  {
+    "id": "pqc-nivel-m",
+    "ruleId": "HERO-PQC-0326-nivel-insuficiente",
+    "expected": "match",
+    "code": "kem = OQS_KEM_new(\"ML-KEM-512\");",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "pqc-nivel-n",
+    "ruleId": "HERO-PQC-0326-nivel-insuficiente",
+    "expected": "no_match",
+    "code": "kem = OQS_KEM_new(\"ML-KEM-1024\");",
+    "note": "caso dourado quase-certo: nivel 5 esta acima do exigido"
+  },
+  {
+    "id": "pqc-hibrido-m",
+    "ruleId": "HERO-PQC-0327-sem-hibrido",
+    "expected": "match",
+    "code": "OQS_KEM_new(\"ML-KEM-768\")",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "pqc-hibrido-n",
+    "ruleId": "HERO-PQC-0327-sem-hibrido",
+    "expected": "no_match",
+    "code": "OQS_KEM_new(\"x25519_mlkem768\")",
+    "note": "caso dourado quase-certo: o prefixo classico indica modo hibrido"
+  },
+  {
+    "id": "pqc-colher-m",
+    "ruleId": "HERO-PQC-0311-colher-agora-decifrar-depois",
+    "expected": "match",
+    "code": "KeyAgreement.getInstance(\"ECDH\")",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "pqc-colher-n",
+    "ruleId": "HERO-PQC-0311-colher-agora-decifrar-depois",
+    "expected": "no_match",
+    "code": "Cipher.getInstance(\"AES/GCM/NoPadding\")",
+    "note": "caso dourado quase-certo: cifra simetrica nao e acordo de chaves e nao corre esse risco"
+  },
+  {
+    "id": "pqc-assinatura-m",
+    "ruleId": "HERO-PQC-0347-assinatura-de-longa-duracao",
+    "expected": "match",
+    "code": "Signature.getInstance(\"SHA256withRSA\")",
+    "note": "caso dourado: a regra DEVE pegar isto"
+  },
+  {
+    "id": "pqc-assinatura-n",
+    "ruleId": "HERO-PQC-0347-assinatura-de-longa-duracao",
+    "expected": "no_match",
+    "code": "Signature.getInstance(\"ML-DSA-65\")",
+    "note": "caso dourado quase-certo: assinatura pos-quantica e a correcao"
   }
 ]

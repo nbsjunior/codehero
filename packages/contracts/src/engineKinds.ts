@@ -11,6 +11,14 @@ export type SecurityCategory =
   | "data-integrity"
   | "ssrf"
   | "supply-chain"
+  // Criptografia que resiste a computador quantico. Categoria propria, e nao
+  // um subconjunto de `weak-crypto`, porque o risco e de outra natureza: o
+  // algoritmo nao esta quebrado HOJE. RSA e ECDH continuam corretos contra
+  // qualquer atacante atual. O que muda e que o trafego capturado agora pode
+  // ser decifrado depois, quando existir maquina para isso — o chamado
+  // "colher agora, decifrar depois". Misturar as duas categorias esconderia
+  // isso: um time que ja corrigiu MD5 acha que resolveu criptografia.
+  | "quantum-safe"
   | "code-smell";
 
 export type TaintSourceKind =

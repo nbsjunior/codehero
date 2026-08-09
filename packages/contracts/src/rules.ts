@@ -2,6 +2,7 @@ import type { Severity, IssueType } from "./severity.ts";
 import type { SecurityCategory, TaintSinkKind, TaintSourceKind } from "./engineKinds.ts";
 import type { PatternScope } from "./lexicalMask.ts";
 import { SONAR_WAY_LIVE_RULES } from "./sonarWayLive.ts";
+import { QUANTUM_SAFE_RULES } from "./quantumSafe.ts";
 import { COBOL_CORE_RULES } from "./cobolRules.ts";
 import { STRUCTURAL_RULES } from "./structuralCatalog.ts";
 
@@ -900,7 +901,7 @@ export const STRUCTURAL_HERO_RULES: HeroRule[] = STRUCTURAL_RULES.map((r) => ({
  * Live detection set: core + Sonar way L0 ports (stubs excluded — catalog only).
  * Used by scanner / getActiveRules matching. Structural rules are separate.
  */
-export const RULES: HeroRule[] = [...CORE_RULES, ...SONAR_WAY_LIVE_RULES];
+export const RULES: HeroRule[] = [...CORE_RULES, ...QUANTUM_SAFE_RULES, ...SONAR_WAY_LIVE_RULES];
 
 let _catalogRules: HeroRule[] | null = null;
 
