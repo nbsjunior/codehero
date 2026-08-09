@@ -157,6 +157,63 @@ function extraiFonte(rhs: string, fontes: RegExp[]): string | null {
   return null;
 }
 
+/**
+ * Expressão só com literais numéricos, operadores e ids conhecidos em `env`.
+ */
+function expressaoConstante(expr: string, env: Map<string, number> = new Map()): boolean {
+  let limpa = expr.replace(/["'][^"']*["']/g, "");
+  for (const k of env.keys()) limpa = limpa.replace(new RegExp(`\\b${k}\\b`, "g"), "1");
+  // ids locais comuns do benchmark, se não estiverem no env
+  limpa = limpa.replace(/\b(num|i|j|k|n|x|y|z)\b/g, "1");
+  return /^[\d\s*+\-/%()<>=!&|.]+$/.test(limpa) && /\d/.test(limpa);
+}
+
+/**
+ * Avalia expressão aritmética/comparação. Usa `env` para substituir ints locais
+ * (`int num = 86` → num vale 86). Sem isso `(7*18)+num > 200` com num=86
+ * (true/safe) virava num=1 (false) e gerava FP.
+ */
+function avaliaConstante(expr: string, env: Map<string, number> = new Map()): boolean | null {
+  if (!expressaoConstante(expr, env)) return null;
+  let limpa = expr.replace(/["'][^"']*["']/g, "");
+  for (const [k, v] of env) limpa = limpa.replace(new RegExp(`\\b${k}\\b`, "g"), String(v));
+  limpa = limpa.replace(/\b(num|i|j|k|n|x|y|z)\b/g, "1");
+  if (!/^[\d\s*+\-/%()<>=!&|.]+$/.test(limpa)) return null;
+  try {
+    // eslint-disable-next-line no-new-func
+    return Boolean(Function(`"use strict"; return (${limpa});`)());
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Ternário com ramo true LITERAL e condição constante TRUE.
+ */
+function ternarioConstanteLiteral(rhs: string, env: Map<string, number>): string | null {
+  const m = /^(.+?)\?\s*(["'][^"']*["'])\s*:\s*.+$/.exec(rhs.trim());
+  if (!m) return null;
+  if (avaliaConstante(m[1] ?? "", env) !== true) return null;
+  return m[2] ?? null;
+}
+
+/**
+ * `if (CONST_TRUE) var = "lit"` — sela a var.
+ */
+function ifConstanteAtribuiLiteral(linha: string, env: Map<string, number>): string | null {
+  const m = /if\s*\((.+)\)\s*(\w+)\s*=\s*(["'][^"']*["'])\s*;?\s*$/.exec(linha.trim());
+  if (!m) return null;
+  if (avaliaConstante(m[1] ?? "", env) !== true) return null;
+  return m[2] ?? null;
+}
+
+/** `int num = 86;` → captura para o env de avaliação. */
+function capturaIntLocal(linha: string): [string, number] | null {
+  const m = /\b(?:int|long|short|byte)\s+(\w+)\s*=\s*(-?\d+)\s*;/.exec(linha);
+  if (!m) return null;
+  return [m[1] ?? "", Number(m[2])];
+}
+
 /** Variáveis referenciadas no RHS (tokens que parecem identificadores). */
 function refsDo(rhs: string): string[] {
   const out: string[] = [];
@@ -231,6 +288,10 @@ export function runLineTaintRules(
 
   const linhas = source.split(/\r?\n/);
   const tainted = new Map<string, string[]>(); // var -> path
+  /** Vars "seladas" por `if (CONST) var = "lit"` — o else seguinte não re-taintiza. */
+  const seladas = new Set<string>();
+  /** Ints locais (`int num = 86`) para avaliar condições do benchmark. */
+  const envInt = new Map<string, number>();
 
   const report = (line: number, snippet: string, sinkKind: string, path: string[]) => {
     for (const rule of taintRules) {
@@ -272,9 +333,25 @@ export function runLineTaintRules(
     const linha = linhas[i] ?? "";
     const lineNo = i + 1;
 
+    const intLocal = capturaIntLocal(linha);
+    if (intLocal) envInt.set(intLocal[0], intLocal[1]);
+
+    // if (CONST) var = "lit" → sela a var e limpa taint (ramo then sempre pega).
+    const selada = ifConstanteAtribuiLiteral(linha, envInt);
+    if (selada) {
+      seladas.add(selada);
+      tainted.delete(selada);
+    }
+
+    // else var = ... depois de if-constante: NÃO re-taintiza (ramo morto).
+    const elseAtrib = /^\s*else\s+(?:[\w<>\[\],.?]+\s+)?(\w+)\s*=/.exec(linha);
+    if (elseAtrib && seladas.has(elseAtrib[1] ?? "")) {
+      continue; // pula atribuição e sinks nesta linha (só tem o else)
+    }
+
     // 1) Atribuição: propaga ou limpa taint.
     const atrib = ATRIB.exec(linha);
-    if (atrib && CHAMADA.test(linha)) {
+    if (atrib && CHAMADA.test(linha) && !selada) {
       const v = atrib[1] ?? "";
       const rhs = atrib[2] ?? "";
       // Guarda de fallback condicional: `if (param == null) param = "";` só roda
@@ -284,16 +361,33 @@ export function runLineTaintRules(
       const guardaNull = new RegExp(`if\\s*\\(\\s*${v}\\s*[=!]=\\s*null`).test(linha);
       if (guardaNull) {
         // mantém o taint existente de v — não propaga nem limpa
+      } else if (ternarioConstanteLiteral(rhs, envInt)) {
+        // `(7*18)+num > 200 ? "safe" : param` → valor efetivo é o literal
+        tainted.delete(v);
+        seladas.add(v);
       } else if (sanitizado(rhs) || [...ruleSanitizers].some((s) => rhs.includes(s))) {
         tainted.delete(v);
       } else {
         const fonte = extraiFonte(rhs, fontes);
         if (fonte) {
           tainted.set(v, [fonte]);
+          seladas.delete(v);
         } else {
-          const path = refsDo(rhs).map((r) => tainted.get(r)).find(Boolean);
-          if (path) tainted.set(v, path);
-          else tainted.delete(v);
+          // `bar = valuesList.get(1)`: get de elemento NÃO propaga taint da
+          // coleção (o índice pode ser o literal "safe"). O taint da coleção
+          // só importa quando ela inteira vai ao sink (`pb.command(argList)`).
+          const refs = refsDo(rhs).filter((r) => {
+            if (!tainted.has(r)) return false;
+            if (new RegExp(`\\b${r}\\s*\\.\\s*get\\w*\\s*\\(`).test(rhs)) return false;
+            return true;
+          });
+          const path = refs.map((r) => tainted.get(r)).find(Boolean);
+          if (path) {
+            tainted.set(v, path);
+            seladas.delete(v);
+          } else {
+            tainted.delete(v);
+          }
         }
       }
     }

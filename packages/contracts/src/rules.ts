@@ -665,7 +665,8 @@ const _CORE_BASE: HeroRule[] = (
     category: "string-injection",
     pattern: {
       scope: "any",
-      regex: "(?i)\\.search\\s*\\([^)]*(filter|\\+)",
+      // Exige concatenação — `.search(base, filter, ...)` sozinho não é vuln.
+      regex: "(?i)\\.search\\s*\\([^)]*\\+",
     },
     taint: {
       sources: ["http.param", "http.body", "http.header", "user.input"],
