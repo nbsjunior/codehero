@@ -596,6 +596,48 @@
   font-weight: 700;
 }
 
+/* --- Metricas de mercado (quadro 07) ------------------------------------- */
+
+.hq-metricas {
+  display: grid;
+  gap: 0.85rem;
+  margin: 1.1rem 0 0.75rem;
+  padding: 0;
+}
+
+@media (min-width: 720px) {
+  .hq-metricas {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.hq-metricas > div {
+  border: var(--hq-borda) solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  background: var(--paper-raised);
+  margin: 0;
+}
+
+.hq-metricas dt {
+  margin: 0 0 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.hq-metricas dd {
+  margin: 0;
+  line-height: 1.45;
+  font-size: clamp(0.92rem, 2.1vw, 1.02rem);
+}
+
+.hq-metricas code {
+  font-size: 0.85em;
+}
+
 /* --- Duas colunas: se destaca / ainda nao vai ---------------------------- */
 
 .hq-duas {

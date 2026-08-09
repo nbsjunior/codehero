@@ -2,6 +2,8 @@
 
 Como o CodeHero **aumenta presença vs Sonar** sem reinventar motores: roda ferramentas especializadas, importa SARIF com provenance `EXT:<tool>:<rule>`, e o Quality Gate decide.
 
+Isso sustenta o posicionamento de produto: o motor nativo é **peer-competitive em segurança** (ver [Posicionamento-e-metricas.md](./Posicionamento-e-metricas.md)); a amplitude de smells/SAST enterprise entra por orquestração, não por promessa de catálogo nativo equivalente.
+
 Princípio: LLM **nunca** no hot path do PR. Modelos só offline (ruleforge / fp-ranker / triage batch).
 
 ## Matriz tool → comando → import

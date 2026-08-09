@@ -37,6 +37,7 @@
     "sonar:fetch": "node scripts/fetch-sonar-way.mjs",
     "sonar:generate": "node scripts/generate-sonar-way-rules.mjs",
     "sonar:compare": "node scripts/compare-sonar-way.mjs",
+    "sonar:engenharia": "node scripts/sonar-way-engenharia.mjs",
     "cve:mine": "node scripts/mine-cve-fixes.mjs",
     "fp-ranker:train": "npm run train -w @codehero/fp-ranker",
     "build:cpg": "npm run build -w @codehero/cpg-joern",

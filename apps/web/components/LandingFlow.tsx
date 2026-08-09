@@ -8,26 +8,26 @@ const STEPS = [
   {
     id: "scan",
     label: "Scan",
-    sub: "Suas ferramentas rodam juntas",
+    sub: "Nativo + suas ferramentas",
     out: "Uma lista só, sem repetidos",
   },
   {
     id: "gate",
     label: "Gate",
-    sub: "A sua regra, sempre igual",
+    sub: "Sem IA no juiz do merge",
     out: "Passa ou não passa",
   },
   {
     id: "fix",
     label: "Correção",
-    sub: "Só no que o gate liberou",
-    out: "Sugestão de correção no PR",
+    sub: "SDD + agente; scanner prova",
+    out: "Contrato verificável no PR",
   },
   {
     id: "learn",
     label: "Esteira",
-    sub: "O que o time marcou como falso",
-    out: "Regra ajustada para a próxima",
+    sub: "FP/FN viram evolução offline",
+    out: "Regra ajustada com portão F1",
   },
 ] as const;
 

@@ -138,16 +138,17 @@ export default function LandingComic({
       {/* Capa */}
       <section data-anima className="hq-capa" aria-labelledby="hq-capa-titulo">
         <div className="hq-capa-inner">
-          <p className="hq-kicker">Análise de código para quem responde pelo risco</p>
+          <p className="hq-kicker">Qualidade de código com prova — não só mais um SAST</p>
           <h1 id="hq-capa-titulo" className="hq-marca">
             CodeHero
           </h1>
           <p className="hq-chamada">
-            Seu time não precisa de mais alertas. Precisa saber quais importam.
+            Detecta como os pares. Fecha o ciclo que os outros deixam aberto.
           </p>
           <p className="hq-lede">
-            O CodeHero junta o que as suas ferramentas já encontram, tira o que está repetido e decide
-            o que segura o merge. Sempre do mesmo jeito.
+            Motor determinístico competitivo em segurança, regras que evoluem offline com portão F1,
+            correção com contrato verificável e agentes via MCP — sem IA no quality gate. Junta o
+            sinal das ferramentas que você já paga e decide o merge sempre do mesmo jeito.
           </p>
           <div className="hq-ctas">
             <button type="button" className="hq-btn hq-btn--primario" onClick={onSignup}>
@@ -274,13 +275,59 @@ export default function LandingComic({
           </p>
         </Quadro>
 
-        <Quadro n="07" largo tom="calmo" titulo="Onde ela se destaca e onde ainda não vai." id="limites">
+        <Quadro n="07" largo titulo="Onde estamos no mercado — com número, não slogan." id="metricas">
+          <p>
+            Em detecção de vulnerabilidades o CodeHero já joga no mesmo patamar dos peers. Em amplitude
+            de catálogo de smells enterprise, ainda não. O posicionamento é esse:{" "}
+            <strong>peer-competitive na segurança, líder no ciclo depois do finding</strong>.
+          </p>
+          <dl className="hq-metricas">
+            <div>
+              <dt>OWASP BenchmarkJava</dt>
+              <dd>
+                F1 <strong>75,1%</strong> · precisão <strong>75,6%</strong> · score{" "}
+                <strong>48,9</strong>
+              </dd>
+            </div>
+            <div>
+              <dt>Leitura de mercado</dt>
+              <dd>
+                Peers públicos (CodeQL/Semgrep) têm F1 parecido — e FPR bem mais alto. Aqui o score
+                OWASP (acerto menos falso) sai calibrado.
+              </dd>
+            </div>
+            <div>
+              <dt>Catálogo Sonar way</dt>
+              <dd>
+                ~<strong>19%</strong> semântica (core) · VULN live ~<strong>69%</strong> — smells
+                ainda via Presence/SARIF, não substituição 1:1.
+              </dd>
+            </div>
+            <div>
+              <dt>Tempo de scan</dt>
+              <dd>
+                L0 em microssegundos/arquivo · árvore (~25&nbsp;KB) em ~13&nbsp;ms · sem LLM no PR
+              </dd>
+            </div>
+          </dl>
+          <p className="hq-nota">
+            Baseline medido no repositório (<code>benchmarks/owasp-baseline.json</code>, ago/2026).
+            Presence Pack importa Semgrep/CodeQL quando você quiser a amplitude deles no mesmo gate.
+          </p>
+        </Quadro>
+
+        <Quadro n="08" largo tom="calmo" titulo="Onde ela se destaca e onde ainda não vai." id="limites">
           <div className="hq-duas">
             <div className="hq-coluna hq-coluna--forte">
               <h3>Se destaca</h3>
               <ul>
+                <li>
+                  Loop fechado: finding → contrato de correção (SDD) → agente MCP → scanner prova que
+                  sumiu
+                </li>
+                <li>Regras que evoluem offline com portão F1 — auditável, sem GenAI no merge</li>
                 <li>COBOL e DB2 lidos como uma coisa só, que é como eles quebram</li>
-                <li>Junta o sinal das ferramentas que você já paga e remove o que está repetido</li>
+                <li>Orquestra CodeQL/Semgrep/Trivy no mesmo gate; remove eco entre ferramentas</li>
                 <li>Decisão que não muda de humor entre uma execução e outra</li>
               </ul>
             </div>
@@ -288,7 +335,11 @@ export default function LandingComic({
               <h3>Ainda não vai</h3>
               <ul>
                 <li>
-                  Rastreamento profundo de fluxo de dados hoje só em JavaScript e TypeScript
+                  Substituir Sonar/suite enterprise só por amplitude de code smells (live smells ~7%)
+                </li>
+                <li>
+                  Rastreamento profundo de fluxo de dados (taint interprocedural) hoje maduro sobretudo
+                  em JavaScript e TypeScript
                 </li>
                 <li>
                   Para as demais linguagens, traga o relatório do seu SAST e o gate unifica tudo num

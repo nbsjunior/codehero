@@ -35,6 +35,8 @@ export interface PerguntaAoModelo {
   linha: number;
   /** A linha do apontamento, com algumas de contexto em volta. */
   trecho: string;
+  /** Posicao da linha alvo DENTRO de `trecho`, base 1. O modelo numera a partir dai. */
+  linhaNoTrecho: number;
 }
 
 /**
@@ -145,6 +147,7 @@ export async function coletarVotosDeModelo(
         arquivo: c.arquivo,
         linha: c.linha,
         trecho: linhas.slice(ini, fim).join("\n"),
+        linhaNoTrecho: c.linha - ini,
       });
       votos.set(c.id, v);
       perguntados++;
@@ -187,4 +190,89 @@ export function interpretarResposta(texto: string): Voto {
   if (t.startsWith("PRESENTE")) return "match";
   if (t.startsWith("AUSENTE")) return "no_match";
   return null;
+}
+
+// ---------------------------------------------------------------------------
+// A pergunta VERIFICÁVEL, que substitui a pergunta de opinião.
+//
+// Por que a primeira formulação não servia
+// ---------------------------------------------------------------------------
+// "Este defeito está presente?" pede um veredito, e veredito não se confere.
+// Medido no BenchmarkJava: 53.1% de acurácia balanceada, moeda. E o pior não é
+// o número, é que uma resposta errada entra na urna com o mesmo peso de uma
+// certa, porque nada distingue as duas.
+//
+// "Em qual linha este dado entra no programa?" é outra coisa. É uma afirmação
+// sobre o texto, e o motor de fluxo confere se a linha apontada é mesmo uma
+// fonte de entrada. Três consequências:
+//
+//   - resposta errada vira ABSTENÇÃO DETECTADA, não voto. O modelo só
+//     consegue votar quando acerta algo que dá para checar;
+//   - a tarefa é mais fácil para o modelo. Localizar `request.getParameter`
+//     num trecho é leitura, não julgamento de segurança;
+//   - o erro que sobra é o silencioso — apontar uma fonte que existe mas não
+//     alimenta AQUELA linha. Menos frequente, e é o que o EM ainda tem de
+//     descontar medindo a confiabilidade dele.
+// ---------------------------------------------------------------------------
+
+export const INSTRUCAO_DE_ORIGEM = `Você recebe um trecho de código numerado e a LINHA ALVO onde uma regra
+estática apontou algo. Sua tarefa é localizar de onde vem o dado usado na
+linha alvo. NÃO julgue se há vulnerabilidade.
+
+Responda APENAS com uma destas formas, nada mais:
+
+  LINHA <n>   o número da linha em que o dado usado na linha alvo entra no
+              programa vindo DE FORA (parâmetro de requisição, cabeçalho,
+              cookie, arquivo, rede, variável de ambiente, entrada padrão)
+  NENHUMA     o dado usado na linha alvo é constante, literal, ou nasce
+              inteiro dentro do trecho, sem vir de fora
+  INCERTO     o trecho não mostra a origem
+
+Regras:
+- responda com o número da linha COMO ESTÁ NUMERADO no trecho;
+- se o dado passa por várias variáveis, aponte a linha da ENTRADA original,
+  não as intermediárias;
+- INCERTO é uma resposta boa. Chutar é pior que abster.`;
+
+/** O que o modelo afirmou sobre a origem, antes de ser conferido. */
+export interface AfirmacaoDeOrigem {
+  tipo: "linha" | "nenhuma" | "incerto";
+  linha?: number;
+}
+
+export function interpretarOrigem(texto: string): AfirmacaoDeOrigem {
+  const t = texto.trim().toUpperCase();
+  const m = /LINHA\s+(\d+)/.exec(t);
+  if (m) return { tipo: "linha", linha: Number(m[1]) };
+  if (t.startsWith("NENHUMA")) return { tipo: "nenhuma" };
+  return { tipo: "incerto" };
+}
+
+/**
+ * Confere a afirmação contra o texto e devolve o voto.
+ *
+ * `verificaFonte` é injetada (na prática, `ehFonteDeEntrada` do motor) para
+ * que a checagem use os MESMOS padrões do rastreio. Uma segunda lista
+ * derivaria da primeira e passaria a validar contra algo que o motor não usa.
+ */
+export function votoDeOrigem(
+  af: AfirmacaoDeOrigem,
+  linhasDoTrecho: string[],
+  verificaFonte: (linha: string) => boolean,
+): { voto: Voto; conferido: "confirmada" | "refutada" | "sem-afirmacao" } {
+  if (af.tipo === "incerto") return { voto: null, conferido: "sem-afirmacao" };
+  if (af.tipo === "nenhuma") {
+    // Afirmação forte e conferível pelo outro lado: se o trecho NÃO tem
+    // nenhuma fonte, ele tem razão e isso é evidência de falso positivo.
+    const temAlguma = linhasDoTrecho.some((l) => verificaFonte(l));
+    return temAlguma
+      ? { voto: null, conferido: "refutada" }
+      : { voto: "no_match", conferido: "confirmada" };
+  }
+  const idx = (af.linha ?? 0) - 1;
+  const alvo = linhasDoTrecho[idx];
+  if (alvo === undefined) return { voto: null, conferido: "refutada" };
+  return verificaFonte(alvo)
+    ? { voto: "match", conferido: "confirmada" }
+    : { voto: null, conferido: "refutada" };
 }

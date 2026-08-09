@@ -4,6 +4,12 @@
 > pipelines de deploy ou inventário de serviços hospedados. Operação da plataforma
 > comercial fica fora deste repositório.
 
+## Posicionamento (resumo)
+
+Plataforma de qualidade com **loop de prova**: detecção determinística peer-competitive em segurança (OWASP F1 ~75%, score ~48,9), evolução de regras offline com portão F1, SDD + MCP para correção verificável. Sonar way: ~19% semântica (core) e ~69% VULN live scannable; smells via Presence/SARIF. Esteira: [wiki/Esteira-Sonar-Way.md](./wiki/Esteira-Sonar-Way.md).
+
+Detalhe e anti-claims: [wiki/Posicionamento-e-metricas.md](./wiki/Posicionamento-e-metricas.md).
+
 ## Princípio
 
 - **Inspeção** = determinística, na borda (CLI / CI / IDE), sem LLM por arquivo.

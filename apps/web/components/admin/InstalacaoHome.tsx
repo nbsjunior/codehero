@@ -391,7 +391,7 @@ function InstalacaoHome() {
           <h3 style={{ margin: "0 0 0.75rem", fontSize: "1rem" }}>Prévia na Cloud</h3>
           {!cloudPreviewFlag.loading && !cloudPreviewFlag.enabled ? (
             <p className="hero-caption" style={{ margin: 0 }}>
-              Recurso desativado temporariamente pelo admin geral da plataforma.
+              Prévia na nuvem temporariamente indisponível. Use a GitHub Action ou o plugin enquanto isso.
             </p>
           ) : (
             <>

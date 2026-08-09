@@ -757,6 +757,115 @@ const TEMPLATES = [
     regex: "(?i)(ScriptEngineManager|getEngineByName|eval\\s*\\()",
     effort: 35,
   },
+  // --- wave2: VULN stubs prioritários (esteira sonar:engenharia) ---
+  {
+    id: "custom-crypto",
+    re: /custom cryptographic algorithm/i,
+    regex: "(?i)(extends\\s+(CipherSpi|MessageDigestSpi|KeyGeneratorSpi)|implements\\s+ICryptoTransform)",
+    effort: 45,
+  },
+  {
+    id: "sql-dynamic-format",
+    re: /sql queries should not be dynamically formatted|dynamically formatted/i,
+    regex:
+      "(?i)(string\\.Format|String\\.format)\\s*\\(\\s*['\"`].{0,120}\\b(SELECT|INSERT|UPDATE|DELETE)\\b",
+    scope: "any",
+    effort: 45,
+  },
+  {
+    id: "requested-session-id",
+    re: /getRequestedSessionId/i,
+    regex: "(?i)getRequestedSessionId\\s*\\(",
+    effort: 20,
+  },
+  {
+    id: "securerandom-predictable",
+    re: /secure random number generators should not output predictable/i,
+    regex: "(?i)(new\\s+SecureRandom\\s*\\(\\s*\\)|\\.setSeed\\s*\\(\\s*\\d+\\s*\\))",
+    effort: 25,
+  },
+  {
+    id: "aws-long-term-keys",
+    re: /long-term aws access keys/i,
+    regex: "(?i)(AKIA[0-9A-Z]{16}|aws_access_key_id\\s*=\\s*['\"]AKIA)",
+    scope: "any",
+    effort: 30,
+  },
+  {
+    id: "xml-signature-validate",
+    re: /xml signatures? should be validated/i,
+    regex: "(?i)(XMLSignatureFactory|SignedXml|javax\\.xml\\.crypto)",
+    effort: 30,
+  },
+  {
+    id: "log-injection",
+    re: /logging should not be vulnerable to injection/i,
+    regex: "(?i)(log(ger)?|Logger)\\.(info|warn|error|debug|trace)\\s*\\([^)]*(\\+|\\$\\{|String\\.format)",
+    effort: 15,
+  },
+  {
+    id: "ssrf-forging",
+    re: /server-side requests should not be vulnerable to (forging|traversing)/i,
+    regex:
+      "(?i)(HttpClient|WebClient|RestTemplate|OkHttpClient|fetch|axios)\\s*(\\.[a-zA-Z]+)?\\s*\\([^)]*(request\\.|req\\.|getParameter|params\\.|Query\\.)",
+    effort: 45,
+  },
+  {
+    id: "redirect-forging",
+    re: /redirections should not be open to forging|request redirections should not be open/i,
+    regex: "(?i)(sendRedirect|Response\\.Redirect|res\\.redirect)\\s*\\([^)]*(request\\.|req\\.|getParameter|Query\\.)",
+    effort: 20,
+  },
+  {
+    id: "cmd-args-user-input",
+    re: /system command arguments constructed from user input/i,
+    regex:
+      "(?i)(ProcessBuilder|Runtime\\.getRuntime\\(\\)\\.exec|spawnSync|execFile)\\s*\\([^)]*(request\\.|req\\.|getParameter|argv|params\\.)",
+    effort: 45,
+  },
+  {
+    id: "connection-string-inject",
+    re: /connection strings should not be vulnerable/i,
+    regex: "(?i)(ConnectionString|connection_string)\\s*=\\s*[^;\\n]{0,80}(\\+|string\\.Format|\\$\\{|getParameter)",
+    effort: 40,
+  },
+  {
+    id: "xslt-injection",
+    re: /xslt transformations should not be vulnerable/i,
+    regex: "(?i)(TransformerFactory|XslCompiledTransform|newTransformer)\\s*(\\(|\\.).{0,80}(\\+|request\\.|req\\.)",
+    effort: 35,
+  },
+  {
+    id: "bean-untrusted",
+    re: /javabean properties should not be populated from untrusted|populated from untrusted input/i,
+    regex: "(?i)(BeanUtils\\.(copyProperties|populate)|PropertyUtils\\.setProperty)\\s*\\(",
+    effort: 30,
+  },
+  {
+    id: "db-query-injection",
+    re: /database queries should not be vulnerable to injection/i,
+    regex:
+      "(?i)(createQuery|createNativeQuery|FromSqlRaw|SqlCommand|executeQuery)\\s*\\([^)]*(\\+|string\\.Format|\\$\"|\\$\\{)",
+    effort: 45,
+  },
+  {
+    id: "template-injection",
+    re: /server-side templates should not be vulnerable to injection/i,
+    regex: "(?i)(Template\\.(parse|compile)|Freemarker|Velocity|Thymeleaf).{0,60}(\\+|request\\.|req\\.)",
+    effort: 45,
+  },
+  {
+    id: "env-untrusted",
+    re: /environment variables should not be defined from untrusted/i,
+    regex: "(?i)(putenv|SetEnvironmentVariable|process\\.env\\[[^\\]]+\\]\\s*=)\\s*[^;\\n]*(request\\.|req\\.|params)",
+    effort: 25,
+  },
+  {
+    id: "cobol-dynamic-call",
+    re: /name of the subprogram to be called should not be programmatically updated/i,
+    regex: "(?i)CALL\\s+[A-Z][A-Z0-9-]{1,30}(?![\"'])\\s*(USING|$)",
+    effort: 40,
+  },
 ];
 
 /**
@@ -856,6 +965,17 @@ function sddFor(tmplId, type) {
     "debug-log": "sdd.smell.remove-debug",
     "todo-fixme": "sdd.smell.resolve-todo",
     "goto-cobol": "sdd.smell.restructure-goto",
+    "custom-crypto": "sdd.crypto.upgrade-hash",
+    "sql-dynamic-format": "sdd.sqli.parametrize",
+    "db-query-injection": "sdd.sqli.parametrize",
+    "ssrf-forging": "sdd.ssrf.allowlist",
+    "redirect-forging": "sdd.redirect.allowlist",
+    "cmd-args-user-input": "sdd.cmd.avoid-shell",
+    "aws-long-term-keys": "sdd.secret.externalize",
+    "log-injection": "sdd.generic.secure-fix",
+    "bean-untrusted": "sdd.generic.secure-fix",
+    "template-injection": "sdd.generic.secure-fix",
+    "cobol-dynamic-call": "sdd.generic.secure-fix",
   };
   if (tmplId && byTmpl[tmplId]) return byTmpl[tmplId];
   if (type === "VULNERABILITY" || type === "SECURITY_HOTSPOT") return "sdd.generic.secure-fix";
@@ -960,6 +1080,7 @@ async function main() {
             regex: tmpl.regex,
             ...(tmpl.flags ? { flags: tmpl.flags } : {}),
             ...(tmpl.unless ? { unless: tmpl.unless } : {}),
+            ...(tmpl.scope ? { scope: tmpl.scope } : {}),
           }
         : { regex: STUB_REGEX };
 

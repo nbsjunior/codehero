@@ -32,8 +32,12 @@ import {
   estadoVazio,
   coletarVotosDeModelo,
   interpretarResposta,
+  interpretarOrigem,
+  votoDeOrigem,
   INSTRUCAO_DE_VOTO,
+  INSTRUCAO_DE_ORIGEM,
 } from "../packages/ruleforge/dist/index.js";
+import { ehFonteDeEntrada } from "../packages/engine/dist/index.js";
 
 const arg = (n, d) => {
   const i = process.argv.indexOf(n);
@@ -44,6 +48,10 @@ const ORCAMENTO = Number(arg("--orcamento", "300"));
 const MODELO = arg("--modelo", "gemini-2.5-flash");
 const SAIDA = arg("--saida", "packages/ruleforge/corpus/votos-modelo.json");
 const BENCH = ".tmp/benchmark-java/src/main/java/org/owasp/benchmark/testcode";
+// Pergunta VERIFICAVEL por padrao. `--modo-veredito` volta a pergunta de
+// opiniao, que ficou so para reproduzir a medicao que a reprovou (53.1% de
+// acuracia balanceada, moeda).
+const MODO_ORIGEM = !process.argv.includes("--modo-veredito");
 
 const chave = process.env.GEMINI_API_KEY ?? process.env.GOOGLE_GENAI_API_KEY;
 if (!chave) {
@@ -147,19 +155,38 @@ const regras = new Map(RULES.map((r) => [r.id, r]));
 let erros = 0;
 let vistas = 0;
 
+const conferencia = { confirmada: 0, refutada: 0, "sem-afirmacao": 0 };
+
 const chamar = async (p) => {
-  const prompt = [
-    INSTRUCAO_DE_VOTO,
-    "",
-    `DEFEITO APONTADO: ${p.mensagemDaRegra}`,
-    "",
-    "TRECHO:",
-    "```java",
-    p.trecho,
-    "```",
-    "",
-    "Responda com UMA palavra: PRESENTE, AUSENTE ou INCERTO.",
-  ].join("\n");
+  const linhasTrecho = p.trecho.split("\n");
+  const numerado = linhasTrecho
+    .map((l, i) => `${String(i + 1).padStart(3)} | ${l}`)
+    .join("\n");
+  const prompt = MODO_ORIGEM
+    ? [
+        INSTRUCAO_DE_ORIGEM,
+        "",
+        `LINHA ALVO: ${p.linhaNoTrecho}`,
+        "",
+        "TRECHO NUMERADO:",
+        "```java",
+        numerado,
+        "```",
+        "",
+        "Responda APENAS: LINHA <n>, NENHUMA ou INCERTO.",
+      ].join("\n")
+    : [
+        INSTRUCAO_DE_VOTO,
+        "",
+        `DEFEITO APONTADO: ${p.mensagemDaRegra}`,
+        "",
+        "TRECHO:",
+        "```java",
+        p.trecho,
+        "```",
+        "",
+        "Responda com UMA palavra: PRESENTE, AUSENTE ou INCERTO.",
+      ].join("\n");
   try {
     const res = await ai.generate({
       model: googleAI.model(MODELO),
@@ -180,10 +207,20 @@ const chamar = async (p) => {
       },
     });
     const txt = res.text ?? "";
-    if (process.env.HERO_DEBUG_VOTO && vistas++ < 3) {
+    if (process.env.HERO_DEBUG_VOTO && vistas++ < 5) {
       console.error(`  [cru] ${JSON.stringify(txt).slice(0, 120)}`);
     }
-    return interpretarResposta(txt);
+    if (!MODO_ORIGEM) return interpretarResposta(txt);
+
+    // A resposta é CONFERIDA antes de virar voto. O modelo afirma uma linha;
+    // o motor diz se aquela linha é mesmo uma fonte de entrada. Quando ele
+    // erra, isso é detectado e vira abstenção — o erro não entra na urna com
+    // o mesmo peso do acerto, que era o vício da pergunta de opinião.
+    const r = votoDeOrigem(interpretarOrigem(txt), linhasTrecho, (l) =>
+      ehFonteDeEntrada(l, "java"),
+    );
+    conferencia[r.conferido]++;
+    return r.voto;
   } catch (e) {
     erros++;
     if (erros <= 3) console.error(`  erro do modelo: ${String(e.message ?? e).slice(0, 120)}`);
@@ -206,6 +243,19 @@ console.log(`reaproveitados do cache: ${r.reaproveitados}`);
 console.log(`abstidos por orcamento: ${r.abstidosPorOrcamento}`);
 console.log(`erros de chamada: ${erros}`);
 console.log(`tempo: ${((Date.now() - inicio) / 1000).toFixed(0)}s`);
+
+if (MODO_ORIGEM) {
+  const total = conferencia.confirmada + conferencia.refutada + conferencia["sem-afirmacao"];
+  console.log(
+    "\nconferencia da afirmacao: confirmada=" +
+      conferencia.confirmada +
+      " refutada=" +
+      conferencia.refutada +
+      " sem-afirmacao=" +
+      conferencia["sem-afirmacao"] +
+      (total ? "  (" + ((conferencia.refutada * 100) / total).toFixed(0) + "% do que ele afirmou nao se sustentou)" : ""),
+  );
+}
 
 const dist = { match: 0, no_match: 0, abstencao: 0 };
 for (const v of r.votos.values()) dist[v ?? "abstencao"]++;

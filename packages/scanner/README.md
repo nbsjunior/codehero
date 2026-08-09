@@ -44,9 +44,23 @@ npx @codehero/scanner . --metrics
 - `--metrics` liga métricas estruturais (complexidade, duplicação, aninhamento). Custa parsing; deixe desligado se você só quer o gate.
 - `--format sarif` para consumir em outra ferramenta.
 
+## Baseline de segurança (OWASP)
+
+Linha de base versionada em [`benchmarks/owasp-baseline.json`](../../benchmarks/owasp-baseline.json) (BenchmarkJava v1.2, 2.740 casos):
+
+| Métrica | Valor |
+|---|---|
+| F1 | 75,1% |
+| Precisão | 75,6% |
+| Recall | 74,6% |
+| Score OWASP (TPR − FPR) | 48,9 |
+
+Regredir esses números no CI é ato deliberado (`scripts/benchmark-gate.mjs`). Posicionamento vs mercado: [docs/wiki/Posicionamento-e-metricas.md](../../docs/wiki/Posicionamento-e-metricas.md).
+
 ## Limites, ditos na frente
 
 - Rastreamento de fluxo (L2) existe só para JS/TS. Nas demais linguagens as regras valem no nível de padrão e de árvore — o catálogo diz qual regra é qual.
+- Amplitude de code smells enterprise não é o eixo nativo (live smells ~7% do Sonar way; VULN live ~69%); use import SARIF / Presence Pack.
 - Achados do tipo `SECURITY_HOTSPOT` **não reprovam o build**, por desenho: eles pedem revisão humana, e reprovar CI por eles gera ruído que ninguém lê.
 - Regras estruturais silenciam quando a árvore tem erro de sintaxe. Um match daí seria artefato, não achado.
 

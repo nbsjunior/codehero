@@ -1,71 +1,83 @@
 # CodeHero 🛡️
 
-**Análise estática de código que aprende — sem colocar IA generativa no caminho de cada arquivo.**
+**Detecção peer-competitive. Loop fechado depois do finding — sem IA no quality gate.**
 
-CodeHero é uma plataforma de qualidade e segurança de código — débito técnico, quality gates, análise multi-linguagem — com um eixo diferente: **o catálogo de regras evolui continuamente por um motor determinístico, e cada issue encontrada já nasce com um contrato de correção que um agente (via MCP) pode aplicar e provar que resolveu.**
+CodeHero é uma plataforma de qualidade e segurança de código: motor determinístico na borda, regras que evoluem offline com portão F1, contratos de correção (SDD) que um agente (via MCP) aplica e o scanner **prova** que resolveu. Orquestra CodeQL/Semgrep/Trivy quando você já os paga; não inventa um segundo juiz no PR.
 
-[Documentação na plataforma](https://codehero.web.app/docs) · [Wiki](https://github.com/nbsjunior/codehero/wiki)
+[Documentação na plataforma](https://codehero.web.app/docs) · [Wiki](https://github.com/nbsjunior/codehero/wiki) · [Posicionamento e métricas](./docs/wiki/Posicionamento-e-metricas.md)
 
 ---
 
 ## O problema que isso resolve
 
-Toda ferramenta de análise estática enfrenta a mesma tensão: regras de mão têm cobertura limitada e ficam obsoletas (novos CVEs, novos frameworks, novos anti-padrões), mas "colocar um LLM para analisar cada arquivo" resolve a cobertura trocando por um problema pior — **custo que cresce linearmente com o volume de código**, latência incompatível com CI/IDE, e resultados não-determinísticos (a mesma linha pode ser marcada ou não dependendo da temperatura do modelo naquele dia).
+Toda ferramenta de análise estática enfrenta a mesma tensão: regras de mão têm cobertura limitada e ficam obsoletas, mas "colocar um LLM para analisar cada arquivo" resolve a cobertura trocando por um problema pior — **custo linear com o volume**, latência incompatível com CI/IDE, e resultados não-determinísticos.
 
-CodeHero recusa essa troca. A resposta arquitetural é separar os dois problemas:
+CodeHero recusa essa troca:
 
-- **Detectar** é sempre determinístico, instantâneo e roda na borda (CI/IDE) — nunca centralizado, nunca com custo de inferência por arquivo.
-- **Evoluir as regras** é onde a IA entra — mas em lote, offline, validada por um corpus de teste antes de qualquer promoção. Uma proposta de regra (de um humano ou de um LLM) só vira produção se provar, matematicamente, que melhora sem regredir.
-- **Corrigir** é onde a IA generativa entra de fato, sob demanda — e não "sugere um fix"; ela recebe uma **especificação verificável** (SDD Spec) com critérios de aceite que o próprio motor determinístico confirma depois de aplicado.
+- **Detectar** é sempre determinístico, na borda (CI/IDE) — microssegundos (L0) a ~13 ms/arquivo com árvore (L1).
+- **Evoluir as regras** é onde a IA entra — em lote, offline, só promove se ΔF1 > 0 e P ≥ 0,85 no corpus.
+- **Corrigir** é sob demanda: SDD Spec com critérios de aceite; o motor confirma depois do fix.
+
+## Posicionamento (métricas, não slogan)
+
+| Eixo | CodeHero hoje | Como ler |
+|---|---|---|
+| **OWASP BenchmarkJava** v1.2 | F1 **75,1%** · precisão **75,6%** · recall **74,6%** · score **48,9** | Peer-competitive com engines públicos; score OWASP (TPR−FPR) costuma sair **melhor calibrado** que peers de alto recall e FPR altíssimo |
+| **Catálogo Sonar way** | ~**19%** semântica (core) · VULN live **~69%** | Smells ainda baixos; esteira `sonar:engenharia` promove VULN com F1 |
+| **Presence Pack** | Importa Semgrep/CodeQL/… no mesmo gate | Complementar — orquestra amplitude sem segundo juiz |
+| **Latência** | L0 µs/arquivo · L1 ~13 ms/25 KB | Adequado a CI e save no IDE |
+
+Fonte da baseline OWASP: [`benchmarks/owasp-baseline.json`](./benchmarks/owasp-baseline.json) (medido 2026-08-09). Detalhe e anti-claims: [docs/wiki/Posicionamento-e-metricas.md](./docs/wiki/Posicionamento-e-metricas.md).
+
+**Uma frase:** peer-competitive em detecção de vulnerabilidades; líder no ciclo pós-finding (evolução + correção verificável + agentes); complementar — não substituto — em amplitude de smells enterprise.
+
+GTM (ICPs, anti-claims, quando usar o quê): [docs/wiki/Posicionamento-e-metricas.md](./docs/wiki/Posicionamento-e-metricas.md) · portal [`/docs/#posicionamento`](https://codehero.web.app/docs/#posicionamento).
 
 ## Em que ponto isso evolui em relação a suites enterprise clássicas
 
 | | Suites enterprise clássicas | CodeHero |
 |---|---|---|
-| **Origem das regras** | Curadas pelo vendor, lançadas em releases | Curadas + **evoluídas por busca evolutiva determinística** contra um corpus rotulado — cada promoção é auditável e reproduzível |
-| **Correção de issues** | Aponta o problema; quick fixes limitados e sem prova | Gera um **SDD Spec** com localização, contexto e critérios de aceite — o agente aplica e o scanner **confirma** que a issue sumiu |
-| **Integração com IA/agentes** | Add-on comercial fechado | **Nativo em MCP** — regras ativas no contexto de geração, issues, SDD, scan e resultado do fix |
-| **Custo de manter a IA** | N/A ou por token/arquivo | Validar uma regra nova custa **milissegundos de CPU** contra o corpus — o custo não cresce com o volume analisado |
-| **Aprendizado com uso real** | Feedback vira ticket para o vendor | Telemetria de produção alimenta o próximo ciclo de evolução — o ciclo é parte do produto |
-| **Operação da plataforma** | Cluster próprio (DB, search, etc.) | Cloud serverless — sem cluster próprio para o cliente manter |
+| **Origem das regras** | Curadas pelo vendor, lançadas em releases | Curadas + **evoluídas por busca evolutiva determinística** contra um corpus rotulado |
+| **Correção de issues** | Aponta o problema; quick fixes limitados e sem prova | **SDD Spec** + agente aplica + scanner **confirma** que a issue sumiu |
+| **Integração com IA/agentes** | Add-on comercial fechado | **Nativo em MCP** — regras no contexto de geração, issues, SDD, scan e prova do fix |
+| **Custo de manter a IA** | N/A ou por token/arquivo | Validar regra nova = **milissegundos de CPU** no corpus |
+| **Aprendizado com uso real** | Feedback vira ticket para o vendor | Telemetria alimenta o próximo ciclo de evolução |
+| **Operação** | Cluster próprio | Cloud serverless — sem cluster para o cliente manter |
 | **Linguagens legadas** | Frequentemente add-on Enterprise | COBOL, T-SQL/DB2, C#/VB.Net desde o MVP |
+| **Amplitude de smells** | Catálogo maduro (décadas) | Ainda atrás — use Presence Pack / Sonar ao lado |
 
-**O que ainda não alcançamos** (honestidade > marketing): suites maduras têm mais de uma década de cobertura e análise de taint inter-procedural avançada. O motor determinístico do CodeHero hoje cobre o MVP com matcher + AST/dataflow em evolução — ver a documentação na plataforma e a Wiki.
+**O que ainda não alcançamos** (honestidade > marketing): amplitude de code smells enterprise e taint interprocedural avançado em todas as linguagens. O motor nativo cobre L0 + AST/dataflow em evolução; Java e demais langs ganham profundidade via SARIF importado.
 
 ## Prova, não promessa
 
-Toda alegação acima já foi exercitada de ponta a ponta neste repositório, não apenas desenhada:
-
-- **Busca evolutiva real**: contra o corpus golden, regras foram promovidas automaticamente e mutações ruins corretamente rejeitadas — o portão de segurança funcionando.
-- **Correção verificável**: relatório → portal → SDD Spec → fix → confirmação pelo scanner, ponta a ponta.
-- **Multi-linguagem real**: regras dedicadas para COBOL, T-SQL/DB2 e C#/VB.Net — testado com exemplos em [`examples/legacy/`](examples/legacy/).
+- **Busca evolutiva real**: promoção e rejeição auditáveis contra o corpus golden.
+- **Correção verificável**: relatório → portal → SDD → fix → confirmação pelo scanner.
+- **Multi-linguagem real**: COBOL, T-SQL/DB2 e C#/VB.Net — [`examples/legacy/`](examples/legacy/).
+- **Benchmark de segurança**: baseline OWASP versionada no repo (regredir o score quebra o gate de CI).
 
 ## Os três módulos
 
-1. **Motor de Inspeção** — determinístico na borda; evolução de regras offline e auditável (Dress Code Tools + corpus).
-2. **Painel & SDD** — ingestão via API, débito técnico, quality gates, especificações de correção.
-3. **Integrações** — GitHub Action, VS Code/Cursor e servidor MCP para agentes de IA.
+1. **Motor de Inspeção** — determinístico na borda; evolução offline (Dress Code Tools + corpus).
+2. **Painel & SDD** — ingestão, débito técnico, quality gates, especificações de correção.
+3. **Integrações** — GitHub Action, VS Code/Cursor e servidor MCP.
 
-Guia completo para quem usa a plataforma: **[codehero.web.app/docs](https://codehero.web.app/docs)**.
+Guia completo: **[codehero.web.app/docs](https://codehero.web.app/docs)**.
 
 ## Contribuindo (open source)
-
-Pull requests são bem-vindos no motor, contratos, Action, MCP e docs.
 
 - [CONTRIBUTING.md](./CONTRIBUTING.md) — como contribuir
 - [SECURITY.md](./SECURITY.md) — vulnerabilidades (privadas)
 - [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
 - Licença: [Apache-2.0](./LICENSE)
 
-**Não** envie secrets, IDs de tenant nem workflows de deploy de produção. A operação
-da plataforma hospedada fica fora deste repositório.
+**Não** envie secrets, IDs de tenant nem workflows de deploy de produção.
 
 ```bash
 npm ci
 npm test
 ```
 
-Exemplos de workflow para o *seu* repositório: [`examples/github-workflows/`](./examples/github-workflows/).
+Exemplos de workflow: [`examples/github-workflows/`](./examples/github-workflows/).
 
 ## Começando (produto hospedado)
 
@@ -76,14 +88,15 @@ Crie a conta no [portal](https://codehero.web.app), provisione um projeto e esco
 | Componente | Estado |
 |---|---|
 | Contratos (relatório + SDD + métricas + matcher) | ✅ |
-| Scanner multi-linguagem | ✅ exemplos reais |
+| Scanner multi-linguagem + baseline OWASP | ✅ |
 | Evolução de regras (corpus + Dress Code Tools) | ✅ |
 | API (ingestão / SDD / provisionamento / feedback) | ✅ |
 | MCP server | ✅ |
 | GitHub Action + one-click | ✅ |
 | Portal web | ✅ |
-| Motor nativo de escala (roadmap) | ⬜ |
+| Presence Pack (SARIF externo) | ✅ |
+| Motor nativo de escala enterprise (roadmap) | ⬜ |
 
 ---
 
-<sub>CodeHero é projeto e arquitetura próprios. Comparações com o mercado são conceituais.</sub>
+<sub>CodeHero é projeto e arquitetura próprios. Números de benchmark são medidos neste repositório; comparações com peers públicos citam estudos externos quando indicado.</sub>

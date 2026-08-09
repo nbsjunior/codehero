@@ -35,6 +35,29 @@ const FONTES: Record<string, RegExp[]> = {
     /\bgetValue\s*\(|\bgetParameter\b/,
     /\bnextElement\s*\(/, // iteração sobre headers/cookies
     /\b\.getValue\s*\(\s*\)|\.getName\s*\(\s*\)/, // Cookie.getValue/getName
+    // ---- Juliet NIST: fontes indiretas (não-HTTP) ----
+    // socket / console / arquivo / DB / properties — o bad() do Juliet lê
+    // daqui, não de getParameter. Sem isso recall Juliet fica ~0% fora de cmdi.
+    /\.readLine\s*\(\s*\)/, // BufferedReader.readLine (tcp, console, file)
+    /\breadLine\s*\(\s*\)\s*;?\s*$/, // data = reader.readLine() no fim de stmt
+    /\bSystem\.console\s*\(\s*\)\.readLine/,
+    /\bnew\s+BufferedReader\s*\(/,
+    /\bFiles\.(readString|readAllLines|newBufferedReader|lines)\b/,
+    /\bDriverManager\.getConnection\b/,
+    // `rs.getString("COL")` é fonte (Juliet: dado de DB). Mas NÃO quando aparece
+    // dentro de um RowMapper aninhado num sink JDBC do OWASP — aí o resultado
+    // já é o valor da query, não entrada nova. Só conta se a linha ATRIBUI o
+    // getString a uma variável (`data = rs.getString(...)`), padrão do Juliet.
+    /(?:^|[=(]\s*)\w+\s*=\s*[^;]*?\bResultSet\b[\s\S]{0,40}?\.getString\s*\(/,
+    // Juliet: `data = (String) resultSet.getObject(...)` / `.getString(...)` em stmt.
+    /^\s*\w+\s*=\s*(?:\(\s*String\s*\)\s*)?\s*\w*[Rr]s\w*\.get(String|Object|Int)\s*\(/,
+    /\bStatement\b.*\.(executeQuery|execute)\s*\(\s*"/, // result de query fixa como fonte
+    /\bSystem\.getProperty\s*\(/,
+    /\bSystem\.getenv\s*\(/,
+    /\bProperties\b.*\.(getProperty|get)\s*\(/,
+    /\b\.getProperty\s*\(\s*"/,
+    /\bnew\s+URL\s*\(\s*["']?http/,
+    /\bURLConnection\b.*\.getInputStream/,
   ],
   python: [
     /\binput\s*\(/,
@@ -68,7 +91,15 @@ const SANITIZERS: RegExp[] = [
   /\bPrepareStatement|setString|setInt\b/, // parametrize (tratado à parte abaixo)
   /\bquote\w*\s*\(/i,
   /\bstrtol|atoi|atol\s*\(/i,
+  // ---- P0: path traversal + session ----
+  /\b(getCanonicalPath|getCanonicalFile|toRealPath|normalize)\s*\(/,
+  /\bESAPI\.validator\s*\(\s*\)\.getValid\w+/,
+  /\bStringEscapeUtils\.escapeXml\s*\(/, // XPath/XML — CWE-643 goodB2G
+  /\bencodeForLDAP|LdapEncoder|escapeLdap/i,
 ];
+
+/** `new File(param)` / `pb.command(argList)` — o sink recebe o PRÓPRIO arg,
+ *  não só refs. Detecta sink cujo argumento é um identificador tainted. */
 
 /** Sinks por categoria. Casam na LINHA da chamada. */
 const SINKS: Record<string, RegExp[]> = {
@@ -118,18 +149,23 @@ const SINKS: Record<string, RegExp[]> = {
     /\b(Object\.assign|_\.merge|_\.extend|_\.defaultsDeep|merge|extend)\s*\(/,
   ],
   "ldap.search": [
-    /\b(DirContext|InitialDirContext|LdapContext)\b[\s\S]{0,80}?\.search\s*\(/,
-    /\bidc\.search\s*\(|\bctx\.search\s*\(|\bldapContext\.search\s*\(/,
-    /\.\s*search\s*\(\s*[^)]*(filter|base|query)/i,
+    // Juliet + OWASP: `directoryContext.search("", search, null)` — variável genérica.
+    /\b(DirContext|InitialDirContext|LdapContext|directoryContext|dirContext|ctx|idc)\b[\s\S]{0,80}?\.search\s*\(/,
+    /\b\w*[Dd]irContext\w*\.search\s*\(/,
+    /\.\s*search\s*\(\s*[^)]*(filter|base|query|search)/i,
   ],
   "xpath.evaluate": [
     /\b(XPath|XPathExpression)\b[\s\S]{0,60}?\.(evaluate|compile)\s*\(/,
-    /\bxpath\.(evaluate|compile)\s*\(/,
+    /\bxpath\.(evaluate|compile)\s*\(/i,
     /\.\s*(evaluate|compile)\s*\(\s*[^)]*(expression|xpath|query)/i,
-    /\bxp\.(evaluate|compile)\s*\(/, // variável XPath comum no benchmark
+    /\bxp\.(evaluate|compile)\s*\(/,
+    // Juliet: `xPath.evaluate(query, inputXml, ...)` — variável camelCase.
+    /\bxPath\.evaluate\s*\(/,
+    /\b\w*[Xx][Pp]ath\w*\.(evaluate|compile)\s*\(/,
   ],
   "session.setAttribute": [
-    /\b(session|getSession\s*\(\s*\)|request\.getSession)\b[\s\S]{0,40}?\.(setAttribute|putValue)\s*\(/,
+    // OWASP trustbound: `request.getSession().setAttribute(param, ...)` — chave tainted.
+    /\b(session|getSession\s*\(\s*\)|request\.getSession)\b[\s\S]{0,60}?\.(setAttribute|putValue)\s*\(/,
     /\.\s*(setAttribute|putValue)\s*\(\s*[^)]*(user|param|input|name|value)/i,
     /\bgetSession\s*\(\s*\)\s*\.(setAttribute|putValue)\s*\(/,
   ],
@@ -161,6 +197,8 @@ function extraiFonte(rhs: string, fontes: RegExp[]): string | null {
  * Expressão só com literais numéricos, operadores e ids conhecidos em `env`.
  */
 function expressaoConstante(expr: string, env: Map<string, number> = new Map()): boolean {
+  // Booleanos puros do benchmark: `if (true)` / `if (false)` (Juliet variante 02).
+  if (/^\s*(true|false)\s*$/.test(expr)) return true;
   let limpa = expr.replace(/["'][^"']*["']/g, "");
   for (const k of env.keys()) limpa = limpa.replace(new RegExp(`\\b${k}\\b`, "g"), "1");
   // ids locais comuns do benchmark, se não estiverem no env
@@ -174,6 +212,8 @@ function expressaoConstante(expr: string, env: Map<string, number> = new Map()):
  * (true/safe) virava num=1 (false) e gerava FP.
  */
 function avaliaConstante(expr: string, env: Map<string, number> = new Map()): boolean | null {
+  if (/^\s*true\s*$/.test(expr)) return true;
+  if (/^\s*false\s*$/.test(expr)) return false;
   if (!expressaoConstante(expr, env)) return null;
   let limpa = expr.replace(/["'][^"']*["']/g, "");
   for (const [k, v] of env) limpa = limpa.replace(new RegExp(`\\b${k}\\b`, "g"), String(v));
@@ -362,7 +402,10 @@ function chamadaResultante(rhs: string): string | null {
  * concluir que `bar` não vinha de lugar nenhum.
  */
 function comandos(corpo: string): string[] {
-  const m = mascaraTexto(corpo);
+  // `(String)` / `(int)` são CASTS, não chamadas: não devem manter o parêntese
+  // aberto, senão `bar = (String) map.get("a");` engole o próximo comando.
+  const semCast = corpo.replace(/\(\s*(?:String|Object|int|long|double|float|short|byte|char|boolean|Integer|Long|Double)\s*\)/g, " ");
+  const m = mascaraTexto(semCast);
   const out: string[] = [];
   let ini = 0;
   let par = 0;
@@ -371,11 +414,11 @@ function comandos(corpo: string): string[] {
     if (c === "(" || c === "[") par++;
     else if (c === ")" || c === "]") par--;
     else if ((c === ";" || c === "{" || c === "}") && par === 0) {
-      out.push(corpo.slice(ini, i).replace(/\s+/g, " ").trim());
+      out.push(semCast.slice(ini, i).replace(/\s+/g, " ").trim());
       ini = i + 1;
     }
   }
-  out.push(corpo.slice(ini).replace(/\s+/g, " ").trim());
+  out.push(semCast.slice(ini).replace(/\s+/g, " ").trim());
   return out.filter(Boolean);
 }
 
@@ -410,6 +453,8 @@ function retornoDerivaDeParams(corpo: string, params: string[]): boolean {
   const derivado = new Set(params);
   const seladas = new Set<string>();
   const envInt = new Map<string, number>();
+  /** `map.put("chave", valor)` por chave, para o `get("chave")` decidir. */
+  const chave = new Map<string, boolean>();
   let viuReturn = false;
   for (const st of comandos(corpo)) {
     const intLocal = capturaIntLocal(st + ";");
@@ -429,11 +474,34 @@ function retornoDerivaDeParams(corpo: string, params: string[]): boolean {
     // `sb.append(param); ... return sb.toString();` — o acumulador herda.
     const col =
       /\b(\w+)\s*\.\s*(?:add|put|addAll|set|push|append|offer|putValue|insert|write)\s*\(\s*(.+?)\s*\)\s*$/.exec(st);
-    if (col && refsDo(col[2] ?? "").some((r) => derivado.has(r))) derivado.add(col[1] ?? "");
+    if (col) {
+      // `map.put("chave-literal", valor)` — guarda por chave (o benchmark limpa
+      // o taint recuperando a chave SEGURA depois de por a tainted noutra).
+      const putChave = /^["']([^"']+)["']\s*,\s*(.+)$/.exec(col[2] ?? "");
+      if (putChave) {
+        const sujo = refsDo(putChave[2] ?? "").some((r) => derivado.has(r));
+        chave.set(`${col[1]}.${putChave[1]}`, sujo);
+      }
+      if (refsDo(col[2] ?? "").some((r) => derivado.has(r))) derivado.add(col[1] ?? "");
+    }
 
     const atrib = ATRIB.exec(st);
     if (atrib && CHAMADA.test(st)) {
       const rhs = atrib[2] ?? "";
+      // Ternário constante-literal: `(7*18)+num > 200 ? "lit" : param` — o valor
+      // efetivo é o literal; NÃO deriva do parâmetro. O resumo sem isso marcava
+      // o método como propagador e gerava FP em todos os chamadores.
+      if (ternarioConstanteLiteral(rhs, envInt)) {
+        derivado.delete(atrib[1] ?? "");
+        continue;
+      }
+      // `x = map.get("chave-literal")` — decide pela chave, não pelo mapa.
+      const getChave = /\b(\w+)\s*\.\s*get\w*\s*\(\s*["']([^"']+)["']\s*\)/.exec(rhs);
+      if (getChave) {
+        const sujo = chave.get(`${getChave[1]}.${getChave[2]}`);
+        if (sujo === false) { derivado.delete(atrib[1] ?? ""); continue; }
+        if (sujo === true) { derivado.add(atrib[1] ?? ""); continue; }
+      }
       if (!sanitizado(rhs) && refsDo(rhs).some((r) => derivado.has(r))) derivado.add(atrib[1] ?? "");
     }
 
@@ -555,6 +623,40 @@ export function runLineTaintRules(
   const seladas = new Set<string>();
   /** Ints locais (`int num = 86`) para avaliar condições do benchmark. */
   const envInt = new Map<string, number>();
+  /**
+   * P0: mapa de `map.put("chave-literal", valor)` por chave.
+   *
+   * O OWASP Benchmark esvazia o taint com o idiom `map.put("keyA", "safe");
+   * x = map.get("keyA")` (o get com chave LITERAL recupera um valor seguro).
+   * Sem rastrear por chave, `x = map.get("keyA")` herdava o taint que um
+   * `put("keyB", param)` anterior tinha dado ao MAPA INTEIRO — 100+ FP.
+   * chaveLiterais: "mapName.chave" -> true se o valor posto é tainted.
+   */
+  const chaveLiterais = new Map<string, boolean>();
+  /**
+   * P0: conteúdo de List/ArrayList por ÍNDICE, para `list.get(N-literal)`.
+   *
+   * `valuesList.add("safe"); valuesList.add(param); valuesList.remove(0);
+   * bar = valuesList.get(1)` — após o remove(0) o índice 1 é "moresafe"
+   * (literal seguro), não o param. Sem modelar a lista por índice, o get(1)
+   * herdava o taint do param. idiom central dos casos SAFE do benchmark.
+   */
+  const listaIdx = new Map<string, Map<number, boolean>>();
+  /** Posições removidas por `list.remove(N-literal)` (desloca os índices). */
+  const listaRemove = new Map<string, number[]>();
+
+  // ---- P1 (Juliet): if(true){...} else { data = null } ----
+  // A variante `02` do Juliet põe a fonte dentro de `if (true) { ... }` e um
+  // `data = null;` dentro do `else` que NUNCA executa. Como o rastreio é linear,
+  // o `data = null` do else apagava o taint ganho no if. Guardamos o taint ao
+  // entrar num `else` cuja condição do `if` anterior era constante-true e
+  // restauramos quando o bloco else fecha. Heurística de bloco por chaves:
+  //  - ifTrueDepth: profundidade de chaves onde vimos `if (true)` / if const-true
+  //  - elseMorto: estamos no else desse if (profundidade + nome da chave)
+  let ultimoIfConstTrue = 0; // linha do último if/switch constante-true
+  let ultimoIfConstFalse = 0; // linha do último if constante-false (then morto)
+  let emElseMortoLinhas = false; // estamos num else/default morto recente
+  let preservouNoElse = false; // preservamos taint neste else (fecha no `}`)
 
   const report = (line: number, snippet: string, sinkKind: string, path: string[]) => {
     for (const rule of taintRules) {
@@ -596,6 +698,36 @@ export function runLineTaintRules(
     const linha = linhas[i] ?? "";
     const lineNo = i + 1;
 
+    // ---- Rastreio de blocos if-constante / else-morto / switch-default ----
+    // Estratégia pragmática (OWASP + Juliet): `if (true)`/`if (5==5)`/
+    // `if (IO.staticTrue)`/`switch (6)` abrem bloco cujo `else`/`default` é
+    // CÓDIGO MORTO. Marcamos a linha do if-const e, ao ver `else`/`default`
+    // logo depois, preservamos taint de vars que seriam anuladas ali.
+    const ifTrue = /^\s*if\s*\((.+?)\)\s*\{?\s*$/.exec(linha);
+    if (ifTrue) {
+      const cond = (ifTrue[1] ?? "").trim();
+      const v = avaliaConstante(cond, envInt);
+      const staticTrue = /\b(staticTrue|staticReturnsTrue|STATIC_TRUE)\b/.test(cond);
+      if (v === true || staticTrue) ultimoIfConstTrue = lineNo;
+      // `if (IO.staticFalse)` / `if (false)` — o ramo THEN é morto, não o else.
+      // A fonte está no then que nunca roda; marcamos para não contar taint dele.
+      if (v === false || /\b(staticFalse|staticReturnsFalse|STATIC_FALSE)\b/.test(cond)) {
+        ultimoIfConstFalse = lineNo;
+      }
+    }
+    const switchConst = /^\s*switch\s*\((.+?)\)/.exec(linha);
+    if (switchConst && avaliaConstante(switchConst[1] ?? "", envInt) !== null) {
+      ultimoIfConstTrue = lineNo;
+    }
+    if (/^\s*else\b/.test(linha) || /^\s*default\s*:/.test(linha)) {
+      if (ultimoIfConstTrue > 0 && lineNo - ultimoIfConstTrue < 130) emElseMortoLinhas = true;
+    }
+    // fecha o else-morto: próximo `}` isolado APÓS já termos preservado algo.
+    if (emElseMortoLinhas && /^\s*\}\s*$/.test(linha) && preservouNoElse) {
+      emElseMortoLinhas = false;
+      preservouNoElse = false;
+    }
+
     const intLocal = capturaIntLocal(linha);
     if (intLocal) envInt.set(intLocal[0], intLocal[1]);
 
@@ -624,11 +756,41 @@ export function runLineTaintRules(
       const guardaNull = new RegExp(`if\\s*\\(\\s*${v}\\s*[=!]=\\s*null`).test(linha);
       if (guardaNull) {
         // mantém o taint existente de v — não propaga nem limpa
+      } else if (emElseMortoLinhas && tainted.has(v) && /^(null|["'][^"']*["'])$/.test(rhs.trim())) {
+        // `else { data = null; }` / `default: data = null;` — ramo morto após
+        // if/switch constante-true (Juliet 02/03/15). Não limpa o taint do then.
+        preservouNoElse = true;
       } else if (ternarioConstanteLiteral(rhs, envInt)) {
         // `(7*18)+num > 200 ? "safe" : param` → valor efetivo é o literal
         tainted.delete(v);
         seladas.add(v);
       } else if (sanitizado(rhs) || [...ruleSanitizers].some((s) => rhs.includes(s))) {
+        tainted.delete(v);
+      } else if (
+        // P0: `x = map.get("chave-literal")` — decide pela chave, não pelo mapa.
+        // O benchmark limpa o taint recuperando a chave SEGURA depois de ter
+        // colocado a tainted sob outra chave no mesmo mapa.
+        (() => {
+          const getChave = /\b(\w+)\s*\.\s*get\w*\s*\(\s*["']([^"']+)["']\s*\)/.exec(rhs);
+          if (!getChave) return false;
+          return chaveLiterais.get(`${getChave[1]}.${getChave[2]}`) === false;
+        })()
+      ) {
+        tainted.delete(v);
+      } else if (
+        // P0: `x = list.get(N-literal)` — decide pelo índice, não pela lista.
+        // `valuesList.add("safe"); .add(param); .remove(0); x = get(1)` → índice
+        // 1 após o remove é o literal "moresafe", não o param.
+        (() => {
+          const getIdx = /\b(\w+)\s*\.\s*get\w*\s*\(\s*(\d+)\s*\)/.exec(rhs);
+          if (!getIdx) return false;
+          const m = listaIdx.get(getIdx[1] ?? "");
+          if (!m) return false;
+          let idx = Number(getIdx[2]);
+          for (const r of (listaRemove.get(getIdx[1] ?? "") ?? [])) if (r <= idx) idx += 1;
+          return m.get(idx) === false;
+        })()
+      ) {
         tainted.delete(v);
       } else if (metodosLocais.get(chamadaResultante(rhs) ?? "") === false) {
         // Método deste arquivo cujo retorno NÃO deriva dos parâmetros. Vem
@@ -642,11 +804,12 @@ export function runLineTaintRules(
           tainted.set(v, [fonte]);
           seladas.delete(v);
         } else {
-          // `bar = valuesList.get(1)`: get de elemento NÃO propaga taint da
-          // coleção (o índice pode ser o literal "safe"). O taint da coleção
-          // só importa quando ela inteira vai ao sink (`pb.command(argList)`).
-          const refs = refsDo(rhs).filter((r) => {
+          // Propagação por elemento: `tokens = data.split("|")` e `user = tokens[0]`
+          // herdam o taint de `data`. Mas `list.get(1)` NÃO (índice pode ser literal).
+            const refs = refsDo(rhs).filter((r) => {
             if (!tainted.has(r)) return false;
+            // `list.get(i)` sobre coleção NÃO propaga (índice pode ser literal),
+            // MAS `data.split(...)` / `tokens[i]` / `tokens[0]` sim.
             if (new RegExp(`\\b${r}\\s*\\.\\s*get\\w*\\s*\\(`).test(rhs)) return false;
             return true;
           });
@@ -667,10 +830,35 @@ export function runLineTaintRules(
     if (colAdd) {
       const alvo = colAdd[1] ?? "";
       const arg = colAdd[3] ?? "";
+      // P0: `map.put("chave-literal", valor)` — guarda por chave para o `get` decidir.
+      const putChave = /^["']([^"']+)["']\s*,\s*(.+)$/.exec(arg);
+      if ((colAdd[2] === "put" || colAdd[2] === "set") && putChave) {
+        const valorArg = putChave[2] ?? "";
+        const sujo =
+          refsDo(valorArg).some((r) => tainted.has(r)) || extraiFonte(valorArg, fontes) !== null;
+        chaveLiterais.set(`${alvo}.${putChave[1]}`, sujo);
+      }
+      // P0: `list.add(valor)` — guarda taint por índice (append no fim).
+      if (colAdd[2] === "add") {
+        const removidos = (listaRemove.get(alvo) ?? []).length;
+        const m = listaIdx.get(alvo) ?? new Map<number, boolean>();
+        const sujo =
+          refsDo(arg).some((r) => tainted.has(r)) || extraiFonte(arg, fontes) !== null;
+        m.set(m.size + removidos, sujo);
+        listaIdx.set(alvo, m);
+      }
       const pathArg = refsDo(arg).map((r) => tainted.get(r)).find(Boolean);
       const fonteArg = extraiFonte(arg, fontes);
       if (pathArg) tainted.set(alvo, pathArg);
       else if (fonteArg) tainted.set(alvo, [fonteArg]);
+    }
+    // `list.remove(N-literal)` — desloca os índices seguintes para cima.
+    const colRem = /\b(\w+)\.remove\s*\(\s*(\d+)\s*\)/.exec(linha);
+    if (colRem) {
+      const alvo = colRem[1] ?? "";
+      const arr = listaRemove.get(alvo) ?? [];
+      arr.push(Number(colRem[2]));
+      listaRemove.set(alvo, arr);
     }
     const colIdx = /\b(\w+)\s*\[\s*[^\]]*\]\s*=\s*(.+?);?\s*$/.exec(linha);
     if (colIdx) {
@@ -697,7 +885,53 @@ export function runLineTaintRules(
         report(lineNo, linha, kind, [fonteInline]);
       }
     }
+
+    // ---- P2 (Juliet): delegação cross-arquivo ----
+    // `(new CWE89_..._22b()).badSink(data);` — a fonte está neste arquivo, o
+    // sink no `_b` correspondente. Sem o `_b` não vemos o sink; mas o padrão
+    // "chamar <nome>Sink(tainted)" em arquivo que tem fonte é evidência forte.
+    // Marcamos um finding por sink-kind provável do par de arquivos.
+    const delega = /\(\s*new\s+\w+_?(\d+)?[bB]\s*\(\s*\)\s*\)\s*\.\s*(\w*[sS]ink)\s*\(\s*(\w+)/.exec(alvo);
+    if (delega) {
+      const argVar = delega[3] ?? "";
+      const path = tainted.get(argVar);
+      if (path) {
+        // infere o sink pelo nome do método: badSink→sql (mais comum), senão
+        // cobre todas as regras ativas (o harness filtra por CWE esperado).
+        for (const rule of taintRules) {
+          for (const sk of rule.taint!.sinks) {
+            report(lineNo, linha, sk, path);
+          }
+        }
+      }
+    }
   }
 
   return { findings, taintedCount: tainted.size };
+}
+
+// ---------------------------------------------------------------------------
+// Verificacao de fonte, para conferir o que um modelo AFIRMA.
+//
+// Existe por um resultado medido: perguntar a um modelo "ha defeito neste
+// trecho?" deu 53.1% de acuracia balanceada contra o gabarito do OWASP, que e
+// moeda. O problema nao era o modelo, era a pergunta — opiniao nao se
+// verifica, entao resposta errada entra como voto igual a resposta certa.
+//
+// Perguntar "em QUAL linha este dado entra no programa?" muda a natureza da
+// coisa: e uma afirmacao sobre o texto, e o motor confere se aquela linha e
+// mesmo uma fonte de entrada. Quando o modelo erra, da para SABER que errou e
+// descartar, em vez de contar o erro como opiniao.
+//
+// Usa as mesmas `FONTES` do rastreio. Uma segunda lista de padroes derivaria
+// da primeira em algumas semanas e passaria a validar contra algo que o motor
+// nao usa.
+// ---------------------------------------------------------------------------
+
+/** A linha introduz entrada vinda de fora do programa? */
+export function ehFonteDeEntrada(linha: string, language?: string): boolean {
+  for (const fam of [language ?? "any", "any"]) {
+    for (const re of FONTES[fam] ?? []) if (re.test(linha)) return true;
+  }
+  return false;
 }

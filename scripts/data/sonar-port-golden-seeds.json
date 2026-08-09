@@ -1,0 +1,74 @@
+{
+  "_porque": "Sementes match/no_match por template wave2. A esteira sonar:engenharia instancia um caso por regra SONAR-* promovida e só promove com P≥0.85 e ≥1 match + ≥1 no_match.",
+  "byTemplate": {
+    "custom-crypto": [
+      { "expected": "match", "code": "public class WeakCipher extends CipherSpi { }" },
+      { "expected": "no_match", "code": "Cipher c = Cipher.getInstance(\"AES/GCM/NoPadding\");" }
+    ],
+    "sql-dynamic-format": [
+      { "expected": "match", "code": "var sql = string.Format(\"SELECT * FROM t WHERE id={0}\", id);" },
+      { "expected": "no_match", "code": "cmd.Parameters.AddWithValue(\"@id\", id);" }
+    ],
+    "requested-session-id": [
+      { "expected": "match", "code": "String sid = request.getRequestedSessionId();" },
+      { "expected": "no_match", "code": "String sid = request.getSession(true).getId();" }
+    ],
+    "securerandom-predictable": [
+      { "expected": "match", "code": "SecureRandom r = new SecureRandom();" },
+      { "expected": "match", "code": "r.setSeed(12345);" },
+      { "expected": "no_match", "code": "SecureRandom r = SecureRandom.getInstanceStrong();" }
+    ],
+    "aws-long-term-keys": [
+      { "expected": "match", "code": "aws_access_key_id = \"AKIAIOSFODNN7EXAMPLE\"" },
+      { "expected": "no_match", "code": "aws_access_key_id = os.environ[\"AWS_ACCESS_KEY_ID\"]" }
+    ],
+    "xml-signature-validate": [
+      { "expected": "match", "code": "XMLSignatureFactory fac = XMLSignatureFactory.getInstance(\"DOM\");" },
+      { "expected": "no_match", "code": "DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();" }
+    ],
+    "log-injection": [
+      { "expected": "match", "code": "logger.info(\"user=\" + request.getParameter(\"u\"));" },
+      { "expected": "no_match", "code": "logger.info(\"login ok for id={}\", userId);" }
+    ],
+    "ssrf-forging": [
+      { "expected": "match", "code": "restTemplate.getForObject(request.getParameter(\"url\"), String.class);" },
+      { "expected": "no_match", "code": "restTemplate.getForObject(\"https://api.internal/health\", String.class);" }
+    ],
+    "redirect-forging": [
+      { "expected": "match", "code": "response.sendRedirect(request.getParameter(\"next\"));" },
+      { "expected": "no_match", "code": "response.sendRedirect(\"/home\");" }
+    ],
+    "cmd-args-user-input": [
+      { "expected": "match", "code": "Runtime.getRuntime().exec(\"ping \" + request.getParameter(\"host\"));" },
+      { "expected": "no_match", "code": "Runtime.getRuntime().exec(new String[]{\"ping\", \"-c\", \"1\", \"127.0.0.1\"});" }
+    ],
+    "connection-string-inject": [
+      { "expected": "match", "code": "ConnectionString = \"Server=\" + request.getParameter(\"h\");" },
+      { "expected": "no_match", "code": "ConnectionString = configuration[\"Default\"];" }
+    ],
+    "xslt-injection": [
+      { "expected": "match", "code": "TransformerFactory.newInstance().newTransformer(new StreamSource(req.getParameter(\"xsl\")));" },
+      { "expected": "no_match", "code": "TransformerFactory.newInstance().newTransformer(new StreamSource(\"safe.xsl\"));" }
+    ],
+    "bean-untrusted": [
+      { "expected": "match", "code": "BeanUtils.populate(bean, request.getParameterMap());" },
+      { "expected": "no_match", "code": "bean.setName(safeName);" }
+    ],
+    "db-query-injection": [
+      { "expected": "match", "code": "em.createQuery(\"select u from User u where u.id=\" + id);" },
+      { "expected": "no_match", "code": "em.createQuery(\"select u from User u where u.id=:id\").setParameter(\"id\", id);" }
+    ],
+    "template-injection": [
+      { "expected": "match", "code": "Template.parse(\"Hello \" + request.getParameter(\"name\"));" },
+      { "expected": "no_match", "code": "Template.parse(\"Hello {{name}}\");" }
+    ],
+    "env-untrusted": [
+      { "expected": "match", "code": "process.env[\"PATH\"] = req.query.path;" },
+      { "expected": "no_match", "code": "process.env.NODE_ENV = \"production\";" }
+    ],
+    "cobol-dynamic-call": [
+      { "expected": "match", "code": "           CALL WS-PROG-NAME USING WS-ARGS.", "profile": "cobol" },
+      { "expected": "no_match", "code": "           CALL \"FIXEDPROG\" USING WS-ARGS.", "profile": "cobol" }
+    ]
+  }
+}

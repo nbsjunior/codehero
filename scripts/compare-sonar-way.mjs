@@ -160,19 +160,28 @@ function langApplies(heroLangs, sonarLang, heroLangMap) {
 async function loadHeroRules() {
   const distPath = join(ROOT, "packages", "contracts", "dist", "rules.js");
   const indexPath = join(ROOT, "packages", "contracts", "dist", "index.js");
+  let rules = null;
   for (const p of [distPath, indexPath]) {
     try {
       const mod = await import(pathToFileURL(p).href);
-      if (mod.RULES?.length) return mod.RULES;
+      if (mod.RULES?.length) {
+        rules = mod.RULES;
+        break;
+      }
     } catch {
       /* try next */
     }
   }
-  const { execSync } = await import("node:child_process");
-  execSync("npm run build -w @codehero/contracts", { cwd: ROOT, stdio: "inherit" });
-  const mod = await import(pathToFileURL(distPath).href);
-  if (!mod.RULES?.length) throw new Error("Failed to load RULES from @codehero/contracts");
-  return mod.RULES;
+  if (!rules) {
+    const { execSync } = await import("node:child_process");
+    execSync("npm run build -w @codehero/contracts", { cwd: ROOT, stdio: "inherit" });
+    const mod = await import(pathToFileURL(distPath).href);
+    if (!mod.RULES?.length) throw new Error("Failed to load RULES from @codehero/contracts");
+    rules = mod.RULES;
+  }
+  // Semântica Hero↔Sonar usa só CORE. Incluir sonar-port faria cada SONAR-*
+  // “cobrir” a si mesmo e inflar a % sem ganho real de detecção.
+  return rules.filter((r) => (r.implementation ?? "core") === "core");
 }
 
 async function main() {
@@ -307,13 +316,45 @@ async function main() {
   const totalSonar = sonarResults.length;
   const coveredOrPartial = (byStatus.covered ?? 0) + (byStatus.partial ?? 0);
 
+  /** Métrica que importa para o motor: ids na curadoria (live scannable), não stub. */
+  let liveScannable = null;
+  try {
+    const catalog = JSON.parse(
+      await readFile(join(ROOT, "packages/contracts/src/data/sonarWayRules.json"), "utf8"),
+    );
+    const curation = JSON.parse(
+      await readFile(join(ROOT, "packages/contracts/src/data/sonarWayCuration.json"), "utf8"),
+    );
+    const selected = new Set(curation.selecao);
+    const tally = (pred) => {
+      const rows = catalog.filter(pred);
+      const live = rows.filter((r) => selected.has(r.id));
+      return {
+        total: rows.length,
+        stub: rows.filter((r) => r.implementation === "stub").length,
+        genSonarPort: rows.filter((r) => r.implementation === "sonar-port").length,
+        liveCurated: live.length,
+        livePct: rows.length ? Math.round((live.length / rows.length) * 1000) / 10 : 0,
+      };
+    };
+    liveScannable = {
+      all: tally(() => true),
+      vulnerability: tally((r) => r.type === "VULNERABILITY"),
+      bug: tally((r) => r.type === "BUG"),
+      codeSmell: tally((r) => r.type === "CODE_SMELL"),
+    };
+  } catch (e) {
+    console.warn("live scannable metrics skipped:", e.message);
+  }
+
   const report = {
     generatedAt: new Date().toISOString(),
     source: index.source,
     fetchedAt: index.fetchedAt,
     limitations: [
-      "Semantic match only — CodeHero has no sonarKey field; SonarCloud/next API often omits numeric CWE ids.",
+      "Semantic match (Hero core ↔ Sonar names/CWE) ≠ live scannable catalog coverage.",
       "covered/partial ≠ equivalent detection power (L0 regex vs Sonar analyzers).",
+      "Live scannable = sonarWayCuration.selecao; stubs do catálogo não disparam no scanner.",
       "plsql snapshot is a public proxy for DB2SQL (no dedicated DB2 Sonar way on the public instance).",
       "Dress-code overlays excluded — canonical RULES + golden corpus only.",
     ],
@@ -334,6 +375,7 @@ async function main() {
         (heroResults.filter((h) => h.in_golden_corpus).length / heroRules.length) * 1000,
       ) / 10,
       goldenCases: golden.length,
+      liveScannable,
     },
     byLanguage: byLang,
     securityGaps: securityGaps.slice(0, 120),
@@ -370,8 +412,16 @@ function renderMarkdown(report) {
   lines.push("## Verdict");
   lines.push("");
   lines.push(
-    `CodeHero **does not** cover the Sonar way catalog for the selected languages. Approximate semantic coverage of Sonar way rules: **${s.sonarCoveragePct}%** (${s.sonarCovered} covered + ${s.sonarPartial} partial out of **${s.sonarWayRules}**).`,
+    `Cobertura **semântica** (Hero core ↔ nomes/CWE Sonar): **${s.sonarCoveragePct}%** (${s.sonarCovered} covered + ${s.sonarPartial} partial out of **${s.sonarWayRules}**).`,
   );
+  if (s.liveScannable) {
+    const v = s.liveScannable.vulnerability;
+    const a = s.liveScannable.all;
+    lines.push("");
+    lines.push(
+      `Cobertura **live scannable** (curadoria → motor): **${a.livePct}%** do catálogo (${a.liveCurated}/${a.total}); VULN **${v.livePct}%** (${v.liveCurated}/${v.total}). Stubs **não** contam.`,
+    );
+  }
   lines.push("");
   lines.push(`Of **${s.heroRules}** canonical Hero rules, **${s.heroWithSonarAnalogue}** (${s.heroWithSonarAnaloguePct}%) have at least one Sonar analogue; **${s.heroInGoldenCorpus}** (${s.heroInGoldenCorpusPct}%) appear in the golden corpus (${s.goldenCases} cases).`);
   lines.push("");
@@ -379,6 +429,22 @@ function renderMarkdown(report) {
   lines.push("");
   for (const L of report.limitations) lines.push(`- ${L}`);
   lines.push("");
+  if (s.liveScannable) {
+    lines.push("## Live scannable (motor)");
+    lines.push("");
+    lines.push("| Escopo | Total | Stub catálogo | sonar-port gerado | Live curado | Live % |");
+    lines.push("|--------|------:|--------------:|------------------:|------------:|-------:|");
+    for (const [k, row] of Object.entries(s.liveScannable)) {
+      lines.push(
+        `| ${k} | ${row.total} | ${row.stub} | ${row.genSonarPort} | ${row.liveCurated} | ${row.livePct} |`,
+      );
+    }
+    lines.push("");
+    lines.push(
+      "Esteira: `npm run sonar:engenharia -- all` — prioriza VULN, promove com golden/F1, smells ficam stub salvo ROI.",
+    );
+    lines.push("");
+  }
   lines.push("## By language");
   lines.push("");
   lines.push("| Lang | Available | Total | Covered | Partial | Uncovered | Coverage % |");

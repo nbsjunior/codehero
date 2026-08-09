@@ -1,79 +1,110 @@
 {
-  "generatedAt": "2026-07-28T13:34:52.047Z",
+  "generatedAt": "2026-08-09T21:09:00.049Z",
   "source": "https://next.sonarqube.com/sonarqube/api",
   "fetchedAt": "2026-07-28T13:07:41.908Z",
   "limitations": [
-    "Semantic match only — CodeHero has no sonarKey field; SonarCloud/next API often omits numeric CWE ids.",
+    "Semantic match (Hero core ↔ Sonar names/CWE) ≠ live scannable catalog coverage.",
     "covered/partial ≠ equivalent detection power (L0 regex vs Sonar analyzers).",
+    "Live scannable = sonarWayCuration.selecao; stubs do catálogo não disparam no scanner.",
     "plsql snapshot is a public proxy for DB2SQL (no dedicated DB2 Sonar way on the public instance).",
     "Dress-code overlays excluded — canonical RULES + golden corpus only."
   ],
   "summary": {
     "sonarWayRules": 2668,
-    "sonarCovered": 113,
-    "sonarPartial": 261,
-    "sonarUncovered": 2294,
-    "sonarCoveragePct": 14,
+    "sonarCovered": 138,
+    "sonarPartial": 368,
+    "sonarUncovered": 2162,
+    "sonarCoveragePct": 19,
     "uncoveredByType": {
-      "CODE_SMELL": 1387,
-      "BUG": 601,
-      "VULNERABILITY": 306
+      "CODE_SMELL": 1319,
+      "BUG": 571,
+      "VULNERABILITY": 272
     },
-    "heroRules": 32,
-    "heroWithSonarAnalogue": 28,
-    "heroWithSonarAnaloguePct": 87.5,
-    "heroInGoldenCorpus": 20,
-    "heroInGoldenCorpusPct": 62.5,
-    "goldenCases": 61
+    "heroRules": 83,
+    "heroWithSonarAnalogue": 65,
+    "heroWithSonarAnaloguePct": 78.3,
+    "heroInGoldenCorpus": 42,
+    "heroInGoldenCorpusPct": 50.6,
+    "goldenCases": 566,
+    "liveScannable": {
+      "all": {
+        "total": 2668,
+        "stub": 2176,
+        "genSonarPort": 492,
+        "liveCurated": 492,
+        "livePct": 18.4
+      },
+      "vulnerability": {
+        "total": 479,
+        "stub": 149,
+        "genSonarPort": 330,
+        "liveCurated": 330,
+        "livePct": 68.9
+      },
+      "bug": {
+        "total": 664,
+        "stub": 608,
+        "genSonarPort": 56,
+        "liveCurated": 56,
+        "livePct": 8.4
+      },
+      "codeSmell": {
+        "total": 1525,
+        "stub": 1419,
+        "genSonarPort": 106,
+        "liveCurated": 106,
+        "livePct": 7
+      }
+    }
   },
   "byLanguage": {
     "js": {
       "available": true,
       "total": 470,
       "covered": 32,
-      "partial": 34,
-      "uncovered": 404,
-      "coveragePct": 14
+      "partial": 36,
+      "uncovered": 402,
+      "coveragePct": 14.5
     },
     "ts": {
       "available": true,
       "total": 483,
       "covered": 32,
-      "partial": 33,
-      "uncovered": 418,
-      "coveragePct": 13.5
+      "partial": 35,
+      "uncovered": 416,
+      "coveragePct": 13.9
     },
     "py": {
       "available": true,
       "total": 466,
       "covered": 17,
-      "partial": 19,
-      "uncovered": 430,
-      "coveragePct": 7.7
+      "partial": 26,
+      "uncovered": 423,
+      "coveragePct": 9.2
     },
     "java": {
       "available": true,
       "total": 611,
-      "covered": 15,
-      "partial": 74,
-      "uncovered": 522,
-      "coveragePct": 14.6
+      "covered": 18,
+      "partial": 143,
+      "uncovered": 450,
+      "coveragePct": 26.4
     },
     "cs": {
       "available": true,
       "total": 373,
       "covered": 16,
-      "partial": 12,
-      "uncovered": 345,
-      "coveragePct": 7.5
+      "partial": 15,
+      "uncovered": 342,
+      "coveragePct": 8.3
     },
     "cobol": {
       "available": true,
       "total": 74,
-      "covered": 0,
-      "partial": 17,
-      "uncovered": 57,
-      "coveragePct": 23
+      "covered": 22,
+      "partial": 41,
+      "uncovered": 11,
+      "coveragePct": 85.1
     },
     "tsql": {
       "available": true,
@@ -93,51 +124,6 @@
     }
   },
   "securityGaps": [
-    {
-      "key": "cobol:S1686",
-      "name": "When calling a subprogram, the data item containing the name of the subprogram to be called should not be programmatically updated",
-      "lang": "cobol",
-      "type": "VULNERABILITY",
-      "severity": "CRITICAL",
-      "tags": [
-        "pitfall"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
-      "key": "cobol:S4507",
-      "name": "Debugging features should not be enabled in production",
-      "lang": "cobol",
-      "type": "VULNERABILITY",
-      "severity": "MINOR",
-      "tags": [
-        "cwe",
-        "error-handling",
-        "debug",
-        "user-experience",
-        "former-hotspot"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
-      "key": "cobol:SQL.DynamicSqlCheck",
-      "name": "Dynamic SQL clauses should not be used",
-      "lang": "cobol",
-      "type": "VULNERABILITY",
-      "severity": "BLOCKER",
-      "tags": [
-        "cwe",
-        "former-hotspot",
-        "sql"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
     {
       "key": "csharpsquid:S2092",
       "name": "Cookies should have the \"secure\" flag",
@@ -437,20 +423,6 @@
       "hits": 0
     },
     {
-      "key": "csharpsquid:S5693",
-      "name": "HTTP request content length should be limited",
-      "lang": "cs",
-      "type": "VULNERABILITY",
-      "severity": "MAJOR",
-      "tags": [
-        "cwe",
-        "former-hotspot"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
       "key": "csharpsquid:S5753",
       "name": "ASP.NET Request Validation should not be disabled",
       "lang": "cs",
@@ -595,19 +567,6 @@
       "hits": 0
     },
     {
-      "key": "roslyn.sonaranalyzer.security.cs:S5144",
-      "name": "Server-side requests should not be vulnerable to forging attacks",
-      "lang": "cs",
-      "type": "VULNERABILITY",
-      "severity": "MAJOR",
-      "tags": [
-        "cwe"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
       "key": "roslyn.sonaranalyzer.security.cs:S5145",
       "name": "Logging should not be vulnerable to injection attacks",
       "lang": "cs",
@@ -736,19 +695,6 @@
       "hits": 0
     },
     {
-      "key": "roslyn.sonaranalyzer.security.cs:S7044",
-      "name": "Server-side requests should not be vulnerable to traversing attacks",
-      "lang": "cs",
-      "type": "VULNERABILITY",
-      "severity": "MAJOR",
-      "tags": [
-        "cwe"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
       "key": "roslyn.sonaranalyzer.security.cs:S7714",
       "name": "XSLT Transformations should not be vulnerable to injection attacks",
       "lang": "cs",
@@ -775,22 +721,6 @@
       "hits": 0
     },
     {
-      "key": "java:S2092",
-      "name": "Cookies should have the \"secure\" flag",
-      "lang": "java",
-      "type": "VULNERABILITY",
-      "severity": "MINOR",
-      "tags": [
-        "spring",
-        "cwe",
-        "privacy",
-        "former-hotspot"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
       "key": "java:S2245",
       "name": "Pseudorandom number generators (PRNGs) should not be used in security contexts",
       "lang": "java",
@@ -805,48 +735,6 @@
       "hits": 0
     },
     {
-      "key": "java:S2254",
-      "name": "\"HttpServletRequest.getRequestedSessionId()\" should not be used",
-      "lang": "java",
-      "type": "VULNERABILITY",
-      "severity": "CRITICAL",
-      "tags": [
-        "cwe"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
-      "key": "java:S2257",
-      "name": "Custom cryptographic algorithms should not be used",
-      "lang": "java",
-      "type": "VULNERABILITY",
-      "severity": "CRITICAL",
-      "tags": [
-        "cwe",
-        "former-hotspot"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
-      "key": "java:S2612",
-      "name": "File permissions should not be set to world-accessible values",
-      "lang": "java",
-      "type": "VULNERABILITY",
-      "severity": "MAJOR",
-      "tags": [
-        "cwe",
-        "cert",
-        "former-hotspot"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
       "key": "java:S3329",
       "name": "Cipher Block Chaining IVs should be unpredictable",
       "lang": "java",
@@ -854,21 +742,6 @@
       "severity": "CRITICAL",
       "tags": [
         "cwe"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
-      "key": "java:S3330",
-      "name": "Cookies should have the \"HttpOnly\" flag",
-      "lang": "java",
-      "type": "VULNERABILITY",
-      "severity": "MINOR",
-      "tags": [
-        "cwe",
-        "privacy",
-        "former-hotspot"
       ],
       "status": "uncovered",
       "heroId": null,
@@ -913,21 +786,6 @@
       "tags": [
         "cwe",
         "privacy"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
-      "key": "java:S4426",
-      "name": "Cryptographic keys should be robust",
-      "lang": "java",
-      "type": "VULNERABILITY",
-      "severity": "CRITICAL",
-      "tags": [
-        "cwe",
-        "privacy",
-        "rules"
       ],
       "status": "uncovered",
       "heroId": null,
@@ -1195,20 +1053,6 @@
       "hits": 0
     },
     {
-      "key": "java:S5693",
-      "name": "HTTP request content length should be limited",
-      "lang": "java",
-      "type": "VULNERABILITY",
-      "severity": "MAJOR",
-      "tags": [
-        "cwe",
-        "former-hotspot"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
       "key": "java:S5804",
       "name": "Authentication mechanisms should not permit user enumeration.",
       "lang": "java",
@@ -1237,21 +1081,6 @@
       "hits": 0
     },
     {
-      "key": "java:S5852",
-      "name": "Regular expressions should not cause catastrophic backtracking",
-      "lang": "java",
-      "type": "VULNERABILITY",
-      "severity": "CRITICAL",
-      "tags": [
-        "cwe",
-        "regex",
-        "former-hotspot"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
       "key": "java:S5876",
       "name": "A new session should be created during user authentication",
       "lang": "java",
@@ -1260,35 +1089,6 @@
       "tags": [
         "spring",
         "cwe"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
-      "key": "java:S6263",
-      "name": "Long-term AWS access keys should not be used",
-      "lang": "java",
-      "type": "VULNERABILITY",
-      "severity": "MAJOR",
-      "tags": [
-        "aws",
-        "former-hotspot"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
-      "key": "java:S6293",
-      "name": "Biometric authentication should be cryptographically bound",
-      "lang": "java",
-      "type": "VULNERABILITY",
-      "severity": "MAJOR",
-      "tags": [
-        "cwe",
-        "android",
-        "former-hotspot"
       ],
       "status": "uncovered",
       "heroId": null,
@@ -1314,21 +1114,6 @@
       "lang": "java",
       "type": "VULNERABILITY",
       "severity": "MINOR",
-      "tags": [
-        "cwe",
-        "android",
-        "former-hotspot"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
-      "key": "java:S6363",
-      "name": "WebViews should not allow unrestricted file access",
-      "lang": "java",
-      "type": "VULNERABILITY",
-      "severity": "MAJOR",
       "tags": [
         "cwe",
         "android",
@@ -1381,61 +1166,8 @@
       "hits": 0
     },
     {
-      "key": "javasecurity:S2631",
-      "name": "Regular expressions should not be vulnerable to Denial of Service attacks",
-      "lang": "java",
-      "type": "VULNERABILITY",
-      "severity": "CRITICAL",
-      "tags": [
-        "cwe",
-        "denial-of-service"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
-      "key": "javasecurity:S5131",
-      "name": "Endpoints should not be vulnerable to reflected cross-site scripting (XSS) attacks",
-      "lang": "java",
-      "type": "VULNERABILITY",
-      "severity": "BLOCKER",
-      "tags": [
-        "cwe"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
-      "key": "javasecurity:S5144",
-      "name": "Server-side requests should not be vulnerable to forging attacks",
-      "lang": "java",
-      "type": "VULNERABILITY",
-      "severity": "MAJOR",
-      "tags": [
-        "cwe"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
       "key": "javasecurity:S5146",
       "name": "HTTP request redirections should not be open to forging attacks",
-      "lang": "java",
-      "type": "VULNERABILITY",
-      "severity": "BLOCKER",
-      "tags": [
-        "cwe"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
-      "key": "javasecurity:S6096",
-      "name": "Extracting archives should not lead to zip slip vulnerabilities",
       "lang": "java",
       "type": "VULNERABILITY",
       "severity": "BLOCKER",
@@ -1468,45 +1200,6 @@
       "tags": [
         "cwe",
         "denial-of-service"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
-      "key": "javasecurity:S6549",
-      "name": "Accessing files should not lead to filesystem oracle attacks",
-      "lang": "java",
-      "type": "VULNERABILITY",
-      "severity": "MAJOR",
-      "tags": [
-        "cwe"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
-      "key": "javasecurity:S7044",
-      "name": "Server-side requests should not be vulnerable to traversing attacks",
-      "lang": "java",
-      "type": "VULNERABILITY",
-      "severity": "MAJOR",
-      "tags": [
-        "cwe"
-      ],
-      "status": "uncovered",
-      "heroId": null,
-      "hits": 0
-    },
-    {
-      "key": "javasecurity:S7606",
-      "name": "WebViews should not be vulnerable to cross-app scripting attacks",
-      "lang": "java",
-      "type": "VULNERABILITY",
-      "severity": "BLOCKER",
-      "tags": [
-        "cwe"
       ],
       "status": "uncovered",
       "heroId": null,
@@ -1768,9 +1461,359 @@
       "status": "uncovered",
       "heroId": null,
       "hits": 0
+    },
+    {
+      "key": "javascript:S5728",
+      "name": "Content security policy fetch directives should not be disabled",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "MINOR",
+      "tags": [
+        "express.js",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S5734",
+      "name": "Browsers should not be allowed to perform MIME type sniffing",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "MINOR",
+      "tags": [
+        "express.js",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S5736",
+      "name": "HTTP Referrer-Policy should not be set to an unsafe value",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "MINOR",
+      "tags": [
+        "cwe",
+        "express.js",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S5739",
+      "name": "HTTP Strict-Transport-Security policy should not be disabled",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "MINOR",
+      "tags": [
+        "cwe",
+        "express.js",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S5852",
+      "name": "Regular expressions should not cause catastrophic backtracking",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "CRITICAL",
+      "tags": [
+        "cwe",
+        "regex",
+        "type-dependent",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S5876",
+      "name": "A new session should be created during user authentication",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "CRITICAL",
+      "tags": [
+        "cwe"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S6249",
+      "name": "S3 buckets should enforce HTTPS-only access",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "MINOR",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S6252",
+      "name": "Amazon S3 buckets should have versioning enabled",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "MINOR",
+      "tags": [
+        "aws",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S6265",
+      "name": "S3 buckets should not grant access to all users or authenticated users",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "BLOCKER",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S6268",
+      "name": "Angular built-in sanitization should not be disabled",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "BLOCKER",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S6270",
+      "name": "AWS resource-based policies should not grant public access",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "BLOCKER",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S6275",
+      "name": "EBS volumes should be encrypted",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S6281",
+      "name": "Amazon S3 bucket public access should be fully blocked",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "CRITICAL",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S6302",
+      "name": "Policies should not grant all privileges",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "BLOCKER",
+      "tags": [
+        "cwe",
+        "gcp",
+        "aws",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S6303",
+      "name": "Amazon RDS resources should be encrypted at rest",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S6308",
+      "name": "OpenSearch domains should have encryption at rest enabled",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S6317",
+      "name": "AWS IAM policies should limit the scope of permissions given",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "CRITICAL",
+      "tags": [
+        "cwe",
+        "aws"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S6319",
+      "name": "SageMaker notebook instances should be encrypted at rest",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S6327",
+      "name": "Amazon SNS topics should be encrypted at rest",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "MINOR",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S6329",
+      "name": "Public network access to cloud resources should be disabled",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "BLOCKER",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S6330",
+      "name": "SQS queues should be encrypted",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S6332",
+      "name": "Amazon EFS file systems should be encrypted",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "tags": [
+        "cwe",
+        "aws",
+        "former-hotspot"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S8441",
+      "name": "Static Assets should not serve session cookies",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "MINOR",
+      "tags": [],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
+    },
+    {
+      "key": "javascript:S8479",
+      "name": "DOMPurify configuration should not be bypassable",
+      "lang": "js",
+      "type": "VULNERABILITY",
+      "severity": "MINOR",
+      "tags": [
+        "cwe",
+        "type-dependent"
+      ],
+      "status": "uncovered",
+      "heroId": null,
+      "hits": 0
     }
   ],
-  "securityGapTotal": 306,
+  "securityGapTotal": 272,
   "smellGapsSample": [
     {
       "key": "javascript:S2699",
@@ -2875,7 +2918,7 @@
         }
       ],
       "in_golden_corpus": true,
-      "goldenCases": 10
+      "goldenCases": 16
     },
     {
       "id": "HERO-SEC-0918-ssrf",
@@ -2942,7 +2985,7 @@
         }
       ],
       "in_golden_corpus": true,
-      "goldenCases": 2
+      "goldenCases": 4
     },
     {
       "id": "HERO-SEC-0022-path-traversal",
@@ -3492,7 +3535,7 @@
         }
       ],
       "in_golden_corpus": true,
-      "goldenCases": 2
+      "goldenCases": 3
     },
     {
       "id": "HERO-SMELL-0489-debug-statement",
@@ -3744,103 +3787,6 @@
       "goldenCases": 2
     },
     {
-      "id": "HERO-SEC-0798-cobol-hardcoded-secret",
-      "name": "CobolHardcodedSecret",
-      "type": "VULNERABILITY",
-      "severity": "BLOCKER",
-      "languages": [
-        "cobol"
-      ],
-      "cwe": [
-        "CWE-798"
-      ],
-      "has_sonar_analogue": true,
-      "analogueCount": 17,
-      "analogues": [
-        {
-          "key": "cobol:S3004",
-          "name": "SQL \"UPDATE\" statements should not change primary key values",
-          "lang": "cobol",
-          "type": "BUG",
-          "level": "partial",
-          "hits": 3
-        },
-        {
-          "key": "cobol:COBOL.EvaluateStatementUsageCheck",
-          "name": "\"EVALUATE\" structures should end with \"WHEN OTHERS\" clauses",
-          "lang": "cobol",
-          "type": "CODE_SMELL",
-          "level": "partial",
-          "hits": 2
-        },
-        {
-          "key": "cobol:SQL.SelectWithNoWhereClauseCheck",
-          "name": "SQL SELECT statements should always include a WHERE condition",
-          "lang": "cobol",
-          "type": "CODE_SMELL",
-          "level": "partial",
-          "hits": 2
-        },
-        {
-          "key": "cobol:S3482",
-          "name": "\"INSERT\" statements should not set the values of identity columns",
-          "lang": "cobol",
-          "type": "BUG",
-          "level": "partial",
-          "hits": 2
-        },
-        {
-          "key": "cobol:COBOL.MergeStatementUsageCheck",
-          "name": "\"MERGE\" should not be used",
-          "lang": "cobol",
-          "type": "CODE_SMELL",
-          "level": "partial",
-          "hits": 2
-        },
-        {
-          "key": "cobol:COBOL.IfStatementFormattingCheck",
-          "name": "Ending words should be aligned with what they close",
-          "lang": "cobol",
-          "type": "CODE_SMELL",
-          "level": "partial",
-          "hits": 2
-        },
-        {
-          "key": "cobol:S1631",
-          "name": "SQL statements should not join too many tables",
-          "lang": "cobol",
-          "type": "CODE_SMELL",
-          "level": "partial",
-          "hits": 2
-        },
-        {
-          "key": "cobol:COBOL.SortStatementUsageCheck",
-          "name": "\"SORT\" should not be used",
-          "lang": "cobol",
-          "type": "CODE_SMELL",
-          "level": "partial",
-          "hits": 2
-        }
-      ],
-      "in_golden_corpus": true,
-      "goldenCases": 2
-    },
-    {
-      "id": "HERO-SMELL-0goto-cobol",
-      "name": "CobolGoTo",
-      "type": "CODE_SMELL",
-      "severity": "MAJOR",
-      "languages": [
-        "cobol"
-      ],
-      "cwe": [],
-      "has_sonar_analogue": false,
-      "analogueCount": 0,
-      "analogues": [],
-      "in_golden_corpus": true,
-      "goldenCases": 2
-    },
-    {
       "id": "HERO-SEC-0089-jdbc-sqli",
       "name": "JdbcSqlInjection",
       "type": "VULNERABILITY",
@@ -3923,69 +3869,10 @@
       "goldenCases": 0
     },
     {
-      "id": "HERO-SEC-0078-cmd-injection-dotnet",
-      "name": "DotNetCommandInjection",
-      "type": "VULNERABILITY",
-      "severity": "BLOCKER",
-      "languages": [
-        "csharp",
-        "vbnet"
-      ],
-      "cwe": [
-        "CWE-78"
-      ],
-      "has_sonar_analogue": true,
-      "analogueCount": 5,
-      "analogues": [
-        {
-          "key": "roslyn.sonaranalyzer.security.cs:S2076",
-          "name": "OS commands should not be vulnerable to command injection attacks",
-          "lang": "cs",
-          "type": "VULNERABILITY",
-          "level": "strong",
-          "hits": 9
-        },
-        {
-          "key": "roslyn.sonaranalyzer.security.cs:S5883",
-          "name": "OS commands should not be vulnerable to argument injection attacks",
-          "lang": "cs",
-          "type": "VULNERABILITY",
-          "level": "strong",
-          "hits": 6
-        },
-        {
-          "key": "csharpsquid:S4036",
-          "name": "OS commands should not rely on PATH resolution",
-          "lang": "cs",
-          "type": "VULNERABILITY",
-          "level": "strong",
-          "hits": 5
-        },
-        {
-          "key": "roslyn.sonaranalyzer.security.cs:S6350",
-          "name": "System command arguments constructed from user input should be validated",
-          "lang": "cs",
-          "type": "VULNERABILITY",
-          "level": "strong",
-          "hits": 3
-        },
-        {
-          "key": "roslyn.sonaranalyzer.security.cs:S2078",
-          "name": "LDAP queries should not be vulnerable to injection attacks",
-          "lang": "cs",
-          "type": "VULNERABILITY",
-          "level": "partial",
-          "hits": 2
-        }
-      ],
-      "in_golden_corpus": false,
-      "goldenCases": 0
-    },
-    {
       "id": "HERO-SEC-0078-cmd-injection-java",
       "name": "JavaCommandInjection",
       "type": "VULNERABILITY",
-      "severity": "BLOCKER",
+      "severity": "CRITICAL",
       "languages": [
         "java"
       ],
@@ -3993,7 +3880,7 @@
         "CWE-78"
       ],
       "has_sonar_analogue": true,
-      "analogueCount": 46,
+      "analogueCount": 43,
       "analogues": [
         {
           "key": "javasecurity:S2076",
@@ -4060,8 +3947,586 @@
           "hits": 2
         }
       ],
+      "in_golden_corpus": true,
+      "goldenCases": 3
+    },
+    {
+      "id": "HERO-SEC-0022-path-traversal-java",
+      "name": "JavaPathTraversal",
+      "type": "VULNERABILITY",
+      "severity": "CRITICAL",
+      "languages": [
+        "java"
+      ],
+      "cwe": [
+        "CWE-22"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 37,
+      "analogues": [
+        {
+          "key": "javasecurity:S6096",
+          "name": "Extracting archives should not lead to zip slip vulnerabilities",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 6
+        },
+        {
+          "key": "javabugs:S2259",
+          "name": "A NULL object should not be accessed",
+          "lang": "java",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "java:S4036",
+          "name": "OS commands should not rely on PATH resolution",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "javasecurity:S6350",
+          "name": "System command arguments constructed from user input should be validated",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "java:S3753",
+          "name": "\"@Controller\" classes that use \"@SessionAttributes\" must call \"setComplete\" on their \"SessionStatus\" objects",
+          "lang": "java",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "java:S2209",
+          "name": "\"static\" members should be accessed statically",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "java:S1223",
+          "name": "Non-constructor methods should not have the same name as the enclosing class",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "javabugs:S6466",
+          "name": "Accessing an array element should not trigger an ArrayIndexOutOfBoundsException",
+          "lang": "java",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": true,
+      "goldenCases": 1
+    },
+    {
+      "id": "HERO-SEC-0079-xss-java",
+      "name": "JavaXss",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "languages": [
+        "java"
+      ],
+      "cwe": [
+        "CWE-79"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 20,
+      "analogues": [
+        {
+          "key": "javasecurity:S5131",
+          "name": "Endpoints should not be vulnerable to reflected cross-site scripting (XSS) attacks",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 9
+        },
+        {
+          "key": "javasecurity:S6350",
+          "name": "System command arguments constructed from user input should be validated",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "java:S9024",
+          "name": "\"@InjectMocks\" should be used instead of manually constructing test objects",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "java:S6207",
+          "name": "Redundant constructors/methods should be avoided in records",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "javasecurity:S7606",
+          "name": "WebViews should not be vulnerable to cross-app scripting attacks",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "java:S6829",
+          "name": "\"@Autowired\" should be used when multiple constructors are provided",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "java:S6818",
+          "name": "\"@Autowired\" should only be used on a single constructor",
+          "lang": "java",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "java:S5665",
+          "name": "Escape sequences should not be used in text blocks",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": true,
+      "goldenCases": 3
+    },
+    {
+      "id": "HERO-SEC-0327-weak-hash-java",
+      "name": "JavaWeakHash",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "languages": [
+        "java"
+      ],
+      "cwe": [
+        "CWE-327",
+        "CWE-328"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 4,
+      "analogues": [
+        {
+          "key": "java:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 6
+        },
+        {
+          "key": "java:S4426",
+          "name": "Cryptographic keys should be robust",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "java:S6293",
+          "name": "Biometric authentication should be cryptographically bound",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "java:S2257",
+          "name": "Custom cryptographic algorithms should not be used",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
       "in_golden_corpus": false,
       "goldenCases": 0
+    },
+    {
+      "id": "HERO-SEC-0614-insecure-cookie-java",
+      "name": "JavaInsecureCookie",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "languages": [
+        "java"
+      ],
+      "cwe": [
+        "CWE-614"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 5,
+      "analogues": [
+        {
+          "key": "java:S3330",
+          "name": "Cookies should have the \"HttpOnly\" flag",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "java:S2092",
+          "name": "Cookies should have the \"secure\" flag",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "javasecurity:S6547",
+          "name": "Environment variables should not be defined from untrusted input",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "javasecurity:S6287",
+          "name": "Applications should not create session cookies from untrusted input",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "java:S5445",
+          "name": "Insecure temporary file creation methods should not be used",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SEC-0090-ldap-injection-java",
+      "name": "JavaLdapInjection",
+      "type": "VULNERABILITY",
+      "severity": "CRITICAL",
+      "languages": [
+        "java"
+      ],
+      "cwe": [
+        "CWE-90"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 42,
+      "analogues": [
+        {
+          "key": "java:S9068",
+          "name": "\"@ApplicationScoped\" should be preferred over \"@Singleton\" in Quarkus applications",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "java:S9024",
+          "name": "\"@InjectMocks\" should be used instead of manually constructing test objects",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "java:S8909",
+          "name": "\"CacheKeyGenerator\" implementations should be instantiable by the framework",
+          "lang": "java",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "javasecurity:S6350",
+          "name": "System command arguments constructed from user input should be validated",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "javasecurity:S2078",
+          "name": "LDAP queries should not be vulnerable to injection attacks",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "javasecurity:S5883",
+          "name": "OS commands should not be vulnerable to argument injection attacks",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "javasecurity:S2076",
+          "name": "OS commands should not be vulnerable to command injection attacks",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "java:S6905",
+          "name": "SQL queries should retrieve only necessary fields",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SEC-0643-xpath-injection-java",
+      "name": "JavaXPathInjection",
+      "type": "VULNERABILITY",
+      "severity": "CRITICAL",
+      "languages": [
+        "java"
+      ],
+      "cwe": [
+        "CWE-643"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 71,
+      "analogues": [
+        {
+          "key": "javasecurity:S2091",
+          "name": "XPath expressions should not be vulnerable to injection attacks",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 4
+        },
+        {
+          "key": "javasecurity:S6350",
+          "name": "System command arguments constructed from user input should be validated",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "javasecurity:S5883",
+          "name": "OS commands should not be vulnerable to argument injection attacks",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "javasecurity:S2076",
+          "name": "OS commands should not be vulnerable to command injection attacks",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "java:S5843",
+          "name": "Regular expressions should not be too complicated",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "java:S6203",
+          "name": "Text blocks should not be used in complex expressions",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "java:S9068",
+          "name": "\"@ApplicationScoped\" should be preferred over \"@Singleton\" in Quarkus applications",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "java:S9024",
+          "name": "\"@InjectMocks\" should be used instead of manually constructing test objects",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SEC-0501-trust-boundary-java",
+      "name": "JavaTrustBoundary",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "languages": [
+        "java"
+      ],
+      "cwe": [
+        "CWE-501"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 15,
+      "analogues": [
+        {
+          "key": "javasecurity:S6287",
+          "name": "Applications should not create session cookies from untrusted input",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "java:S8908",
+          "name": "Methods annotated with \"@CacheResult\" should not return void",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "java:S6539",
+          "name": "Classes should not depend on an excessive number of classes (aka Monster Class)",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "java:S2168",
+          "name": "Double-checked locking should not be used",
+          "lang": "java",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "java:S3014",
+          "name": "\"ThreadGroup\" should not be used",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "javaarchitecture:S8487",
+          "name": "Relationships should align with the interface design of the intended architecture",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "java:S5973",
+          "name": "Tests should be stable",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "java:S2157",
+          "name": "\"Cloneables\" should implement \"clone\"",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": true,
+      "goldenCases": 3
+    },
+    {
+      "id": "HERO-SEC-0078-cmd-injection-dotnet",
+      "name": "DotNetCommandInjection",
+      "type": "VULNERABILITY",
+      "severity": "BLOCKER",
+      "languages": [
+        "csharp",
+        "vbnet"
+      ],
+      "cwe": [
+        "CWE-78"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 5,
+      "analogues": [
+        {
+          "key": "roslyn.sonaranalyzer.security.cs:S2076",
+          "name": "OS commands should not be vulnerable to command injection attacks",
+          "lang": "cs",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 9
+        },
+        {
+          "key": "roslyn.sonaranalyzer.security.cs:S5883",
+          "name": "OS commands should not be vulnerable to argument injection attacks",
+          "lang": "cs",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 6
+        },
+        {
+          "key": "csharpsquid:S4036",
+          "name": "OS commands should not rely on PATH resolution",
+          "lang": "cs",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "roslyn.sonaranalyzer.security.cs:S6350",
+          "name": "System command arguments constructed from user input should be validated",
+          "lang": "cs",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 3
+        },
+        {
+          "key": "roslyn.sonaranalyzer.security.cs:S2078",
+          "name": "LDAP queries should not be vulnerable to injection attacks",
+          "lang": "cs",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": true,
+      "goldenCases": 2
     },
     {
       "id": "HERO-SEC-0502-insecure-deserialization-dotnet",
@@ -4095,8 +4560,8 @@
           "hits": 2
         }
       ],
-      "in_golden_corpus": false,
-      "goldenCases": 0
+      "in_golden_corpus": true,
+      "goldenCases": 2
     },
     {
       "id": "HERO-SEC-0502-insecure-deserialization-java",
@@ -4177,8 +4642,8 @@
           "hits": 2
         }
       ],
-      "in_golden_corpus": false,
-      "goldenCases": 0
+      "in_golden_corpus": true,
+      "goldenCases": 2
     },
     {
       "id": "HERO-SEC-0611-xxe-java",
@@ -4520,8 +4985,528 @@
       "goldenCases": 0
     },
     {
+      "id": "HERO-SEC-0798-cobol-value-secret",
+      "name": "CobolValueSecret",
+      "type": "VULNERABILITY",
+      "severity": "BLOCKER",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-798"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 2,
+      "analogues": [
+        {
+          "key": "cobol:S1686",
+          "name": "When calling a subprogram, the data item containing the name of the subprogram to be called should not be programmatically updated",
+          "lang": "cobol",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:COBOL.CopyInsideProcedureDivisionCheck",
+          "name": "Copybooks should be used to share data structures, not procedural logic",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        }
+      ],
+      "in_golden_corpus": true,
+      "goldenCases": 5
+    },
+    {
+      "id": "HERO-SEC-0798-cobol-hardcoded-secret",
+      "name": "CobolHardcodedSecret",
+      "type": "VULNERABILITY",
+      "severity": "BLOCKER",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-798"
+      ],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": true,
+      "goldenCases": 2
+    },
+    {
+      "id": "HERO-SEC-cobol-accept-console",
+      "name": "CobolAcceptFromConsole",
+      "type": "VULNERABILITY",
+      "severity": "CRITICAL",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-20"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 2,
+      "analogues": [
+        {
+          "key": "cobol:S1871",
+          "name": "Two branches in a conditional structure should not have exactly the same implementation",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1192",
+          "name": "String literals should not be duplicated",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SEC-cobol-sql-select-star",
+      "name": "CobolSqlSelectStar",
+      "type": "CODE_SMELL",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-89"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 33,
+      "analogues": [
+        {
+          "key": "cobol:SQL.SelectStarUsageCheck",
+          "name": "Columns to be read with a \"SELECT\" statement should be clearly defined",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "strong",
+          "hits": 9
+        },
+        {
+          "key": "cobol:S3482",
+          "name": "\"INSERT\" statements should not set the values of identity columns",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "strong",
+          "hits": 7
+        },
+        {
+          "key": "cobol:S1590",
+          "name": "\"DELETE\" and \"UPDATE\" statements should contain \"WHERE\" clauses",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "strong",
+          "hits": 7
+        },
+        {
+          "key": "cobol:S1069",
+          "name": "DDL statements should not be used",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "strong",
+          "hits": 7
+        },
+        {
+          "key": "cobol:S3614",
+          "name": "Fetches should not select more columns than their cursors",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "strong",
+          "hits": 7
+        },
+        {
+          "key": "cobol:S3621",
+          "name": "Selects should include null indicators for nullable columns",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "strong",
+          "hits": 7
+        },
+        {
+          "key": "cobol:SQL.SelectWithNoWhereClauseCheck",
+          "name": "SQL SELECT statements should always include a WHERE condition",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "strong",
+          "hits": 6
+        },
+        {
+          "key": "cobol:SQL.CursorClosedInsideLoopCheck",
+          "name": "Cursors should not be closed inside loops",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "strong",
+          "hits": 6
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SEC-cobol-sql-no-where",
+      "name": "CobolSqlDeleteUpdateNoWhere",
+      "type": "VULNERABILITY",
+      "severity": "CRITICAL",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-89"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 33,
+      "analogues": [
+        {
+          "key": "cobol:SQL.DynamicSqlCheck",
+          "name": "Dynamic SQL clauses should not be used",
+          "lang": "cobol",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 7
+        },
+        {
+          "key": "cobol:S1590",
+          "name": "\"DELETE\" and \"UPDATE\" statements should contain \"WHERE\" clauses",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 8
+        },
+        {
+          "key": "cobol:S3482",
+          "name": "\"INSERT\" statements should not set the values of identity columns",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 7
+        },
+        {
+          "key": "cobol:S3633",
+          "name": "\"WHERE\" clause conditions should not be contradictory",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 7
+        },
+        {
+          "key": "cobol:SQL.SelectStarUsageCheck",
+          "name": "Columns to be read with a \"SELECT\" statement should be clearly defined",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 7
+        },
+        {
+          "key": "cobol:S1069",
+          "name": "DDL statements should not be used",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 7
+        },
+        {
+          "key": "cobol:S1740",
+          "name": "Arithmetic expressions and scalar functions should not be used in \"WHERE\" conditions",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 7
+        },
+        {
+          "key": "cobol:SQL.SelectWithNoWhereClauseCheck",
+          "name": "SQL SELECT statements should always include a WHERE condition",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 6
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SEC-cobol-sql-ddl",
+      "name": "CobolSqlDdlInApp",
+      "type": "CODE_SMELL",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 2,
+      "analogues": [
+        {
+          "key": "cobol:SQL.SelectWithNoWhereClauseCheck",
+          "name": "SQL SELECT statements should always include a WHERE condition",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S1069",
+          "name": "DDL statements should not be used",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SEC-cobol-sql-like-leading-wildcard",
+      "name": "CobolSqlLikeLeadingWildcard",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 6,
+      "analogues": [
+        {
+          "key": "cobol:S1739",
+          "name": "SQL \"LIKE\" clauses should not start with wildcard characters",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 4
+        },
+        {
+          "key": "cobol:S3643",
+          "name": "\"LIKE\" clauses should not be used without wildcards",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 4
+        },
+        {
+          "key": "cobol:SQL.SelectWithNoWhereClauseCheck",
+          "name": "SQL SELECT statements should always include a WHERE condition",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S1302",
+          "name": "Cyclomatic Complexity of sections should not be too high",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:COBOL.CommentedOutCodeCheck",
+          "name": "Sections of code should not be commented out",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S2527",
+          "name": "\"NULL\" should not be compared directly",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 3
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SEC-cobol-sql-lock-table",
+      "name": "CobolSqlLockTable",
+      "type": "CODE_SMELL",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 3,
+      "analogues": [
+        {
+          "key": "cobol:SQL.SelectWithNoWhereClauseCheck",
+          "name": "SQL SELECT statements should always include a WHERE condition",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S1631",
+          "name": "SQL statements should not join too many tables",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S3625",
+          "name": "Unused \"TABLE\" declarations should be removed",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-0goto-cobol",
+      "name": "CobolGoTo",
+      "type": "CODE_SMELL",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 20,
+      "analogues": [
+        {
+          "key": "cobol:SQL.SelectWithNoWhereClauseCheck",
+          "name": "SQL SELECT statements should always include a WHERE condition",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S3671",
+          "name": "\"BINARY\" variables should be used to declare variable-length table sizes",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.MergeStatementUsageCheck",
+          "name": "\"MERGE\" should not be used",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1138",
+          "name": "SQL EXISTS subqueries should not be used",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1306",
+          "name": "\"PERFORM\" calls should not be nested too deeply",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1631",
+          "name": "SQL statements should not join too many tables",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.SortStatementUsageCheck",
+          "name": "\"SORT\" should not be used",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:SQL.CursorClosedInsideLoopCheck",
+          "name": "Cursors should not be closed inside loops",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": true,
+      "goldenCases": 2
+    },
+    {
+      "id": "HERO-SMELL-goto-depending-cobol",
+      "name": "CobolGoToDependingOn",
+      "type": "CODE_SMELL",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 3,
+      "analogues": [
+        {
+          "key": "cobol:COBOL.EvaluateStatementUsageCheck",
+          "name": "\"EVALUATE\" structures should end with \"WHEN OTHERS\" clauses",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S4882",
+          "name": "\"OCCURS DEPENDING ON\" should be used with a minimum value",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1862",
+          "name": "Conditions in related \"IF/ELSE IF\" statements and \"WHEN\" clauses in \"EVALUATE\" statements should not have the same condition",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
       "id": "HERO-SMELL-alter-cobol",
       "name": "CobolAlter",
+      "type": "CODE_SMELL",
+      "severity": "CRITICAL",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-next-sentence-cobol",
+      "name": "CobolNextSentence",
       "type": "CODE_SMELL",
       "severity": "MAJOR",
       "languages": [
@@ -4533,6 +5518,1376 @@
       "analogues": [],
       "in_golden_corpus": false,
       "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-perform-thru-cobol",
+      "name": "CobolPerformThru",
+      "type": "CODE_SMELL",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 20,
+      "analogues": [
+        {
+          "key": "cobol:COBOL.PerformThruParagraphOrderCheck",
+          "name": "The second procedure of a \"PERFORM THRU\" statement should be defined after the first procedure",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 4
+        },
+        {
+          "key": "cobol:S3581",
+          "name": "Variables of different numeric formats should not be compared",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:SQL.SelectWithNoWhereClauseCheck",
+          "name": "SQL SELECT statements should always include a WHERE condition",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S3671",
+          "name": "\"BINARY\" variables should be used to declare variable-length table sizes",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.MergeStatementUsageCheck",
+          "name": "\"MERGE\" should not be used",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1138",
+          "name": "SQL EXISTS subqueries should not be used",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1306",
+          "name": "\"PERFORM\" calls should not be nested too deeply",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1631",
+          "name": "SQL statements should not join too many tables",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-entry-cobol",
+      "name": "CobolEntry",
+      "type": "CODE_SMELL",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-cancel-cobol",
+      "name": "CobolCancel",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-exit-program-cobol",
+      "name": "CobolExitProgram",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 6,
+      "analogues": [
+        {
+          "key": "cobol:COBOL.ExitProgramUsageCheck",
+          "name": "\"EXIT PROGRAM\" should be the last statement of a sequence",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S1683",
+          "name": "Copybooks should not contain keywords relating to the nature or structure of a program",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1686",
+          "name": "When calling a subprogram, the data item containing the name of the subprogram to be called should not be programmatically updated",
+          "lang": "cobol",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.ProgramNameCheck",
+          "name": "Program names should comply with a naming convention",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.StopRunUsageCheck",
+          "name": "\"STOP RUN\" or \"GOBACK\" should be the last statement of a sequence",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1969",
+          "name": "Section names should be unique within a program",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-stop-run-cobol",
+      "name": "CobolStopRun",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 1,
+      "analogues": [
+        {
+          "key": "cobol:COBOL.StopRunUsageCheck",
+          "name": "\"STOP RUN\" or \"GOBACK\" should be the last statement of a sequence",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 3
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-level77-cobol",
+      "name": "CobolLevel77",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-occurs-depending-cobol",
+      "name": "CobolOccursDependingOn",
+      "type": "CODE_SMELL",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-119"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 2,
+      "analogues": [
+        {
+          "key": "cobol:S4882",
+          "name": "\"OCCURS DEPENDING ON\" should be used with a minimum value",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "strong",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S1682",
+          "name": "\"OCCURS 1\" should not be used on data items",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-redefines-cobol",
+      "name": "CobolRedefines",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 1,
+      "analogues": [
+        {
+          "key": "cobol:S1305",
+          "name": "Sections should be documented",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-occurs-one-cobol",
+      "name": "CobolOccursOne",
+      "type": "CODE_SMELL",
+      "severity": "INFO",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 2,
+      "analogues": [
+        {
+          "key": "cobol:S4882",
+          "name": "\"OCCURS DEPENDING ON\" should be used with a minimum value",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1682",
+          "name": "\"OCCURS 1\" should not be used on data items",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-move-corresponding-cobol",
+      "name": "CobolMoveCorresponding",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-accept-datetime-cobol",
+      "name": "CobolAcceptDateTime",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 1,
+      "analogues": [
+        {
+          "key": "cobol:S1740",
+          "name": "Arithmetic expressions and scalar functions should not be used in \"WHERE\" conditions",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-display-console-cobol",
+      "name": "CobolDisplayUponConsole",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-display-cobol",
+      "name": "CobolDisplay",
+      "type": "CODE_SMELL",
+      "severity": "INFO",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-debug-mode-cobol",
+      "name": "CobolDebugFeatures",
+      "type": "CODE_SMELL",
+      "severity": "CRITICAL",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 1,
+      "analogues": [
+        {
+          "key": "cobol:S4507",
+          "name": "Debugging features should not be enabled in production",
+          "lang": "cobol",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 4
+        }
+      ],
+      "in_golden_corpus": true,
+      "goldenCases": 2
+    },
+    {
+      "id": "HERO-SMELL-todo-cobol",
+      "name": "CobolTodoComment",
+      "type": "CODE_SMELL",
+      "severity": "INFO",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 16,
+      "analogues": [
+        {
+          "key": "cobol:COBOL.EvaluateStatementUsageCheck",
+          "name": "\"EVALUATE\" structures should end with \"WHEN OTHERS\" clauses",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.DataItemInitialValueCheck",
+          "name": "Data items should be initialized with data of the correct type",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.MergeStatementUsageCheck",
+          "name": "\"MERGE\" should not be used",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.ProgramNameCheck",
+          "name": "Program names should comply with a naming convention",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.IfStatementFormattingCheck",
+          "name": "Ending words should be aligned with what they close",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.SortStatementUsageCheck",
+          "name": "\"SORT\" should not be used",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.LinkageSectionUsageCheck",
+          "name": "Data used in a \"LINKAGE\" should be defined in a COPYBOOK",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.ConditionComplexityCheck",
+          "name": "Conditions should not use too many distinct data items",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-sort-merge-cobol",
+      "name": "CobolSortOrMerge",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-xml-parse-cobol",
+      "name": "CobolXmlParse",
+      "type": "SECURITY_HOTSPOT",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-611"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 1,
+      "analogues": [
+        {
+          "key": "cobol:S3482",
+          "name": "\"INSERT\" statements should not set the values of identity columns",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-string-no-overflow-cobol",
+      "name": "CobolStringWithoutOverflow",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-119"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 2,
+      "analogues": [
+        {
+          "key": "cobol:S1192",
+          "name": "String literals should not be duplicated",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S3921",
+          "name": "Strings should only be moved to variables large enough to hold them without truncation",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-call-dynamic-cobol",
+      "name": "CobolDynamicCall",
+      "type": "SECURITY_HOTSPOT",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-94"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 3,
+      "analogues": [
+        {
+          "key": "cobol:S3582",
+          "name": "Conditional variables should not be compared with literals",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:SQL.DynamicSqlCheck",
+          "name": "Dynamic SQL clauses should not be used",
+          "lang": "cobol",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1192",
+          "name": "String literals should not be duplicated",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-cics-xctl-cobol",
+      "name": "CobolCicsXctl",
+      "type": "CODE_SMELL",
+      "severity": "INFO",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-cics-handle-cobol",
+      "name": "CobolCicsHandle",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 10,
+      "analogues": [
+        {
+          "key": "cobol:S2583",
+          "name": "Conditionally executed code should be reachable",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S1871",
+          "name": "Two branches in a conditional structure should not have exactly the same implementation",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:SQL.SelectWithNoWhereClauseCheck",
+          "name": "SQL SELECT statements should always include a WHERE condition",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.ConditionComplexityCheck",
+          "name": "Conditions should not use too many distinct data items",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S3633",
+          "name": "\"WHERE\" clause conditions should not be contradictory",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S4727",
+          "name": "Unused condition names should be removed",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1740",
+          "name": "Arithmetic expressions and scalar functions should not be used in \"WHERE\" conditions",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1862",
+          "name": "Conditions in related \"IF/ELSE IF\" statements and \"WHEN\" clauses in \"EVALUATE\" statements should not have the same condition",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-exec-sql-no-sqlcode-hint-cobol",
+      "name": "CobolExecSqlNeedsStatusCheck",
+      "type": "CODE_SMELL",
+      "severity": "INFO",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SEC-cobol-accept-unvalidated",
+      "name": "CobolAcceptUnvalidated",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-20"
+      ],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": true,
+      "goldenCases": 1
+    },
+    {
+      "id": "HERO-SEC-cobol-string-no-overflow",
+      "name": "CobolStringNoOnOverflow",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-120"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 2,
+      "analogues": [
+        {
+          "key": "cobol:S3921",
+          "name": "Strings should only be moved to variables large enough to hold them without truncation",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1192",
+          "name": "String literals should not be duplicated",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": true,
+      "goldenCases": 2
+    },
+    {
+      "id": "HERO-SEC-cobol-unstring-no-overflow",
+      "name": "CobolUnstringNoOnOverflow",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-120"
+      ],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": true,
+      "goldenCases": 2
+    },
+    {
+      "id": "HERO-SEC-cobol-dynamic-filename",
+      "name": "CobolDynamicFileName",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-73"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 3,
+      "analogues": [
+        {
+          "key": "cobol:S1656",
+          "name": "Variables should not be self-assigned",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S3632",
+          "name": "Binary variables should be used for table subscript access",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:SQL.DynamicSqlCheck",
+          "name": "Dynamic SQL clauses should not be used",
+          "lang": "cobol",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": true,
+      "goldenCases": 1
+    },
+    {
+      "id": "HERO-SMELL-cobol-alter",
+      "name": "CobolAlterParagraph",
+      "type": "CODE_SMELL",
+      "severity": "CRITICAL",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-1120"
+      ],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": true,
+      "goldenCases": 1
+    },
+    {
+      "id": "HERO-SEC-cobol-display-password",
+      "name": "CobolDisplaySensitive",
+      "type": "VULNERABILITY",
+      "severity": "CRITICAL",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-532"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 24,
+      "analogues": [
+        {
+          "key": "cobol:SQL.SelectWithNoWhereClauseCheck",
+          "name": "SQL SELECT statements should always include a WHERE condition",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S2527",
+          "name": "\"NULL\" should not be compared directly",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:SQL.DynamicSqlCheck",
+          "name": "Dynamic SQL clauses should not be used",
+          "lang": "cobol",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S3482",
+          "name": "\"INSERT\" statements should not set the values of identity columns",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1138",
+          "name": "SQL EXISTS subqueries should not be used",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1631",
+          "name": "SQL statements should not join too many tables",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1590",
+          "name": "\"DELETE\" and \"UPDATE\" statements should contain \"WHERE\" clauses",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:SQL.CursorClosedInsideLoopCheck",
+          "name": "Cursors should not be closed inside loops",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": true,
+      "goldenCases": 1
+    },
+    {
+      "id": "HERO-SMELL-cobol-next-sentence",
+      "name": "CobolNextSentence",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": true,
+      "goldenCases": 1
+    },
+    {
+      "id": "HERO-PQC-0327-algoritmo-quebrado",
+      "name": "AlgoritmoPosQuanticoQuebrado",
+      "type": "VULNERABILITY",
+      "severity": "BLOCKER",
+      "languages": [
+        "python",
+        "javascript",
+        "typescript",
+        "java",
+        "csharp",
+        "go"
+      ],
+      "cwe": [
+        "CWE-327"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 7,
+      "analogues": [
+        {
+          "key": "javascript:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "js",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "typescript:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "ts",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "python:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "py",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "java:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "csharpsquid:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "cs",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "python:S4426",
+          "name": "Cryptographic key generation should be based on strong parameters",
+          "lang": "py",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "java:S6293",
+          "name": "Biometric authentication should be cryptographically bound",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": true,
+      "goldenCases": 2
+    },
+    {
+      "id": "HERO-PQC-0327-nome-pre-padronizacao",
+      "name": "NomePreviaPadronizacaoNist",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "languages": [
+        "python",
+        "javascript",
+        "typescript",
+        "java",
+        "csharp",
+        "go"
+      ],
+      "cwe": [
+        "CWE-327"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 7,
+      "analogues": [
+        {
+          "key": "javascript:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "js",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "typescript:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "ts",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "python:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "py",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "java:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "csharpsquid:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "cs",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "python:S9001",
+          "name": "Expected test failures should provide a reason",
+          "lang": "py",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "python:S4426",
+          "name": "Cryptographic key generation should be based on strong parameters",
+          "lang": "py",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": true,
+      "goldenCases": 2
+    },
+    {
+      "id": "HERO-PQC-0326-nivel-insuficiente",
+      "name": "NivelDeSegurancaPosQuanticoBaixo",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "languages": [
+        "python",
+        "javascript",
+        "typescript",
+        "java",
+        "csharp",
+        "go"
+      ],
+      "cwe": [
+        "CWE-326"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 1,
+      "analogues": [
+        {
+          "key": "pythonenterprise:S8435",
+          "name": "Sensitive data should not be passed in URL query parameters",
+          "lang": "py",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 4
+        }
+      ],
+      "in_golden_corpus": true,
+      "goldenCases": 2
+    },
+    {
+      "id": "HERO-PQC-0327-sem-hibrido",
+      "name": "PosQuanticoSemModoHibrido",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "languages": [
+        "python",
+        "javascript",
+        "typescript",
+        "java",
+        "csharp",
+        "go"
+      ],
+      "cwe": [
+        "CWE-327"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 7,
+      "analogues": [
+        {
+          "key": "javascript:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "js",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "typescript:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "ts",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "python:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "py",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "java:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "csharpsquid:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "cs",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "python:S4426",
+          "name": "Cryptographic key generation should be based on strong parameters",
+          "lang": "py",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "java:S6293",
+          "name": "Biometric authentication should be cryptographically bound",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": true,
+      "goldenCases": 2
+    },
+    {
+      "id": "HERO-PQC-0311-colher-agora-decifrar-depois",
+      "name": "ColherAgoraDecifrarDepois",
+      "type": "VULNERABILITY",
+      "severity": "CRITICAL",
+      "languages": [
+        "python",
+        "javascript",
+        "typescript",
+        "java",
+        "csharp",
+        "go"
+      ],
+      "cwe": [
+        "CWE-311",
+        "CWE-327"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 10,
+      "analogues": [
+        {
+          "key": "javascript:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "js",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "typescript:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "ts",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "python:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "py",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "java:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "csharpsquid:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "cs",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 5
+        },
+        {
+          "key": "javascript:S6321",
+          "name": "Administration services access should be restricted to specific IP addresses",
+          "lang": "js",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "typescript:S6321",
+          "name": "Administration services access should be restricted to specific IP addresses",
+          "lang": "ts",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "python:S6321",
+          "name": "Administration services access should be restricted to specific IP addresses",
+          "lang": "py",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        }
+      ],
+      "in_golden_corpus": true,
+      "goldenCases": 2
+    },
+    {
+      "id": "HERO-PQC-0347-assinatura-de-longa-duracao",
+      "name": "AssinaturaClassicaEmArtefatoDuradouro",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "languages": [
+        "python",
+        "javascript",
+        "typescript",
+        "java",
+        "csharp",
+        "go"
+      ],
+      "cwe": [
+        "CWE-347"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 20,
+      "analogues": [
+        {
+          "key": "java:S2254",
+          "name": "\"HttpServletRequest.getRequestedSessionId()\" should not be used",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 4
+        },
+        {
+          "key": "jssecurity:S8703",
+          "name": "Agentic workflows should not be vulnerable to server-side request forgery",
+          "lang": "js",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "javascript:S5693",
+          "name": "HTTP request content length should be limited",
+          "lang": "js",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "jssecurity:S5144",
+          "name": "Server-side requests should not be vulnerable to forging attacks",
+          "lang": "js",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "jssecurity:S7044",
+          "name": "Server-side requests should not be vulnerable to traversing attacks",
+          "lang": "js",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "tssecurity:S8703",
+          "name": "Agentic workflows should not be vulnerable to server-side request forgery",
+          "lang": "ts",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "typescript:S5693",
+          "name": "HTTP request content length should be limited",
+          "lang": "ts",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "tssecurity:S5144",
+          "name": "Server-side requests should not be vulnerable to forging attacks",
+          "lang": "ts",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        }
+      ],
+      "in_golden_corpus": true,
+      "goldenCases": 2
     }
   ],
   "heroOnly": [
@@ -4552,21 +6907,6 @@
       "goldenCases": 3
     },
     {
-      "id": "HERO-SMELL-0goto-cobol",
-      "name": "CobolGoTo",
-      "type": "CODE_SMELL",
-      "severity": "MAJOR",
-      "languages": [
-        "cobol"
-      ],
-      "cwe": [],
-      "has_sonar_analogue": false,
-      "analogueCount": 0,
-      "analogues": [],
-      "in_golden_corpus": true,
-      "goldenCases": 2
-    },
-    {
       "id": "HERO-SMELL-debug-dotnet",
       "name": "DotNetDebugStatement",
       "type": "CODE_SMELL",
@@ -4583,8 +6923,40 @@
       "goldenCases": 0
     },
     {
+      "id": "HERO-SEC-0798-cobol-hardcoded-secret",
+      "name": "CobolHardcodedSecret",
+      "type": "VULNERABILITY",
+      "severity": "BLOCKER",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-798"
+      ],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": true,
+      "goldenCases": 2
+    },
+    {
       "id": "HERO-SMELL-alter-cobol",
       "name": "CobolAlter",
+      "type": "CODE_SMELL",
+      "severity": "CRITICAL",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-next-sentence-cobol",
+      "name": "CobolNextSentence",
       "type": "CODE_SMELL",
       "severity": "MAJOR",
       "languages": [
@@ -4596,6 +6968,207 @@
       "analogues": [],
       "in_golden_corpus": false,
       "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-entry-cobol",
+      "name": "CobolEntry",
+      "type": "CODE_SMELL",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-cancel-cobol",
+      "name": "CobolCancel",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-level77-cobol",
+      "name": "CobolLevel77",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-move-corresponding-cobol",
+      "name": "CobolMoveCorresponding",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-display-console-cobol",
+      "name": "CobolDisplayUponConsole",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-display-cobol",
+      "name": "CobolDisplay",
+      "type": "CODE_SMELL",
+      "severity": "INFO",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-sort-merge-cobol",
+      "name": "CobolSortOrMerge",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-cics-xctl-cobol",
+      "name": "CobolCicsXctl",
+      "type": "CODE_SMELL",
+      "severity": "INFO",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-exec-sql-no-sqlcode-hint-cobol",
+      "name": "CobolExecSqlNeedsStatusCheck",
+      "type": "CODE_SMELL",
+      "severity": "INFO",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SEC-cobol-accept-unvalidated",
+      "name": "CobolAcceptUnvalidated",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-20"
+      ],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": true,
+      "goldenCases": 1
+    },
+    {
+      "id": "HERO-SEC-cobol-unstring-no-overflow",
+      "name": "CobolUnstringNoOnOverflow",
+      "type": "VULNERABILITY",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-120"
+      ],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": true,
+      "goldenCases": 2
+    },
+    {
+      "id": "HERO-SMELL-cobol-alter",
+      "name": "CobolAlterParagraph",
+      "type": "CODE_SMELL",
+      "severity": "CRITICAL",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-1120"
+      ],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": true,
+      "goldenCases": 1
+    },
+    {
+      "id": "HERO-SMELL-cobol-next-sentence",
+      "name": "CobolNextSentence",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": true,
+      "goldenCases": 1
     }
   ],
   "heroWithoutGolden": [
@@ -4682,56 +7255,48 @@
       "goldenCases": 0
     },
     {
-      "id": "HERO-SEC-0078-cmd-injection-dotnet",
-      "name": "DotNetCommandInjection",
+      "id": "HERO-SEC-0327-weak-hash-java",
+      "name": "JavaWeakHash",
       "type": "VULNERABILITY",
-      "severity": "BLOCKER",
+      "severity": "MAJOR",
       "languages": [
-        "csharp",
-        "vbnet"
+        "java"
       ],
       "cwe": [
-        "CWE-78"
+        "CWE-327",
+        "CWE-328"
       ],
       "has_sonar_analogue": true,
-      "analogueCount": 5,
+      "analogueCount": 4,
       "analogues": [
         {
-          "key": "roslyn.sonaranalyzer.security.cs:S2076",
-          "name": "OS commands should not be vulnerable to command injection attacks",
-          "lang": "cs",
-          "type": "VULNERABILITY",
-          "level": "strong",
-          "hits": 9
-        },
-        {
-          "key": "roslyn.sonaranalyzer.security.cs:S5883",
-          "name": "OS commands should not be vulnerable to argument injection attacks",
-          "lang": "cs",
+          "key": "java:S4790",
+          "name": "Weak hashing algorithms should not be used",
+          "lang": "java",
           "type": "VULNERABILITY",
           "level": "strong",
           "hits": 6
         },
         {
-          "key": "csharpsquid:S4036",
-          "name": "OS commands should not rely on PATH resolution",
-          "lang": "cs",
+          "key": "java:S4426",
+          "name": "Cryptographic keys should be robust",
+          "lang": "java",
           "type": "VULNERABILITY",
-          "level": "strong",
-          "hits": 5
+          "level": "partial",
+          "hits": 2
         },
         {
-          "key": "roslyn.sonaranalyzer.security.cs:S6350",
-          "name": "System command arguments constructed from user input should be validated",
-          "lang": "cs",
+          "key": "java:S6293",
+          "name": "Biometric authentication should be cryptographically bound",
+          "lang": "java",
           "type": "VULNERABILITY",
-          "level": "strong",
-          "hits": 3
+          "level": "partial",
+          "hits": 2
         },
         {
-          "key": "roslyn.sonaranalyzer.security.cs:S2078",
-          "name": "LDAP queries should not be vulnerable to injection attacks",
-          "lang": "cs",
+          "key": "java:S2257",
+          "name": "Custom cryptographic algorithms should not be used",
+          "lang": "java",
           "type": "VULNERABILITY",
           "level": "partial",
           "hits": 2
@@ -4741,56 +7306,204 @@
       "goldenCases": 0
     },
     {
-      "id": "HERO-SEC-0078-cmd-injection-java",
-      "name": "JavaCommandInjection",
+      "id": "HERO-SEC-0614-insecure-cookie-java",
+      "name": "JavaInsecureCookie",
       "type": "VULNERABILITY",
-      "severity": "BLOCKER",
+      "severity": "MAJOR",
       "languages": [
         "java"
       ],
       "cwe": [
-        "CWE-78"
+        "CWE-614"
       ],
       "has_sonar_analogue": true,
-      "analogueCount": 46,
+      "analogueCount": 5,
       "analogues": [
         {
-          "key": "javasecurity:S2076",
-          "name": "OS commands should not be vulnerable to command injection attacks",
+          "key": "java:S3330",
+          "name": "Cookies should have the \"HttpOnly\" flag",
           "lang": "java",
           "type": "VULNERABILITY",
-          "level": "strong",
-          "hits": 10
+          "level": "partial",
+          "hits": 3
         },
         {
-          "key": "javasecurity:S5883",
-          "name": "OS commands should not be vulnerable to argument injection attacks",
+          "key": "java:S2092",
+          "name": "Cookies should have the \"secure\" flag",
           "lang": "java",
           "type": "VULNERABILITY",
-          "level": "strong",
-          "hits": 7
+          "level": "partial",
+          "hits": 2
         },
         {
-          "key": "java:S4036",
-          "name": "OS commands should not rely on PATH resolution",
+          "key": "javasecurity:S6547",
+          "name": "Environment variables should not be defined from untrusted input",
           "lang": "java",
           "type": "VULNERABILITY",
-          "level": "strong",
-          "hits": 6
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "javasecurity:S6287",
+          "name": "Applications should not create session cookies from untrusted input",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "java:S5445",
+          "name": "Insecure temporary file creation methods should not be used",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SEC-0090-ldap-injection-java",
+      "name": "JavaLdapInjection",
+      "type": "VULNERABILITY",
+      "severity": "CRITICAL",
+      "languages": [
+        "java"
+      ],
+      "cwe": [
+        "CWE-90"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 42,
+      "analogues": [
+        {
+          "key": "java:S9068",
+          "name": "\"@ApplicationScoped\" should be preferred over \"@Singleton\" in Quarkus applications",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "java:S9024",
+          "name": "\"@InjectMocks\" should be used instead of manually constructing test objects",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "java:S8909",
+          "name": "\"CacheKeyGenerator\" implementations should be instantiable by the framework",
+          "lang": "java",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 3
         },
         {
           "key": "javasecurity:S6350",
           "name": "System command arguments constructed from user input should be validated",
           "lang": "java",
           "type": "VULNERABILITY",
-          "level": "strong",
-          "hits": 4
+          "level": "partial",
+          "hits": 3
         },
         {
           "key": "javasecurity:S2078",
           "name": "LDAP queries should not be vulnerable to injection attacks",
           "lang": "java",
           "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "javasecurity:S5883",
+          "name": "OS commands should not be vulnerable to argument injection attacks",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "javasecurity:S2076",
+          "name": "OS commands should not be vulnerable to command injection attacks",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "java:S6905",
+          "name": "SQL queries should retrieve only necessary fields",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SEC-0643-xpath-injection-java",
+      "name": "JavaXPathInjection",
+      "type": "VULNERABILITY",
+      "severity": "CRITICAL",
+      "languages": [
+        "java"
+      ],
+      "cwe": [
+        "CWE-643"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 71,
+      "analogues": [
+        {
+          "key": "javasecurity:S2091",
+          "name": "XPath expressions should not be vulnerable to injection attacks",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 4
+        },
+        {
+          "key": "javasecurity:S6350",
+          "name": "System command arguments constructed from user input should be validated",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "javasecurity:S5883",
+          "name": "OS commands should not be vulnerable to argument injection attacks",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "javasecurity:S2076",
+          "name": "OS commands should not be vulnerable to command injection attacks",
+          "lang": "java",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "java:S5843",
+          "name": "Regular expressions should not be too complicated",
+          "lang": "java",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "java:S6203",
+          "name": "Text blocks should not be used in complex expressions",
+          "lang": "java",
+          "type": "CODE_SMELL",
           "level": "partial",
           "hits": 3
         },
@@ -4807,131 +7520,6 @@
           "name": "\"@InjectMocks\" should be used instead of manually constructing test objects",
           "lang": "java",
           "type": "CODE_SMELL",
-          "level": "partial",
-          "hits": 2
-        },
-        {
-          "key": "java:S8909",
-          "name": "\"CacheKeyGenerator\" implementations should be instantiable by the framework",
-          "lang": "java",
-          "type": "BUG",
-          "level": "partial",
-          "hits": 2
-        }
-      ],
-      "in_golden_corpus": false,
-      "goldenCases": 0
-    },
-    {
-      "id": "HERO-SEC-0502-insecure-deserialization-dotnet",
-      "name": "DotNetInsecureDeserialization",
-      "type": "VULNERABILITY",
-      "severity": "CRITICAL",
-      "languages": [
-        "csharp",
-        "vbnet"
-      ],
-      "cwe": [
-        "CWE-502"
-      ],
-      "has_sonar_analogue": true,
-      "analogueCount": 2,
-      "analogues": [
-        {
-          "key": "roslyn.sonaranalyzer.security.cs:S6547",
-          "name": "Environment variables should not be defined from untrusted input",
-          "lang": "cs",
-          "type": "VULNERABILITY",
-          "level": "strong",
-          "hits": 2
-        },
-        {
-          "key": "csharpsquid:S5766",
-          "name": "Serializable objects should validate data during deserialization",
-          "lang": "cs",
-          "type": "VULNERABILITY",
-          "level": "partial",
-          "hits": 2
-        }
-      ],
-      "in_golden_corpus": false,
-      "goldenCases": 0
-    },
-    {
-      "id": "HERO-SEC-0502-insecure-deserialization-java",
-      "name": "JavaInsecureDeserialization",
-      "type": "VULNERABILITY",
-      "severity": "CRITICAL",
-      "languages": [
-        "java"
-      ],
-      "cwe": [
-        "CWE-502"
-      ],
-      "has_sonar_analogue": true,
-      "analogueCount": 9,
-      "analogues": [
-        {
-          "key": "javasecurity:S6547",
-          "name": "Environment variables should not be defined from untrusted input",
-          "lang": "java",
-          "type": "VULNERABILITY",
-          "level": "strong",
-          "hits": 3
-        },
-        {
-          "key": "java:S4544",
-          "name": "Jackson deserialization should not use unsafe configuration",
-          "lang": "java",
-          "type": "VULNERABILITY",
-          "level": "partial",
-          "hits": 3
-        },
-        {
-          "key": "java:S4512",
-          "name": "JavaBean properties should not be populated from untrusted input",
-          "lang": "java",
-          "type": "VULNERABILITY",
-          "level": "partial",
-          "hits": 2
-        },
-        {
-          "key": "java:S7409",
-          "name": "Native methods should not be exposed to untrusted WebView content",
-          "lang": "java",
-          "type": "VULNERABILITY",
-          "level": "partial",
-          "hits": 2
-        },
-        {
-          "key": "java:S4434",
-          "name": "Deserialization of Java objects from LDAP should be disabled",
-          "lang": "java",
-          "type": "VULNERABILITY",
-          "level": "partial",
-          "hits": 2
-        },
-        {
-          "key": "javasecurity:S5135",
-          "name": "Deserialization should not be vulnerable to injection attacks",
-          "lang": "java",
-          "type": "VULNERABILITY",
-          "level": "partial",
-          "hits": 2
-        },
-        {
-          "key": "javasecurity:S6287",
-          "name": "Applications should not create session cookies from untrusted input",
-          "lang": "java",
-          "type": "VULNERABILITY",
-          "level": "partial",
-          "hits": 2
-        },
-        {
-          "key": "java:S5301",
-          "name": "\"ActiveMQConnectionFactory\" should not be vulnerable to malicious code deserialization",
-          "lang": "java",
-          "type": "VULNERABILITY",
           "level": "partial",
           "hits": 2
         }
@@ -5279,10 +7867,1078 @@
       "goldenCases": 0
     },
     {
+      "id": "HERO-SEC-cobol-accept-console",
+      "name": "CobolAcceptFromConsole",
+      "type": "VULNERABILITY",
+      "severity": "CRITICAL",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-20"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 2,
+      "analogues": [
+        {
+          "key": "cobol:S1871",
+          "name": "Two branches in a conditional structure should not have exactly the same implementation",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1192",
+          "name": "String literals should not be duplicated",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SEC-cobol-sql-select-star",
+      "name": "CobolSqlSelectStar",
+      "type": "CODE_SMELL",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-89"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 33,
+      "analogues": [
+        {
+          "key": "cobol:SQL.SelectStarUsageCheck",
+          "name": "Columns to be read with a \"SELECT\" statement should be clearly defined",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "strong",
+          "hits": 9
+        },
+        {
+          "key": "cobol:S3482",
+          "name": "\"INSERT\" statements should not set the values of identity columns",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "strong",
+          "hits": 7
+        },
+        {
+          "key": "cobol:S1590",
+          "name": "\"DELETE\" and \"UPDATE\" statements should contain \"WHERE\" clauses",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "strong",
+          "hits": 7
+        },
+        {
+          "key": "cobol:S1069",
+          "name": "DDL statements should not be used",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "strong",
+          "hits": 7
+        },
+        {
+          "key": "cobol:S3614",
+          "name": "Fetches should not select more columns than their cursors",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "strong",
+          "hits": 7
+        },
+        {
+          "key": "cobol:S3621",
+          "name": "Selects should include null indicators for nullable columns",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "strong",
+          "hits": 7
+        },
+        {
+          "key": "cobol:SQL.SelectWithNoWhereClauseCheck",
+          "name": "SQL SELECT statements should always include a WHERE condition",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "strong",
+          "hits": 6
+        },
+        {
+          "key": "cobol:SQL.CursorClosedInsideLoopCheck",
+          "name": "Cursors should not be closed inside loops",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "strong",
+          "hits": 6
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SEC-cobol-sql-no-where",
+      "name": "CobolSqlDeleteUpdateNoWhere",
+      "type": "VULNERABILITY",
+      "severity": "CRITICAL",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-89"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 33,
+      "analogues": [
+        {
+          "key": "cobol:SQL.DynamicSqlCheck",
+          "name": "Dynamic SQL clauses should not be used",
+          "lang": "cobol",
+          "type": "VULNERABILITY",
+          "level": "strong",
+          "hits": 7
+        },
+        {
+          "key": "cobol:S1590",
+          "name": "\"DELETE\" and \"UPDATE\" statements should contain \"WHERE\" clauses",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 8
+        },
+        {
+          "key": "cobol:S3482",
+          "name": "\"INSERT\" statements should not set the values of identity columns",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 7
+        },
+        {
+          "key": "cobol:S3633",
+          "name": "\"WHERE\" clause conditions should not be contradictory",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 7
+        },
+        {
+          "key": "cobol:SQL.SelectStarUsageCheck",
+          "name": "Columns to be read with a \"SELECT\" statement should be clearly defined",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 7
+        },
+        {
+          "key": "cobol:S1069",
+          "name": "DDL statements should not be used",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 7
+        },
+        {
+          "key": "cobol:S1740",
+          "name": "Arithmetic expressions and scalar functions should not be used in \"WHERE\" conditions",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 7
+        },
+        {
+          "key": "cobol:SQL.SelectWithNoWhereClauseCheck",
+          "name": "SQL SELECT statements should always include a WHERE condition",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 6
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SEC-cobol-sql-ddl",
+      "name": "CobolSqlDdlInApp",
+      "type": "CODE_SMELL",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 2,
+      "analogues": [
+        {
+          "key": "cobol:SQL.SelectWithNoWhereClauseCheck",
+          "name": "SQL SELECT statements should always include a WHERE condition",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S1069",
+          "name": "DDL statements should not be used",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SEC-cobol-sql-like-leading-wildcard",
+      "name": "CobolSqlLikeLeadingWildcard",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 6,
+      "analogues": [
+        {
+          "key": "cobol:S1739",
+          "name": "SQL \"LIKE\" clauses should not start with wildcard characters",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 4
+        },
+        {
+          "key": "cobol:S3643",
+          "name": "\"LIKE\" clauses should not be used without wildcards",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 4
+        },
+        {
+          "key": "cobol:SQL.SelectWithNoWhereClauseCheck",
+          "name": "SQL SELECT statements should always include a WHERE condition",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S1302",
+          "name": "Cyclomatic Complexity of sections should not be too high",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:COBOL.CommentedOutCodeCheck",
+          "name": "Sections of code should not be commented out",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S2527",
+          "name": "\"NULL\" should not be compared directly",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 3
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SEC-cobol-sql-lock-table",
+      "name": "CobolSqlLockTable",
+      "type": "CODE_SMELL",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 3,
+      "analogues": [
+        {
+          "key": "cobol:SQL.SelectWithNoWhereClauseCheck",
+          "name": "SQL SELECT statements should always include a WHERE condition",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S1631",
+          "name": "SQL statements should not join too many tables",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S3625",
+          "name": "Unused \"TABLE\" declarations should be removed",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-goto-depending-cobol",
+      "name": "CobolGoToDependingOn",
+      "type": "CODE_SMELL",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 3,
+      "analogues": [
+        {
+          "key": "cobol:COBOL.EvaluateStatementUsageCheck",
+          "name": "\"EVALUATE\" structures should end with \"WHEN OTHERS\" clauses",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S4882",
+          "name": "\"OCCURS DEPENDING ON\" should be used with a minimum value",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1862",
+          "name": "Conditions in related \"IF/ELSE IF\" statements and \"WHEN\" clauses in \"EVALUATE\" statements should not have the same condition",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
       "id": "HERO-SMELL-alter-cobol",
       "name": "CobolAlter",
       "type": "CODE_SMELL",
+      "severity": "CRITICAL",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-next-sentence-cobol",
+      "name": "CobolNextSentence",
+      "type": "CODE_SMELL",
       "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-perform-thru-cobol",
+      "name": "CobolPerformThru",
+      "type": "CODE_SMELL",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 20,
+      "analogues": [
+        {
+          "key": "cobol:COBOL.PerformThruParagraphOrderCheck",
+          "name": "The second procedure of a \"PERFORM THRU\" statement should be defined after the first procedure",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 4
+        },
+        {
+          "key": "cobol:S3581",
+          "name": "Variables of different numeric formats should not be compared",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:SQL.SelectWithNoWhereClauseCheck",
+          "name": "SQL SELECT statements should always include a WHERE condition",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S3671",
+          "name": "\"BINARY\" variables should be used to declare variable-length table sizes",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.MergeStatementUsageCheck",
+          "name": "\"MERGE\" should not be used",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1138",
+          "name": "SQL EXISTS subqueries should not be used",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1306",
+          "name": "\"PERFORM\" calls should not be nested too deeply",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1631",
+          "name": "SQL statements should not join too many tables",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-entry-cobol",
+      "name": "CobolEntry",
+      "type": "CODE_SMELL",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-cancel-cobol",
+      "name": "CobolCancel",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-exit-program-cobol",
+      "name": "CobolExitProgram",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 6,
+      "analogues": [
+        {
+          "key": "cobol:COBOL.ExitProgramUsageCheck",
+          "name": "\"EXIT PROGRAM\" should be the last statement of a sequence",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S1683",
+          "name": "Copybooks should not contain keywords relating to the nature or structure of a program",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1686",
+          "name": "When calling a subprogram, the data item containing the name of the subprogram to be called should not be programmatically updated",
+          "lang": "cobol",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.ProgramNameCheck",
+          "name": "Program names should comply with a naming convention",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.StopRunUsageCheck",
+          "name": "\"STOP RUN\" or \"GOBACK\" should be the last statement of a sequence",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1969",
+          "name": "Section names should be unique within a program",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-stop-run-cobol",
+      "name": "CobolStopRun",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 1,
+      "analogues": [
+        {
+          "key": "cobol:COBOL.StopRunUsageCheck",
+          "name": "\"STOP RUN\" or \"GOBACK\" should be the last statement of a sequence",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 3
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-level77-cobol",
+      "name": "CobolLevel77",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-occurs-depending-cobol",
+      "name": "CobolOccursDependingOn",
+      "type": "CODE_SMELL",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-119"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 2,
+      "analogues": [
+        {
+          "key": "cobol:S4882",
+          "name": "\"OCCURS DEPENDING ON\" should be used with a minimum value",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "strong",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S1682",
+          "name": "\"OCCURS 1\" should not be used on data items",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-redefines-cobol",
+      "name": "CobolRedefines",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 1,
+      "analogues": [
+        {
+          "key": "cobol:S1305",
+          "name": "Sections should be documented",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-occurs-one-cobol",
+      "name": "CobolOccursOne",
+      "type": "CODE_SMELL",
+      "severity": "INFO",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 2,
+      "analogues": [
+        {
+          "key": "cobol:S4882",
+          "name": "\"OCCURS DEPENDING ON\" should be used with a minimum value",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1682",
+          "name": "\"OCCURS 1\" should not be used on data items",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-move-corresponding-cobol",
+      "name": "CobolMoveCorresponding",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-accept-datetime-cobol",
+      "name": "CobolAcceptDateTime",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 1,
+      "analogues": [
+        {
+          "key": "cobol:S1740",
+          "name": "Arithmetic expressions and scalar functions should not be used in \"WHERE\" conditions",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-display-console-cobol",
+      "name": "CobolDisplayUponConsole",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-display-cobol",
+      "name": "CobolDisplay",
+      "type": "CODE_SMELL",
+      "severity": "INFO",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-todo-cobol",
+      "name": "CobolTodoComment",
+      "type": "CODE_SMELL",
+      "severity": "INFO",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 16,
+      "analogues": [
+        {
+          "key": "cobol:COBOL.EvaluateStatementUsageCheck",
+          "name": "\"EVALUATE\" structures should end with \"WHEN OTHERS\" clauses",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.DataItemInitialValueCheck",
+          "name": "Data items should be initialized with data of the correct type",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.MergeStatementUsageCheck",
+          "name": "\"MERGE\" should not be used",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.ProgramNameCheck",
+          "name": "Program names should comply with a naming convention",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.IfStatementFormattingCheck",
+          "name": "Ending words should be aligned with what they close",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.SortStatementUsageCheck",
+          "name": "\"SORT\" should not be used",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.LinkageSectionUsageCheck",
+          "name": "Data used in a \"LINKAGE\" should be defined in a COPYBOOK",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.ConditionComplexityCheck",
+          "name": "Conditions should not use too many distinct data items",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-sort-merge-cobol",
+      "name": "CobolSortOrMerge",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-xml-parse-cobol",
+      "name": "CobolXmlParse",
+      "type": "SECURITY_HOTSPOT",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-611"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 1,
+      "analogues": [
+        {
+          "key": "cobol:S3482",
+          "name": "\"INSERT\" statements should not set the values of identity columns",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-string-no-overflow-cobol",
+      "name": "CobolStringWithoutOverflow",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-119"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 2,
+      "analogues": [
+        {
+          "key": "cobol:S1192",
+          "name": "String literals should not be duplicated",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S3921",
+          "name": "Strings should only be moved to variables large enough to hold them without truncation",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-call-dynamic-cobol",
+      "name": "CobolDynamicCall",
+      "type": "SECURITY_HOTSPOT",
+      "severity": "MAJOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [
+        "CWE-94"
+      ],
+      "has_sonar_analogue": true,
+      "analogueCount": 3,
+      "analogues": [
+        {
+          "key": "cobol:S3582",
+          "name": "Conditional variables should not be compared with literals",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:SQL.DynamicSqlCheck",
+          "name": "Dynamic SQL clauses should not be used",
+          "lang": "cobol",
+          "type": "VULNERABILITY",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1192",
+          "name": "String literals should not be duplicated",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-cics-xctl-cobol",
+      "name": "CobolCicsXctl",
+      "type": "CODE_SMELL",
+      "severity": "INFO",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": false,
+      "analogueCount": 0,
+      "analogues": [],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-cics-handle-cobol",
+      "name": "CobolCicsHandle",
+      "type": "CODE_SMELL",
+      "severity": "MINOR",
+      "languages": [
+        "cobol"
+      ],
+      "cwe": [],
+      "has_sonar_analogue": true,
+      "analogueCount": 10,
+      "analogues": [
+        {
+          "key": "cobol:S2583",
+          "name": "Conditionally executed code should be reachable",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 3
+        },
+        {
+          "key": "cobol:S1871",
+          "name": "Two branches in a conditional structure should not have exactly the same implementation",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:SQL.SelectWithNoWhereClauseCheck",
+          "name": "SQL SELECT statements should always include a WHERE condition",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:COBOL.ConditionComplexityCheck",
+          "name": "Conditions should not use too many distinct data items",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S3633",
+          "name": "\"WHERE\" clause conditions should not be contradictory",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S4727",
+          "name": "Unused condition names should be removed",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1740",
+          "name": "Arithmetic expressions and scalar functions should not be used in \"WHERE\" conditions",
+          "lang": "cobol",
+          "type": "CODE_SMELL",
+          "level": "partial",
+          "hits": 2
+        },
+        {
+          "key": "cobol:S1862",
+          "name": "Conditions in related \"IF/ELSE IF\" statements and \"WHEN\" clauses in \"EVALUATE\" statements should not have the same condition",
+          "lang": "cobol",
+          "type": "BUG",
+          "level": "partial",
+          "hits": 2
+        }
+      ],
+      "in_golden_corpus": false,
+      "goldenCases": 0
+    },
+    {
+      "id": "HERO-SMELL-exec-sql-no-sqlcode-hint-cobol",
+      "name": "CobolExecSqlNeedsStatusCheck",
+      "type": "CODE_SMELL",
+      "severity": "INFO",
       "languages": [
         "cobol"
       ],

@@ -7,6 +7,8 @@
 
 A IA **propõe** mutações de regra offline; o **corpus golden + F1** **decidem** o que entra no CI. O scanner do PR permanece determinístico.
 
+Isso é o núcleo do posicionamento “líder no ciclo pós-finding”: ver [Posicionamento-e-metricas.md](./Posicionamento-e-metricas.md).
+
 ## Passo a passo
 
 ```mermaid

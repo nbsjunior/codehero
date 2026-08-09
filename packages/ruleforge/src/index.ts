@@ -45,6 +45,10 @@ export {
 export {
   coletarVotosDeModelo,
   interpretarResposta,
+  interpretarOrigem,
+  votoDeOrigem,
+  INSTRUCAO_DE_ORIGEM,
+  type AfirmacaoDeOrigem,
   INSTRUCAO_DE_VOTO,
   type ChamadaDeModelo,
   type PerguntaAoModelo,

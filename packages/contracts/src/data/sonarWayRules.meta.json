@@ -1,41 +1,41 @@
 {
-  "generatedAt": "2026-08-07T01:32:48.292Z",
+  "generatedAt": "2026-08-09T21:08:50.047Z",
   "source": "https://next.sonarqube.com/sonarqube/api",
   "fetchedAt": "2026-07-28T13:07:41.908Z",
   "stats": {
     "total": 2668,
-    "live": 431,
-    "stub": 2237,
+    "live": 492,
+    "stub": 2176,
     "byLang": {
       "js": {
         "total": 470,
-        "live": 78,
-        "stub": 392
+        "live": 88,
+        "stub": 382
       },
       "ts": {
         "total": 483,
-        "live": 77,
-        "stub": 406
+        "live": 87,
+        "stub": 396
       },
       "py": {
         "total": 466,
-        "live": 84,
-        "stub": 382
+        "live": 96,
+        "stub": 370
       },
       "java": {
         "total": 611,
-        "live": 104,
-        "stub": 507
+        "live": 119,
+        "stub": 492
       },
       "cs": {
         "total": 373,
-        "live": 63,
-        "stub": 310
+        "live": 76,
+        "stub": 297
       },
       "cobol": {
         "total": 74,
-        "live": 5,
-        "stub": 69
+        "live": 6,
+        "stub": 68
       },
       "tsql": {
         "total": 59,
@@ -79,6 +79,7 @@
       "eqeqeq": 1,
       "grant-all": 6,
       "http-cleartext": 5,
+      "sql-dynamic-format": 5,
       "xss": 9,
       "version-disclosure": 3,
       "clear-temp-files": 9,
@@ -86,11 +87,19 @@
       "disabled-autoescape": 4,
       "cors-star": 7,
       "cookie-secure": 5,
+      "ssrf-forging": 10,
+      "connection-string-inject": 3,
+      "db-query-injection": 5,
+      "cmd-args-user-input": 5,
+      "env-untrusted": 5,
       "mass-assignment": 3,
       "open-redirect": 2,
+      "template-injection": 4,
       "regex-dos": 5,
+      "redirect-forging": 5,
       "session-fixation": 5,
       "ldap-injection": 8,
+      "log-injection": 5,
       "nosql-injection": 5,
       "stack-trace-disclosure": 4,
       "xpath-injection": 7,
@@ -99,27 +108,35 @@
       "http-method-restrict": 2,
       "mutable-default": 1,
       "deserialization": 11,
+      "custom-crypto": 3,
       "cbc-iv": 4,
       "python-subprocess-shell": 1,
+      "xml-signature-validate": 3,
       "bare-except": 1,
+      "aws-long-term-keys": 2,
       "print-statement-py": 2,
       "object-finalize": 4,
+      "bean-untrusted": 1,
       "equals-hashcode": 4,
       "switch-default": 1,
+      "securerandom-predictable": 2,
       "double-checked-locking": 2,
       "android-intent": 5,
       "resource-close": 2,
       "xml-injection": 2,
       "reflection-injection": 3,
       "spring-expression": 2,
+      "requested-session-id": 1,
       "thread-run": 1,
       "hardcoded-uri": 2,
       "instanceof": 1,
       "serial-version-uid": 1,
       "python-assert": 1,
       "disabled-validation": 1,
+      "xslt-injection": 1,
       "null-deref": 2,
       "goto-cobol": 5,
+      "cobol-dynamic-call": 1,
       "exec-immediate-sql": 2
     }
   }

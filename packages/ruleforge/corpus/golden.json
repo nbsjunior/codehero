@@ -3109,5 +3109,861 @@
     "profile": "clike",
     "avaliacao": "fluxo",
     "language": "java"
+  },
+  {
+    "id": "sonar-SONAR-cobol-S1686-match-1",
+    "ruleId": "SONAR-cobol-S1686",
+    "expected": "match",
+    "code": "           CALL WS-PROG-NAME USING WS-ARGS.",
+    "profile": "cobol",
+    "note": "esteira sonar:engenharia · template cobol-dynamic-call"
+  },
+  {
+    "id": "sonar-SONAR-cobol-S1686-no_match-2",
+    "ruleId": "SONAR-cobol-S1686",
+    "expected": "no_match",
+    "code": "           CALL \"FIXEDPROG\" USING WS-ARGS.",
+    "profile": "cobol",
+    "note": "esteira sonar:engenharia · template cobol-dynamic-call"
+  },
+  {
+    "id": "sonar-SONAR-cs-S2257-match-1",
+    "ruleId": "SONAR-cs-S2257",
+    "expected": "match",
+    "code": "public class WeakCipher extends CipherSpi { }",
+    "note": "esteira sonar:engenharia · template custom-crypto"
+  },
+  {
+    "id": "sonar-SONAR-cs-S2257-no_match-2",
+    "ruleId": "SONAR-cs-S2257",
+    "expected": "no_match",
+    "code": "Cipher c = Cipher.getInstance(\"AES/GCM/NoPadding\");",
+    "note": "esteira sonar:engenharia · template custom-crypto"
+  },
+  {
+    "id": "sonar-SONAR-cs-S3649-match-1",
+    "ruleId": "SONAR-cs-S3649",
+    "expected": "match",
+    "code": "em.createQuery(\"select u from User u where u.id=\" + id);",
+    "note": "esteira sonar:engenharia · template db-query-injection"
+  },
+  {
+    "id": "sonar-SONAR-cs-S3649-no_match-2",
+    "ruleId": "SONAR-cs-S3649",
+    "expected": "no_match",
+    "code": "em.createQuery(\"select u from User u where u.id=:id\").setParameter(\"id\", id);",
+    "note": "esteira sonar:engenharia · template db-query-injection"
+  },
+  {
+    "id": "sonar-SONAR-cs-S4347-match-1",
+    "ruleId": "SONAR-cs-S4347",
+    "expected": "match",
+    "code": "SecureRandom r = new SecureRandom(); r.setSeed(12345);",
+    "note": "esteira sonar:engenharia · template securerandom-predictable"
+  },
+  {
+    "id": "sonar-SONAR-cs-S4347-no_match-2",
+    "ruleId": "SONAR-cs-S4347",
+    "expected": "no_match",
+    "code": "SecureRandom r = SecureRandom.getInstanceStrong();",
+    "note": "esteira sonar:engenharia · template securerandom-predictable"
+  },
+  {
+    "id": "sonar-SONAR-cs-S5144-match-1",
+    "ruleId": "SONAR-cs-S5144",
+    "expected": "match",
+    "code": "restTemplate.getForObject(request.getParameter(\"url\"), String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-cs-S5144-no_match-2",
+    "ruleId": "SONAR-cs-S5144",
+    "expected": "no_match",
+    "code": "restTemplate.getForObject(\"https://api.internal/health\", String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-cs-S5145-match-1",
+    "ruleId": "SONAR-cs-S5145",
+    "expected": "match",
+    "code": "logger.info(\"user=\" + request.getParameter(\"u\"));",
+    "note": "esteira sonar:engenharia · template log-injection"
+  },
+  {
+    "id": "sonar-SONAR-cs-S5145-no_match-2",
+    "ruleId": "SONAR-cs-S5145",
+    "expected": "no_match",
+    "code": "logger.info(\"login ok for id={}\", userId);",
+    "note": "esteira sonar:engenharia · template log-injection"
+  },
+  {
+    "id": "sonar-SONAR-cs-S5146-match-1",
+    "ruleId": "SONAR-cs-S5146",
+    "expected": "match",
+    "code": "response.sendRedirect(request.getParameter(\"next\"));",
+    "note": "esteira sonar:engenharia · template redirect-forging"
+  },
+  {
+    "id": "sonar-SONAR-cs-S5146-no_match-2",
+    "ruleId": "SONAR-cs-S5146",
+    "expected": "no_match",
+    "code": "response.sendRedirect(\"/home\");",
+    "note": "esteira sonar:engenharia · template redirect-forging"
+  },
+  {
+    "id": "sonar-SONAR-cs-S6350-match-1",
+    "ruleId": "SONAR-cs-S6350",
+    "expected": "match",
+    "code": "Runtime.getRuntime().exec(\"ping \" + request.getParameter(\"host\"));",
+    "note": "esteira sonar:engenharia · template cmd-args-user-input"
+  },
+  {
+    "id": "sonar-SONAR-cs-S6350-no_match-2",
+    "ruleId": "SONAR-cs-S6350",
+    "expected": "no_match",
+    "code": "Runtime.getRuntime().exec(new String[]{\"ping\", \"-c\", \"1\", \"127.0.0.1\"});",
+    "note": "esteira sonar:engenharia · template cmd-args-user-input"
+  },
+  {
+    "id": "sonar-SONAR-cs-S6377-match-1",
+    "ruleId": "SONAR-cs-S6377",
+    "expected": "match",
+    "code": "XMLSignatureFactory fac = XMLSignatureFactory.getInstance(\"DOM\");",
+    "note": "esteira sonar:engenharia · template xml-signature-validate"
+  },
+  {
+    "id": "sonar-SONAR-cs-S6377-no_match-2",
+    "ruleId": "SONAR-cs-S6377",
+    "expected": "no_match",
+    "code": "DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();",
+    "note": "esteira sonar:engenharia · template xml-signature-validate"
+  },
+  {
+    "id": "sonar-SONAR-cs-S6547-match-1",
+    "ruleId": "SONAR-cs-S6547",
+    "expected": "match",
+    "code": "process.env[\"PATH\"] = req.query.path;",
+    "note": "esteira sonar:engenharia · template env-untrusted"
+  },
+  {
+    "id": "sonar-SONAR-cs-S6547-no_match-2",
+    "ruleId": "SONAR-cs-S6547",
+    "expected": "no_match",
+    "code": "process.env.NODE_ENV = \"production\";",
+    "note": "esteira sonar:engenharia · template env-untrusted"
+  },
+  {
+    "id": "sonar-SONAR-cs-S7044-match-1",
+    "ruleId": "SONAR-cs-S7044",
+    "expected": "match",
+    "code": "restTemplate.getForObject(request.getParameter(\"url\"), String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-cs-S7044-no_match-2",
+    "ruleId": "SONAR-cs-S7044",
+    "expected": "no_match",
+    "code": "restTemplate.getForObject(\"https://api.internal/health\", String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-cs-S7714-match-1",
+    "ruleId": "SONAR-cs-S7714",
+    "expected": "match",
+    "code": "TransformerFactory.newInstance().newTransformer(new StreamSource(req.getParameter(\"xsl\")));",
+    "note": "esteira sonar:engenharia · template xslt-injection"
+  },
+  {
+    "id": "sonar-SONAR-cs-S7714-no_match-2",
+    "ruleId": "SONAR-cs-S7714",
+    "expected": "no_match",
+    "code": "TransformerFactory.newInstance().newTransformer(new StreamSource(\"safe.xsl\"));",
+    "note": "esteira sonar:engenharia · template xslt-injection"
+  },
+  {
+    "id": "sonar-SONAR-java-S2254-match-1",
+    "ruleId": "SONAR-java-S2254",
+    "expected": "match",
+    "code": "String sid = request.getRequestedSessionId();",
+    "note": "esteira sonar:engenharia · template requested-session-id"
+  },
+  {
+    "id": "sonar-SONAR-java-S2254-no_match-2",
+    "ruleId": "SONAR-java-S2254",
+    "expected": "no_match",
+    "code": "String sid = request.getSession(true).getId();",
+    "note": "esteira sonar:engenharia · template requested-session-id"
+  },
+  {
+    "id": "sonar-SONAR-java-S2257-match-1",
+    "ruleId": "SONAR-java-S2257",
+    "expected": "match",
+    "code": "public class WeakCipher extends CipherSpi { }",
+    "note": "esteira sonar:engenharia · template custom-crypto"
+  },
+  {
+    "id": "sonar-SONAR-java-S2257-no_match-2",
+    "ruleId": "SONAR-java-S2257",
+    "expected": "no_match",
+    "code": "Cipher c = Cipher.getInstance(\"AES/GCM/NoPadding\");",
+    "note": "esteira sonar:engenharia · template custom-crypto"
+  },
+  {
+    "id": "sonar-SONAR-java-S3649-match-1",
+    "ruleId": "SONAR-java-S3649",
+    "expected": "match",
+    "code": "em.createQuery(\"select u from User u where u.id=\" + id);",
+    "note": "esteira sonar:engenharia · template db-query-injection"
+  },
+  {
+    "id": "sonar-SONAR-java-S3649-no_match-2",
+    "ruleId": "SONAR-java-S3649",
+    "expected": "no_match",
+    "code": "em.createQuery(\"select u from User u where u.id=:id\").setParameter(\"id\", id);",
+    "note": "esteira sonar:engenharia · template db-query-injection"
+  },
+  {
+    "id": "sonar-SONAR-java-S4347-match-1",
+    "ruleId": "SONAR-java-S4347",
+    "expected": "match",
+    "code": "SecureRandom r = new SecureRandom(); r.setSeed(12345);",
+    "note": "esteira sonar:engenharia · template securerandom-predictable"
+  },
+  {
+    "id": "sonar-SONAR-java-S4347-no_match-2",
+    "ruleId": "SONAR-java-S4347",
+    "expected": "no_match",
+    "code": "SecureRandom r = SecureRandom.getInstanceStrong();",
+    "note": "esteira sonar:engenharia · template securerandom-predictable"
+  },
+  {
+    "id": "sonar-SONAR-java-S4512-match-1",
+    "ruleId": "SONAR-java-S4512",
+    "expected": "match",
+    "code": "BeanUtils.populate(bean, request.getParameterMap());",
+    "note": "esteira sonar:engenharia · template bean-untrusted"
+  },
+  {
+    "id": "sonar-SONAR-java-S4512-no_match-2",
+    "ruleId": "SONAR-java-S4512",
+    "expected": "no_match",
+    "code": "bean.setName(safeName);",
+    "note": "esteira sonar:engenharia · template bean-untrusted"
+  },
+  {
+    "id": "sonar-SONAR-java-S5144-match-1",
+    "ruleId": "SONAR-java-S5144",
+    "expected": "match",
+    "code": "restTemplate.getForObject(request.getParameter(\"url\"), String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-java-S5144-no_match-2",
+    "ruleId": "SONAR-java-S5144",
+    "expected": "no_match",
+    "code": "restTemplate.getForObject(\"https://api.internal/health\", String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-java-S5145-match-1",
+    "ruleId": "SONAR-java-S5145",
+    "expected": "match",
+    "code": "logger.info(\"user=\" + request.getParameter(\"u\"));",
+    "note": "esteira sonar:engenharia · template log-injection"
+  },
+  {
+    "id": "sonar-SONAR-java-S5145-no_match-2",
+    "ruleId": "SONAR-java-S5145",
+    "expected": "no_match",
+    "code": "logger.info(\"login ok for id={}\", userId);",
+    "note": "esteira sonar:engenharia · template log-injection"
+  },
+  {
+    "id": "sonar-SONAR-java-S5146-match-1",
+    "ruleId": "SONAR-java-S5146",
+    "expected": "match",
+    "code": "response.sendRedirect(request.getParameter(\"next\"));",
+    "note": "esteira sonar:engenharia · template redirect-forging"
+  },
+  {
+    "id": "sonar-SONAR-java-S5146-no_match-2",
+    "ruleId": "SONAR-java-S5146",
+    "expected": "no_match",
+    "code": "response.sendRedirect(\"/home\");",
+    "note": "esteira sonar:engenharia · template redirect-forging"
+  },
+  {
+    "id": "sonar-SONAR-java-S5496-match-1",
+    "ruleId": "SONAR-java-S5496",
+    "expected": "match",
+    "code": "Template.parse(\"Hello \" + request.getParameter(\"name\"));",
+    "note": "esteira sonar:engenharia · template template-injection"
+  },
+  {
+    "id": "sonar-SONAR-java-S5496-no_match-2",
+    "ruleId": "SONAR-java-S5496",
+    "expected": "no_match",
+    "code": "Template.parse(\"Hello {{name}}\");",
+    "note": "esteira sonar:engenharia · template template-injection"
+  },
+  {
+    "id": "sonar-SONAR-java-S6350-match-1",
+    "ruleId": "SONAR-java-S6350",
+    "expected": "match",
+    "code": "Runtime.getRuntime().exec(\"ping \" + request.getParameter(\"host\"));",
+    "note": "esteira sonar:engenharia · template cmd-args-user-input"
+  },
+  {
+    "id": "sonar-SONAR-java-S6350-no_match-2",
+    "ruleId": "SONAR-java-S6350",
+    "expected": "no_match",
+    "code": "Runtime.getRuntime().exec(new String[]{\"ping\", \"-c\", \"1\", \"127.0.0.1\"});",
+    "note": "esteira sonar:engenharia · template cmd-args-user-input"
+  },
+  {
+    "id": "sonar-SONAR-java-S6377-match-1",
+    "ruleId": "SONAR-java-S6377",
+    "expected": "match",
+    "code": "XMLSignatureFactory fac = XMLSignatureFactory.getInstance(\"DOM\");",
+    "note": "esteira sonar:engenharia · template xml-signature-validate"
+  },
+  {
+    "id": "sonar-SONAR-java-S6377-no_match-2",
+    "ruleId": "SONAR-java-S6377",
+    "expected": "no_match",
+    "code": "DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();",
+    "note": "esteira sonar:engenharia · template xml-signature-validate"
+  },
+  {
+    "id": "sonar-SONAR-java-S6547-match-1",
+    "ruleId": "SONAR-java-S6547",
+    "expected": "match",
+    "code": "process.env[\"PATH\"] = req.query.path;",
+    "note": "esteira sonar:engenharia · template env-untrusted"
+  },
+  {
+    "id": "sonar-SONAR-java-S6547-no_match-2",
+    "ruleId": "SONAR-java-S6547",
+    "expected": "no_match",
+    "code": "process.env.NODE_ENV = \"production\";",
+    "note": "esteira sonar:engenharia · template env-untrusted"
+  },
+  {
+    "id": "sonar-SONAR-java-S7044-match-1",
+    "ruleId": "SONAR-java-S7044",
+    "expected": "match",
+    "code": "restTemplate.getForObject(request.getParameter(\"url\"), String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-java-S7044-no_match-2",
+    "ruleId": "SONAR-java-S7044",
+    "expected": "no_match",
+    "code": "restTemplate.getForObject(\"https://api.internal/health\", String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-js-S3649-match-1",
+    "ruleId": "SONAR-js-S3649",
+    "expected": "match",
+    "code": "em.createQuery(\"select u from User u where u.id=\" + id);",
+    "note": "esteira sonar:engenharia · template db-query-injection"
+  },
+  {
+    "id": "sonar-SONAR-js-S3649-no_match-2",
+    "ruleId": "SONAR-js-S3649",
+    "expected": "no_match",
+    "code": "em.createQuery(\"select u from User u where u.id=:id\").setParameter(\"id\", id);",
+    "note": "esteira sonar:engenharia · template db-query-injection"
+  },
+  {
+    "id": "sonar-SONAR-js-S5144-match-1",
+    "ruleId": "SONAR-js-S5144",
+    "expected": "match",
+    "code": "restTemplate.getForObject(request.getParameter(\"url\"), String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-js-S5144-no_match-2",
+    "ruleId": "SONAR-js-S5144",
+    "expected": "no_match",
+    "code": "restTemplate.getForObject(\"https://api.internal/health\", String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-js-S5145-match-1",
+    "ruleId": "SONAR-js-S5145",
+    "expected": "match",
+    "code": "logger.info(\"user=\" + request.getParameter(\"u\"));",
+    "note": "esteira sonar:engenharia · template log-injection"
+  },
+  {
+    "id": "sonar-SONAR-js-S5145-no_match-2",
+    "ruleId": "SONAR-js-S5145",
+    "expected": "no_match",
+    "code": "logger.info(\"login ok for id={}\", userId);",
+    "note": "esteira sonar:engenharia · template log-injection"
+  },
+  {
+    "id": "sonar-SONAR-js-S5146-match-1",
+    "ruleId": "SONAR-js-S5146",
+    "expected": "match",
+    "code": "response.sendRedirect(request.getParameter(\"next\"));",
+    "note": "esteira sonar:engenharia · template redirect-forging"
+  },
+  {
+    "id": "sonar-SONAR-js-S5146-no_match-2",
+    "ruleId": "SONAR-js-S5146",
+    "expected": "no_match",
+    "code": "response.sendRedirect(\"/home\");",
+    "note": "esteira sonar:engenharia · template redirect-forging"
+  },
+  {
+    "id": "sonar-SONAR-js-S5496-match-1",
+    "ruleId": "SONAR-js-S5496",
+    "expected": "match",
+    "code": "Template.parse(\"Hello \" + request.getParameter(\"name\"));",
+    "note": "esteira sonar:engenharia · template template-injection"
+  },
+  {
+    "id": "sonar-SONAR-js-S5496-no_match-2",
+    "ruleId": "SONAR-js-S5496",
+    "expected": "no_match",
+    "code": "Template.parse(\"Hello {{name}}\");",
+    "note": "esteira sonar:engenharia · template template-injection"
+  },
+  {
+    "id": "sonar-SONAR-js-S6350-match-1",
+    "ruleId": "SONAR-js-S6350",
+    "expected": "match",
+    "code": "Runtime.getRuntime().exec(\"ping \" + request.getParameter(\"host\"));",
+    "note": "esteira sonar:engenharia · template cmd-args-user-input"
+  },
+  {
+    "id": "sonar-SONAR-js-S6350-no_match-2",
+    "ruleId": "SONAR-js-S6350",
+    "expected": "no_match",
+    "code": "Runtime.getRuntime().exec(new String[]{\"ping\", \"-c\", \"1\", \"127.0.0.1\"});",
+    "note": "esteira sonar:engenharia · template cmd-args-user-input"
+  },
+  {
+    "id": "sonar-SONAR-js-S6547-match-1",
+    "ruleId": "SONAR-js-S6547",
+    "expected": "match",
+    "code": "process.env[\"PATH\"] = req.query.path;",
+    "note": "esteira sonar:engenharia · template env-untrusted"
+  },
+  {
+    "id": "sonar-SONAR-js-S6547-no_match-2",
+    "ruleId": "SONAR-js-S6547",
+    "expected": "no_match",
+    "code": "process.env.NODE_ENV = \"production\";",
+    "note": "esteira sonar:engenharia · template env-untrusted"
+  },
+  {
+    "id": "sonar-SONAR-js-S7044-match-1",
+    "ruleId": "SONAR-js-S7044",
+    "expected": "match",
+    "code": "restTemplate.getForObject(request.getParameter(\"url\"), String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-js-S7044-no_match-2",
+    "ruleId": "SONAR-js-S7044",
+    "expected": "no_match",
+    "code": "restTemplate.getForObject(\"https://api.internal/health\", String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-py-S2257-match-1",
+    "ruleId": "SONAR-py-S2257",
+    "expected": "match",
+    "code": "public class WeakCipher extends CipherSpi { }",
+    "note": "esteira sonar:engenharia · template custom-crypto"
+  },
+  {
+    "id": "sonar-SONAR-py-S2257-no_match-2",
+    "ruleId": "SONAR-py-S2257",
+    "expected": "no_match",
+    "code": "Cipher c = Cipher.getInstance(\"AES/GCM/NoPadding\");",
+    "note": "esteira sonar:engenharia · template custom-crypto"
+  },
+  {
+    "id": "sonar-SONAR-py-S3649-match-1",
+    "ruleId": "SONAR-py-S3649",
+    "expected": "match",
+    "code": "em.createQuery(\"select u from User u where u.id=\" + id);",
+    "note": "esteira sonar:engenharia · template db-query-injection"
+  },
+  {
+    "id": "sonar-SONAR-py-S3649-no_match-2",
+    "ruleId": "SONAR-py-S3649",
+    "expected": "no_match",
+    "code": "em.createQuery(\"select u from User u where u.id=:id\").setParameter(\"id\", id);",
+    "note": "esteira sonar:engenharia · template db-query-injection"
+  },
+  {
+    "id": "sonar-SONAR-py-S5144-match-1",
+    "ruleId": "SONAR-py-S5144",
+    "expected": "match",
+    "code": "restTemplate.getForObject(request.getParameter(\"url\"), String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-py-S5144-no_match-2",
+    "ruleId": "SONAR-py-S5144",
+    "expected": "no_match",
+    "code": "restTemplate.getForObject(\"https://api.internal/health\", String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-py-S5145-match-1",
+    "ruleId": "SONAR-py-S5145",
+    "expected": "match",
+    "code": "logger.info(\"user=\" + request.getParameter(\"u\"));",
+    "note": "esteira sonar:engenharia · template log-injection"
+  },
+  {
+    "id": "sonar-SONAR-py-S5145-no_match-2",
+    "ruleId": "SONAR-py-S5145",
+    "expected": "no_match",
+    "code": "logger.info(\"login ok for id={}\", userId);",
+    "note": "esteira sonar:engenharia · template log-injection"
+  },
+  {
+    "id": "sonar-SONAR-py-S5146-match-1",
+    "ruleId": "SONAR-py-S5146",
+    "expected": "match",
+    "code": "response.sendRedirect(request.getParameter(\"next\"));",
+    "note": "esteira sonar:engenharia · template redirect-forging"
+  },
+  {
+    "id": "sonar-SONAR-py-S5146-no_match-2",
+    "ruleId": "SONAR-py-S5146",
+    "expected": "no_match",
+    "code": "response.sendRedirect(\"/home\");",
+    "note": "esteira sonar:engenharia · template redirect-forging"
+  },
+  {
+    "id": "sonar-SONAR-py-S5496-match-1",
+    "ruleId": "SONAR-py-S5496",
+    "expected": "match",
+    "code": "Template.parse(\"Hello \" + request.getParameter(\"name\"));",
+    "note": "esteira sonar:engenharia · template template-injection"
+  },
+  {
+    "id": "sonar-SONAR-py-S5496-no_match-2",
+    "ruleId": "SONAR-py-S5496",
+    "expected": "no_match",
+    "code": "Template.parse(\"Hello {{name}}\");",
+    "note": "esteira sonar:engenharia · template template-injection"
+  },
+  {
+    "id": "sonar-SONAR-py-S6350-match-1",
+    "ruleId": "SONAR-py-S6350",
+    "expected": "match",
+    "code": "Runtime.getRuntime().exec(\"ping \" + request.getParameter(\"host\"));",
+    "note": "esteira sonar:engenharia · template cmd-args-user-input"
+  },
+  {
+    "id": "sonar-SONAR-py-S6350-no_match-2",
+    "ruleId": "SONAR-py-S6350",
+    "expected": "no_match",
+    "code": "Runtime.getRuntime().exec(new String[]{\"ping\", \"-c\", \"1\", \"127.0.0.1\"});",
+    "note": "esteira sonar:engenharia · template cmd-args-user-input"
+  },
+  {
+    "id": "sonar-SONAR-py-S6377-match-1",
+    "ruleId": "SONAR-py-S6377",
+    "expected": "match",
+    "code": "XMLSignatureFactory fac = XMLSignatureFactory.getInstance(\"DOM\");",
+    "note": "esteira sonar:engenharia · template xml-signature-validate"
+  },
+  {
+    "id": "sonar-SONAR-py-S6377-no_match-2",
+    "ruleId": "SONAR-py-S6377",
+    "expected": "no_match",
+    "code": "DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();",
+    "note": "esteira sonar:engenharia · template xml-signature-validate"
+  },
+  {
+    "id": "sonar-SONAR-py-S6547-match-1",
+    "ruleId": "SONAR-py-S6547",
+    "expected": "match",
+    "code": "process.env[\"PATH\"] = req.query.path;",
+    "note": "esteira sonar:engenharia · template env-untrusted"
+  },
+  {
+    "id": "sonar-SONAR-py-S6547-no_match-2",
+    "ruleId": "SONAR-py-S6547",
+    "expected": "no_match",
+    "code": "process.env.NODE_ENV = \"production\";",
+    "note": "esteira sonar:engenharia · template env-untrusted"
+  },
+  {
+    "id": "sonar-SONAR-py-S7044-match-1",
+    "ruleId": "SONAR-py-S7044",
+    "expected": "match",
+    "code": "restTemplate.getForObject(request.getParameter(\"url\"), String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-py-S7044-no_match-2",
+    "ruleId": "SONAR-py-S7044",
+    "expected": "no_match",
+    "code": "restTemplate.getForObject(\"https://api.internal/health\", String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-ts-S3649-match-1",
+    "ruleId": "SONAR-ts-S3649",
+    "expected": "match",
+    "code": "em.createQuery(\"select u from User u where u.id=\" + id);",
+    "note": "esteira sonar:engenharia · template db-query-injection"
+  },
+  {
+    "id": "sonar-SONAR-ts-S3649-no_match-2",
+    "ruleId": "SONAR-ts-S3649",
+    "expected": "no_match",
+    "code": "em.createQuery(\"select u from User u where u.id=:id\").setParameter(\"id\", id);",
+    "note": "esteira sonar:engenharia · template db-query-injection"
+  },
+  {
+    "id": "sonar-SONAR-ts-S5144-match-1",
+    "ruleId": "SONAR-ts-S5144",
+    "expected": "match",
+    "code": "restTemplate.getForObject(request.getParameter(\"url\"), String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-ts-S5144-no_match-2",
+    "ruleId": "SONAR-ts-S5144",
+    "expected": "no_match",
+    "code": "restTemplate.getForObject(\"https://api.internal/health\", String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-ts-S5145-match-1",
+    "ruleId": "SONAR-ts-S5145",
+    "expected": "match",
+    "code": "logger.info(\"user=\" + request.getParameter(\"u\"));",
+    "note": "esteira sonar:engenharia · template log-injection"
+  },
+  {
+    "id": "sonar-SONAR-ts-S5145-no_match-2",
+    "ruleId": "SONAR-ts-S5145",
+    "expected": "no_match",
+    "code": "logger.info(\"login ok for id={}\", userId);",
+    "note": "esteira sonar:engenharia · template log-injection"
+  },
+  {
+    "id": "sonar-SONAR-ts-S5146-match-1",
+    "ruleId": "SONAR-ts-S5146",
+    "expected": "match",
+    "code": "response.sendRedirect(request.getParameter(\"next\"));",
+    "note": "esteira sonar:engenharia · template redirect-forging"
+  },
+  {
+    "id": "sonar-SONAR-ts-S5146-no_match-2",
+    "ruleId": "SONAR-ts-S5146",
+    "expected": "no_match",
+    "code": "response.sendRedirect(\"/home\");",
+    "note": "esteira sonar:engenharia · template redirect-forging"
+  },
+  {
+    "id": "sonar-SONAR-ts-S5496-match-1",
+    "ruleId": "SONAR-ts-S5496",
+    "expected": "match",
+    "code": "Template.parse(\"Hello \" + request.getParameter(\"name\"));",
+    "note": "esteira sonar:engenharia · template template-injection"
+  },
+  {
+    "id": "sonar-SONAR-ts-S5496-no_match-2",
+    "ruleId": "SONAR-ts-S5496",
+    "expected": "no_match",
+    "code": "Template.parse(\"Hello {{name}}\");",
+    "note": "esteira sonar:engenharia · template template-injection"
+  },
+  {
+    "id": "sonar-SONAR-ts-S6350-match-1",
+    "ruleId": "SONAR-ts-S6350",
+    "expected": "match",
+    "code": "Runtime.getRuntime().exec(\"ping \" + request.getParameter(\"host\"));",
+    "note": "esteira sonar:engenharia · template cmd-args-user-input"
+  },
+  {
+    "id": "sonar-SONAR-ts-S6350-no_match-2",
+    "ruleId": "SONAR-ts-S6350",
+    "expected": "no_match",
+    "code": "Runtime.getRuntime().exec(new String[]{\"ping\", \"-c\", \"1\", \"127.0.0.1\"});",
+    "note": "esteira sonar:engenharia · template cmd-args-user-input"
+  },
+  {
+    "id": "sonar-SONAR-ts-S6547-match-1",
+    "ruleId": "SONAR-ts-S6547",
+    "expected": "match",
+    "code": "process.env[\"PATH\"] = req.query.path;",
+    "note": "esteira sonar:engenharia · template env-untrusted"
+  },
+  {
+    "id": "sonar-SONAR-ts-S6547-no_match-2",
+    "ruleId": "SONAR-ts-S6547",
+    "expected": "no_match",
+    "code": "process.env.NODE_ENV = \"production\";",
+    "note": "esteira sonar:engenharia · template env-untrusted"
+  },
+  {
+    "id": "sonar-SONAR-ts-S7044-match-1",
+    "ruleId": "SONAR-ts-S7044",
+    "expected": "match",
+    "code": "restTemplate.getForObject(request.getParameter(\"url\"), String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-ts-S7044-no_match-2",
+    "ruleId": "SONAR-ts-S7044",
+    "expected": "no_match",
+    "code": "restTemplate.getForObject(\"https://api.internal/health\", String.class);",
+    "note": "esteira sonar:engenharia · template ssrf-forging"
+  },
+  {
+    "id": "sonar-SONAR-cs-S2077-match-1",
+    "ruleId": "SONAR-cs-S2077",
+    "expected": "match",
+    "code": "var sql = string.Format(\"SELECT * FROM t WHERE id={0}\", id);",
+    "note": "esteira sonar:engenharia · template sql-dynamic-format"
+  },
+  {
+    "id": "sonar-SONAR-cs-S2077-no_match-2",
+    "ruleId": "SONAR-cs-S2077",
+    "expected": "no_match",
+    "code": "cmd.Parameters.AddWithValue(\"@id\", id);",
+    "note": "esteira sonar:engenharia · template sql-dynamic-format"
+  },
+  {
+    "id": "sonar-SONAR-cs-S6641-match-1",
+    "ruleId": "SONAR-cs-S6641",
+    "expected": "match",
+    "code": "ConnectionString = \"Server=\" + request.getParameter(\"h\");",
+    "note": "esteira sonar:engenharia · template connection-string-inject"
+  },
+  {
+    "id": "sonar-SONAR-cs-S6641-no_match-2",
+    "ruleId": "SONAR-cs-S6641",
+    "expected": "no_match",
+    "code": "ConnectionString = configuration[\"Default\"];",
+    "note": "esteira sonar:engenharia · template connection-string-inject"
+  },
+  {
+    "id": "sonar-SONAR-java-S2077-match-1",
+    "ruleId": "SONAR-java-S2077",
+    "expected": "match",
+    "code": "var sql = string.Format(\"SELECT * FROM t WHERE id={0}\", id);",
+    "note": "esteira sonar:engenharia · template sql-dynamic-format"
+  },
+  {
+    "id": "sonar-SONAR-java-S2077-no_match-2",
+    "ruleId": "SONAR-java-S2077",
+    "expected": "no_match",
+    "code": "cmd.Parameters.AddWithValue(\"@id\", id);",
+    "note": "esteira sonar:engenharia · template sql-dynamic-format"
+  },
+  {
+    "id": "sonar-SONAR-java-S6263-match-1",
+    "ruleId": "SONAR-java-S6263",
+    "expected": "match",
+    "code": "aws_access_key_id = \"AKIAIOSFODNN7EXAMPLE\"",
+    "note": "esteira sonar:engenharia · template aws-long-term-keys"
+  },
+  {
+    "id": "sonar-SONAR-java-S6263-no_match-2",
+    "ruleId": "SONAR-java-S6263",
+    "expected": "no_match",
+    "code": "aws_access_key_id = os.environ[\"AWS_ACCESS_KEY_ID\"]",
+    "note": "esteira sonar:engenharia · template aws-long-term-keys"
+  },
+  {
+    "id": "sonar-SONAR-js-S2077-match-1",
+    "ruleId": "SONAR-js-S2077",
+    "expected": "match",
+    "code": "var sql = string.Format(\"SELECT * FROM t WHERE id={0}\", id);",
+    "note": "esteira sonar:engenharia · template sql-dynamic-format"
+  },
+  {
+    "id": "sonar-SONAR-js-S2077-no_match-2",
+    "ruleId": "SONAR-js-S2077",
+    "expected": "no_match",
+    "code": "cmd.Parameters.AddWithValue(\"@id\", id);",
+    "note": "esteira sonar:engenharia · template sql-dynamic-format"
+  },
+  {
+    "id": "sonar-SONAR-js-S6641-match-1",
+    "ruleId": "SONAR-js-S6641",
+    "expected": "match",
+    "code": "ConnectionString = \"Server=\" + request.getParameter(\"h\");",
+    "note": "esteira sonar:engenharia · template connection-string-inject"
+  },
+  {
+    "id": "sonar-SONAR-js-S6641-no_match-2",
+    "ruleId": "SONAR-js-S6641",
+    "expected": "no_match",
+    "code": "ConnectionString = configuration[\"Default\"];",
+    "note": "esteira sonar:engenharia · template connection-string-inject"
+  },
+  {
+    "id": "sonar-SONAR-py-S2077-match-1",
+    "ruleId": "SONAR-py-S2077",
+    "expected": "match",
+    "code": "var sql = string.Format(\"SELECT * FROM t WHERE id={0}\", id);",
+    "note": "esteira sonar:engenharia · template sql-dynamic-format"
+  },
+  {
+    "id": "sonar-SONAR-py-S2077-no_match-2",
+    "ruleId": "SONAR-py-S2077",
+    "expected": "no_match",
+    "code": "cmd.Parameters.AddWithValue(\"@id\", id);",
+    "note": "esteira sonar:engenharia · template sql-dynamic-format"
+  },
+  {
+    "id": "sonar-SONAR-py-S7625-match-1",
+    "ruleId": "SONAR-py-S7625",
+    "expected": "match",
+    "code": "aws_access_key_id = \"AKIAIOSFODNN7EXAMPLE\"",
+    "note": "esteira sonar:engenharia · template aws-long-term-keys"
+  },
+  {
+    "id": "sonar-SONAR-py-S7625-no_match-2",
+    "ruleId": "SONAR-py-S7625",
+    "expected": "no_match",
+    "code": "aws_access_key_id = os.environ[\"AWS_ACCESS_KEY_ID\"]",
+    "note": "esteira sonar:engenharia · template aws-long-term-keys"
+  },
+  {
+    "id": "sonar-SONAR-ts-S2077-match-1",
+    "ruleId": "SONAR-ts-S2077",
+    "expected": "match",
+    "code": "var sql = string.Format(\"SELECT * FROM t WHERE id={0}\", id);",
+    "note": "esteira sonar:engenharia · template sql-dynamic-format"
+  },
+  {
+    "id": "sonar-SONAR-ts-S2077-no_match-2",
+    "ruleId": "SONAR-ts-S2077",
+    "expected": "no_match",
+    "code": "cmd.Parameters.AddWithValue(\"@id\", id);",
+    "note": "esteira sonar:engenharia · template sql-dynamic-format"
+  },
+  {
+    "id": "sonar-SONAR-ts-S6641-match-1",
+    "ruleId": "SONAR-ts-S6641",
+    "expected": "match",
+    "code": "ConnectionString = \"Server=\" + request.getParameter(\"h\");",
+    "note": "esteira sonar:engenharia · template connection-string-inject"
+  },
+  {
+    "id": "sonar-SONAR-ts-S6641-no_match-2",
+    "ruleId": "SONAR-ts-S6641",
+    "expected": "no_match",
+    "code": "ConnectionString = configuration[\"Default\"];",
+    "note": "esteira sonar:engenharia · template connection-string-inject"
   }
 ]

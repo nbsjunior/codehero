@@ -9,12 +9,12 @@ import "./docs.css";
 export const metadata: Metadata = {
   title: "Docs",
   description:
-    "Modelos matemáticos, aprendizado contínuo de regras, quality gate, GitHub Action, VS Code e MCP.",
+    "Posicionamento, GTM/ICPs, métricas OWASP, modelos matemáticos, quality gate, GitHub Action, VS Code e MCP.",
   alternates: { canonical: "/docs/" },
   openGraph: {
     title: `Docs · ${SITE_NAME}`,
     description:
-      "Modelos matemáticos, aprendizado contínuo de regras, quality gate, GitHub Action, VS Code e MCP.",
+      "Posicionamento, GTM/ICPs, métricas OWASP, modelos matemáticos, quality gate, GitHub Action, VS Code e MCP.",
     url: `${SITE_URL}/docs/`,
     type: "article",
   },
@@ -22,6 +22,9 @@ export const metadata: Metadata = {
 
 const TOC = [
   { href: "#missao", label: "Missão e valor" },
+  { href: "#posicionamento", label: "Posicionamento e métricas" },
+  { href: "#gtm-icp", label: "Para quem falar (GTM)" },
+  { href: "#quando-usar", label: "Quando usar o quê" },
   { href: "#modelos-matematicos", label: "Modelos matemáticos" },
   { href: "#aprendizado-continuo", label: "Aprendizado contínuo" },
   { href: "#cenario-ruleforge", label: "Cenário exercitado" },
@@ -29,7 +32,7 @@ const TOC = [
   { href: "#modelos", label: "GenAI + motor de prova" },
   { href: "#matematica", label: "Fórmulas (débito, F1, gate)" },
   { href: "#indices", label: "Manutenibilidade e segurança" },
-  { href: "#papeis", label: "Dois tipos de perfil" },
+  { href: "#papeis", label: "Quem usa o CodeHero" },
   { href: "#canais", label: "Onde o CodeHero age" },
   { href: "#comecar", label: "Começar do zero" },
   { href: "#github-action", label: "GitHub Action (pipeline)" },
@@ -173,16 +176,16 @@ export default function DocsPage() {
         <article className="cr-docs-article">
           <h1>Documentação do CodeHero</h1>
           <p className="cr-docs-lede">
-            Modelos matemáticos, aprendizado contínuo de regras e o fluxo que promove qualidade e segurança — na
-            pipeline, no editor e nas IDEs de IA — sem o time configurar infraestrutura.
+            Detecção peer-competitive, loop fechado depois do finding e o fluxo que promove qualidade e segurança —
+            na pipeline, no editor e nas IDEs de IA — sem IA no quality gate e sem o time configurar infraestrutura.
           </p>
 
           <section id="missao">
             <h2>Missão e valor</h2>
             <p>
-              O CodeHero existe para <strong>elevar a qualidade e a segurança</strong> do software que o time entrega.
-              O scanner é <strong>determinístico</strong> (reproduzível, auditável, sem “alucinação” no caminho crítico).
-              A IA entra onde agrega: dress code em português, contratos de correção (SDD) e agentes via MCP.
+              O CodeHero existe para <strong>elevar a qualidade e a segurança</strong> do software que o time entrega —
+              com motor <strong>determinístico</strong> (reproduzível, auditável) e um ciclo que não para no alerta:
+              regras evoluem offline, a correção nasce com contrato (SDD) e o agente (MCP) prova o fix no rescaneio.
             </p>
             <div className="cr-docs-callout">
               <strong>Princípio</strong>
@@ -203,6 +206,215 @@ export default function DocsPage() {
                 <strong>Agentes de IA</strong> — MCP no Cursor, Claude e GitHub Copilot para corrigir com prova.
               </li>
             </ul>
+          </section>
+
+          <section id="posicionamento">
+            <h2>Posicionamento e métricas</h2>
+            <p>
+              Categoria: plataforma de qualidade <em>AI-native</em> com <strong>loop de prova determinístico</strong> —
+              não “mais um SAST”, não clone de suite enterprise por amplitude de catálogo.
+            </p>
+            <div className="cr-docs-callout">
+              <strong>Headline</strong>
+              <p style={{ margin: "0.5rem 0 0" }}>
+                CodeHero: detecção peer-competitive, loop fechado depois do finding — sem IA no quality gate.
+              </p>
+            </div>
+            <div className="cr-docs-callout">
+              <strong>Uma frase</strong>
+              <p style={{ margin: "0.5rem 0 0" }}>
+                Peer-competitive em detecção de vulnerabilidades (OWASP); líder no ciclo pós-finding (evolução + SDD +
+                MCP); complementar — não substituto — em amplitude de smells enterprise.
+              </p>
+            </div>
+
+            <h3>Três provas</h3>
+            <ol>
+              <li>
+                <strong>OWASP BenchmarkJava</strong> — F1 <strong>75,1%</strong> · precisão <strong>75,6%</strong> ·
+                score <strong>48,9</strong> (<code>benchmarks/owasp-baseline.json</code>).
+              </li>
+              <li>
+                <strong>Sonar way VULN live</strong> — ~<strong>69%</strong> (330/479) na curadoria, com esteira F1;
+                smells via Presence/SARIF.
+              </li>
+              <li>
+                <strong>Correção com prova</strong> — SDD → agente MCP → scanner confirma que a finding sumiu.
+              </li>
+            </ol>
+
+            <div className="cr-docs-module-grid">
+              <div className="cr-docs-module-card">
+                <strong>OWASP BenchmarkJava</strong>
+                <span>
+                  F1 <strong>75,1%</strong> · precisão <strong>75,6%</strong> · recall <strong>74,6%</strong> · score{" "}
+                  <strong>48,9</strong> (TPR − FPR). Baseline em{" "}
+                  <code>benchmarks/owasp-baseline.json</code> (2026-08-09).
+                </span>
+              </div>
+              <div className="cr-docs-module-card">
+                <strong>Vs peers públicos</strong>
+                <span>
+                  Estudos recentes colocam CodeQL/Semgrep com F1 OWASP ~69–74% e FPR muito alto. O CodeHero tende a
+                  score OWASP mais calibrado (menos ruído no gate), sem reivindicar o maior recall do mercado.
+                </span>
+              </div>
+              <div className="cr-docs-module-card">
+                <strong>Sonar way / smells</strong>
+                <span>
+                  ~<strong>19%</strong> semântica (core) · VULN live ~<strong>69%</strong> · smells live ~<strong>7%</strong>.
+                  Não revendemos substituição 1:1 do catálogo enterprise.
+                </span>
+              </div>
+              <div className="cr-docs-module-card">
+                <strong>Latência</strong>
+                <span>
+                  L0 em microssegundos/arquivo; L1 (árvore ~25&nbsp;KB) ~13&nbsp;ms/arquivo; sem LLM no hot path do PR.
+                </span>
+              </div>
+            </div>
+
+            <div className="cr-docs-compare">
+              <div>
+                <strong>Liderar o pitch com</strong>
+                <ul>
+                  <li>Loop fechado: finding → SDD → agente → prova</li>
+                  <li>Precisão / score OWASP calibrado</li>
+                  <li>MCP nativo + regras no contexto de geração</li>
+                  <li>COBOL/DB2 sem add-on enterprise</li>
+                  <li>Orquestração CodeQL/Semgrep/Trivy</li>
+                  <li>Esteira de promoção com F1 auditável</li>
+                </ul>
+              </div>
+              <div>
+                <strong>Anti-claims — não dizer</strong>
+                <ul>
+                  <li>“Temos mais regras que o Sonar”</li>
+                  <li>Substituição 1:1 de suite enterprise em smells</li>
+                  <li>“LLM analisa cada arquivo”</li>
+                  <li>Taint interprocedural maduro em todas as langs</li>
+                  <li>Catálogo nativo como única cobertura</li>
+                  <li>“Melhor SAST do mercado” só pelo F1</li>
+                  <li>Contar stub de catálogo como cobertura live</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section id="gtm-icp">
+            <h2>Para quem falar (GTM · Sim)</h2>
+            <p>
+              Early access e conversas comerciais focam nestes ICPs — não em “troca o Sonar por amplitude de smells”.
+            </p>
+            <div className="cr-docs-table-wrap">
+              <table className="cr-docs-table">
+                <thead>
+                  <tr>
+                    <th>ICP</th>
+                    <th>Abertura</th>
+                    <th>Fecho</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <strong>AppSec (odeia FP)</strong>
+                    </td>
+                    <td>Mesmo patamar de F1, score OWASP mais calibrado.</td>
+                    <td>Gate estável; FP vira estatística da regra.</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>Times com agentes</strong>
+                      <br />
+                      <span style={{ color: "var(--cr-muted)", fontSize: "0.85em" }}>
+                        Cursor / Copilot / Claude
+                      </span>
+                    </td>
+                    <td>SAST que fala MCP e prova o fix.</td>
+                    <td>Regras no contexto de geração; rescaneio fecha o ciclo.</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>Legado / banco</strong>
+                    </td>
+                    <td>COBOL + DB2 na junta, sem SKU Enterprise.</td>
+                    <td>Host var × coluna, cursor, COMMIT no laço.</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>Já tem Sonar/CodeQL</strong>
+                    </td>
+                    <td>Não troque o detector — unifique o gate e a correção.</td>
+                    <td>Presence Pack no mesmo juiz.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="cr-docs-callout">
+              <strong>Para quem não liderar com troca total</strong>
+              <p style={{ margin: "0.5rem 0 0" }}>
+                Quem só quer amplitude de code smells enterprise e não usa agentes/SDD — Sonar (ou Presence) continua no
+                papel de catálogo; o CodeHero não vende “mais regras de smell”.
+              </p>
+            </div>
+          </section>
+
+          <section id="quando-usar">
+            <h2>Quando usar o quê</h2>
+            <div className="cr-docs-table-wrap">
+              <table className="cr-docs-table">
+                <thead>
+                  <tr>
+                    <th>Cenário</th>
+                    <th>Escolha</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Gate + legado + agentes + evolução de regras</td>
+                    <td>
+                      <strong>CodeHero sozinho</strong> (perfil <code>native</code> / Action)
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Amplitude de smells/SAST <em>e</em> loop de fix</td>
+                    <td>
+                      <strong>CodeHero + Sonar/Semgrep/CodeQL</strong> (Presence Pack)
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Só catálogo de smells, sem agentes/SDD</td>
+                    <td>
+                      <strong>Sonar</strong> (ou import SARIF) — CodeHero não é o substituto
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>CI rápido no PR + profundidade à noite</td>
+                    <td>Semgrep/Opengrep no Presence + CodeQL importado no mesmo gate</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              Wiki completa:{" "}
+              <a
+                href="https://github.com/nbsjunior/codehero/blob/main/docs/wiki/Posicionamento-e-metricas.md"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Posicionamento-e-metricas.md
+              </a>
+              . Esteira Sonar way (VULN → golden → F1 → live):{" "}
+              <a
+                href="https://github.com/nbsjunior/codehero/blob/main/docs/wiki/Esteira-Sonar-Way.md"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Esteira-Sonar-Way.md
+              </a>{" "}
+              · <code>npm run sonar:engenharia -- all</code>.
+            </p>
           </section>
 
           <section id="modelos-matematicos">
@@ -653,51 +865,41 @@ export default function DocsPage() {
           </section>
 
           <section id="papeis">
-            <h2>Dois tipos de perfil</h2>
+            <h2>Quem usa o CodeHero</h2>
             <p>
-              A plataforma separa quem opera a <em>plataforma inteira</em> de quem opera <em>projetos e
-              repositórios</em>. Isso evita que engenheiros precisem conhecer a Cloud, secrets de ops ou painéis de
-              infra.
+              A documentação e o portal são para o <strong>time do projeto</strong>: quem provisiona a org, liga o
+              repositório e escolhe os canais (Action, plugin, MCP). Não é necessário conhecer infraestrutura do
+              CodeHero — só a conta no portal e o repositório GitHub.
             </p>
 
             <div className="cr-docs-role-grid">
-              <div className="cr-docs-role-card">
-                <span className="cr-docs-role-badge">Admin geral da plataforma</span>
-                <h3 style={{ marginTop: "0.75rem" }}>Enxerga todos os projetos</h3>
-                <p>
-                  Papel interno do CodeHero. Vê o painel global (<code>/admin</code>), acompanha orgs/projetos de
-                  todos os clientes e pode definir dress code <strong>global</strong> (regras que valem para a
-                  plataforma).
-                </p>
-                <p style={{ marginBottom: 0 }}>
-                  Conta de referência atual: <code>nelsonborgesjr@hotmail.com</code> — concedida fora da aplicação
-                  (nunca autoatribuída no signup).
-                </p>
-              </div>
               <div className="cr-docs-role-card is-accent">
-                <span className="cr-docs-role-badge">Admin de projeto (cliente)</span>
+                <span className="cr-docs-role-badge">Admin de projeto</span>
                 <h3 style={{ marginTop: "0.75rem" }}>Engenheiros, tech leads, donos do repo</h3>
                 <p>
-                  São os usuários típicos: querem qualidade no código das aplicações (repos públicos ou privados).
-                  Provisionam o projeto no portal, ligam o GitHub Action, instalam o plugin e/ou o MCP.
+                  Provisionam organização e projeto, conectam o GitHub, instalam o plugin e/ou o MCP, definem dress
+                  code do time e acompanham quality gate e issues.
                 </p>
                 <p style={{ marginBottom: 0 }}>
-                  <strong>Não</strong> configuram a Cloud, a API interna nem secrets da plataforma — só o portal e
-                  o repositório deles.
+                  Tudo isso acontece no portal e no repositório — sem configurar infraestrutura do fornecedor.
+                </p>
+              </div>
+              <div className="cr-docs-role-card">
+                <span className="cr-docs-role-badge">Membros do time</span>
+                <h3 style={{ marginTop: "0.75rem" }}>Quem abre PR e corrige findings</h3>
+                <p>
+                  Usam a Action no CI, o plugin no editor e, se quiserem, o MCP no agente para aplicar o SDD e provar o
+                  fix.
+                </p>
+                <p style={{ marginBottom: 0 }}>
+                  Recebem o token/config do admin do projeto (aba Configurar) — não gerenciam a conta da organização
+                  sozinhos, salvo permissão no portal.
                 </p>
               </div>
             </div>
 
-            <h3>O que cada um faz no dia a dia</h3>
+            <h3>O que você faz no dia a dia</h3>
             <div className="cr-docs-compare">
-              <div>
-                <strong>Admin geral</strong>
-                <ul>
-                  <li>Monitorar saúde de todos os projetos</li>
-                  <li>Dress code global da plataforma</li>
-                  <li>Operação / OAuth App / secrets (ops)</li>
-                </ul>
-              </div>
               <div>
                 <strong>Admin de projeto</strong>
                 <ul>
@@ -705,6 +907,15 @@ export default function DocsPage() {
                   <li>One-click da GitHub Action no repo</li>
                   <li>Plugin VS Code + prévia de repo + MCP</li>
                   <li>Dress code do próprio projeto</li>
+                </ul>
+              </div>
+              <div>
+                <strong>Engenharia no repo</strong>
+                <ul>
+                  <li>Push/PR com quality gate</li>
+                  <li>Scan no editor antes do PR</li>
+                  <li>Corrigir issues (manual ou via MCP)</li>
+                  <li>Marcar falso positivo quando fizer sentido</li>
                 </ul>
               </div>
             </div>
@@ -779,28 +990,28 @@ export default function DocsPage() {
           <section id="github-action">
             <h2>GitHub Action — quality gate na pipeline</h2>
             <p>
-              É o jeito mais simples de garantir que <strong>todo PR</strong> passa pelas regras do CodeHero. O admin
-              de projeto configura no próprio GitHub, sem tocar na Cloud da plataforma.
+              É o jeito mais simples de garantir que <strong>todo PR</strong> passa pelas regras do CodeHero. Você
+              configura tudo a partir do portal e do próprio repositório GitHub.
             </p>
 
             <h3>Passo a passo (1 clique)</h3>
             <ol className="cr-docs-steps">
               <li>
-                <strong>Projeto com repoUrl</strong>
+                <strong>Projeto com URL do repositório</strong>
                 <p>Na criação (ou edição) informe a URL <code>https://github.com/org/repo</code>.</p>
               </li>
               <li>
                 <strong>Aba GitHub Action → Configurar Action no GitHub (1 clique)</strong>
                 <p>
-                  Autorize o app do CodeHero. O portal cria/atualiza{" "}
-                  <code>.github/workflows/codehero.yml</code>, o secret <code>HERO_TOKEN</code> e a variable{" "}
-                  <code>HERO_CORE_URL</code> (= <code>https://codehero.web.app/api</code>).
+                  Autorize o acesso pedido pelo portal. O CodeHero cria/atualiza{" "}
+                  <code>.github/workflows/codehero.yml</code> e os segredos/variáveis necessários no repositório
+                  (<code>HERO_TOKEN</code> e <code>HERO_CORE_URL</code>).
                 </p>
               </li>
               <li>
                 <strong>Abra um PR ou faça push</strong>
                 <p>
-                  A Action roda o scanner com as regras ativas (canônicas + dress code), envia o relatório à API e avalia o
+                  A Action roda o scanner com as regras ativas (canônicas + dress code), envia o relatório e avalia o
                   quality gate. Severidades críticas podem falhar o job e bloquear o merge.
                 </p>
               </li>
@@ -809,8 +1020,7 @@ export default function DocsPage() {
             <h3>Alternativas (se preferir manual)</h3>
             <ul>
               <li>
-                <strong>Script <code>gh</code></strong> — copie na mesma aba (<code>gh secret set</code> /{" "}
-                <code>gh variable set</code>).
+                <strong>Script <code>gh</code></strong> — copie na mesma aba do portal.
               </li>
               <li>
                 <strong>Deep link “new file”</strong> — abre o GitHub com o YAML pronto para commit.
@@ -819,13 +1029,6 @@ export default function DocsPage() {
                 <strong>Colar o YAML</strong> — em <code>.github/workflows/codehero.yml</code>.
               </li>
             </ul>
-            <div className="cr-docs-callout">
-              <strong>Callback OAuth (só ops da plataforma)</strong>
-              <p style={{ margin: 0 }}>
-                O GitHub redireciona para <code>https://codehero.web.app/projeto/githubOauthCallback</code>. Clientes
-                não precisam saber disso — é configuração do admin geral.
-              </p>
-            </div>
           </section>
 
           <section id="vscode">
@@ -1150,8 +1353,9 @@ export default function DocsPage() {
             <h2>Presença SARIF (orquestração)</h2>
             <p>
               CodeHero não substitui CodeQL/Semgrep: <strong>orquestra</strong> esses motores via SARIF e aplica a
-              mesma política, gate e proveniência no portal. No hot path do PR: scan nativo + imports; modelos só
-              offline (triagem / ruleforge).
+              mesma política, gate e proveniência no portal. O nativo cobre o eixo de segurança com métricas
+              peer-competitive (<a href="#posicionamento">posicionamento</a>); a amplitude de smells/SAST enterprise
+              entra por import. No hot path do PR: scan nativo + imports; modelos só offline (triagem / ruleforge).
             </p>
             <ul>
               <li>
@@ -1196,10 +1400,11 @@ export default function DocsPage() {
             </p>
             <ul>
               <li>
-                <strong>Admin de projeto</strong> — dress code no escopo do projeto.
+                <strong>No projeto</strong> — políticas do seu time (escopo do projeto no portal).
               </li>
               <li>
-                <strong>Admin geral</strong> — dress code global (vale para a plataforma).
+                Políticas da organização, quando existirem, aparecem junto das regras ativas no scan — sem configuração
+                extra no repositório.
               </li>
             </ul>
             <p>
@@ -1251,11 +1456,12 @@ export default function DocsPage() {
               </div>
               <div className="cr-docs-module-card">
                 <strong>Integrações</strong>
-                <span>VS Code, GitHub Action, MCP — API pública em <code>codehero.web.app/api</code>.</span>
+                <span>VS Code, GitHub Action e MCP — o portal e a aba Configurar entregam o que cada canal precisa.</span>
               </div>
             </div>
             <p>
-              Multi-tenant por organização e projeto. Admin de plataforma é papel separado, gerenciado fora do signup.
+              Cada organização e projeto tem o próprio espaço no portal: regras, tokens de ingestão e quality gate
+              ficam isolados por projeto.
             </p>
           </section>
 
@@ -1294,17 +1500,8 @@ export default function DocsPage() {
                 </a>
               </li>
               <li>
-                <a
-                  href="https://github.com/nbsjunior/codehero/blob/main/docs/GITHUB_ACTION_ONE_CLICK.md"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  One-click GitHub Action (ops)
-                </a>
-              </li>
-              <li>
                 <a href="https://github.com/nbsjunior/codehero/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noreferrer">
-                  Arquitetura completa
+                  Arquitetura (visão pública)
                 </a>
               </li>
             </ul>
