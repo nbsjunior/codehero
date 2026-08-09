@@ -168,7 +168,26 @@ export async function collectStructural(
       // de um programa, os campos dele entram nessa contagem pelo caminho
       // normal.
       const ehCopybook = /\.cpy$/i.test(m.file);
-      for (const d of ehCopybook ? [] : camposMortos(parsed.root as never)) {
+
+      // SEGUNDA CONDICAO: o programa nao pode ter COPY por expandir.
+      //
+      // `COPY CVACT01Y` traz declaracao e, as vezes, comando. Sem expandir, a
+      // analise nao ve metade do programa, e dizer que um campo nunca e
+      // referenciado passa a ser afirmacao sobre o que ela NAO leu.
+      //
+      // Medido no CardDemo: 78% dos programas tem COPY por expandir, e o dado
+      // morto era 92% de todo o output em COBOL. Um smell MINOR afogando as
+      // analises de costura, que sao o diferencial. A ferramenta que promete
+      // menos ruido no PR entregando ruido.
+      //
+      // Quando o indice de copybooks resolve o COPY, a expansao acontece antes
+      // daqui e o texto ja chega sem a diretiva: o programa volta a ser
+      // analisado pelo caminho normal. Ou seja, a analise nao foi desligada,
+      // ela passou a exigir a condicao que a torna valida.
+      const temCopyPorExpandir = /^[\s\d]*COPY\s+[\w$#-]+/im.test(f.source);
+      const podeAfirmarDadoMorto = !ehCopybook && !temCopyPorExpandir;
+
+      for (const d of podeAfirmarDadoMorto ? camposMortos(parsed.root as never) : []) {
         cobolFindings.push({
           analysis: COBOL_ANALYSES["HERO-CBL-1164-dado-morto"]!,
           file: m.file,
