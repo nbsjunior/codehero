@@ -200,14 +200,9 @@ function AdminPanelInner() {
   }, [projects]);
 
   const groups = useMemo(() => {
-    const shared = SHARED_GROUPS.map((g) => {
-      if (isPlatformAdmin) return g;
-      // Gestor (workspace): vê gráficos/visão executiva dos seus projetos;
-      // só fica de fora o "Novo workspace" (criação global).
-      if (g.id === "projetos") return { ...g, items: g.items.filter((i) => i.id !== "novo-workspace") };
-      return g;
-    });
-    return isPlatformAdmin ? [...shared, ...ADMIN_ONLY_GROUPS] : shared;
+    // Gestor: mesmos itens de projetos (incl. Novo workspace na própria org);
+    // menus de governança de plataforma ficam só para platform admin.
+    return isPlatformAdmin ? [...SHARED_GROUPS, ...ADMIN_ONLY_GROUPS] : SHARED_GROUPS;
   }, [isPlatformAdmin]);
 
   const navigateWorkspace = useCallback(
@@ -665,17 +660,14 @@ function AdminPanelInner() {
               title="Todos os projetos"
               description="Consolidação por projeto — abra o workspace para configurar Action, scan e plugin"
               actions={
-                isPlatformAdmin ? (
-                  <button type="button" className="hero-btn hero-btn-accent" onClick={() => selectTab("novo-workspace")}>
-                    Novo workspace
-                  </button>
-                ) : undefined
+                <button type="button" className="hero-btn hero-btn-accent" onClick={() => selectTab("novo-workspace")}>
+                  Novo workspace
+                </button>
               }
             />
             {projects.length === 0 ? (
               <Callout tone="neutral" title="Nenhum projeto">
-                Use <strong>Instalação → Novo projeto</strong>
-                {isPlatformAdmin ? " ou Novo workspace" : ""} para começar.
+                Use <strong>Instalação → Novo projeto</strong> ou <strong>Novo workspace</strong> para começar.
               </Callout>
             ) : (
               <div className="hero-panel" style={{ overflowX: "auto" }}>
@@ -835,7 +827,7 @@ function AdminPanelInner() {
           />
         )}
 
-        {tab === "novo-workspace" && isPlatformAdmin && (
+        {tab === "novo-workspace" && (
           <WorkspaceWizard projects={projects} onOpenWorkspace={navigateWorkspace} />
         )}
 

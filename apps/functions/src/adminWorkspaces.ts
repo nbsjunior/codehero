@@ -7,10 +7,18 @@ import { deriveRepoName } from "./lib/repoName.ts";
 import { recomputeProjectAggregate } from "./lib/projectAggregate.ts";
 import { getOrgQuotas } from "./lib/quotas.ts";
 import { generateIngestToken, storeIngestToken } from "./lib/ingestToken.ts";
+import { requireVerifiedEmail, requireOrgRole, consumeRateLimit } from "./lib/authz.ts";
+import { parseGithubUrl } from "./lib/repoScan.ts";
+import { portalCallableOpts } from "./lib/httpSecurity.ts";
 
 async function requirePlatformAdmin(uid: string): Promise<void> {
   const snap = await db.doc(`platformAdmins/${uid}`).get();
   if (!snap.exists) throw new HttpsError("permission-denied", "platform admin required");
+}
+
+async function isPlatformAdmin(uid: string): Promise<boolean> {
+  const snap = await db.doc(`platformAdmins/${uid}`).get();
+  return snap.exists;
 }
 
 function normalizeRepoUrls(raw: unknown): string[] {
@@ -34,24 +42,36 @@ interface AdminCreateProjectInput {
 }
 
 /**
- * Platform-admin wizard: create (or reuse) an org, create a project, attach
- * zero or more repos in one shot, return ingest tokens once.
+ * Workspace wizard: create (or reuse) an org, create a project, attach zero or
+ * more repos in one shot, return ingest tokens once.
+ *
+ * Authz:
+ * - new org → any verified user (caller becomes owner)
+ * - existing org → platform admin, or org owner/admin
  */
-export const adminCreateProject = onCall<AdminCreateProjectInput>(async (request) => {
+export const adminCreateProject = onCall<AdminCreateProjectInput>(portalCallableOpts, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
-  await requirePlatformAdmin(uid);
+  await requireVerifiedEmail(uid);
 
   const data = request.data ?? ({} as AdminCreateProjectInput);
   const projectName = String(data.projectName ?? "").trim();
   if (!projectName) throw new HttpsError("invalid-argument", "projectName is required");
 
   const repoUrls = normalizeRepoUrls(data.repoUrls);
+  for (const u of repoUrls) {
+    if (!parseGithubUrl(u)) {
+      throw new HttpsError("invalid-argument", "repoUrls must be github.com HTTPS URLs");
+    }
+  }
+
   let orgId = String(data.orgId ?? "").trim();
   const orgName = String(data.orgName ?? "").trim();
+  const platformAdmin = await isPlatformAdmin(uid);
 
   if (!orgId) {
     if (!orgName) throw new HttpsError("invalid-argument", "orgName is required when creating a new org");
+    if (!platformAdmin) await consumeRateLimit(`provision:${uid}`, 10);
     const orgRef = db.collection("orgs").doc();
     orgId = orgRef.id;
     await orgRef.set({
@@ -67,6 +87,10 @@ export const adminCreateProject = onCall<AdminCreateProjectInput>(async (request
   } else {
     const orgSnap = await db.doc(`orgs/${orgId}`).get();
     if (!orgSnap.exists) throw new HttpsError("not-found", "org not found");
+    if (!platformAdmin) {
+      await requireOrgRole(orgId, uid, ["owner", "admin"]);
+      await consumeRateLimit(`createProject:${uid}:${orgId}`, 20);
+    }
   }
 
   const orgProjects = await db.collection(`orgs/${orgId}/projects`).get();
