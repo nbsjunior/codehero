@@ -68,6 +68,10 @@ type Props = {
   issuesLoading: boolean;
   issuesError: string | null;
   onOpenWorkspace: (orgId: string, projectId: string, repoId?: string) => void;
+  /** platform = admin global; workspace = gestor (só orgs/projetos do membro). */
+  scope?: "platform" | "workspace";
+  /** Recarrega issues/resumo no escopo workspace (opcional). */
+  onRefreshWorkspace?: () => Promise<void>;
 };
 
 export default function RelatorioPanel({
@@ -79,30 +83,35 @@ export default function RelatorioPanel({
   issuesLoading,
   issuesError,
   onOpenWorkspace,
+  scope = "platform",
+  onRefreshWorkspace,
 }: Props) {
   const [retryBusy, setRetryBusy] = useState(false);
+  const isWorkspace = scope === "workspace";
+
+  const summaryLabel = isWorkspace ? "seus projetos" : "plataforma";
 
   const maintainability = useMemo(() => {
     const fromSummary = platformSummary?.byMaintainabilityRating;
     if (bucketTotal(fromSummary) > 0) {
-      return { buckets: fromSummary!, source: "plataforma" as const };
+      return { buckets: fromSummary!, source: summaryLabel };
     }
     return {
       buckets: bucketsFromProjects(projects, "maintainabilityRating"),
       source: "projetos carregados" as const,
     };
-  }, [platformSummary, projects]);
+  }, [platformSummary, projects, summaryLabel]);
 
   const security = useMemo(() => {
     const fromSummary = platformSummary?.bySecurityRating;
     if (bucketTotal(fromSummary) > 0) {
-      return { buckets: fromSummary!, source: "plataforma" as const };
+      return { buckets: fromSummary!, source: summaryLabel };
     }
     return {
       buckets: bucketsFromProjects(projects, "securityRating"),
       source: "projetos carregados" as const,
     };
-  }, [platformSummary, projects]);
+  }, [platformSummary, projects, summaryLabel]);
 
   const worstSecurity =
     platformSummary?.worstSecurityRating ??
@@ -121,6 +130,10 @@ export default function RelatorioPanel({
   async function retrySummary() {
     setRetryBusy(true);
     try {
+      if (isWorkspace) {
+        if (onRefreshWorkspace) await onRefreshWorkspace();
+        return;
+      }
       const summary = await adminGetPlatformSummary();
       onSummaryLoaded(summary, null);
     } catch (err) {
@@ -131,14 +144,19 @@ export default function RelatorioPanel({
   }
 
   const usingFallback =
-    maintainability.source === "projetos carregados" || security.source === "projetos carregados";
+    !isWorkspace &&
+    (maintainability.source === "projetos carregados" || security.source === "projetos carregados");
 
   return (
     <>
       <PageHeader
         eyebrow="Visão"
-        title="Relatório"
-        description="Ratings, débito e onde a plataforma precisa de atenção"
+        title={isWorkspace ? "Relatório executivo" : "Relatório"}
+        description={
+          isWorkspace
+            ? "Ratings, débito e achados dos seus projetos, workspaces e repositórios"
+            : "Ratings, débito e onde a plataforma precisa de atenção"
+        }
         actions={
           <button type="button" className="hero-btn hero-btn-outline" disabled={retryBusy} onClick={() => void retrySummary()}>
             {retryBusy ? "Atualizando…" : "Atualizar resumo"}
@@ -155,9 +173,15 @@ export default function RelatorioPanel({
         <KpiCard label="Projetos na amostra" value={projects.length} />
       </KpiGroup>
 
-      {summaryError && (
+      {summaryError && !isWorkspace && (
         <Callout tone="warn" title="Resumo agregado indisponível">
           {summaryError} Os gráficos usam os projetos já carregados nesta sessão.
+        </Callout>
+      )}
+      {isWorkspace && projects.length > 0 && (
+        <Callout tone="neutral" title="Escopo do workspace">
+          Visão limitada às {projects.length} organização(ões)/projeto(s) em que você é membro — não inclui o
+          restante da plataforma.
         </Callout>
       )}
       {!summaryError && usingFallback && projects.length > 0 && (

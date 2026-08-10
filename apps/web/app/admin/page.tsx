@@ -36,6 +36,7 @@ import {
   type PlatformSummary,
   type RepoRow,
 } from "@/lib/api";
+import { loadWorkspaceIssues, summaryFromProjects } from "@/lib/workspaceInsights";
 
 const ProjectWorkspace = dynamic(() => import("@/components/admin/ProjectWorkspace"), { ssr: false });
 const WorkspaceWizard = dynamic(() => import("@/components/admin/WorkspaceWizard"), { ssr: false });
@@ -201,7 +202,8 @@ function AdminPanelInner() {
   const groups = useMemo(() => {
     const shared = SHARED_GROUPS.map((g) => {
       if (isPlatformAdmin) return g;
-      if (g.id === "visao") return { ...g, items: g.items.filter((i) => i.id !== "apontamentos" && i.id !== "relatorio") };
+      // Gestor (workspace): vê gráficos/visão executiva dos seus projetos;
+      // só fica de fora o "Novo workspace" (criação global).
       if (g.id === "projetos") return { ...g, items: g.items.filter((i) => i.id !== "novo-workspace") };
       return g;
     });
@@ -374,6 +376,46 @@ function AdminPanelInner() {
     }
   }
 
+  const refreshWorkspaceInsights = useCallback(async () => {
+    setIssuesLoading(true);
+    setIssuesError(null);
+    try {
+      setPlatformSummary(summaryFromProjects(projects));
+      setSummaryError(null);
+      const res = await loadWorkspaceIssues(projects);
+      setIssues(res);
+    } catch (err) {
+      setIssuesError(err instanceof Error ? err.message : "Falha nos apontamentos do workspace.");
+    } finally {
+      setIssuesLoading(false);
+    }
+  }, [projects]);
+
+  // Gestor: gráficos e relatório a partir dos projetos/repos da conta.
+  useEffect(() => {
+    if (status !== "ready" || isPlatformAdmin) return;
+    let cancelled = false;
+    setIssuesLoading(true);
+    setPlatformSummary(summaryFromProjects(projects));
+    setSummaryError(null);
+    loadWorkspaceIssues(projects)
+      .then((res) => {
+        if (!cancelled) setIssues(res);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setIssuesError(err instanceof Error ? err.message : "Falha nos apontamentos do workspace.");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setIssuesLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [status, isPlatformAdmin, projects]);
+
+  // Platform admin: callables globais (issues + ops + flags).
   useEffect(() => {
     if (status !== "ready" || !isPlatformAdmin) return;
     let cancelled = false;
@@ -545,6 +587,14 @@ function AdminPanelInner() {
               <button type="button" className="hero-link" style={{ background: "none", border: 0, cursor: "pointer", font: "inherit" }} onClick={() => selectTab("todos-projetos")}>
                 Projetos
               </button>
+              {" · "}
+              <button type="button" className="hero-link" style={{ background: "none", border: 0, cursor: "pointer", font: "inherit" }} onClick={() => selectTab("relatorio")}>
+                Relatório executivo
+              </button>
+              {" · "}
+              <button type="button" className="hero-link" style={{ background: "none", border: 0, cursor: "pointer", font: "inherit" }} onClick={() => selectTab("apontamentos")}>
+                Apontamentos
+              </button>
               {isPlatformAdmin && (
                 <>
                   {" · "}
@@ -557,12 +607,16 @@ function AdminPanelInner() {
           </>
         )}
 
-        {tab === "apontamentos" && isPlatformAdmin && (
+        {tab === "apontamentos" && (
           <>
             <PageHeader
               eyebrow="Visão"
               title="Apontamentos"
-              description="Achados abertos em toda a plataforma — clique para abrir a ficha"
+              description={
+                isPlatformAdmin
+                  ? "Achados abertos em toda a plataforma — clique para abrir a ficha"
+                  : "Achados abertos nos seus projetos e repositórios — abra o workspace para a ficha"
+              }
             />
             {issuesError && <div className="hero-error">{issuesError}</div>}
             <FindingsBrowser
@@ -586,7 +640,7 @@ function AdminPanelInner() {
           </>
         )}
 
-        {tab === "relatorio" && isPlatformAdmin && (
+        {tab === "relatorio" && (
           <RelatorioPanel
             projects={projects}
             platformSummary={platformSummary}
@@ -599,6 +653,8 @@ function AdminPanelInner() {
             issuesLoading={issuesLoading}
             issuesError={issuesError}
             onOpenWorkspace={navigateWorkspace}
+            scope={isPlatformAdmin ? "platform" : "workspace"}
+            onRefreshWorkspace={isPlatformAdmin ? undefined : refreshWorkspaceInsights}
           />
         )}
 
