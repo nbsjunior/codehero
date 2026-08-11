@@ -1,0 +1,108 @@
+name: Portal smoke (contínuo)
+
+# Smoke de callables Firebase contra produção com contas QA.
+# Roda após deploy, diariamente, e sob demanda (workflow_dispatch).
+#
+# Secrets necessários (vários já usados no firebase-deploy):
+#   NEXT_PUBLIC_FIREBASE_API_KEY
+#   NEXT_PUBLIC_FIREBASE_PROJECT_ID   (ou FIREBASE_PROJECT_ID)
+#   CODEHERO_QA_PASSWORD             (senha das contas seed-test-admins)
+#   GCP_SA_KEY                       (ADC para descobrir org QA via qaMarker)
+# Opcional: SMOKE_ORG_ID / SMOKE_PROJECT_ID / SMOKE_REPO_ID
+#
+# Contas (scripts/seed-test-admins.mjs):
+#   qa.repo.gestor@codehero.test
+#   qa.platform.admin@codehero.test
+
+on:
+  workflow_dispatch:
+    inputs:
+      deep:
+        description: "Incluir dress-code (LLM) e previewRepoScan"
+        type: boolean
+        default: false
+  schedule:
+    # Diário 11:00 UTC (smoke rápido)
+    - cron: "0 11 * * *"
+    # Segunda 12:00 UTC (smoke DEEP)
+    - cron: "0 12 * * 1"
+  workflow_run:
+    workflows: ["Deploy CodeHero para Firebase"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    if: >
+      (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') &&
+      (github.event_name != 'schedule' || github.event.schedule == '0 11 * * *') &&
+      !(github.event_name == 'workflow_dispatch' && inputs.deep == true)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install (firebase-admin for QA org discovery)
+        run: npm ci --ignore-scripts
+
+      - name: Auth Google Cloud (descobrir org QA)
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+        continue-on-error: true
+
+      - name: Portal smoke
+        env:
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID || secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          FIRESTORE_DATABASE_ID: ${{ secrets.FIRESTORE_DATABASE_ID || 'codehero' }}
+          CODEHERO_QA_PASSWORD: ${{ secrets.CODEHERO_QA_PASSWORD }}
+          SMOKE_ORG_ID: ${{ secrets.SMOKE_ORG_ID }}
+          SMOKE_PROJECT_ID: ${{ secrets.SMOKE_PROJECT_ID }}
+          SMOKE_REPO_ID: ${{ secrets.SMOKE_REPO_ID }}
+        run: node scripts/smoke-portal.mjs
+
+  smoke-deep:
+    if: >
+      (github.event_name == 'schedule' && github.event.schedule == '0 12 * * 1') ||
+      (github.event_name == 'workflow_dispatch' && inputs.deep == true)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci --ignore-scripts
+
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+        continue-on-error: true
+
+      - name: Portal smoke DEEP (dress-code + preview)
+        env:
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID || secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          FIRESTORE_DATABASE_ID: ${{ secrets.FIRESTORE_DATABASE_ID || 'codehero' }}
+          CODEHERO_QA_PASSWORD: ${{ secrets.CODEHERO_QA_PASSWORD }}
+          SMOKE_DEEP: "1"
+          SMOKE_ORG_ID: ${{ secrets.SMOKE_ORG_ID }}
+          SMOKE_PROJECT_ID: ${{ secrets.SMOKE_PROJECT_ID }}
+          SMOKE_REPO_ID: ${{ secrets.SMOKE_REPO_ID }}
+        run: node scripts/smoke-portal.mjs

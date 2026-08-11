@@ -15,6 +15,23 @@ npm run build:contracts
 npm test
 ```
 
+## Portal smoke (maintainers)
+
+Suíte contínua de callables contra produção (`scripts/smoke-portal.mjs`):
+
+```bash
+# rápido (authz, gate, membros, catálogo)
+FIREBASE_API_KEY=… FIREBASE_PROJECT_ID=apponti \
+  CODEHERO_QA_PASSWORD=… SMOKE_ORG_ID=… SMOKE_PROJECT_ID=… \
+  npm run test:smoke
+
+# profundo (dress-code via Gemini + previewRepoScan)
+npm run test:smoke:deep
+```
+
+Workflow: `.github/workflows/smoke-portal.yml` (pós-deploy, diário, `workflow_dispatch`).
+Secret extra: `CODEHERO_QA_PASSWORD` (contas de `scripts/seed-test-admins.mjs`).
+
 ## Escopo bem-vindo
 
 - Regras / corpus / testes do motor (`packages/contracts`, `packages/engine`, `packages/ruleforge`)

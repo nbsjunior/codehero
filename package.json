@@ -57,7 +57,9 @@
     "corpus:mine": "node scripts/mine-characterization.mjs .",
     "corpus:check": "node scripts/mine-characterization.mjs . --check",
     "benchmark": "node scripts/benchmark-gate.mjs",
-    "benchmark:gravar": "node scripts/benchmark-gate.mjs --gravar"
+    "benchmark:gravar": "node scripts/benchmark-gate.mjs --gravar",
+    "test:smoke": "node scripts/smoke-portal.mjs",
+    "test:smoke:deep": "node scripts/smoke-portal.mjs --deep"
   },
   "devDependencies": {
     "typescript": "^5.7.2"
