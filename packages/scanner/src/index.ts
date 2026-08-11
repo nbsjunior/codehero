@@ -81,6 +81,13 @@ interface CliOptions {
   importSarif: string[];
   /** Opt-in CPG via Joern (JVM/Docker). */
   joern: boolean;
+  /**
+   * Grafo estrutural determinístico (calls/imports) — distinto do Joern.
+   * Grava `.codehero/code-graph.json` e anota fan-in / hops no SARIF.
+   */
+  codeGraph: boolean;
+  /** Desliga o code-graph mesmo com --metrics. */
+  noCodeGraph: boolean;
   withOxlint: boolean;
   withEslint: boolean;
   withSemgrep: boolean;
@@ -114,6 +121,8 @@ function parseArgs(argv: string[]): CliOptions {
     copybooks: [],
     importSarif: [],
     joern: false,
+    codeGraph: false,
+    noCodeGraph: false,
     withOxlint: false,
     withEslint: false,
     withSemgrep: false,
@@ -146,6 +155,8 @@ function parseArgs(argv: string[]): CliOptions {
     else if (a === "--metrics") opts.metrics = true;
     else if (a === "--semantic") { opts.semantic = true; opts.metrics = true; }
     else if (a === "--joern") opts.joern = true;
+    else if (a === "--code-graph") opts.codeGraph = true;
+    else if (a === "--no-code-graph") opts.noCodeGraph = true;
     else if (a === "--with-oxlint") opts.withOxlint = true;
     else if (a === "--with-eslint") opts.withEslint = true;
     else if (a === "--with-pmd") opts.withPmd = true;
@@ -219,6 +230,10 @@ async function main(): Promise<void> {
     opts.withSca = engines.sca;
     process.stderr.write(`CodeHero: profile=${opts.profile}\n`);
   }
+
+  // Com métricas estruturais, o grafo entra por padrão (UI portal/plugin).
+  if (opts.noCodeGraph) opts.codeGraph = false;
+  else if (opts.metrics) opts.codeGraph = true;
 
   const { rules, meta } = await loadRules(opts);
   const cwd = process.cwd();
@@ -478,15 +493,42 @@ async function main(): Promise<void> {
     (structural?.files ?? []).map((m) => [m.file.replace(/\\/g, "/"), m]),
   );
 
+  // Code-graph determinístico (opcional): navegação + features de triagem.
+  // Distinto do --joern (CPG de segurança).
+  let codeGraphDoc: import("@codehero/code-graph").CodeGraphDocument | null = null;
+  if (opts.codeGraph) {
+    try {
+      const { mkdirSync } = await import("node:fs");
+      const { join } = await import("node:path");
+      const { buildCodeGraph, saveCodeGraph } = await import("@codehero/code-graph");
+      codeGraphDoc = await buildCodeGraph({ root: cwd, files });
+      const outGraph = join(cwd, ".codehero", "code-graph.json");
+      mkdirSync(join(cwd, ".codehero"), { recursive: true });
+      saveCodeGraph(codeGraphDoc, outGraph);
+      process.stderr.write(
+        `CodeHero: code-graph → ${outGraph} (${codeGraphDoc.nodes.length} nós, ${codeGraphDoc.edges.length} arestas)\n`,
+      );
+    } catch (err) {
+      process.stderr.write(
+        `CodeHero: code-graph falhou: ${err instanceof Error ? err.message : String(err)}\n`,
+      );
+    }
+  }
+
+  const { enrichFinding } = codeGraphDoc
+    ? await import("@codehero/code-graph")
+    : { enrichFinding: null };
+
   for (const run of sarif.runs ?? []) {
     for (const r of run.results ?? []) {
       const file = r.locations?.[0]?.physicalLocation?.artifactLocation?.uri ?? "";
       const linha = r.locations?.[0]?.physicalLocation?.region?.startLine ?? 0;
       const fm = metricasPorArquivo.get(file);
-      // A função que CONTÉM o achado descreve melhor o entorno que a média do
-      // arquivo: um achado numa função trivial dentro de um arquivo complexo
-      // não herda a complexidade do vizinho.
       const fn = fm?.functions.find((f) => linha >= f.startLine && linha <= f.endLine);
+      const graphEv =
+        codeGraphDoc && enrichFinding && file && linha
+          ? enrichFinding(codeGraphDoc, file, linha)
+          : null;
       const score = scoreFinding(DEFAULT_MODEL, {
         ruleId: r.ruleId,
         file,
@@ -506,14 +548,46 @@ async function main(): Promise<void> {
         outlierScore:
           typeof r.properties?.outlierScore === "number" ? r.properties.outlierScore : undefined,
         familySize: typeof r.properties?.familySize === "number" ? r.properties.familySize : undefined,
+        fanIn: graphEv?.fanIn,
+        hopsToEntry: graphEv?.hopsToEntry ?? undefined,
       });
       r.properties = {
         ...r.properties,
         assertiveness: Math.round(score.assertiveness * 1000) / 1000,
         fpLikelihood: Math.round(score.fpLikelihood * 1000) / 1000,
         rankerModel: score.modelVersion,
+        ...(graphEv
+          ? {
+              graphFanIn: graphEv.fanIn,
+              graphFanOut: graphEv.fanOut,
+              graphHopsToEntry: graphEv.hopsToEntry,
+              graphPriority: graphEv.priority,
+              graphFunctionId: graphEv.functionId,
+              graphFunctionName: graphEv.functionName,
+              callGraph: {
+                functionId: graphEv.functionId,
+                functionName: graphEv.functionName,
+                fanIn: graphEv.fanIn,
+                fanOut: graphEv.fanOut,
+                hopsToEntry: graphEv.hopsToEntry,
+                callers: graphEv.callers,
+                callees: graphEv.callees,
+                imports: graphEv.imports,
+                priority: graphEv.priority,
+              },
+            }
+          : {}),
       };
     }
+  }
+
+  if (codeGraphDoc) {
+    const { toVizSummary } = await import("@codehero/code-graph");
+    const viz = toVizSummary(codeGraphDoc);
+    sarif.runs[0]!.properties = {
+      ...(sarif.runs[0]!.properties ?? {}),
+      codeGraph: viz,
+    };
   }
 
   if (opts.format === "sarif") {

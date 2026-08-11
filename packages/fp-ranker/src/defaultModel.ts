@@ -45,6 +45,9 @@ export const SEED_MODEL: RankerModel = {
     { feature: "cognitiveNorm", threshold: 0.25, left: -0.15, right: 0.2 },
     { feature: "nestingNorm", threshold: 0.4, left: -0.05, right: 0.15 },
     { feature: "fileChurnNorm", threshold: 0.1, left: -0.2, right: 0.2 },
+    // code-graph: alto fan-in / perto de entry → um pouco mais assertivo (exposto).
+    { feature: "fanInNorm", threshold: 0.2, left: -0.05, right: 0.18 },
+    { feature: "entryReachNorm", threshold: 0.5, left: -0.08, right: 0.16 },
   ],
 };
 

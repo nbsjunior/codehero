@@ -1,10 +1,10 @@
 # codehero-mcp
 
-Servidor MCP do CodeHero — **plug-and-play** para Cursor, Claude Desktop e GitHub Copilot.
+**Para o líder técnico:** servidor MCP que fecha o ciclo que o board cobra — regras e issues no contexto do agente, SDD para o patch, `run_scan` para **provar** que a finding sumiu. Sem IA no quality gate.
 
-Fecha o ciclo do produto: regras e issues no contexto de geração, SDD Spec para o agente aplicar o fix, e `run_scan` para **provar** que a finding sumiu — sem IA no quality gate. Posicionamento e métricas: [docs/wiki/Posicionamento-e-metricas.md](../../docs/wiki/Posicionamento-e-metricas.md).
+Briefing: [docs/wiki/Posicionamento-e-metricas.md](../../docs/wiki/Posicionamento-e-metricas.md) · Guia: [docs/wiki/Conectar-MCP-CodeHero.md](../../docs/wiki/Conectar-MCP-CodeHero.md)
 
-> Nome no npm: **`codehero-mcp`** (sem scope). O workspace interno do monorepo continua em `packages/mcp`.
+> Nome no npm: **`codehero-mcp`** (sem scope).
 
 ## Instalação rápida (sem clonar o monorepo)
 

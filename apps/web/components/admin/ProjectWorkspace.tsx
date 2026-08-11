@@ -33,6 +33,7 @@ import {
 } from "@/lib/api";
 import { HERO_CORE_URL } from "@/lib/heroCoreUrl";
 import OrgMembersPanel from "@/components/admin/OrgMembersPanel";
+import { CodeGraphPanel, vizFromIssues } from "@/components/CodeGraphPanel";
 
 interface ProjectData {
   name: string;
@@ -60,6 +61,25 @@ interface RepoData {
   githubActionInstalledAt?: unknown;
   githubActionRepo?: string;
   autoScan?: RepoAutoScan;
+  codeGraph?: {
+    version?: number;
+    generatedAt?: string;
+    nodes: number;
+    edges: number;
+    functions: number;
+    calls: number;
+    imports: number;
+    entries: number;
+    hotspots: Array<{
+      id: string;
+      name: string;
+      file: string;
+      fanIn: number;
+      fanOut: number;
+      hopsToEntry: number | null;
+    }>;
+    links: Array<{ from: string; to: string; kind?: string }>;
+  } | null;
 }
 
 interface IssueFeedbackEntry {
@@ -106,6 +126,17 @@ interface RepoIssue {
   clusterId?: string | null;
   familySize?: number | null;
   outlierScore?: number | null;
+  callGraph?: {
+    functionId?: string | null;
+    functionName?: string | null;
+    fanIn?: number;
+    fanOut?: number;
+    hopsToEntry?: number | null;
+    callers?: Array<{ id: string; name: string; file: string }>;
+    callees?: Array<{ id: string; name: string; file: string }>;
+    imports?: string[];
+    priority?: number;
+  } | null;
 }
 
 const ratingColor: Record<string, string> = {
@@ -352,6 +383,7 @@ export default function ProjectWorkspace({
         clusterId: issue.clusterId ?? null,
         familySize: issue.familySize ?? null,
         outlierScore: issue.outlierScore ?? null,
+        callGraph: issue.callGraph ?? null,
       })),
     [issues],
   );
@@ -1010,6 +1042,15 @@ export default function ProjectWorkspace({
                   )}
                 </div>
               </div>
+
+              <CodeGraphPanel
+                loading={issuesLoading}
+                graph={
+                  selectedRepo.codeGraph && selectedRepo.codeGraph.functions > 0
+                    ? selectedRepo.codeGraph
+                    : vizFromIssues(issues)
+                }
+              />
 
               {drillOpen && (
                 <div className="ch-drill-panel">

@@ -56,7 +56,7 @@ export class DashboardPanel {
     }
     const panel = vscode.window.createWebviewPanel(
       "codeheroDashboard",
-      "CodeHero: Saúde e compliance",
+      "CodeHero: Saúde e grafo",
       { viewColumn: vscode.ViewColumn.Beside, preserveFocus: true },
       { enableScripts: false, retainContextWhenHidden: true },
     );
@@ -72,7 +72,7 @@ export class DashboardPanel {
   }
 
   private update(summary: ScanSummary): void {
-    this.panel.title = "CodeHero: Saúde e compliance";
+    this.panel.title = "CodeHero: Saúde e grafo";
     this.panel.webview.html = renderHtml(summary);
   }
 }
@@ -231,6 +231,8 @@ function renderHtml(summary: ScanSummary): string {
     </div>
     <p class="note">Stubs Sonar way entram no catálogo informativo (e via SARIF no portal); o matcher do plugin usa só as regras scannable.</p>`;
 
+  const graphHtml = renderCodeGraphHtml(summary);
+
   return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -308,15 +310,31 @@ function renderHtml(summary: ScanSummary): string {
   tr.row-bad td:first-child { color: var(--vscode-editorError-foreground, #f14c4c); font-weight: 600; }
   tr.row-ok td:first-child { color: var(--vscode-testing-iconPassed, #3fb950); }
   .muted { color: var(--vscode-descriptionForeground); text-align: center; padding: 1rem; }
+  .muted-inline { color: var(--vscode-descriptionForeground); font-size: 0.75rem; }
+  .g-kpis { display: flex; gap: 0.65rem; flex-wrap: wrap; margin: 0.65rem 0 0.85rem; }
+  .g-svg {
+    width: 100%; height: auto; max-height: 320px;
+    background: var(--vscode-editor-background, #1e1e1e);
+    border: 1px solid var(--vscode-editorWidget-border, #454545);
+    border-radius: 6px;
+  }
+  .g-edge { stroke: #6e7681; stroke-width: 1.2; }
+  .g-node { fill: #388bfd; stroke: #79c0ff; stroke-width: 1.4; }
+  .g-node.entry { fill: #238636; stroke: #3fb950; }
+  .g-label { fill: var(--vscode-descriptionForeground); font-size: 10px; text-anchor: middle; }
+  .g-hot { list-style: none; margin: 0.75rem 0 0; padding: 0; font-size: 0.8rem; }
+  .g-hot li { display: flex; gap: 0.65rem; flex-wrap: wrap; padding: 0.2rem 0; border-bottom: 1px solid var(--vscode-editorWidget-border, #333); }
+  .g-hot span { color: var(--vscode-descriptionForeground); }
   code { font-family: var(--vscode-editor-font-family); }
 </style>
 </head>
 <body>
-  <h1>CodeHero — Saúde e compliance</h1>
+  <h1>CodeHero — Saúde e grafo</h1>
   <p class="subtitle">${total} finding(s) · ${summary.linesOfCode.toLocaleString("pt-BR")} LOC · scan ${escapeHtml(summary.rulesSource ?? "?")} ${escapeHtml((summary.rulesVersion ?? "").slice(0, 12))} · catálogo ${escapeHtml((summary.catalogVersion ?? "").slice(0, 12))}</p>
 
   ${statsHtml}
   ${healthHtml}
+  ${graphHtml}
 
   <div class="top-grid">
     ${ringHtml ? `<div>${ringHtml}</div>` : ""}
@@ -335,6 +353,81 @@ function renderHtml(summary: ScanSummary): string {
   </table>
 </body>
 </html>`;
+}
+
+function renderCodeGraphHtml(summary: ScanSummary): string {
+  const g = summary.codeGraph;
+  if (!g || (!g.functions && !(g.hotspots?.length))) {
+    return `<section class="card">
+      <div class="card-head"><h2>Grafo do código avaliado</h2></div>
+      <p class="note" style="margin:0">Sem code-graph neste scan. A avaliação de workspace usa --metrics --code-graph automaticamente.</p>
+    </section>`;
+  }
+
+  const hotspots = g.hotspots ?? [];
+  const W = 640;
+  const H = 300;
+  const cx = W / 2;
+  const cy = H / 2;
+  const radius = Math.min(W, H) * 0.38;
+  const n = Math.max(1, hotspots.length);
+  const pos = new Map<string, { x: number; y: number }>();
+  hotspots.forEach((h, i) => {
+    const a = (Math.PI * 2 * i) / n - Math.PI / 2;
+    pos.set(h.id, { x: cx + radius * Math.cos(a), y: cy + radius * Math.sin(a) });
+  });
+  const maxFan = Math.max(1, ...hotspots.map((h) => h.fanIn));
+
+  const edges = (g.links ?? [])
+    .map((l, i) => {
+      const a = pos.get(l.from);
+      const b = pos.get(l.to);
+      if (!a || !b) return "";
+      return `<line key="${i}" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" class="g-edge" />`;
+    })
+    .join("");
+
+  const nodes = hotspots
+    .map((h) => {
+      const p = pos.get(h.id);
+      if (!p) return "";
+      const r = 8 + (h.fanIn / maxFan) * 12;
+      const entry = h.hopsToEntry === 0 ? " entry" : "";
+      const label = h.name.length > 16 ? `${h.name.slice(0, 15)}…` : h.name;
+      return `<g transform="translate(${p.x},${p.y})">
+        <circle r="${r}" class="g-node${entry}">
+          <title>${escapeHtml(h.name)} · fan-in ${h.fanIn}</title>
+        </circle>
+        <text y="${r + 11}" class="g-label">${escapeHtml(label)}</text>
+      </g>`;
+    })
+    .join("");
+
+  const hotList = hotspots
+    .slice(0, 8)
+    .map(
+      (h) =>
+        `<li><code>${escapeHtml(h.name)}</code> <span>fan-in ${h.fanIn}</span>${
+          h.hopsToEntry != null ? ` <span>hops ${h.hopsToEntry}</span>` : ""
+        }</li>`,
+    )
+    .join("");
+
+  return `<section class="card">
+    <div class="card-head"><h2>Grafo do código avaliado</h2><span class="muted-inline">determinístico</span></div>
+    <div class="g-kpis">
+      <div class="stat"><strong>${g.functions}</strong><span>funções</span></div>
+      <div class="stat"><strong>${g.calls}</strong><span>calls</span></div>
+      <div class="stat"><strong>${g.imports}</strong><span>imports</span></div>
+      <div class="stat"><strong>${g.entries}</strong><span>entries</span></div>
+      <div class="stat"><strong>${g.nodes}</strong><span>nós</span></div>
+      <div class="stat"><strong>${g.edges}</strong><span>arestas</span></div>
+    </div>
+    <svg class="g-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Grafo de chamadas">
+      ${edges}${nodes}
+    </svg>
+    <ul class="g-hot">${hotList}</ul>
+  </section>`;
 }
 
 function ratingRingSvg(label: string, rating: Rating | string): string {

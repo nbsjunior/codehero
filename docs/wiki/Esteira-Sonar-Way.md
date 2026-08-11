@@ -1,56 +1,36 @@
-# Esteira de engenharia Sonar way
+# Esteira Sonar way — aproximar com prova, sem mentir para o board
 
-Como aproximar o CodeHero do Sonar way **sem mentir com stubs**.
+**Para o líder:** cobertura “de catálogo” que conta stub como regra viva é dívida política. Esta esteira promove **VULN** só com detector + golden + F1; smells ficam stub ou entram via Presence/SARIF.
 
-## Os 4 pontos
+## Os 4 pontos (linguagem de gestão)
 
-1. **Priorizar VULN** — backlog só de `VULNERABILITY` stub / ainda fora da curadoria (`reports/sonar-way-vuln-backlog.*`).
-2. **Promover com prova** — template L0 (ou L1/L2 depois) + sementes golden + portão **P ≥ 0,85** e ≥1 match + ≥1 no_match → entra em `sonarWayCuration.selecao`.
-3. **Smells = ROI ou SARIF** — `CODE_SMELL` não é auto-promovido; effort &lt; 15 fica stub; Presence Pack importa Sonar/Semgrep.
-4. **Medir live scannable** — % na curadoria (o que o motor carrega), não “covered” semântico nem stub de catálogo.
+1. **Priorizar VULN** — backlog de vulnerabilidades stub / fora da curadoria.  
+2. **Promover com prova** — P ≥ 0,85 e matches reais → entra no live.  
+3. **Smells = ROI ou SARIF** — não auto-promover smell em massa.  
+4. **Medir live scannable** — o que o motor carrega, não “covered” semântico cosmético.
 
 ## Comandos
 
 ```bash
-# Backlog + política de smell + live scannable
 npm run sonar:engenharia
-
-# Gera templates, promove VULNs que passam F1, rebuild live + contracts
 npm run sonar:engenharia -- promote
-
-# Esteira completa (+ compare)
 npm run sonar:engenharia -- all
-
-# Só relatório live
 npm run sonar:engenharia -- report
 ```
 
-Pipeline clássico (inalterado):
+Pipeline clássico: `sonar:fetch` → `sonar:generate` → `sonar:live` → `sonar:compare`.
 
-```bash
-npm run sonar:fetch      # snapshots API pública
-npm run sonar:generate   # catálogo live L0 + stubs
-npm run sonar:live       # deriva sonarWayLiveRules.json da curadoria
-npm run sonar:compare    # semântica Hero↔Sonar + bloco live scannable
-```
-
-## Arquivos
+## Artefatos
 
 | Artefato | Papel |
 |---|---|
-| `scripts/generate-sonar-way-rules.mjs` | Templates (incl. wave2 VULN) |
-| `scripts/data/sonar-port-golden-seeds.json` | Sementes match/no_match por template |
-| `scripts/sonar-way-engenharia.mjs` | Orquestrador dos 4 pontos |
+| `scripts/sonar-way-engenharia.mjs` | Orquestrador |
 | `packages/contracts/src/data/sonarWayCuration.json` | O que de fato roda |
 | `reports/sonar-way-vuln-backlog.*` | Prioridade |
-| `reports/sonar-way-promote.json` | Última promoção |
-| `reports/sonar-way-live-scannable.json` | Métrica live |
-| `reports/sonar-way-coverage.md` | Compare (semântica + live) |
+| `reports/sonar-way-live-scannable.json` | Métrica para o slide |
 
-## O que isto não faz
+## O que isto **não** faz
 
-- Não copia analyzers Java/Roslyn do Sonar.
-- Não promove smell em massa (quebraria P≥0,85).
-- Não conta stub como cobertura.
+Não copia analyzers Java/Roslyn do Sonar. Não promove smell em massa. Não conta stub como cobertura.
 
 Posicionamento: [Posicionamento-e-metricas.md](./Posicionamento-e-metricas.md).

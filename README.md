@@ -1,102 +1,84 @@
-# CodeHero 🛡️
+# CodeHero
 
-**Detecção peer-competitive. Loop fechado depois do finding — sem IA no quality gate.**
+**O quality gate que o time de engenharia confia — e que o agente de IA consegue fechar com prova.**
 
-CodeHero é uma plataforma de qualidade e segurança de código: motor determinístico na borda, regras que evoluem offline com portão F1, contratos de correção (SDD) que um agente (via MCP) aplica e o scanner **prova** que resolveu. Orquestra CodeQL/Semgrep/Trivy quando você já os paga; não inventa um segundo juiz no PR.
+CodeHero é a plataforma de qualidade e segurança de código pensada para **CTOs e líderes técnicos** que já pagam o custo do ruído no PR: falso positivo que atrasa merge, finding sem dono, e “IA que analisa arquivo” que quebra reprodutibilidade e orçamento.
 
-[Documentação na plataforma](https://codehero.web.app/docs) · [Wiki](https://github.com/nbsjunior/codehero/wiki) · [Posicionamento e métricas](./docs/wiki/Posicionamento-e-metricas.md)
+[Portal](https://codehero.web.app) · [Documentação para liderança](https://codehero.web.app/docs) · [Briefing e métricas](./docs/wiki/Posicionamento-e-metricas.md)
 
 ---
 
-## O problema que isso resolve
+## A conversa de 90 segundos com o CTO
 
-Toda ferramenta de análise estática enfrenta a mesma tensão: regras de mão têm cobertura limitada e ficam obsoletas, mas "colocar um LLM para analisar cada arquivo" resolve a cobertura trocando por um problema pior — **custo linear com o volume**, latência incompatível com CI/IDE, e resultados não-determinísticos.
+| Pergunta do board | Resposta CodeHero |
+|---|---|
+| **O gate é auditável?** | Sim. Inspeção determinística na borda (CI/IDE). Sem LLM no hot path do PR. |
+| **Vocês competem com Sonar/CodeQL?** | Em **segurança**, estamos no mesmo patamar (OWASP F1 ~75%, score ~49). Em **amplitude de smells**, orquestramos o que você já tem — não prometemos catálogo enterprise 1:1. |
+| **Onde está o diferencial?** | Depois do finding: regra evolui com portão F1, correção nasce com contrato (SDD), agente (MCP) aplica e o scanner **prova** que a issue sumiu. |
+| **Quanto custa a IA?** | Validar regra nova = milissegundos de CPU no corpus. Não há custo linear por arquivo no CI. |
+| **Quanto custa o produto?** | Sem custo de licença no modelo atual — você opera no [portal](https://codehero.web.app). |
 
-CodeHero recusa essa troca:
+**Uma frase para o comitê:** peer-competitive em vulnerabilidades; líder no ciclo pós-finding (evolução + correção verificável + agentes); complementar — não substituto — em smells enterprise.
 
-- **Detectar** é sempre determinístico, na borda (CI/IDE) — microssegundos (L0) a ~13 ms/arquivo com árvore (L1).
-- **Evoluir as regras** é onde a IA entra — em lote, offline, só promove se ΔF1 > 0 e P ≥ 0,85 no corpus.
-- **Corrigir** é sob demanda: SDD Spec com critérios de aceite; o motor confirma depois do fix.
+---
 
-## Posicionamento (métricas, não slogan)
+## Por que líderes técnicos escolhem isto agora
 
-| Eixo | CodeHero hoje | Como ler |
-|---|---|---|
-| **OWASP BenchmarkJava** v1.2 | F1 **75,1%** · precisão **75,6%** · recall **74,6%** · score **48,9** | Peer-competitive com engines públicos; score OWASP (TPR−FPR) costuma sair **melhor calibrado** que peers de alto recall e FPR altíssimo |
-| **Catálogo Sonar way** | ~**19%** semântica (core) · VULN live **~69%** | Smells ainda baixos; esteira `sonar:engenharia` promove VULN com F1 |
-| **Presence Pack** | Importa Semgrep/CodeQL/… no mesmo gate | Complementar — orquestra amplitude sem segundo juiz |
-| **Latência** | L0 µs/arquivo · L1 ~13 ms/25 KB | Adequado a CI e save no IDE |
+1. **Agentes já estão no fluxo** (Cursor, Copilot, Claude) — sem um SAST que fala MCP e prova o fix, a IA gera patch sem contrato.
+2. **FP custa sprint** — score OWASP calibrado (precisão ~76%) reduz o ruído que o AppSec e o TL rejeitam no gate.
+3. **Legado não é SKU** — COBOL, DB2/T-SQL e C#/VB entram sem add-on “Enterprise”.
+4. **Um juiz, vários sensores** — CodeQL, Semgrep, Trivy, Oxlint no mesmo Quality Gate (Presence Pack).
+5. **Grafo do código sem Gen AI** — callers, fan-in e exposição a entrypoints no console e no plugin, para priorizar o que importa.
 
-Fonte da baseline OWASP: [`benchmarks/owasp-baseline.json`](./benchmarks/owasp-baseline.json) (medido 2026-08-09). Detalhe e anti-claims: [docs/wiki/Posicionamento-e-metricas.md](./docs/wiki/Posicionamento-e-metricas.md).
+Detalhe, ICPs e anti-claims: [docs/wiki/Posicionamento-e-metricas.md](./docs/wiki/Posicionamento-e-metricas.md).
 
-**Uma frase:** peer-competitive em detecção de vulnerabilidades; líder no ciclo pós-finding (evolução + correção verificável + agentes); complementar — não substituto — em amplitude de smells enterprise.
+---
 
-GTM (ICPs, anti-claims, quando usar o quê): [docs/wiki/Posicionamento-e-metricas.md](./docs/wiki/Posicionamento-e-metricas.md) · portal [`/docs/#posicionamento`](https://codehero.web.app/docs/#posicionamento).
+## Prova, não slide
 
-## Em que ponto isso evolui em relação a suites enterprise clássicas
+| Evidência | Número / artefato |
+|---|---|
+| OWASP BenchmarkJava v1.2 | F1 **75,1%** · precisão **75,6%** · recall **74,6%** · score **48,9** — [`benchmarks/owasp-baseline.json`](./benchmarks/owasp-baseline.json) |
+| Sonar way VULN live | ~**69%** (330/479) com esteira F1 |
+| Latência no PR | L0 µs/arquivo · L1 ~13 ms/25 KB — cabe no CI e no save do IDE |
+| Loop de correção | SDD → MCP → `run_scan` confirma |
 
-| | Suites enterprise clássicas | CodeHero |
-|---|---|---|
-| **Origem das regras** | Curadas pelo vendor, lançadas em releases | Curadas + **evoluídas por busca evolutiva determinística** contra um corpus rotulado |
-| **Correção de issues** | Aponta o problema; quick fixes limitados e sem prova | **SDD Spec** + agente aplica + scanner **confirma** que a issue sumiu |
-| **Integração com IA/agentes** | Add-on comercial fechado | **Nativo em MCP** — regras no contexto de geração, issues, SDD, scan e prova do fix |
-| **Custo de manter a IA** | N/A ou por token/arquivo | Validar regra nova = **milissegundos de CPU** no corpus |
-| **Aprendizado com uso real** | Feedback vira ticket para o vendor | Telemetria alimenta o próximo ciclo de evolução |
-| **Operação** | Cluster próprio | Cloud serverless — sem cluster para o cliente manter |
-| **Linguagens legadas** | Frequentemente add-on Enterprise | COBOL, T-SQL/DB2, C#/VB.Net desde o MVP |
-| **Amplitude de smells** | Catálogo maduro (décadas) | Ainda atrás — use Presence Pack / Sonar ao lado |
+Regredir o baseline OWASP quebra o gate de CI deste repositório.
 
-**O que ainda não alcançamos** (honestidade > marketing): amplitude de code smells enterprise e taint interprocedural avançado em todas as linguagens. O motor nativo cobre L0 + AST/dataflow em evolução; Java e demais langs ganham profundidade via SARIF importado.
+---
 
-## Prova, não promessa
+## O que o time instala (sem cluster)
 
-- **Busca evolutiva real**: promoção e rejeição auditáveis contra o corpus golden.
-- **Correção verificável**: relatório → portal → SDD → fix → confirmação pelo scanner.
-- **Multi-linguagem real**: COBOL, T-SQL/DB2 e C#/VB.Net — [`examples/legacy/`](examples/legacy/).
-- **Benchmark de segurança**: baseline OWASP versionada no repo (regredir o score quebra o gate de CI).
+| Canal | Papel para o líder |
+|---|---|
+| **GitHub Action** | Gate no PR — um clique a partir do portal |
+| **Plugin VS Code / Cursor** | Shift-left: saúde, compliance e grafo no workspace |
+| **MCP** | Agentes corrigem com regras e prova no contexto |
+| **Console executivo** | Débito, ratings, apontamentos, grafo do código avaliado |
 
-## Os três módulos
+Comece em [codehero.web.app](https://codehero.web.app) → provisione o workspace → Action ou plugin.
 
-1. **Motor de Inspeção** — determinístico na borda; evolução offline (Dress Code Tools + corpus).
-2. **Painel & SDD** — ingestão, débito técnico, quality gates, especificações de correção.
-3. **Integrações** — GitHub Action, VS Code/Cursor e servidor MCP.
+---
 
-Guia completo: **[codehero.web.app/docs](https://codehero.web.app/docs)**.
+## Onde **não** vender troca total
 
-## Contribuindo (open source)
+Quem só quer amplitude de code smells enterprise e **não** usa agentes/SDD: mantenha Sonar (ou importe SARIF). CodeHero não lidera o pitch com “temos mais regras de smell”.
 
-- [CONTRIBUTING.md](./CONTRIBUTING.md) — como contribuir
-- [SECURITY.md](./SECURITY.md) — vulnerabilidades (privadas)
-- [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
-- Licença: [Apache-2.0](./LICENSE)
+Honestidade de roadmap: taint interprocedural maduro em todas as linguagens e paridade de smells ainda não são claims.
 
-**Não** envie secrets, IDs de tenant nem workflows de deploy de produção.
+---
+
+## Open source
+
+Apache-2.0. Contribuição: [CONTRIBUTING.md](./CONTRIBUTING.md) · [SECURITY.md](./SECURITY.md).
 
 ```bash
 npm ci
 npm test
 ```
 
-Exemplos de workflow: [`examples/github-workflows/`](./examples/github-workflows/).
-
-## Começando (produto hospedado)
-
-Crie a conta no [portal](https://codehero.web.app), provisione um projeto e escolha o canal (Action, plugin, prévia ou MCP). Detalhes: [docs na plataforma](https://codehero.web.app/docs).
-
-## Status atual
-
-| Componente | Estado |
-|---|---|
-| Contratos (relatório + SDD + métricas + matcher) | ✅ |
-| Scanner multi-linguagem + baseline OWASP | ✅ |
-| Evolução de regras (corpus + Dress Code Tools) | ✅ |
-| API (ingestão / SDD / provisionamento / feedback) | ✅ |
-| MCP server | ✅ |
-| GitHub Action + one-click | ✅ |
-| Portal web | ✅ |
-| Presence Pack (SARIF externo) | ✅ |
-| Motor nativo de escala enterprise (roadmap) | ⬜ |
+Arquitetura para engenharia: [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) · Wiki executiva: [docs/wiki/](./docs/wiki/).
 
 ---
 
-<sub>CodeHero é projeto e arquitetura próprios. Números de benchmark são medidos neste repositório; comparações com peers públicos citam estudos externos quando indicado.</sub>
+CodeHero · qualidade com loop de prova · [codehero.web.app](https://codehero.web.app)

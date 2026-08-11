@@ -1,35 +1,33 @@
-# GitHub Action — one-click (portal)
+# GitHub Action — gate no PR em um clique
 
-Guia para o **time do projeto**. Você configura a Action a partir do portal CodeHero e do repositório GitHub — sem precisar conhecer a infraestrutura do fornecedor.
+**Para o líder técnico:** o menor caminho entre “aprovamos o CodeHero” e “o PR falha quando a política falha”. Sem o time aprender a infra do fornecedor.
 
-## O que você faz
+## O que o time faz (5 minutos)
 
-1. No portal → seu projeto → aba **GitHub Action** → **Configurar Action no GitHub (1 clique)**
-2. Autorize o acesso pedido pelo portal (`repo` + `workflow`)
+1. Portal → workspace → aba **GitHub Action** → **Configurar Action no GitHub (1 clique)**  
+2. Autorize `repo` + `workflow`  
 3. O CodeHero cria no repositório:
    - `.github/workflows/codehero.yml`
-   - secret `HERO_TOKEN` (token de ingestão do projeto)
-   - variable `HERO_CORE_URL` (endpoint público usado pela Action)
+   - secret `HERO_TOKEN`
+   - variable `HERO_CORE_URL`
 
-Fallbacks na mesma aba: script `gh`, deep link, YAML — se preferir configurar à mão.
+Fallbacks na mesma aba: script `gh`, deep link, YAML manual.
 
-## Depois do one-click
+## O que o board ganha
 
-Abra um PR ou faça push: a Action roda o scanner, envia o relatório e avalia o quality gate. Severidades críticas podem falhar o job conforme a política do projeto.
+- Quality gate no merge (política do projeto)  
+- Relatório no console executivo (débito, ratings, grafo)  
+- Mesmo juiz se você ligar Presence (CodeQL/Semgrep/…)  
 
-## Presence Pack (SARIF / profundidade)
-
-Para mais profundidade sem depender só do motor nativo, ligue na Action (ou no YAML):
+## Presence Pack (profundidade sem segundo juiz)
 
 | Input | Efeito |
 |---|---|
-| `metrics` | Default `true` — métricas de débito no CI |
-| `semantic` | Taint/semantic TS mais profundo |
-| `oxlint` | Roda Oxlint → `EXT:oxlint:*` |
-| `semgrep` | Roda Semgrep → `EXT:semgrep:*` |
-| `sca` + `sca-tool` | Trivy ou osv-scanner → SCA no gate |
-| `import-sarif` | Paths de SARIF já gerados (ex.: CodeQL) |
+| `metrics` | Default `true` — métricas + grafo estrutural |
+| `semantic` | Taint/semantic mais profundo |
+| `oxlint` / `semgrep` / `sca` | Amplitude no mesmo gate |
+| `import-sarif` | CodeQL (ou outro) já gerado |
 
-Matriz completa: [docs/wiki/Presenca-SARIF.md](wiki/Presenca-SARIF.md). Workflow de exemplo: [`examples/github-workflows/codehero-presence.example.yml`](../examples/github-workflows/codehero-presence.example.yml).
+Matriz: [wiki/Presenca-SARIF.md](wiki/Presenca-SARIF.md) · Exemplo: [`examples/github-workflows/codehero-presence.example.yml`](../examples/github-workflows/codehero-presence.example.yml)
 
-Docs do produto: https://codehero.web.app/docs/#github-action
+Docs: https://codehero.web.app/docs/#github-action · Briefing: [wiki/Posicionamento-e-metricas.md](wiki/Posicionamento-e-metricas.md)

@@ -282,9 +282,11 @@ export default function LandingComic({
 
         <Quadro n="07" largo titulo="Onde estamos no mercado — com número, não slogan." id="metricas">
           <p>
-            Em detecção de vulnerabilidades o CodeHero já joga no mesmo patamar dos peers. Em amplitude
-            de catálogo de smells enterprise, ainda não. O posicionamento é esse:{" "}
-            <strong>peer-competitive na segurança, líder no ciclo depois do finding</strong>.
+            Para o CTO e o líder técnico: em detecção de vulnerabilidades o CodeHero já joga no mesmo patamar dos
+            peers. Em amplitude de catálogo de smells enterprise, ainda não — e não vendemos essa troca. O
+            posicionamento é{" "}
+            <strong>peer-competitive na segurança, líder no ciclo depois do finding</strong> (contrato, agente,
+            prova).
           </p>
           <dl className="hq-metricas">
             <div>
@@ -298,7 +300,7 @@ export default function LandingComic({
               <dt>Leitura de mercado</dt>
               <dd>
                 Peers públicos (CodeQL/Semgrep) têm F1 parecido — e FPR bem mais alto. Aqui o score
-                OWASP (acerto menos falso) sai calibrado.
+                OWASP (acerto menos falso) sai calibrado: menos ruído no gate que o time contorna.
               </dd>
             </div>
             <div>
@@ -317,7 +319,8 @@ export default function LandingComic({
           </dl>
           <p className="hq-nota">
             Baseline medido no repositório (<code>benchmarks/owasp-baseline.json</code>, ago/2026).
-            Presence Pack importa Semgrep/CodeQL quando você quiser a amplitude deles no mesmo gate.
+            Presence Pack importa Semgrep/CodeQL quando você quiser a amplitude deles no mesmo gate. Briefing:{" "}
+            <a href="/docs/#posicionamento">documentação para liderança</a>.
           </p>
         </Quadro>
 

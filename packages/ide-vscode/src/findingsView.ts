@@ -84,6 +84,7 @@ export class FindingsTreeProvider implements vscode.TreeDataProvider<vscode.Tree
     linesOfCode: 1,
     health: computeRepoHealth([], 1),
     ruleCatalog: [],
+    codeGraph: null,
   };
   private roots: vscode.TreeItem[] = [new SummaryItem("Nenhum scan ainda", "Clique em ↻ Rodar scan")];
 

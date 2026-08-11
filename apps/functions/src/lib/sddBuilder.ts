@@ -12,6 +12,18 @@ export interface IssueData {
   sddTemplateId?: string | null;
   surroundingCode?: string;
   imports?: string[];
+  /** From scanner SARIF properties / local code-graph (deterministic). */
+  callGraph?: {
+    functionId: string | null;
+    functionName: string | null;
+    fanIn: number;
+    fanOut: number;
+    hopsToEntry: number | null;
+    callers: Array<{ id: string; name: string; file: string }>;
+    callees: Array<{ id: string; name: string; file: string }>;
+    imports?: string[];
+    priority: number;
+  };
 }
 
 function intentFor(issueType: string): SddSpec["intent"] {
@@ -54,13 +66,28 @@ export function buildSpecFromIssue(issue: IssueData, fingerprint: string): SddSp
     },
     location: {
       file: issue.file,
+      function: issue.callGraph?.functionName ?? undefined,
       range: { startLine: issue.line || 1, startColumn: issue.column || undefined },
     },
     context: {
       language: languageFromPath(issue.file),
       targetSnippet: issue.snippet ?? "",
       surroundingCode: issue.surroundingCode ?? issue.snippet ?? "",
-      imports: issue.imports ?? [],
+      imports: issue.imports?.length ? issue.imports : issue.callGraph?.imports ?? [],
+      ...(issue.callGraph
+        ? {
+            callGraph: {
+              functionId: issue.callGraph.functionId,
+              functionName: issue.callGraph.functionName,
+              fanIn: issue.callGraph.fanIn,
+              fanOut: issue.callGraph.fanOut,
+              hopsToEntry: issue.callGraph.hopsToEntry,
+              callers: issue.callGraph.callers,
+              callees: issue.callGraph.callees,
+              priority: issue.callGraph.priority,
+            },
+          }
+        : {}),
     },
     remediation: {
       strategy: template?.strategy ?? "manual_fix",

@@ -9,12 +9,12 @@ import "./docs.css";
 export const metadata: Metadata = {
   title: "Docs",
   description:
-    "Posicionamento, GTM/ICPs, métricas OWASP, modelos matemáticos, quality gate, GitHub Action, VS Code e MCP.",
+    "Briefing para CTO e líder técnico: posicionamento, métricas OWASP, quality gate, Action, VS Code e MCP.",
   alternates: { canonical: "/docs/" },
   openGraph: {
     title: `Docs · ${SITE_NAME}`,
     description:
-      "Posicionamento, GTM/ICPs, métricas OWASP, modelos matemáticos, quality gate, GitHub Action, VS Code e MCP.",
+      "Briefing para CTO e líder técnico: posicionamento, métricas OWASP, quality gate, Action, VS Code e MCP.",
     url: `${SITE_URL}/docs/`,
     type: "article",
   },
@@ -176,34 +176,36 @@ export default function DocsPage() {
         <article className="cr-docs-article">
           <h1>Documentação do CodeHero</h1>
           <p className="cr-docs-lede">
-            Detecção peer-competitive, loop fechado depois do finding e o fluxo que promove qualidade e segurança —
-            na pipeline, no editor e nas IDEs de IA — sem IA no quality gate e sem o time configurar infraestrutura.
+            Briefing para <strong>CTO e líder técnico</strong>: detecção peer-competitive, loop fechado depois do
+            finding e um quality gate auditável — na pipeline, no editor e nas IDEs de IA —{" "}
+            <strong>sem IA no gate do PR</strong> e sem o time operar cluster.
           </p>
 
           <section id="missao">
             <h2>Missão e valor</h2>
             <p>
-              O CodeHero existe para <strong>elevar a qualidade e a segurança</strong> do software que o time entrega —
-              com motor <strong>determinístico</strong> (reproduzível, auditável) e um ciclo que não para no alerta:
-              regras evoluem offline, a correção nasce com contrato (SDD) e o agente (MCP) prova o fix no rescaneio.
+              O CodeHero existe para o líder que já paga o custo do ruído: falso positivo que atrasa merge, finding sem
+              dono, e agente que gera patch sem prova. Elevamos <strong>qualidade e segurança</strong> com motor{" "}
+              <strong>determinístico</strong> (reproduzível, auditável) e um ciclo que não para no alerta: regras
+              evoluem offline, a correção nasce com contrato (SDD) e o agente (MCP) prova o fix no rescaneio.
             </p>
             <div className="cr-docs-callout">
-              <strong>Princípio</strong>
+              <strong>Princípio que passa em due diligence</strong>
               <p style={{ margin: 0 }}>
                 Inspeção = regras + motor determinístico. IA = planejamento de correção e evolução de políticas — nunca
                 no lugar do quality gate do PR.
               </p>
             </div>
-            <p>Na prática, o herói do PR usa o CodeHero em três frentes:</p>
+            <p>Na prática, o time usa o CodeHero em três frentes que o board entende:</p>
             <ul>
               <li>
-                <strong>Pipeline</strong> — GitHub Action bloqueia merge quando o gate falha.
+                <strong>Pipeline</strong> — GitHub Action bloqueia merge quando a política falha.
               </li>
               <li>
-                <strong>Shift left</strong> — plugin VS Code/Cursor mostra compliance e non-compliance no workspace.
+                <strong>Shift left</strong> — plugin VS Code/Cursor: saúde, compliance e grafo do código no workspace.
               </li>
               <li>
-                <strong>Agentes de IA</strong> — MCP no Cursor, Claude e GitHub Copilot para corrigir com prova.
+                <strong>Agentes de IA</strong> — MCP no Cursor, Claude e Copilot para corrigir com prova.
               </li>
             </ul>
           </section>
@@ -212,7 +214,7 @@ export default function DocsPage() {
             <h2>Posicionamento e métricas</h2>
             <p>
               Categoria: plataforma de qualidade <em>AI-native</em> com <strong>loop de prova determinístico</strong> —
-              não “mais um SAST”, não clone de suite enterprise por amplitude de catálogo.
+              a conversa certa para CTO/TL, não “mais um SAST” nem clone de suite enterprise por amplitude de catálogo.
             </p>
             <div className="cr-docs-callout">
               <strong>Headline</strong>
@@ -221,7 +223,7 @@ export default function DocsPage() {
               </p>
             </div>
             <div className="cr-docs-callout">
-              <strong>Uma frase</strong>
+              <strong>Uma frase para o comitê</strong>
               <p style={{ margin: "0.5rem 0 0" }}>
                 Peer-competitive em detecção de vulnerabilidades (OWASP); líder no ciclo pós-finding (evolução + SDD +
                 MCP); complementar — não substituto — em amplitude de smells enterprise.
@@ -255,8 +257,8 @@ export default function DocsPage() {
               <div className="cr-docs-module-card">
                 <strong>Vs peers públicos</strong>
                 <span>
-                  Estudos recentes colocam CodeQL/Semgrep com F1 OWASP ~69–74% e FPR muito alto. O CodeHero tende a
-                  score OWASP mais calibrado (menos ruído no gate), sem reivindicar o maior recall do mercado.
+                  Estudos recentes colocam CodeQL/Semgrep com F1 OWASP ~69–74% e FPR muito alto. O CodeHero prioriza
+                  gate estável (menos ruído), sem reivindicar o maior recall do mercado.
                 </span>
               </div>
               <div className="cr-docs-module-card">
@@ -284,6 +286,7 @@ export default function DocsPage() {
                   <li>COBOL/DB2 sem add-on enterprise</li>
                   <li>Orquestração CodeQL/Semgrep/Trivy</li>
                   <li>Esteira de promoção com F1 auditável</li>
+                  <li>Grafo estrutural sem Gen AI (priorização)</li>
                 </ul>
               </div>
               <div>
@@ -304,7 +307,8 @@ export default function DocsPage() {
           <section id="gtm-icp">
             <h2>Para quem falar (GTM · Sim)</h2>
             <p>
-              Early access e conversas comerciais focam nestes ICPs — não em “troca o Sonar por amplitude de smells”.
+              Early access e conversas com <strong>CTO / líder técnico</strong> focam nestes ICPs — não em “troque o
+              Sonar por amplitude de smells”.
             </p>
             <div className="cr-docs-table-wrap">
               <table className="cr-docs-table">

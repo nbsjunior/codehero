@@ -1,41 +1,49 @@
-# CodeHero — visão de arquitetura (pública)
+# CodeHero — arquitetura (visão para liderança e contribuidores)
 
-> Documento para contribuidores. **Não** descreve provedores, contas cloud, IDs de projeto,
-> pipelines de deploy ou inventário de serviços hospedados. Operação da plataforma
-> comercial fica fora deste repositório.
+> Para o **CTO / líder técnico**: como a plataforma reduz risco operacional sem cluster e sem LLM no gate.  
+> Para o **contribuidores**: mapa dos módulos open source.  
+> **Não** documenta provedores, contas cloud, IDs de tenant nem inventário hospedado.
 
-## Posicionamento (resumo)
+## Mensagem executiva
 
-Plataforma de qualidade com **loop de prova**: detecção determinística peer-competitive em segurança (OWASP F1 ~75%, score ~48,9), evolução de regras offline com portão F1, SDD + MCP para correção verificável. Sonar way: ~19% semântica (core) e ~69% VULN live scannable; smells via Presence/SARIF. Esteira: [wiki/Esteira-Sonar-Way.md](./wiki/Esteira-Sonar-Way.md).
+Inspeção na borda é **determinística e barata**. Evolução de regras e planejamento de correção usam IA **fora** do hot path. O Quality Gate do PR continua reproduzível e auditável — o tipo de propriedade que passa em due diligence e em SOC.
 
-Detalhe e anti-claims: [wiki/Posicionamento-e-metricas.md](./wiki/Posicionamento-e-metricas.md).
+## Posicionamento (âncora)
 
-## Princípio
+Peer-competitive em segurança (OWASP F1 ~75%, score ~48,9); líder no ciclo pós-finding; complementar em smells via Presence/SARIF.  
+Briefing completo: [wiki/Posicionamento-e-metricas.md](./wiki/Posicionamento-e-metricas.md).
 
-- **Inspeção** = determinística, na borda (CLI / CI / IDE), sem LLM por arquivo.
-- **Evolução de regras** = offline, em lote; corpus golden + F1 decidem promoção.
-- **Correção** = SDD Spec verificável + agentes via MCP; o scanner prova o resultado.
+## Princípios de desenho (o que o TL deve exigir)
+
+| Princípio | Implicação |
+|---|---|
+| **Inspeção = determinística** | CLI / CI / IDE; sem LLM por arquivo |
+| **Evolução = offline com portão F1** | Corpus golden decide promoção; rejeição é auditável |
+| **Correção = contrato + prova** | SDD Spec → agente (MCP) → scanner confirma |
+| **Um juiz, vários sensores** | SARIF externo entra no mesmo gate |
+| **Grafo sem Gen AI** | Calls/imports para priorização e SDD |
 
 ## Módulos open source
 
-| Pacote / área | Papel |
+| Pacote | Papel de negócio |
 |---|---|
-| `packages/contracts` | SARIF+, SDD, métricas, matcher, catálogo de regras |
-| `packages/engine` | AST / taint / CFG (JS/TS e extensões) |
-| `packages/scanner` | CLI `hero-scanner` |
-| `packages/ruleforge` | Corpus + busca evolutiva (decide promoção) |
-| `packages/fp-ranker` | Ranqueador de assertividade (offline) |
-| `packages/code-embed` | Clustering AST não supervisionado |
-| `packages/mcp` | Servidor MCP para agentes |
-| `packages/github-action` | Action de scan → ingest |
-| `packages/ide-vscode` | Extensão VS Code / Cursor |
-| `apps/web` | Portal (requer config local — ver `.env.local.example`) |
-| `apps/functions` | API / callables (self-host; secrets só no ambiente) |
+| `packages/contracts` | Contratos: SARIF+, SDD, métricas, catálogo |
+| `packages/engine` | Análise AST / taint / estrutural |
+| `packages/scanner` | CLI na borda (CI / Action / IDE) |
+| `packages/code-graph` | Grafo estrutural determinístico (UI + triagem) |
+| `packages/ruleforge` | Evolução de regras com prova F1 |
+| `packages/fp-ranker` | Assertividade (anti-FP) — offline / anotações |
+| `packages/code-embed` | Famílias AST — offline |
+| `packages/mcp` | Ponte para agentes |
+| `packages/github-action` | Gate no PR |
+| `packages/ide-vscode` | Shift-left no editor |
+| `apps/web` | Console executivo |
+| `apps/functions` | API / ingestão / SDD (self-host ou hospedado) |
 
-## Contratos entre mundos
+## Fluxo que o board entende
 
 ```text
-Scan (borda) → SARIF+ → ingestão → issues + quality gate
+Scan (borda) → SARIF+ → ingestão → issues + quality gate + grafo
                          ↓
                    SDD Spec → agente (MCP) → run_scan → prova
                          ↓
@@ -44,18 +52,10 @@ Scan (borda) → SARIF+ → ingestão → issues + quality gate
 
 ## O que **não** vai neste repositório
 
-- Credenciais, service accounts, API keys
-- IDs reais de org / projeto / repo de tenants
-- Workflows de deploy da plataforma hospedada
-- Inventário de recursos cloud ou nomes de projeto GCP/Firebase
-- Documentação operacional interna de produção
-
-Self-hosters configuram o próprio ambiente via variáveis (ver `CONTRIBUTING.md` e
-`apps/web/.env.local.example`).
+Credenciais, IDs de tenant, workflows de deploy da plataforma hospedada, inventário cloud. Self-host: `CONTRIBUTING.md` e `apps/web/.env.local.example`.
 
 ## Links
 
-- Docs do produto: https://codehero.web.app/docs
-- Wiki: [docs/wiki/](./wiki/)
-- Como contribuir: [CONTRIBUTING.md](../CONTRIBUTING.md)
-- Segurança: [SECURITY.md](../SECURITY.md)
+- Produto: https://codehero.web.app/docs  
+- Wiki: [docs/wiki/](./wiki/)  
+- Contribuição: [CONTRIBUTING.md](../CONTRIBUTING.md) · [SECURITY.md](../SECURITY.md)

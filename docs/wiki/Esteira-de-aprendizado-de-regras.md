@@ -1,13 +1,13 @@
 # Esteira de aprendizado de regras (Ruleforge)
 
-> Página da wiki do CodeHero — espelho em `docs/wiki/` no repositório.
-> Docs interativas: https://codehero.web.app/docs/#aprendizado-continuo
+**Para o CTO:** a IA **propõe** mutações offline; o **corpus golden + F1 decidem** o que entra no CI. O scanner do PR permanece determinístico — propriedade exigível em auditoria e due diligence.
+
+Núcleo do posicionamento “líder no ciclo pós-finding”: [Posicionamento-e-metricas.md](./Posicionamento-e-metricas.md).  
+Docs interativas: https://codehero.web.app/docs/#aprendizado-continuo
 
 ## Em uma frase
 
-A IA **propõe** mutações de regra offline; o **corpus golden + F1** **decidem** o que entra no CI. O scanner do PR permanece determinístico.
-
-Isso é o núcleo do posicionamento “líder no ciclo pós-finding”: ver [Posicionamento-e-metricas.md](./Posicionamento-e-metricas.md).
+IA propõe · corpus prova · o gate não muda de natureza.
 
 ## Passo a passo
 
@@ -45,7 +45,7 @@ flowchart LR
 | **3. Provar** | `@codehero/ruleforge` mede P, R, F1 no corpus (`evolve.ts`) | Não há “confiança” subjetiva do modelo |
 | **4. Publicar** | Só com ΔF1&gt;0, P≥0,85 e zero regressão | Sem republicar plugin / Action |
 
-## Como isso difere das demais ferramentas
+## Como isso difere (slide para o board)
 
 ```mermaid
 flowchart TB
@@ -73,44 +73,23 @@ flowchart TB
 
 ## Cenário exercitado (run real)
 
-Comandos:
-
 ```bash
 npm run ruleforge:evaluate
 npm run ruleforge:evolve-all
 ```
 
-**O que medimos**
+- 20 regras no corpus golden com **P = R = F1 = 1,00**.
+- Evolve: baseline F1 = 1,000 · 5 gerações · melhor = 1,000 → **REJECTED — sem ganho de F1**.
 
-- 20 regras no corpus golden (ex.: `HERO-SEC-0798-hardcoded-secret`, `HERO-SEC-0089-sql-injection`) com **P = R = F1 = 1,00**.
-
-**O que o evolve fez**
-
-1. Baseline F1 = 1,000.
-2. 5 gerações de busca evolutiva com seed reproduzível.
-3. Melhor candidato também F1 = 1,000.
-
-**Decisão**
-
-```
-DECISÃO: REJECTED — sem ganho de F1 (baseline=1.000, melhor=1.000)
-```
-
-ou, quando não há mutações cadastradas para a regra:
-
-```
-DECISÃO: REJECTED — sem mutações registradas para esta regra
-```
-
-**Leitura de produto:** o portão funcionou. Regras já perfeitas no corpus **não** são “melhoradas” por cosmética. Promoção só existe com **ganho comprovado**.
+**Leitura de produto:** o portão funcionou. Regras já perfeitas **não** são “melhoradas” por cosmética. Promoção só com **ganho comprovado**.
 
 ### Cenário de promoção (fluxo de produto)
 
 1. Dev marca FP: `console.log` em arquivo de teste.
 2. Admin publica dress code: “proibido `console.log` em produção”.
-3. A orquestração de agentes propõe a regra + casos entram no corpus.
-4. Se ΔF1&gt;0 e P≥0,85 → proposta na fila → RuleSet.
-5. Próximo PR: scanner determinístico aplica a regra — sem LLM no hot path.
+3. A orquestração propõe a regra + casos no corpus.
+4. Se ΔF1&gt;0 e P≥0,85 → RuleSet.
+5. Próximo PR: scanner determinístico — sem LLM no hot path.
 
 ## CLI útil
 
@@ -118,10 +97,9 @@ DECISÃO: REJECTED — sem mutações registradas para esta regra
 |---|---|
 | `npm run ruleforge:evaluate` | Tabela P/R/F1 por regra |
 | `npm run ruleforge:evolve-all` | Busca evolutiva em lote |
-| Job cloud `ruleforgeDaily` | Orquestração de agentes 1×/dia (chave do provedor em secret) |
+| Job cloud `ruleforgeDaily` | Orquestração 1×/dia |
 
 ## Links
 
-- Docs: [/docs/#aprendizado-continuo](https://codehero.web.app/docs/#aprendizado-continuo)
-- Landing: seção “A esteira que aprende regras”
+- Docs: https://codehero.web.app/docs/#aprendizado-continuo
 - Código: `packages/ruleforge/`, `apps/functions/src/ruleforgeDaily.ts`

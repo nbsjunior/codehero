@@ -5,6 +5,6 @@
     "outDir": "dist",
     "types": ["node"]
   },
-  "references": [{ "path": "../contracts" }, { "path": "../engine" }],
+  "references": [{ "path": "../contracts" }, { "path": "../engine" }, { "path": "../code-graph" }],
   "include": ["src/**/*.ts"]
 }

@@ -22,7 +22,9 @@ export type FeatureName =
   | "isStructural"
   | "toolDepth"
   | "clusterOutlier"
-  | "clusterSizeNorm";
+  | "clusterSizeNorm"
+  | "fanInNorm"
+  | "entryReachNorm";
 
 export const FEATURE_NAMES: FeatureName[] = [
   "ruleRepoFpRate",
@@ -40,6 +42,8 @@ export const FEATURE_NAMES: FeatureName[] = [
   "toolDepth",
   "clusterOutlier",
   "clusterSizeNorm",
+  "fanInNorm",
+  "entryReachNorm",
 ];
 
 export type FeatureVector = Record<FeatureName, number>;
@@ -103,6 +107,10 @@ export interface FindingFeatureInput {
   outlierScore?: number;
   /** code-embed: tamanho do cluster / família. */
   familySize?: number;
+  /** code-graph: quantos callers diretos (fan-in). */
+  fanIn?: number;
+  /** code-graph: hops até entrypoint (menor = mais exposto). */
+  hopsToEntry?: number | null;
 }
 
 const SEV_RANK: Record<string, number> = {
@@ -157,6 +165,12 @@ export function extractFeatures(input: FindingFeatureInput): FeatureVector {
     clusterOutlier: clamp01(input.outlierScore ?? 0),
     // Famílias grandes = padrão comum do repo (menos suspeito); size 1 = singleton.
     clusterSizeNorm: normMetric(input.familySize, 40),
+    fanInNorm: normMetric(input.fanIn, 20),
+    // hops 0 = entry; hops altos ou null = menos alcançável → reach baixo.
+    entryReachNorm:
+      input.hopsToEntry == null
+        ? 0.15
+        : clamp01(1 - Number(input.hopsToEntry) / 8),
   };
 }
 

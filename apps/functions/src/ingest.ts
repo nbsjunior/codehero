@@ -10,6 +10,7 @@ import {
   coverageFromSarif,
   duplicationFromSarif,
   branchCoverageFromSarif,
+  codeGraphFromSarif,
 } from "./lib/ingestCore.ts";
 import { ingestIdempotencyKey, findRecentIngest } from "./lib/ingestIdempotency.ts";
 import { assertBuildQuota, incrementBuildQuota } from "./lib/quotas.ts";
@@ -146,6 +147,7 @@ export const ingestAnalysis = onRequest(
       coveragePercent: coverageFromSarif(sarif),
       duplicationPercent: duplicationFromSarif(sarif),
       branchCoveragePercent: branchCoverageFromSarif(sarif),
+      codeGraph: codeGraphFromSarif(sarif),
       sarifPath,
       source: "github-action",
       idempotencyKey,

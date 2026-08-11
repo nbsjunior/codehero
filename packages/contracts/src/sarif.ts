@@ -17,8 +17,10 @@ export interface SarifRun {
     };
   };
   results: SarifResult[];
-  /** Run-level CodeHero extensions (coverage, complexity, leitura assistida). */
-  properties?: Record<string, unknown>;
+  /** Run-level CodeHero extensions (coverage, complexity, code-graph, leitura assistida). */
+  properties?: Record<string, unknown> & {
+    codeGraph?: SarifCodeGraphSummary;
+  };
 }
 
 export interface SarifReportingDescriptor {
@@ -98,7 +100,46 @@ export interface SarifResult {
     outlierScore?: number;
     functionName?: string;
     embedModel?: string;
+    /** code-graph determinístico: fan-in / hops / evidência estrutural. */
+    graphFanIn?: number;
+    graphFanOut?: number;
+    graphHopsToEntry?: number | null;
+    graphPriority?: number;
+    graphFunctionId?: string | null;
+    graphFunctionName?: string | null;
+    callGraph?: {
+      functionId: string | null;
+      functionName: string | null;
+      fanIn: number;
+      fanOut: number;
+      hopsToEntry: number | null;
+      callers: Array<{ id: string; name: string; file: string }>;
+      callees: Array<{ id: string; name: string; file: string }>;
+      imports?: string[];
+      priority: number;
+    };
   };
+}
+
+/** Resumo do grafo estrutural no run SARIF (portal / plugin). */
+export interface SarifCodeGraphSummary {
+  version: 1;
+  generatedAt: string;
+  nodes: number;
+  edges: number;
+  functions: number;
+  calls: number;
+  imports: number;
+  entries: number;
+  hotspots: Array<{
+    id: string;
+    name: string;
+    file: string;
+    fanIn: number;
+    fanOut: number;
+    hopsToEntry: number | null;
+  }>;
+  links: Array<{ from: string; to: string; kind: "calls" | "imports" }>;
 }
 
 export interface SarifLocation {

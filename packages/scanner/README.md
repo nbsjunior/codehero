@@ -1,12 +1,12 @@
 # @codehero/scanner
 
-Análise estática com **gate de build determinístico**. Mesma entrada, mesma saída — nenhum modelo de linguagem participa do scan.
+**Para o líder técnico:** análise estática com **gate de build determinístico**. Mesma entrada, mesma saída — nenhum LLM no scan do PR. É o motor que a Action e o plugin usam para bloquear merge com reprodutibilidade auditável.
 
 ```bash
 npx @codehero/scanner .
 ```
 
-Sai com código 1 se houver achado acima do limiar configurado; 0 caso contrário. É isso que o torna usável em CI.
+Sai com código 1 se houver achado acima do limiar; 0 caso contrário.
 
 ## O que ele faz
 

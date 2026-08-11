@@ -1,14 +1,18 @@
-# Wiki (espelho no repositório)
+# Wiki CodeHero — para CTO, líder técnico e engenharia
 
-| Página | Arquivo |
-|---|---|
-| **Posicionamento e métricas** (OWASP, GTM/ICPs, quando usar o quê) | [Posicionamento-e-metricas.md](./Posicionamento-e-metricas.md) |
-| **Esteira Sonar way** (VULN → golden → F1 → live) | [Esteira-Sonar-Way.md](./Esteira-Sonar-Way.md) |
-| **Presença SARIF** (CodeQL, Semgrep, Oxlint, Trivy) | [Presenca-SARIF.md](./Presenca-SARIF.md) |
-| **Modelos offline** (fp-ranker, triagem em lote) | [Modelos-Offline.md](./Modelos-Offline.md) |
-| **Code Embed** (AST → K-Means, não supervisionado) | [Code-Embed.md](./Code-Embed.md) |
-| **Conectar MCP** | [Conectar-MCP-CodeHero.md](./Conectar-MCP-CodeHero.md) |
-| Esteira de aprendizado de regras | [Esteira-de-aprendizado-de-regras.md](./Esteira-de-aprendizado-de-regras.md) |
+Espelho no repositório do que a liderança usa para **decidir** e o time usa para **operar**.
 
-- Docs: https://codehero.web.app/docs/#posicionamento · https://codehero.web.app/docs/#presenca-sarif
-- Exemplos workflow: `examples/github-workflows/codehero-presence.example.yml`
+Comece pelo briefing: **[Posicionamento e métricas](./Posicionamento-e-metricas.md)**.
+
+| Página | Para quem | Em uma linha |
+|---|---|---|
+| [Posicionamento e métricas](./Posicionamento-e-metricas.md) | **CTO / TL** | Tese, provas OWASP, ICPs, anti-claims, quando usar o quê |
+| [Presença SARIF](./Presenca-SARIF.md) | TL / Platform | Unificar CodeQL, Semgrep, Trivy… no mesmo gate |
+| [Code-graph determinístico](./Code-graph-deterministico.md) | TL / AppSec | Priorizar por callers/fan-in sem Gen AI |
+| [Conectar MCP](./Conectar-MCP-CodeHero.md) | TL / DevEx | Agentes corrigem com prova |
+| [Esteira Sonar way](./Esteira-Sonar-Way.md) | Eng. de regras | Promover VULN com F1 — sem stub mentiroso |
+| [Esteira de aprendizado](./Esteira-de-aprendizado-de-regras.md) | Eng. de regras | Ruleforge: IA propõe, corpus decide |
+| [Modelos offline](./Modelos-Offline.md) | Platform | fp-ranker e triagem — nunca no gate do PR |
+| [Code Embed](./Code-Embed.md) | Platform | Famílias AST / outliers — offline |
+
+Portal: https://codehero.web.app/docs · Action one-click: [../GITHUB_ACTION_ONE_CLICK.md](../GITHUB_ACTION_ONE_CLICK.md)

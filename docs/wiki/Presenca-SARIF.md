@@ -1,71 +1,56 @@
-# Pack Presença SARIF — matriz oficial
+# Presence Pack — um juiz, vários sensores
 
-Como o CodeHero **aumenta presença vs Sonar** sem reinventar motores: roda ferramentas especializadas, importa SARIF com provenance `EXT:<tool>:<rule>`, e o Quality Gate decide.
+**Para o líder técnico:** você não precisa trocar CodeQL, Semgrep ou Trivy. Precisa de **uma política de gate** e um loop de correção. O Presence Pack importa SARIF desses motores com provenance `EXT:<tool>:<rule>` e o Quality Gate do CodeHero decide.
 
-Isso sustenta o posicionamento de produto: o motor nativo é **peer-competitive em segurança** (ver [Posicionamento-e-metricas.md](./Posicionamento-e-metricas.md)); a amplitude de smells/SAST enterprise entra por orquestração, não por promessa de catálogo nativo equivalente.
+Isso sustenta a tese comercial: motor nativo **peer-competitive em segurança** ([Posicionamento](./Posicionamento-e-metricas.md)); amplitude de smells/SAST enterprise entra por **orquestração**, não por promessa de catálogo nativo equivalente.
 
-Princípio: LLM **nunca** no hot path do PR. Modelos só offline (ruleforge / fp-ranker / triage batch).
+**Princípio de risco:** LLM **nunca** no hot path do PR. Modelos só offline (ruleforge / fp-ranker / triage).
 
 ## Matriz tool → comando → import
 
 | Tool | Comando típico | Artefato | Action / scanner |
 |---|---|---|---|
 | **CodeQL** | `codeql database analyze … --format=sarif-latest -o codeql.sarif` | `codeql.sarif` | `import-sarif` ou job prévio |
-| **Opengrep** | `opengrep scan --config auto --sarif -o opengrep.sarif` | `opengrep.sarif` | input `opengrep: true` ou `--with-opengrep` |
-| **Semgrep** | `semgrep scan --config auto --sarif -o semgrep.sarif` | `semgrep.sarif` | input `semgrep: true` ou `--with-semgrep` |
-| **Oxlint** | `npx oxlint . -f sarif -o oxlint.sarif` | `oxlint.sarif` | input `oxlint: true` ou `--with-oxlint` |
-| **Trivy** (SCA) | `trivy fs --format sarif -o trivy.sarif .` | `trivy.sarif` | input `sca: true` / `--with-sca` |
+| **Opengrep** | `opengrep scan --config auto --sarif -o opengrep.sarif` | `opengrep.sarif` | `opengrep: true` / `--with-opengrep` |
+| **Semgrep** | `semgrep scan --config auto --sarif -o semgrep.sarif` | `semgrep.sarif` | `semgrep: true` / `--with-semgrep` |
+| **Oxlint** | `npx oxlint . -f sarif -o oxlint.sarif` | `oxlint.sarif` | `oxlint: true` / `--with-oxlint` |
+| **Trivy** (SCA) | `trivy fs --format sarif -o trivy.sarif .` | `trivy.sarif` | `sca: true` / `--with-sca` |
 | **osv-scanner** | `osv-scanner --format sarif -o osv.sarif .` | `osv.sarif` | `sca-tool: osv` |
-| **Joern** | via `--joern` | embutido | input `joern: true` |
-| **ESLint** | `eslint -f json` | convertido | `eslint: true` / `--with-eslint` |
-| **PMD** | `pmd check -f sarif` | SARIF | `pmd: true` / `--with-pmd` / `profile: java` |
-| **SpotBugs** | `spotbugs -sarif` | SARIF | `spotbugs: true` + `spotbugs-classes` |
+| **Joern** | via `--joern` | embutido | `joern: true` |
+| **ESLint** | `eslint -f json` | convertido | `eslint: true` |
+| **PMD** | `pmd check -f sarif` | SARIF | `pmd: true` / `profile: java` |
+| **SpotBugs** | `spotbugs -sarif` | SARIF | `spotbugs: true` + classes |
 
-## Perfis canônicos (`--profile` / Action `profile` / MCP / IDE)
+## Perfis (mesmo intent em CLI, Action, MCP, IDE)
 
-| Perfil | Engines |
+| Perfil | Engines | Quando o TL escolhe |
+|---|---|---|
+| `native` | Só CodeHero | Gate rápido + legado + agentes |
+| `presence` | metrics + oxlint + opengrep + sca | Amplitude sem instalar JVM de análise |
+| `java` | metrics + pmd + spotbugs | Stack Java no mesmo juiz |
+| `full` | adapters (exceto Joern) | Máxima presença no PR noturno / scheduled |
+
+Flags individuais fazem **OR** por cima do perfil.
+
+## Cobertura e complexidade (linguagem de risco)
+
+CodeHero **não** instrumenta bytecode (igual Sonar). Consome JaCoCo / JCov / Cobertura e cruza com ciclomática (`--metrics` + `--coverage`): duas suítes com 70% de linha podem ter risco oposto — o cruzamento **complexidade coberta vs não coberta** deixa isso visível no SARIF e no portal.
+
+Gate: `minNewCodeCoverage` + opcional `minBranchCoverage` (só quando há dados de branch).
+
+## Leitura assistida (orçamento, não “IA no PR”)
+
+`--llm-budget` só recorta trechos do diff onde o determinístico **não** apontou. Observação de modelo **nunca** entra no gate — vira candidata a regra → corpus → promoção.
+
+## Grafo e CPG
+
+| Camada | Para o líder |
 |---|---|
-| `native` | Só CodeHero (default IDE / save) |
-| `presence` | metrics + oxlint + opengrep + sca |
-| `java` | metrics + pmd + spotbugs |
-| `full` | todas as adapters (exceto Joern) |
+| **code-graph** nativo | Priorização e SDD — determinístico ([Code-graph](./Code-graph-deterministico.md)) |
+| **Joern** (`--joern`) | CPG profundo opcional no mesmo SARIF+ |
+| LLM | Só offline |
 
-Mesmo JSON de intent em CLI, GitHub Action, MCP (`run_scan`) e IDE (`codehero.scanProfile`). Flags individuais **OR** por cima do perfil.
-
-## Cobertura: JaCoCo, JCov e branch
-
-O CodeHero **não instrumenta** bytecode — isso é decisão de produto, igual Sonar. O que muda com JaCoCo/JCov/OpenCppCoverage:
-
-- **JaCoCo XML** (`<sourcefile>` + `<line ci mi cb mb>`): linha + branch, já consumido.
-- **JCov XML** (`<class source="…">…<bl s e c>`): método/bloco → linha (parser `parseJcov`).
-- **OpenCppCoverage**: não tem formato próprio — exporta **Cobertura XML**, então o mesmo `parseCobertura` cobre C++ no Windows.
-- **Gate**: `minNewCodeCoverage` (linha, em código novo) + opcional `minBranchCoverage` (% branch global). Branch só aplica quando o relatório tem dados — nunca reprova projeto sem branch instrumentada.
-
-## Complexidade coberta vs não coberta (JaCoCo)
-
-O CodeHero separa o que JaCoCo chama de `covered` e `missed` **por complexidade**, não só por linha. Duas suítes com 70% de cobertura podem ter risco oposto: uma cobre o caminho feliz, outra cobre os `catch`. Só a soma de linhas não distingue — a **ciclomática** sim, porque cada `if` é uma aresta do grafo.
-
-```
-CodeHero: complexidade coberta 42 · nao coberta 18 (70.0% coberta)
-```
-
-- `--metrics` fornece a ciclomática por função (tree-sitter).
-- `--coverage` fornece as linhas cobertas (JaCoCo/JCov/lcov/Cobertura).
-- O cruzamento vai no SARIF (`properties.complexidadeCoberta`) e no portal.
-
-## Leitura assistida por modelo barato (Alibaba OCR)
-
-`--llm-budget <tokens>` ativa o recorte **antes** de qualquer modelo existir: só o trecho do diff onde o determinístico não teve nada a dizer. Três propriedades que mantêm o custo baixo e o gate reproduzível:
-
-1. **Orçamento corta ANTES** de despachar (`tetoDeTokens`), nunca depois.
-2. **Linha já coberta por regra não vai para o modelo** — pagar duas vezes pela mesma informação é o que quebra a conta.
-3. **Observação nunca entra no gate.** O caminho é candidata a regra → avaliação determinística no corpus → só então vira apontamento reproduzível para todo mundo.
-
-## Symbolic / graph (Better CRG, arXiv 2507.18476)
-
-O eixo "grafo + raciocínio simbólico" já existe em três camadas: **determinístico** (L0 + tree-sitter + AST/taint = o mapa de conhecimento verificável), **grafo** (`--joern` CPG = a busca semântica/call-graph que os CRG MCPs vendem) e **LLM offline** (ruleforge / fp-ranker). Regra: LLM nunca no gate; call-graph entra via `--joern` no mesmo SARIF+.
-
-Todos os achados importados usam id `EXT:<ferramenta>:<regra>` ([`importSarif.ts`](../../packages/scanner/src/importSarif.ts)). Eco entre ferramentas colapsa na mesma linha; ids absorvidos ficam em `alsoRuleIds` (portal/MCP/IDE mostram “também …”).
+Achados importados: `EXT:<ferramenta>:<regra>`. Eco na mesma linha colapsa; `alsoRuleIds` no portal/IDE.
 
 ## Fluxo CI recomendado
 
@@ -78,40 +63,8 @@ flowchart LR
   TV[Trivy] --> SARIF
   SARIF --> Scan[hero-scan --import]
   Native[L0 metrics taint] --> Scan
-  Scan --> Ingest[ingestAnalysis]
-  FB[Feedback FP/TP] --> Stats[ruleFpStats]
-  Stats --> Ingest
-  Ingest --> Gate[Quality Gate]
+  Scan --> Gate[Quality Gate CodeHero]
+  Gate --> Portal[Console + SDD + MCP]
 ```
 
-## Aprendizado no gate (FP local)
-
-Quando uma regra acumula no **mesmo repo** ≥5 feedbacks e taxa FP ≥60%, os achados dessa regra:
-
-- Continuam visíveis no portal (`fora do gate (FP local)`)
-- **Não** contam para blockers novos / ratings do Quality Gate
-
-Stats em `repos/{repoId}/ruleFpStats`. O fp-ranker também usa `ruleRepoFpRate` + `toolDepth` (CodeQL > Opengrep/Semgrep > Oxlint).
-
-## Checklist de adoção
-
-1. Portal → token + org/project/repo na Action.
-2. Ligue `metrics: true` (já default), `opengrep` e/ou `oxlint`/`semgrep`/`sca` conforme stack.
-3. CodeQL: job nightly → passe o SARIF em `import-sarif`.
-4. Confirme no portal provenance `via codeql` / `via opengrep` / etc.
-5. Marque FP/TP nos findings — após N≥5 a regra ruidosa sai do gate sozinha.
-6. Não habilite Joern no default sem JDK/Docker consciente.
-
-## Models (Fase 4 — offline)
-
-| Modelo | Uso |
-|---|---|
-| Orquestração de agentes | Dress code + mutações ruleforge (portão F1) |
-| fp-ranker | Treino com `exportRuleforgeFeedback` → `hero-fp-ranker train` |
-| LLM local / triagem em lote | `scripts/foundation-sec-triage.mjs` em batch — **não** no gate |
-
-Docs produto: [/docs/#presenca-sarif](https://codehero.web.app/docs/#presenca-sarif)
-
-## Exemplo de workflow
-
-Ver [`examples/github-workflows/codehero-presence.example.yml`](../../examples/github-workflows/codehero-presence.example.yml).
+Exemplo: [`examples/github-workflows/codehero-presence.example.yml`](../../examples/github-workflows/codehero-presence.example.yml) · Docs: https://codehero.web.app/docs/#presenca-sarif

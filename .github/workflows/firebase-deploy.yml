@@ -24,6 +24,7 @@ on:
       - "packages/ruleforge/**"
       - "packages/fp-ranker/**"
       - "packages/code-embed/**"
+      - "packages/code-graph/**"
       - "packages/scanner/**"
       - "firebase.json"
       - "firestore.rules"

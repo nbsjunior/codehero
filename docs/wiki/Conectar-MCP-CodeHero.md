@@ -1,8 +1,9 @@
-# Conectar o CodeHero MCP — passo a passo
+# Conectar o CodeHero MCP — agentes com prova
 
-Guia para ligar o **CodeHero** em **Cursor**, **Claude Desktop**, **GitHub Copilot** e **Devin**.
+**Para o líder técnico:** se o time já usa Cursor, Copilot ou Claude, o gap não é “ter IA” — é a IA **gerar patch sem contrato e sem prova**. O MCP CodeHero entrega regras ativas, issues, SDD, grafo e rescaneio no mesmo contexto do agente.
 
-Pacote npm: [`codehero-mcp`](https://www.npmjs.com/package/codehero-mcp) · API: `https://codehero.web.app/api`
+Pacote npm: [`codehero-mcp`](https://www.npmjs.com/package/codehero-mcp) · API: `https://codehero.web.app/api`  
+Briefing: [Posicionamento-e-metricas.md](./Posicionamento-e-metricas.md)
 
 ---
 
@@ -245,10 +246,15 @@ Liste: `devin mcp list` · detalhe: `devin mcp get codehero`
 | `get_generation_context` | Guardrails antes de gerar código |
 | `get_active_rules` | Catálogo ativo |
 | `get_issues` | Findings abertos |
-| `get_sdd_spec` | Contrato de correção |
+| `get_sdd_spec` | Contrato de correção (enriquece com call-graph se `.codehero/code-graph.json` existir) |
 | `submit_fix_result` | Reportar applied / rejected / failed |
 | `apply_sdd_workflow` | Roteiro verified-fix |
 | `run_scan` | Opcional (precisa `HERO_SCANNER_CMD` local) |
+| `get_callers` / `get_callees` | Navegação estrutural local (determinística; sem Gen AI) |
+| `path_to_entrypoint` | Hops até entrypoint |
+| `enrich_finding_graph` | Fan-in / callers / prioridade para arquivo:linha |
+
+Gere o grafo com `hero-code-graph build` ou `hero-scan --code-graph` — ver [Code-graph-deterministico.md](./Code-graph-deterministico.md).
 
 ---
 

@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@codehero/contracts": "^0.1.0",
+    "@codehero/code-graph": "^0.1.0",
     "@codehero/cpg-joern": "^0.1.0",
     "@codehero/engine": "^0.1.0",
     "@codehero/fp-ranker": "^0.1.0"

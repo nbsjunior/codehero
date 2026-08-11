@@ -35,6 +35,23 @@ export const SddSpecSchema = z.object({
     targetSnippet: z.string(),
     surroundingCode: z.string(),
     imports: z.array(z.string()).default([]),
+    /** Evidência estrutural determinística (code-graph) — sem Gen AI. */
+    callGraph: z
+      .object({
+        functionId: z.string().nullable(),
+        functionName: z.string().nullable(),
+        fanIn: z.number().int().nonnegative(),
+        fanOut: z.number().int().nonnegative(),
+        hopsToEntry: z.number().int().nonnegative().nullable(),
+        callers: z.array(
+          z.object({ id: z.string(), name: z.string(), file: z.string() }),
+        ),
+        callees: z.array(
+          z.object({ id: z.string(), name: z.string(), file: z.string() }),
+        ),
+        priority: z.number(),
+      })
+      .optional(),
   }),
   remediation: z.object({
     strategy: z.string(),

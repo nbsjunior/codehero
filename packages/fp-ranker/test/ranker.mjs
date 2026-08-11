@@ -30,7 +30,7 @@ console.log("\n=== todo atributo do vetor tem de existir");
 const v = extractFeatures({ ruleId: "R", file: "a.ts", severity: "MAJOR" });
 for (const f of FEATURE_NAMES) check(typeof v[f] === "number", `atributo ${f} ausente`);
 console.log(`  ${FEATURE_NAMES.length} atributos, todos numericos`);
-check(FEATURE_NAMES.length >= 15, "deve incluir toolDepth + cluster*");
+check(FEATURE_NAMES.length >= 17, "deve incluir toolDepth + cluster* + fanIn/entryReach");
 
 console.log("\n=== atributos que o scanner passou a informar movem o score");
 // Sem stump para eles, os atributos eram calculados e nao mudavam nada: 196

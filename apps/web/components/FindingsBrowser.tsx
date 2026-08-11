@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { buildFindingFicha } from "@codehero/contracts";
 import FindingFichaCard from "@/components/FindingFichaCard";
+import { FindingCallGraphBlock } from "@/components/CodeGraphPanel";
 import type { IssueFeedbackVerdict } from "@/lib/api";
 
 const SEVERITY_ORDER = ["BLOCKER", "CRITICAL", "MAJOR", "MINOR", "INFO"] as const;
@@ -57,6 +58,16 @@ export type FindingsBrowserItem = {
   clusterId?: string | null;
   familySize?: number | null;
   outlierScore?: number | null;
+  callGraph?: {
+    functionId?: string | null;
+    functionName?: string | null;
+    fanIn?: number;
+    fanOut?: number;
+    hopsToEntry?: number | null;
+    callers?: Array<{ id: string; name: string; file: string }>;
+    callees?: Array<{ id: string; name: string; file: string }>;
+    priority?: number;
+  } | null;
 };
 
 function verdictLabel(v: IssueFeedbackVerdict | null | undefined): string | null {
@@ -439,6 +450,7 @@ export default function FindingsBrowser({
 
             <div className="findings-modal__body">
               <FindingFichaCard ficha={resolveFicha(active)} hideHeader />
+              <FindingCallGraphBlock callGraph={active.callGraph} />
             </div>
 
             {enableFeedback && onFeedback ? (

@@ -411,5 +411,6 @@ function emptySummary(): ScanSummary {
     linesOfCode: 1,
     health: computeRepoHealth([], 1),
     ruleCatalog: [],
+    codeGraph: null,
   };
 }

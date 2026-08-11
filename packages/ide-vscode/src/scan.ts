@@ -30,6 +30,15 @@ export interface ScanFinding {
   engine?: string | null;
   isDependency?: boolean;
   alsoRuleIds?: string[];
+  callGraph?: {
+    functionId?: string | null;
+    functionName?: string | null;
+    fanIn?: number;
+    fanOut?: number;
+    hopsToEntry?: number | null;
+    callers?: Array<{ id: string; name: string; file: string }>;
+    callees?: Array<{ id: string; name: string; file: string }>;
+  } | null;
 }
 
 export interface RuleCatalogEntry {
@@ -69,6 +78,28 @@ export interface ScanSummary {
   ruleCatalog: RuleCatalogEntry[];
   /** Raw SARIF for optional portal sync (workspace scans). */
   sarif?: unknown;
+  /** Resumo do code-graph (SARIF run properties) para o dashboard. */
+  codeGraph?: CodeGraphSummary | null;
+}
+
+export interface CodeGraphSummary {
+  version?: number;
+  generatedAt?: string;
+  nodes: number;
+  edges: number;
+  functions: number;
+  calls: number;
+  imports: number;
+  entries: number;
+  hotspots: Array<{
+    id: string;
+    name: string;
+    file: string;
+    fanIn: number;
+    fanOut: number;
+    hopsToEntry: number | null;
+  }>;
+  links: Array<{ from: string; to: string; kind?: string }>;
 }
 
 interface SarifResult {
@@ -104,6 +135,7 @@ interface SarifResult {
     engine?: string;
     isDependency?: boolean;
     alsoRuleIds?: string[];
+    callGraph?: ScanFinding["callGraph"];
   };
 }
 
@@ -140,8 +172,13 @@ export async function runScan(opts: {
 
   const profile =
     opts.forceNativeProfile ? "native" : (opts.scanProfile || "native").toLowerCase();
-  const args = [...inv.argsPrefix, opts.target, "--sarif", ...profileToScannerArgs(profile)];
-  if (opts.spotbugsClasses && (profile === "java" || profile === "full")) {
+  const args = [
+    ...inv.argsPrefix,
+    opts.target,
+    "--sarif",
+    ...(opts.forceNativeProfile ? [] : profileToScannerArgs(profile)),
+  ];
+  if (opts.spotbugsClasses && (profile === "java" || profile === "full") && !opts.forceNativeProfile) {
     args.push("--spotbugs-classes", opts.spotbugsClasses);
   }
   if (rulesMeta.file) args.push("--rules-file", rulesMeta.file);
@@ -150,7 +187,10 @@ export async function runScan(opts: {
 
   const stdout = await execCapture(inv.bin, args, opts.cwd, inv.shell);
   const sarif = JSON.parse(stdout) as {
-    runs?: Array<{ results?: SarifResult[]; properties?: { linesOfCode?: number } }>;
+    runs?: Array<{
+      results?: SarifResult[];
+      properties?: { linesOfCode?: number; codeGraph?: CodeGraphSummary };
+    }>;
   };
   const cwd = opts.cwd ?? process.cwd();
   const minIdx = SEV_ORDER.indexOf(opts.minSeverity ?? "INFO");
@@ -190,6 +230,7 @@ export async function runScan(opts: {
       engine: p?.engine ?? null,
       isDependency: p?.isDependency === true,
       alsoRuleIds: Array.isArray(p?.alsoRuleIds) ? p!.alsoRuleIds : [],
+      callGraph: p?.callGraph ?? null,
     });
   }
 
@@ -229,6 +270,25 @@ export async function runScan(opts: {
     },
     ruleCatalog,
     sarif,
+    codeGraph: normalizeCodeGraph(sarif.runs?.[0]?.properties?.codeGraph),
+  };
+}
+
+function normalizeCodeGraph(raw: unknown): CodeGraphSummary | null {
+  if (!raw || typeof raw !== "object") return null;
+  const g = raw as Partial<CodeGraphSummary>;
+  if (typeof g.functions !== "number" && typeof g.nodes !== "number") return null;
+  return {
+    version: 1,
+    generatedAt: typeof g.generatedAt === "string" ? g.generatedAt : undefined,
+    nodes: Number(g.nodes) || 0,
+    edges: Number(g.edges) || 0,
+    functions: Number(g.functions) || 0,
+    calls: Number(g.calls) || 0,
+    imports: Number(g.imports) || 0,
+    entries: Number(g.entries) || 0,
+    hotspots: Array.isArray(g.hotspots) ? g.hotspots.slice(0, 40) : [],
+    links: Array.isArray(g.links) ? g.links.slice(0, 120) : [],
   };
 }
 
@@ -236,12 +296,13 @@ export async function runScan(opts: {
 function profileToScannerArgs(profile: string): string[] {
   switch (profile) {
     case "presence":
-      return ["--metrics", "--with-oxlint", "--with-opengrep", "--with-sca"];
+      return ["--metrics", "--code-graph", "--with-oxlint", "--with-opengrep", "--with-sca"];
     case "java":
-      return ["--metrics", "--with-pmd", "--with-spotbugs"];
+      return ["--metrics", "--code-graph", "--with-pmd", "--with-spotbugs"];
     case "full":
       return [
         "--metrics",
+        "--code-graph",
         "--with-oxlint",
         "--with-eslint",
         "--with-semgrep",
@@ -251,7 +312,8 @@ function profileToScannerArgs(profile: string): string[] {
         "--with-sca",
       ];
     default:
-      return [];
+      // Avaliação de workspace: métricas + grafo estrutural (UI do dashboard).
+      return ["--metrics", "--code-graph"];
   }
 }
 

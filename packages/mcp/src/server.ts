@@ -3,6 +3,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import {
   SCAN_PROFILE_IDS,
   SCAN_PROFILES,
@@ -38,6 +40,25 @@ const REPO_ID = process.env.HERO_REPO_ID ?? process.env.CODEHERO_REPO_ID ?? "";
 const DEFAULT_PROFILE = isScanProfileId(process.env.HERO_SCAN_PROFILE)
   ? process.env.HERO_SCAN_PROFILE!
   : "native";
+
+/** Local deterministic code-graph (HERO_CODE_GRAPH or .codehero/code-graph.json). */
+function resolveGraphPath(): string | null {
+  const fromEnv = (process.env.HERO_CODE_GRAPH ?? "").trim();
+  if (fromEnv) return fromEnv;
+  const fallback = join(process.cwd(), ".codehero", "code-graph.json");
+  return existsSync(fallback) ? fallback : null;
+}
+
+async function loadLocalGraph() {
+  const path = resolveGraphPath();
+  if (!path || !existsSync(path)) return null;
+  try {
+    const { loadCodeGraph } = await import("@codehero/code-graph");
+    return { path, doc: loadCodeGraph(path) };
+  } catch {
+    return null;
+  }
+}
 
 function authHeaders(): Record<string, string> {
   return { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" };
@@ -130,7 +151,7 @@ server.tool(
 
 server.tool(
   "get_sdd_spec",
-  "Gera a especificação SDD (contrato verificável de correção) para uma issue, identificada pelo fingerprint.",
+  "Gera a especificação SDD (contrato verificável de correção) para uma issue, identificada pelo fingerprint. Se existir code-graph local, enriquece com callers/callees (determinístico, sem Gen AI).",
   {
     orgId: z.string().default(ORG_ID),
     projectId: z.string().default(PROJECT_ID),
@@ -156,7 +177,42 @@ server.tool(
       body: JSON.stringify({ orgId, projectId, repoId, fingerprint }),
     });
     const body = await r.text();
-    return { content: [{ type: "text", text: body }], isError: !r.ok };
+    if (!r.ok) return { content: [{ type: "text", text: body }], isError: true };
+
+    try {
+      const spec = JSON.parse(body) as {
+        location?: { file?: string; range?: { startLine?: number } };
+        context?: Record<string, unknown>;
+      };
+      const file = spec.location?.file;
+      const line = spec.location?.range?.startLine;
+      const g = await loadLocalGraph();
+      if (g && file && line) {
+        const { enrichFinding } = await import("@codehero/code-graph");
+        const ev = enrichFinding(g.doc, file, line);
+        spec.context = {
+          ...(spec.context ?? {}),
+          imports:
+            Array.isArray(spec.context?.imports) && (spec.context!.imports as string[]).length
+              ? spec.context!.imports
+              : ev.imports,
+          callGraph: {
+            functionId: ev.functionId,
+            functionName: ev.functionName,
+            fanIn: ev.fanIn,
+            fanOut: ev.fanOut,
+            hopsToEntry: ev.hopsToEntry,
+            callers: ev.callers,
+            callees: ev.callees,
+            priority: ev.priority,
+          },
+        };
+        return { content: [{ type: "text", text: JSON.stringify(spec, null, 2) }] };
+      }
+    } catch {
+      // fall through — return raw body
+    }
+    return { content: [{ type: "text", text: body }] };
   },
 );
 
@@ -515,6 +571,101 @@ server.resource(
     return {
       contents: [{ uri: uri.href, text, mimeType: "application/json" }],
     };
+  },
+);
+
+// --- Code-graph determinístico (sem Gen AI; distinto do Joern CPG) ------------
+
+server.tool(
+  "get_callers",
+  "Lista callers de uma função no code-graph local (determinístico). Requer HERO_CODE_GRAPH ou .codehero/code-graph.json.",
+  {
+    nodeId: z.string().describe("Id do nó, ex. src/a.ts#handler@10"),
+  },
+  async ({ nodeId }) => {
+    const g = await loadLocalGraph();
+    if (!g) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: "Code-graph ausente. Rode: hero-code-graph build . -o .codehero/code-graph.json (ou hero-scan --code-graph).",
+          },
+        ],
+        isError: true,
+      };
+    }
+    const { callers } = await import("@codehero/code-graph");
+    return { content: [{ type: "text", text: JSON.stringify(callers(g.doc, nodeId), null, 2) }] };
+  },
+);
+
+server.tool(
+  "get_callees",
+  "Lista callees de uma função no code-graph local (determinístico).",
+  { nodeId: z.string() },
+  async ({ nodeId }) => {
+    const g = await loadLocalGraph();
+    if (!g) {
+      return {
+        content: [{ type: "text", text: "Code-graph ausente. Rode hero-code-graph build." }],
+        isError: true,
+      };
+    }
+    const { callees } = await import("@codehero/code-graph");
+    return { content: [{ type: "text", text: JSON.stringify(callees(g.doc, nodeId), null, 2) }] };
+  },
+);
+
+server.tool(
+  "path_to_entrypoint",
+  "Distância (hops) até um entrypoint via arestas calls — priorização estrutural sem Gen AI.",
+  {
+    nodeId: z.string(),
+    maxDepth: z.number().int().min(1).max(32).default(12),
+  },
+  async ({ nodeId, maxDepth }) => {
+    const g = await loadLocalGraph();
+    if (!g) {
+      return {
+        content: [{ type: "text", text: "Code-graph ausente. Rode hero-code-graph build." }],
+        isError: true,
+      };
+    }
+    const { hopsToEntrypoint } = await import("@codehero/code-graph");
+    const hops = hopsToEntrypoint(g.doc, nodeId, maxDepth);
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(
+            { nodeId, hopsToEntry: hops, entries: g.doc.indexes.entries.slice(0, 20) },
+            null,
+            2,
+          ),
+        },
+      ],
+    };
+  },
+);
+
+server.tool(
+  "enrich_finding_graph",
+  "Evidência estrutural (fan-in, callers, hops até entry) para um arquivo:linha — útil antes de aplicar SDD.",
+  {
+    file: z.string(),
+    line: z.number().int().positive(),
+  },
+  async ({ file, line }) => {
+    const g = await loadLocalGraph();
+    if (!g) {
+      return {
+        content: [{ type: "text", text: "Code-graph ausente. Rode hero-code-graph build." }],
+        isError: true,
+      };
+    }
+    const { enrichFinding } = await import("@codehero/code-graph");
+    return { content: [{ type: "text", text: JSON.stringify(enrichFinding(g.doc, file, line), null, 2) }] };
   },
 );
 

@@ -1,5 +1,5 @@
 {
-  "name": "@codehero/fp-ranker",
+  "name": "@codehero/code-graph",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -11,7 +11,7 @@
     }
   },
   "bin": {
-    "hero-fp-ranker": "./dist/cli.js"
+    "hero-code-graph": "./dist/cli.js"
   },
   "files": [
     "dist",
@@ -19,22 +19,20 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "train": "node dist/cli.js train",
-    "eval": "node dist/cli.js eval",
-    "clean": "rimraf dist",
-    "test": "npm run build && node test/ranker.mjs && node test/labelQuality.mjs"
+    "test": "npm run build && node test/graph.mjs",
+    "clean": "rimraf dist"
   },
-  "description": "Ranqueador de falso positivo do CodeHero: modelo versionado em arquivo, sem inferência em tempo de scan.",
+  "dependencies": {
+    "@codehero/engine": "^0.1.0"
+  },
+  "description": "Grafo estrutural determinístico do repositório (calls/imports) — sem Gen AI. Alimenta MCP, SDD e triagem.",
   "license": "Apache-2.0",
   "author": "nbsjunior",
   "homepage": "https://github.com/nbsjunior/codehero#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nbsjunior/codehero.git",
-    "directory": "packages/fp-ranker"
-  },
-  "bugs": {
-    "url": "https://github.com/nbsjunior/codehero/issues"
+    "directory": "packages/code-graph"
   },
   "publishConfig": {
     "access": "public"

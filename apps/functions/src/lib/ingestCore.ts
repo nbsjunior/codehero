@@ -41,6 +41,8 @@ export interface PersistAnalysisInput {
   duplicationPercent?: number | null;
   /** Branch % (JaCoCo/JCov/lcov); null/0 pula a condição. */
   branchCoveragePercent?: number | null;
+  /** Resumo do code-graph (SARIF run properties). */
+  codeGraph?: Record<string, unknown> | null;
   analysisId?: string;
   /** Per-project gate thresholds (merged with defaults when omitted). */
   qualityGateThresholds?: QualityGateThresholds | null;
@@ -90,6 +92,37 @@ export function branchCoverageFromSarif(sarif: SarifLog): number | null {
   )?.properties?.coverage?.branches;
   if (!raw || typeof raw.total !== "number" || raw.total <= 0) return null;
   return coveragePct(raw);
+}
+
+/** Resumo do code-graph determinístico (run properties). */
+export function codeGraphFromSarif(sarif: SarifLog): Record<string, unknown> | null {
+  const raw = sarif.runs?.[0]?.properties?.codeGraph;
+  if (!raw || typeof raw !== "object") return null;
+  const g = raw as {
+    version?: number;
+    nodes?: number;
+    edges?: number;
+    functions?: number;
+    calls?: number;
+    imports?: number;
+    entries?: number;
+    hotspots?: unknown;
+    links?: unknown;
+    generatedAt?: string;
+  };
+  if (typeof g.functions !== "number" && typeof g.nodes !== "number") return null;
+  return {
+    version: 1,
+    generatedAt: typeof g.generatedAt === "string" ? g.generatedAt : new Date().toISOString(),
+    nodes: Number(g.nodes) || 0,
+    edges: Number(g.edges) || 0,
+    functions: Number(g.functions) || 0,
+    calls: Number(g.calls) || 0,
+    imports: Number(g.imports) || 0,
+    entries: Number(g.entries) || 0,
+    hotspots: Array.isArray(g.hotspots) ? g.hotspots.slice(0, 40) : [],
+    links: Array.isArray(g.links) ? g.links.slice(0, 120) : [],
+  };
 }
 
 export function computeAnalysisSummary(
@@ -211,6 +244,18 @@ export async function upsertIssuesFromResults(input: {
             outlierScore:
               typeof r.properties?.outlierScore === "number" ? r.properties.outlierScore : undefined,
             familySize: typeof r.properties?.familySize === "number" ? r.properties.familySize : undefined,
+            fanIn:
+              typeof r.properties?.callGraph?.fanIn === "number"
+                ? r.properties.callGraph.fanIn
+                : typeof r.properties?.graphFanIn === "number"
+                  ? r.properties.graphFanIn
+                  : undefined,
+            hopsToEntry:
+              r.properties?.callGraph?.hopsToEntry !== undefined
+                ? r.properties.callGraph.hopsToEntry
+                : r.properties?.graphHopsToEntry !== undefined
+                  ? r.properties.graphHopsToEntry
+                  : undefined,
           });
 
     bulkWriter.set(
@@ -270,6 +315,25 @@ export async function upsertIssuesFromResults(input: {
               triageMode: r.properties.triageMode ?? "sarif",
             }
           : {}),
+        ...(r.properties?.callGraph && typeof r.properties.callGraph === "object"
+          ? { callGraph: r.properties.callGraph }
+          : typeof r.properties?.graphFanIn === "number"
+            ? {
+                callGraph: {
+                  functionId: r.properties.graphFunctionId ?? null,
+                  functionName: r.properties.graphFunctionName ?? null,
+                  fanIn: r.properties.graphFanIn,
+                  fanOut: r.properties.graphFanOut ?? 0,
+                  hopsToEntry:
+                    typeof r.properties.graphHopsToEntry === "number"
+                      ? r.properties.graphHopsToEntry
+                      : null,
+                  callers: [],
+                  callees: [],
+                  priority: r.properties.graphPriority ?? 0,
+                },
+              }
+            : {}),
         status: "open",
         isNewCode: newSet.has(fp),
         branch: input.branch,
@@ -350,6 +414,7 @@ export async function persistAnalysisResults(input: PersistAnalysisInput): Promi
     summary,
     idempotencyKey: input.idempotencyKey ?? null,
     issuesPending: !!input.deferIssueWrites,
+    ...(input.codeGraph ? { codeGraph: input.codeGraph } : {}),
   });
 
   await rRef.set(
@@ -362,6 +427,7 @@ export async function persistAnalysisResults(input: PersistAnalysisInput): Promi
       securityRating: summary.securityRating,
       qualityGateStatus: summary.qualityGate.status,
       openIssues: results.length,
+      ...(input.codeGraph ? { codeGraph: input.codeGraph } : {}),
     },
     { merge: true },
   );
