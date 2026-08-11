@@ -138,7 +138,47 @@ async function discoverQaScope(idToken, gestorUid) {
     console.warn(`  (admin discover skipped: ${err instanceof Error ? err.message : err})`);
   }
 
-  // Fallback: list members on a previously known org from env, or fail clearly.
+  // Fallback: Firestore REST with the caller's ID token (collectionGroup members).
+  try {
+    const dbId = encodeURIComponent(process.env.FIRESTORE_DATABASE_ID?.trim() || "codehero");
+    const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/${dbId}/documents:runQuery`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: JSON.stringify({
+        structuredQuery: {
+          from: [{ collectionId: "members", allDescendants: true }],
+          where: {
+            fieldFilter: {
+              field: { fieldPath: "uid" },
+              op: "EQUAL",
+              value: { stringValue: gestorUid },
+            },
+          },
+          limit: 5,
+        },
+      }),
+    });
+    const rows = await res.json();
+    if (!res.ok) throw new Error(JSON.stringify(rows).slice(0, 200));
+    for (const row of Array.isArray(rows) ? rows : []) {
+      const name = row.document?.name; // .../documents/orgs/{orgId}/members/{uid}
+      const m = typeof name === "string" ? name.match(/\/documents\/orgs\/([^/]+)\/members\//) : null;
+      if (!m) continue;
+      const foundOrg = m[1];
+      const listUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/${dbId}/documents/orgs/${foundOrg}/projects?pageSize=5`;
+      const listRes = await fetch(listUrl, { headers: { Authorization: `Bearer ${idToken}` } });
+      const listBody = await listRes.json();
+      const first = listBody.documents?.[0]?.name?.match(/\/projects\/([^/]+)$/)?.[1];
+      if (first) return { orgId: foundOrg, projectId: first, repoId: null };
+    }
+  } catch (err) {
+    console.warn(`  (rest discover skipped: ${err instanceof Error ? err.message : err})`);
+  }
+
   throw new Error(
     `Cannot discover QA org/project for ${gestorUid}. Set SMOKE_ORG_ID and SMOKE_PROJECT_ID.`,
   );
