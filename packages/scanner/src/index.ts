@@ -582,11 +582,53 @@ async function main(): Promise<void> {
   }
 
   if (codeGraphDoc) {
-    const { toVizSummary } = await import("@codehero/code-graph");
+    const { toVizSummary, analisarArquitetura } = await import("@codehero/code-graph");
     const viz = toVizSummary(codeGraphDoc);
+
+    // --- leitura arquitetural, no mesmo carona do grafo --------------------
+    //
+    // Sai por AQUI, e não por um endpoint próprio, porque o caminho já existe:
+    // o SARIF carrega `properties.codeGraph`, o ingest o lê e grava no
+    // documento do repositório. Um segundo caminho para o mesmo dado seria
+    // duas coisas para manter e duas para divergir.
+    //
+    // Só acontece com `--metrics`: sem complexidade por função não há o que
+    // cruzar com o alcance, e o relatório viraria uma lista de acoplamento
+    // sem a metade que decide.
+    let arquitetura: Record<string, unknown> | null = null;
+    if (structural?.files?.length) {
+      const metricas = new Map(
+        structural.files.map((m) => [
+          m.file.replace(/\\/g, "/"),
+          {
+            linhasDeCodigo: m.linesOfCode,
+            ciclomatica: m.cyclomatic,
+            cognitiva: m.cognitive,
+            funcoes: m.functions.length,
+            maiorFuncao: m.functions.reduce((a, f) => Math.max(a, f.cyclomatic), 0),
+            // Abstratividade fica de fora deste caminho de propósito: exigiria
+            // reler a fonte só para contar exportação, e o valor dela é
+            // aproximado de qualquer forma. Quem quer o número roda
+            // `scripts/relatorio-arquitetura.mjs`.
+          },
+        ]),
+      );
+      const rel = analisarArquitetura(codeGraphDoc, metricas);
+      // Compactado: o relatório inteiro de um monorepo passa de centenas de
+      // módulos, e isso viaja em TODO scan. Totais, ciclos e os módulos que
+      // realmente pedem atenção cabem; a lista completa não precisa viajar.
+      arquitetura = {
+        geradoEm: rel.geradoEm,
+        totais: rel.totais,
+        ciclos: rel.ciclos.slice(0, 10),
+        modulos: rel.modulos.slice(0, 40),
+      };
+    }
+
     sarif.runs[0]!.properties = {
       ...(sarif.runs[0]!.properties ?? {}),
       codeGraph: viz,
+      ...(arquitetura ? { arquitetura } : {}),
     };
   }
 
