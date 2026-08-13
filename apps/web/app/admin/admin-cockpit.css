@@ -1017,3 +1017,113 @@
 }
 
 
+
+/* ---------------------------------------------------------------------------
+   Leitura arquitetural.
+
+   A tabela e o coracao da tela, entao ela ganha numero tabular e o resto
+   fica quieto: o que a pessoa faz aqui e comparar colunas de digitos, e
+   digito que dança de largura entre linhas torna a comparação impossivel.
+   --------------------------------------------------------------------------- */
+.arq-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+.arq-metrica {
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-left: 3px solid var(--muted);
+}
+.arq-metrica--ok { border-left-color: var(--ok); }
+.arq-metrica--warn { border-left-color: var(--warn); }
+.arq-metrica--danger { border-left-color: var(--danger); }
+.arq-metrica__rot {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.arq-metrica__val {
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.arq-metrica__nota { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+.arq-ciclo {
+  border: 1px solid var(--danger);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 14px;
+}
+.arq-ciclo__n { font-size: 12px; color: var(--muted); }
+.arq-ciclo__lista { flex-basis: 100%; font-size: 13px; line-height: 1.9; }
+.arq-ciclo__lista code {
+  font-size: 12.5px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.arq-seta { color: var(--muted); padding: 0 2px; }
+
+.arq-controles { display: flex; gap: 8px; flex-wrap: wrap; }
+.arq-busca,
+.arq-ordem {
+  background: transparent;
+  color: inherit;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.16));
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-family: inherit;
+}
+.arq-busca { min-width: 200px; }
+.arq-busca:focus-visible,
+.arq-ordem:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.arq-rolagem { overflow-x: auto; }
+.arq-tabela { width: 100%; border-collapse: collapse; min-width: 860px; font-size: 13.5px; }
+.arq-tabela th,
+.arq-tabela td {
+  padding: 9px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  white-space: nowrap;
+}
+.arq-tabela th {
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+}
+.arq-num { text-align: right; font-variant-numeric: tabular-nums; }
+.arq-risco { font-weight: 600; }
+.arq-caminho {
+  max-width: 380px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12.5px;
+}
+.arq-papel {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+}
+.arq-papel--ok { color: var(--ok); }
+.arq-papel--warn { color: var(--warn); }
+.arq-papel--danger { color: var(--danger); }
+.arq-papel--neutro { color: var(--muted); }

@@ -45,6 +45,7 @@ const RulesCatalog = dynamic(() => import("@/components/admin/RulesCatalog"), { 
 const McpIntegrationPanel = dynamic(() => import("@/components/admin/McpIntegrationPanel"), { ssr: false });
 const RelatorioPanel = dynamic(() => import("@/components/admin/RelatorioPanel"), { ssr: false });
 const EsteiraPanel = dynamic(() => import("@/components/admin/EsteiraPanel"), { ssr: false });
+const ArquiteturaPanel = dynamic(() => import("@/components/admin/ArquiteturaPanel"), { ssr: false });
 const FindingsBrowser = dynamic(
   () => import("@/components/FindingsBrowser").then((m) => m.default),
   { ssr: false },
@@ -66,6 +67,7 @@ const SHARED_GROUPS: CockpitNavGroup[] = [
       { id: "visao-geral", label: "Visão geral" },
       { id: "apontamentos", label: "Apontamentos" },
       { id: "relatorio", label: "Relatório executivo" },
+      { id: "arquitetura", label: "Leitura arquitetural" },
     ],
   },
   {
@@ -284,6 +286,7 @@ function AdminPanelInner() {
                   qualityGateStatus: (rd.qualityGateStatus as string | undefined) ?? "PASSED",
                   openIssues: (rd.openIssues as number | undefined) ?? 0,
                   lastAnalyzedAt: null,
+                  codeGraph: (rd.codeGraph as RepoRow["codeGraph"]) ?? null,
                 };
               }),
             };
@@ -906,6 +909,8 @@ function AdminPanelInner() {
             </DataSection>
           </>
         )}
+
+        {tab === "arquitetura" && <ArquiteturaPanel />}
 
         {tab === "esteira" && isPlatformAdmin && <EsteiraPanel />}
 

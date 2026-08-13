@@ -20,3 +20,9 @@ export {
   summarizeGraph,
 } from "./query.ts";
 export { toVizSummary, vizFromCallGraphEvidence } from "./viz.ts";
+export { analisarArquitetura } from "./arquitetura.ts";
+export type {
+  RelatorioArquitetura,
+  ModuloArquitetura,
+  MetricaDeArquivo,
+} from "./arquitetura.ts";
