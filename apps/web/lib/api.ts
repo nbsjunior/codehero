@@ -47,6 +47,26 @@ export interface RepoAutoScan {
   lastRunAt: string | null;
 }
 
+export interface CodeGraphRepoSummary {
+  version?: number;
+  generatedAt?: string;
+  nodes: number;
+  edges: number;
+  functions: number;
+  calls: number;
+  imports: number;
+  entries: number;
+  hotspots?: Array<{
+    id: string;
+    name: string;
+    file: string;
+    fanIn: number;
+    fanOut: number;
+    hopsToEntry: number | null;
+  }>;
+  links?: Array<{ from: string; to: string; kind?: string }>;
+}
+
 export interface RepoRow {
   repoId: string;
   name: string;
@@ -58,6 +78,7 @@ export interface RepoRow {
   openIssues: number;
   lastAnalyzedAt: string | null;
   autoScan?: RepoAutoScan;
+  codeGraph?: CodeGraphRepoSummary | null;
 }
 
 export interface AdminProjectRow {

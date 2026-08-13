@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { Callout, DataSection, KpiCard, KpiGroup, PageHeader } from "@/components/AdminUi";
+import { CodeGraphPanel } from "@/components/CodeGraphPanel";
+import { VerticalBars } from "@/components/RepoHealthCharts";
 import {
   adminGetPlatformSummary,
   type AdminIssuesResult,
@@ -9,6 +11,7 @@ import {
   type AdminRepoFindingCount,
   type PlatformSummary,
 } from "@/lib/api";
+import { aggregateCodeGraphs } from "@/lib/workspaceInsights";
 
 const ratingColor: Record<string, string> = {
   A: "var(--rating-a)",
@@ -154,8 +157,8 @@ export default function RelatorioPanel({
         title={isWorkspace ? "Relatório executivo" : "Relatório"}
         description={
           isWorkspace
-            ? "Ratings, débito e achados dos seus projetos, workspaces e repositórios"
-            : "Ratings, débito e onde a plataforma precisa de atenção"
+            ? "Ratings, débito, grafo estrutural e achados dos seus projetos"
+            : "Ratings, débito, grafo do código avaliado e onde a plataforma precisa de atenção"
         }
         actions={
           <button type="button" className="hero-btn hero-btn-outline" disabled={retryBusy} onClick={() => void retrySummary()}>
@@ -210,6 +213,8 @@ export default function RelatorioPanel({
           <RatingDistribution buckets={security.buckets} emptyHint="Nenhum projeto com rating ainda." />
         </DataSection>
       </div>
+
+      <CodeGraphExecutiveSection projects={projects} onOpenWorkspace={onOpenWorkspace} />
 
       <DataSection
         title="Principais causas"
@@ -284,6 +289,159 @@ export default function RelatorioPanel({
         </DataSection>
       </div>
     </>
+  );
+}
+
+const HOP_LABEL: Record<string, string> = {
+  entry: "Entry (0 hops)",
+  hop1: "1 hop",
+  hop2: "2 hops",
+  hop3plus: "3+ hops",
+  unknown: "Sem caminho",
+};
+const HOP_COLOR: Record<string, string> = {
+  entry: "#3fb950",
+  hop1: "#58a6ff",
+  hop2: "#d29922",
+  hop3plus: "#db6d28",
+  unknown: "#8b949e",
+};
+
+function CodeGraphExecutiveSection({
+  projects,
+  onOpenWorkspace,
+}: {
+  projects: AdminProjectRow[];
+  onOpenWorkspace: (orgId: string, projectId: string, repoId?: string) => void;
+}) {
+  const graph = useMemo(() => aggregateCodeGraphs(projects), [projects]);
+  const coveragePct =
+    graph.repoCount > 0 ? Math.round((graph.reposWithGraph / graph.repoCount) * 100) : 0;
+  const hopRows = (["entry", "hop1", "hop2", "hop3plus", "unknown"] as const)
+    .map((k) => ({ label: HOP_LABEL[k]!, value: graph.hopBuckets[k], color: HOP_COLOR[k] }))
+    .filter((r) => r.value > 0);
+  const mergedViz =
+    graph.hotspots.length > 0
+      ? {
+          version: 1 as const,
+          nodes: graph.nodes,
+          edges: graph.edges,
+          functions: graph.functions,
+          calls: graph.calls,
+          imports: graph.imports,
+          entries: graph.entries,
+          hotspots: graph.hotspots.map((h) => ({
+            id: h.id,
+            name: h.name,
+            file: h.file,
+            fanIn: h.fanIn,
+            fanOut: h.fanOut,
+            hopsToEntry: h.hopsToEntry,
+          })),
+          links: [],
+        }
+      : null;
+
+  return (
+    <div style={{ margin: "1.5rem 0 0.5rem" }}>
+      <DataSection
+        title="Grafo do código avaliado"
+        description="Estrutura determinística (funções, calls, imports) — sem Gen AI. Agregado dos repositórios com scan + métricas."
+      >
+        <KpiGroup>
+          <KpiCard
+            label="Repos com grafo"
+            value={`${graph.reposWithGraph}/${graph.repoCount}`}
+            sub={`${coveragePct}% da amostra`}
+            tone={graph.reposWithGraph === 0 ? "warn" : "ok"}
+          />
+          <KpiCard label="Funções" value={graph.functions.toLocaleString("pt-BR")} />
+          <KpiCard label="Calls" value={graph.calls.toLocaleString("pt-BR")} />
+          <KpiCard label="Imports" value={graph.imports.toLocaleString("pt-BR")} />
+          <KpiCard label="Entries" value={graph.entries.toLocaleString("pt-BR")} />
+          <KpiCard
+            label="Nós · arestas"
+            value={`${graph.nodes.toLocaleString("pt-BR")} · ${graph.edges.toLocaleString("pt-BR")}`}
+          />
+        </KpiGroup>
+
+        {graph.reposWithGraph === 0 ? (
+          <Callout tone="neutral" title="Ainda sem code-graph nesta amostra">
+            Rode a avaliação no plugin ou no CI com métricas (o scanner gera o grafo automaticamente) e
+            sincronize o SARIF. O workspace mostra o diagrama depois do ingest.
+          </Callout>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gap: "1.25rem",
+              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+              marginTop: "1rem",
+            }}
+          >
+            <div className="ch-metric-card" style={{ gridColumn: "auto" }}>
+              <h3>Composição estrutural</h3>
+              <VerticalBars data={graph.composition} maxBars={4} />
+            </div>
+            <div className="ch-metric-card">
+              <h3>Exposição até entrypoint</h3>
+              {hopRows.length === 0 ? (
+                <p className="hero-caption">Sem hotspots com hops medidos.</p>
+              ) : (
+                <VerticalBars data={hopRows} maxBars={5} />
+              )}
+            </div>
+            <div className="ch-metric-card">
+              <h3>Repositórios com mais funções</h3>
+              {graph.topRepos.length === 0 ? (
+                <p className="hero-caption">Sem dados.</p>
+              ) : (
+                <div style={{ display: "grid", gap: "0.4rem" }}>
+                  {graph.topRepos.slice(0, 8).map((r) => (
+                    <button
+                      key={`${r.orgId}/${r.projectId}/${r.repoId}`}
+                      type="button"
+                      className="hero-panel-sm"
+                      onClick={() => onOpenWorkspace(r.orgId, r.projectId, r.repoId)}
+                      style={{
+                        padding: "0.55rem 0.75rem",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        gap: "0.65rem",
+                        width: "100%",
+                        textAlign: "left",
+                        cursor: "pointer",
+                        border: "1px solid var(--line)",
+                        background: "var(--surface)",
+                        font: "inherit",
+                        color: "inherit",
+                      }}
+                    >
+                      <div>
+                        <strong>{r.repoName}</strong>
+                        <div className="hero-caption">
+                          {r.projectName} · fan-in máx. {r.maxFanIn}
+                        </div>
+                      </div>
+                      <span className="hero-badge" style={{ background: "#388bfd", color: "#fff" }}>
+                        {r.functions.toLocaleString("pt-BR")} fn
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {mergedViz ? (
+          <div style={{ marginTop: "1.1rem" }}>
+            <CodeGraphPanel graph={mergedViz} title="Hotspots do portfólio (maior fan-in)" />
+          </div>
+        ) : null}
+      </DataSection>
+    </div>
   );
 }
 

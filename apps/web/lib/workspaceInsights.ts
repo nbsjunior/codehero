@@ -6,6 +6,7 @@ import type {
   AdminProjectRow,
   AdminRepoFindingCount,
   AdminRuleCause,
+  CodeGraphRepoSummary,
   PlatformSummary,
 } from "@/lib/api";
 
@@ -63,6 +64,114 @@ export function summaryFromProjects(projects: AdminProjectRow[]): PlatformSummar
     byMaintainabilityRating,
     byQualityGate,
   };
+}
+
+export type PortfolioCodeGraph = {
+  repoCount: number;
+  reposWithGraph: number;
+  functions: number;
+  calls: number;
+  imports: number;
+  entries: number;
+  nodes: number;
+  edges: number;
+  topRepos: Array<{
+    repoId: string;
+    repoName: string;
+    projectName: string;
+    orgName: string;
+    orgId: string;
+    projectId: string;
+    functions: number;
+    calls: number;
+    imports: number;
+    maxFanIn: number;
+  }>;
+  hotspots: Array<{
+    id: string;
+    name: string;
+    file: string;
+    fanIn: number;
+    fanOut: number;
+    hopsToEntry: number | null;
+    repoName: string;
+  }>;
+  hopBuckets: { entry: number; hop1: number; hop2: number; hop3plus: number; unknown: number };
+  composition: Array<{ label: string; value: number; color: string }>;
+};
+
+function isGraph(g: CodeGraphRepoSummary | null | undefined): g is CodeGraphRepoSummary {
+  return Boolean(g && (g.functions > 0 || g.nodes > 0));
+}
+
+/** Soma o code-graph dos repositórios já carregados (relatório executivo). */
+export function aggregateCodeGraphs(projects: AdminProjectRow[]): PortfolioCodeGraph {
+  const empty: PortfolioCodeGraph = {
+    repoCount: 0,
+    reposWithGraph: 0,
+    functions: 0,
+    calls: 0,
+    imports: 0,
+    entries: 0,
+    nodes: 0,
+    edges: 0,
+    topRepos: [],
+    hotspots: [],
+    hopBuckets: { entry: 0, hop1: 0, hop2: 0, hop3plus: 0, unknown: 0 },
+    composition: [],
+  };
+  const hopBuckets = { entry: 0, hop1: 0, hop2: 0, hop3plus: 0, unknown: 0 };
+  const topRepos: PortfolioCodeGraph["topRepos"] = [];
+  const hotspots: PortfolioCodeGraph["hotspots"] = [];
+  let repoCount = 0;
+
+  for (const p of projects) {
+    for (const r of p.repos) {
+      repoCount += 1;
+      const g = r.codeGraph;
+      if (!isGraph(g)) continue;
+      empty.reposWithGraph += 1;
+      empty.functions += g.functions || 0;
+      empty.calls += g.calls || 0;
+      empty.imports += g.imports || 0;
+      empty.entries += g.entries || 0;
+      empty.nodes += g.nodes || 0;
+      empty.edges += g.edges || 0;
+      const maxFanIn = Math.max(0, ...(g.hotspots ?? []).map((h) => h.fanIn));
+      topRepos.push({
+        repoId: r.repoId,
+        repoName: r.name,
+        projectName: p.name,
+        orgName: p.orgName,
+        orgId: p.orgId,
+        projectId: p.projectId,
+        functions: g.functions || 0,
+        calls: g.calls || 0,
+        imports: g.imports || 0,
+        maxFanIn,
+      });
+      for (const h of g.hotspots ?? []) {
+        hotspots.push({ ...h, repoName: r.name });
+        if (h.hopsToEntry === 0) hopBuckets.entry += 1;
+        else if (h.hopsToEntry === 1) hopBuckets.hop1 += 1;
+        else if (h.hopsToEntry === 2) hopBuckets.hop2 += 1;
+        else if (typeof h.hopsToEntry === "number") hopBuckets.hop3plus += 1;
+        else hopBuckets.unknown += 1;
+      }
+    }
+  }
+
+  empty.repoCount = repoCount;
+  empty.topRepos = topRepos.sort((a, b) => b.functions - a.functions).slice(0, 10);
+  empty.hotspots = hotspots.sort((a, b) => b.fanIn - a.fanIn).slice(0, 12);
+  empty.hopBuckets = hopBuckets;
+  empty.composition = [
+    { label: "Funções", value: empty.functions, color: "#388bfd" },
+    { label: "Calls", value: empty.calls, color: "#a371f7" },
+    { label: "Imports", value: empty.imports, color: "#d29922" },
+    { label: "Entries", value: empty.entries, color: "#3fb950" },
+  ];
+  return empty;
 }
 
 /**

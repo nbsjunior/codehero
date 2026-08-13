@@ -10,6 +10,58 @@ async function requirePlatformAdmin(uid: string): Promise<void> {
 
 const ORGS_PAGE_SIZE = 25;
 
+/** Compact code-graph summary stored on the repo doc after ingest. */
+function slimCodeGraph(raw: unknown): Record<string, unknown> | null {
+  if (!raw || typeof raw !== "object") return null;
+  const g = raw as {
+    nodes?: number;
+    edges?: number;
+    functions?: number;
+    calls?: number;
+    imports?: number;
+    entries?: number;
+    generatedAt?: string;
+    hotspots?: unknown;
+    links?: unknown;
+  };
+  if (typeof g.functions !== "number" && typeof g.nodes !== "number") return null;
+  const hotspots = Array.isArray(g.hotspots)
+    ? g.hotspots
+        .filter((h): h is Record<string, unknown> => !!h && typeof h === "object")
+        .slice(0, 28)
+        .map((h) => ({
+          id: String(h.id ?? ""),
+          name: String(h.name ?? ""),
+          file: String(h.file ?? ""),
+          fanIn: Number(h.fanIn) || 0,
+          fanOut: Number(h.fanOut) || 0,
+          hopsToEntry: typeof h.hopsToEntry === "number" ? h.hopsToEntry : null,
+        }))
+    : [];
+  const links = Array.isArray(g.links)
+    ? g.links
+        .filter((l): l is Record<string, unknown> => !!l && typeof l === "object")
+        .slice(0, 90)
+        .map((l) => ({
+          from: String(l.from ?? ""),
+          to: String(l.to ?? ""),
+          kind: typeof l.kind === "string" ? l.kind : "calls",
+        }))
+    : [];
+  return {
+    version: 1,
+    generatedAt: typeof g.generatedAt === "string" ? g.generatedAt : null,
+    nodes: Number(g.nodes) || 0,
+    edges: Number(g.edges) || 0,
+    functions: Number(g.functions) || 0,
+    calls: Number(g.calls) || 0,
+    imports: Number(g.imports) || 0,
+    entries: Number(g.entries) || 0,
+    hotspots,
+    links,
+  };
+}
+
 /**
  * Paginated admin view: one page of orgs (each with its projects and their
  * repos) at a time. Fanning out to EVERY org/project/repo in one call breaks
@@ -53,6 +105,7 @@ export const adminListAllProjects = onCall(
                 qualityGateStatus: rd.qualityGateStatus ?? "PASSED",
                 openIssues: rd.openIssues ?? 0,
                 lastAnalyzedAt: rd.lastAnalyzedAt?.toDate?.().toISOString() ?? null,
+                codeGraph: slimCodeGraph(rd.codeGraph),
                 autoScan: rd.autoScan
                   ? {
                       enabled: !!rd.autoScan.enabled,
