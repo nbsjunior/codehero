@@ -2775,6 +2775,39 @@ a.hero-link {
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
+.ch-ts {
+  display: grid;
+  gap: 0.55rem;
+}
+.ch-ts-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.ch-ts-grid {
+  stroke: var(--line);
+  stroke-width: 1;
+  opacity: 0.45;
+}
+.ch-ts-axis {
+  font-size: 9px;
+  fill: var(--muted);
+}
+.ch-ts-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.ch-ts-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
 .ch-debt-head {
   display: flex;
   flex-wrap: wrap;

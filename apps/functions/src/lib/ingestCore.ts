@@ -55,6 +55,9 @@ export interface PersistAnalysisResult {
   summary: {
     total: number;
     bySeverity: Record<Severity, number>;
+    /** Contagem por tipo (CODE_SMELL, BUG, …) — base da série histórica de smells. */
+    byType: Record<string, number>;
+    codeSmellCount: number;
     debtMinutes: number;
     debtRatio: number;
     maintainabilityRating: string;
@@ -219,9 +222,11 @@ export function computeAnalysisSummary(
   const newSet = new Set(newCodeFingerprints ?? []);
   const scopeToNewCode = newSet.size > 0;
   const bySeverity: Record<Severity, number> = { BLOCKER: 0, CRITICAL: 0, MAJOR: 0, MINOR: 0, INFO: 0 };
+  const byType: Record<string, number> = {};
   const codeSmellEfforts: number[] = [];
   const vulnSeverities: Severity[] = [];
   let newBlockerIssues = 0;
+  let codeSmellCount = 0;
 
   for (const r of results) {
     const sev = (r.properties?.severity as Severity) ?? "INFO";
@@ -233,6 +238,8 @@ export function computeAnalysisSummary(
     const gateSuppressed = r.properties?.gateSuppressed === true;
 
     if (SEVERITIES.includes(sev)) bySeverity[sev] += 1;
+    byType[issueType] = (byType[issueType] ?? 0) + 1;
+    if (issueType === "CODE_SMELL") codeSmellCount += 1;
     // Política: regra com FP local alto (≥minFeedback e rate≥0.6) não conta no gate.
     if (!gateSuppressed && sev === "BLOCKER" && isNew) newBlockerIssues += 1;
 
@@ -263,6 +270,8 @@ export function computeAnalysisSummary(
   return {
     total: results.length,
     bySeverity,
+    byType,
+    codeSmellCount,
     debtMinutes: debtMin,
     debtRatio,
     maintainabilityRating: maintRating,

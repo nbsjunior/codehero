@@ -211,3 +211,136 @@ export function GatePill({ status }: { status: string }) {
     </span>
   );
 }
+
+export type TimeSeriesPoint = { t: number; label: string; values: Record<string, number> };
+
+export type TimeSeriesLine = {
+  key: string;
+  label: string;
+  color: string;
+};
+
+/**
+ * Multi-series line chart for portfolio evolution (smells / complexity).
+ * Expects points ordered by `t` ascending; missing series values are skipped in the path.
+ */
+export function TimeSeriesChart({
+  points,
+  series,
+  height = 180,
+  valueFormat,
+}: {
+  points: TimeSeriesPoint[];
+  series: TimeSeriesLine[];
+  height?: number;
+  valueFormat?: (n: number) => string;
+}) {
+  const fmt = valueFormat ?? ((n: number) => n.toLocaleString("pt-BR"));
+  if (points.length === 0) {
+    return <p className="hero-caption">Sem histórico de análises ainda.</p>;
+  }
+
+  const pad = { top: 12, right: 12, bottom: 28, left: 44 };
+  const width = 560;
+  const innerW = width - pad.left - pad.right;
+  const innerH = height - pad.top - pad.bottom;
+
+  let minY = Infinity;
+  let maxY = -Infinity;
+  for (const p of points) {
+    for (const s of series) {
+      const v = p.values[s.key];
+      if (typeof v === "number" && Number.isFinite(v)) {
+        minY = Math.min(minY, v);
+        maxY = Math.max(maxY, v);
+      }
+    }
+  }
+  if (!Number.isFinite(minY) || !Number.isFinite(maxY)) {
+    return <p className="hero-caption">Sem métricas numéricas neste período.</p>;
+  }
+  if (minY === maxY) {
+    minY = Math.min(0, minY);
+    maxY = maxY === 0 ? 1 : maxY * 1.15;
+  }
+  const ySpan = maxY - minY || 1;
+  const xSpan = Math.max(1, points.length - 1);
+
+  const xAt = (i: number) => pad.left + (i / xSpan) * innerW;
+  const yAt = (v: number) => pad.top + innerH - ((v - minY) / ySpan) * innerH;
+
+  const paths = series.map((s) => {
+    const coords: Array<{ x: number; y: number; v: number }> = [];
+    points.forEach((p, i) => {
+      const v = p.values[s.key];
+      if (typeof v === "number" && Number.isFinite(v)) {
+        coords.push({ x: xAt(i), y: yAt(v), v });
+      }
+    });
+    if (coords.length === 0) return { ...s, d: "", coords };
+    const d = coords.map((c, i) => `${i === 0 ? "M" : "L"}${c.x.toFixed(1)},${c.y.toFixed(1)}`).join(" ");
+    return { ...s, d, coords };
+  });
+
+  const yTicks = [minY, minY + ySpan / 2, maxY];
+  const labelEvery = Math.max(1, Math.ceil(points.length / 6));
+
+  return (
+    <div className="ch-ts">
+      <svg
+        className="ch-ts-svg"
+        viewBox={`0 0 ${width} ${height}`}
+        role="img"
+        aria-label="Série temporal"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {yTicks.map((tick, i) => {
+          const y = yAt(tick);
+          return (
+            <g key={`yt-${i}`}>
+              <line
+                x1={pad.left}
+                x2={width - pad.right}
+                y1={y}
+                y2={y}
+                className="ch-ts-grid"
+              />
+              <text x={pad.left - 6} y={y + 3} textAnchor="end" className="ch-ts-axis">
+                {fmt(Math.round(tick * 10) / 10)}
+              </text>
+            </g>
+          );
+        })}
+        {paths.map((s) =>
+          s.d ? (
+            <path key={s.key} d={s.d} fill="none" stroke={s.color} strokeWidth={2.2} strokeLinejoin="round" strokeLinecap="round" />
+          ) : null,
+        )}
+        {paths.flatMap((s) =>
+          s.coords.map((c, i) => (
+            <circle key={`${s.key}-${i}`} cx={c.x} cy={c.y} r={3} fill={s.color}>
+              <title>
+                {s.label}: {fmt(c.v)}
+              </title>
+            </circle>
+          )),
+        )}
+        {points.map((p, i) =>
+          i % labelEvery === 0 || i === points.length - 1 ? (
+            <text key={`xl-${i}`} x={xAt(i)} y={height - 8} textAnchor="middle" className="ch-ts-axis">
+              {p.label}
+            </text>
+          ) : null,
+        )}
+      </svg>
+      <ul className="ch-ts-legend">
+        {series.map((s) => (
+          <li key={s.key}>
+            <span className="ch-dot" style={{ background: s.color }} />
+            {s.label}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}

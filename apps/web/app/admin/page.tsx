@@ -278,6 +278,20 @@ function AdminPanelInner() {
               lastAnalyzedAt: null,
               repos: reposSnap.docs.map((r) => {
                 const rd = r.data();
+                const lastAt =
+                  typeof rd.lastAnalyzedAt?.toDate === "function"
+                    ? (rd.lastAnalyzedAt.toDate() as Date).toISOString()
+                    : typeof rd.lastAnalyzedAt === "string"
+                      ? rd.lastAnalyzedAt
+                      : null;
+                const auto = rd.autoScan as
+                  | {
+                      enabled?: boolean;
+                      periodicityDays?: number;
+                      nextRunAt?: { toDate?: () => Date };
+                      lastRunAt?: { toDate?: () => Date };
+                    }
+                  | undefined;
                 return {
                   repoId: r.id,
                   name: (rd.name as string | undefined) ?? r.id,
@@ -287,11 +301,32 @@ function AdminPanelInner() {
                   securityRating: (rd.securityRating as string | undefined) ?? "A",
                   qualityGateStatus: (rd.qualityGateStatus as string | undefined) ?? "PASSED",
                   openIssues: (rd.openIssues as number | undefined) ?? 0,
-                  lastAnalyzedAt: null,
+                  lastAnalyzedAt: lastAt,
                   codeGraph: (rd.codeGraph as RepoRow["codeGraph"]) ?? null,
+                  arquitetura: (rd.arquitetura as RepoRow["arquitetura"]) ?? null,
+                  autoScan: auto
+                    ? {
+                        enabled: !!auto.enabled,
+                        periodicityDays: auto.periodicityDays ?? 7,
+                        nextRunAt:
+                          typeof auto.nextRunAt?.toDate === "function"
+                            ? auto.nextRunAt.toDate().toISOString()
+                            : null,
+                        lastRunAt:
+                          typeof auto.lastRunAt?.toDate === "function"
+                            ? auto.lastRunAt.toDate().toISOString()
+                            : null,
+                      }
+                    : undefined,
                 };
               }),
             };
+            const latestRepo = row.repos
+              .map((r) => r.lastAnalyzedAt)
+              .filter((x): x is string => Boolean(x))
+              .sort()
+              .at(-1);
+            row.lastAnalyzedAt = latestRepo ?? null;
             return row;
           }),
         );
@@ -380,16 +415,22 @@ function AdminPanelInner() {
     setIssuesLoading(true);
     setIssuesError(null);
     try {
-      setPlatformSummary(summaryFromProjects(projects));
+      let nextProjects = projects;
+      if (user?.uid) {
+        nextProjects = await loadMemberProjects(user.uid);
+        setProjects(nextProjects);
+        setOrgCount(new Set(nextProjects.map((p) => p.orgId)).size);
+      }
+      setPlatformSummary(summaryFromProjects(nextProjects));
       setSummaryError(null);
-      const res = await loadWorkspaceIssues(projects);
+      const res = await loadWorkspaceIssues(nextProjects);
       setIssues(res);
     } catch (err) {
       setIssuesError(err instanceof Error ? err.message : "Falha nos apontamentos do workspace.");
     } finally {
       setIssuesLoading(false);
     }
-  }, [projects]);
+  }, [projects, user?.uid]);
 
   // Gestor: gráficos e relatório a partir dos projetos/repos da conta.
   useEffect(() => {

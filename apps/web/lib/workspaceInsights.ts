@@ -1,4 +1,4 @@
-import { collection, getDocs, limit, query, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, where } from "firebase/firestore";
 import { dbClient } from "@/lib/firebaseDb";
 import type {
   AdminIssueRow,
@@ -6,12 +6,14 @@ import type {
   AdminProjectRow,
   AdminRepoFindingCount,
   AdminRuleCause,
+  ArquiteturaRepoSummary,
   CodeGraphRepoSummary,
   PlatformSummary,
 } from "@/lib/api";
 
 const MAX_ISSUES = 800;
 const PER_REPO_LIMIT = 120;
+const PER_REPO_ANALYSES = 40;
 
 function worseRating(a: string, b: string): string {
   const order = ["A", "B", "C", "D", "E"];
@@ -387,3 +389,536 @@ export function aggregateArquitetura(projects: AdminProjectRow[]): PortfolioArqu
   out.ciclos = out.ciclos.slice(0, 8);
   return out;
 }
+
+// ---------------------------------------------------------------------------
+// Série temporal histórica (workspace admin) — smells + complexidade/grafo
+// ---------------------------------------------------------------------------
+
+export type AnalysisSnap = {
+  at: number;
+  dayKey: string;
+  debtMinutes: number;
+  codeSmells: number | null;
+  findingsTotal: number;
+  functions: number;
+  calls: number;
+  edges: number;
+  maxFanIn: number;
+  cognitivaMedia: number | null;
+  ciclomaticaMedia: number | null;
+  funcoesArq: number;
+  modulosEmCiclo: number;
+  arestasInternas: number;
+  gatePassed: boolean;
+  failedConditions: string[];
+  maintainabilityRating: string | null;
+  securityRating: string | null;
+};
+
+function dayKeyFromMs(ms: number): string {
+  const d = new Date(ms);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function labelFromDayKey(dayKey: string): string {
+  const [, m, d] = dayKey.split("-");
+  return `${d}/${m}`;
+}
+
+function createdAtMs(raw: unknown): number | null {
+  if (!raw) return null;
+  if (typeof raw === "object" && raw !== null && "toDate" in raw) {
+    try {
+      return (raw as { toDate: () => Date }).toDate().getTime();
+    } catch {
+      return null;
+    }
+  }
+  if (typeof raw === "string" || typeof raw === "number") {
+    const n = new Date(raw).getTime();
+    return Number.isFinite(n) ? n : null;
+  }
+  return null;
+}
+
+function maxFanInFromGraph(g: CodeGraphRepoSummary | null | undefined): number {
+  if (!g?.hotspots?.length) return 0;
+  return Math.max(0, ...g.hotspots.map((h) => h.fanIn || 0));
+}
+
+function snapFromAnalysisDoc(data: Record<string, unknown>): AnalysisSnap | null {
+  const at = createdAtMs(data.createdAt);
+  if (at == null) return null;
+  const summary = (data.summary as Record<string, unknown> | undefined) ?? {};
+  const byType = (summary.byType as Record<string, number> | undefined) ?? undefined;
+  const codeSmellCount =
+    typeof summary.codeSmellCount === "number"
+      ? summary.codeSmellCount
+      : typeof byType?.CODE_SMELL === "number"
+        ? byType.CODE_SMELL
+        : null;
+  const g = data.codeGraph as CodeGraphRepoSummary | null | undefined;
+  const a = data.arquitetura as ArquiteturaRepoSummary | null | undefined;
+  const gate = summary.qualityGate as { status?: string; failedConditions?: string[] } | undefined;
+  return {
+    at,
+    dayKey: dayKeyFromMs(at),
+    debtMinutes: typeof summary.debtMinutes === "number" ? summary.debtMinutes : 0,
+    codeSmells: codeSmellCount,
+    findingsTotal: typeof summary.total === "number" ? summary.total : 0,
+    functions: g?.functions ?? 0,
+    calls: g?.calls ?? 0,
+    edges: g?.edges ?? 0,
+    maxFanIn: maxFanInFromGraph(g),
+    cognitivaMedia: a?.totais?.cognitivaMedia ?? null,
+    ciclomaticaMedia: a?.totais?.ciclomaticaMedia ?? null,
+    funcoesArq: a?.totais?.funcoes ?? 0,
+    modulosEmCiclo: a?.totais?.modulosEmCiclo ?? 0,
+    arestasInternas: a?.totais?.arestasInternas ?? 0,
+    gatePassed: (gate?.status ?? "PASSED") === "PASSED",
+    failedConditions: Array.isArray(gate?.failedConditions)
+      ? gate!.failedConditions!.filter((c): c is string => typeof c === "string")
+      : [],
+    maintainabilityRating:
+      typeof summary.maintainabilityRating === "string" ? summary.maintainabilityRating : null,
+    securityRating: typeof summary.securityRating === "string" ? summary.securityRating : null,
+  };
+}
+
+/**
+ * Últimas analyses por repositório do workspace (Firestore client).
+ * Ordenadas por createdAt asc dentro de cada repo.
+ */
+export async function loadWorkspaceAnalysisHistory(
+  projects: AdminProjectRow[],
+): Promise<Map<string, AnalysisSnap[]>> {
+  const byRepo = new Map<string, AnalysisSnap[]>();
+  const repoJobs = projects.flatMap((p) =>
+    p.repos.map((r) => ({
+      key: `${p.orgId}/${p.projectId}/${r.repoId}`,
+      orgId: p.orgId,
+      projectId: p.projectId,
+      repoId: r.repoId,
+    })),
+  );
+
+  const CONCURRENCY = 10;
+  for (let i = 0; i < repoJobs.length; i += CONCURRENCY) {
+    const chunk = repoJobs.slice(i, i + CONCURRENCY);
+    const snaps = await Promise.all(
+      chunk.map(async (meta) => {
+        try {
+          const q = query(
+            collection(
+              dbClient,
+              "orgs",
+              meta.orgId,
+              "projects",
+              meta.projectId,
+              "repos",
+              meta.repoId,
+              "analyses",
+            ),
+            orderBy("createdAt", "desc"),
+            limit(PER_REPO_ANALYSES),
+          );
+          const snap = await getDocs(q);
+          const rows: AnalysisSnap[] = [];
+          for (const d of snap.docs) {
+            const row = snapFromAnalysisDoc(d.data() as Record<string, unknown>);
+            if (row) rows.push(row);
+          }
+          rows.sort((a, b) => a.at - b.at);
+          return { key: meta.key, rows };
+        } catch {
+          return { key: meta.key, rows: [] as AnalysisSnap[] };
+        }
+      }),
+    );
+    for (const { key, rows } of snaps) {
+      if (rows.length > 0) byRepo.set(key, rows);
+    }
+  }
+  return byRepo;
+}
+
+export type PortfolioHistoryPoint = {
+  t: number;
+  label: string;
+  values: Record<string, number>;
+};
+
+export type PortfolioHistorySeries = {
+  analysisCount: number;
+  repoCountWithHistory: number;
+  smellPoints: PortfolioHistoryPoint[];
+  complexityPoints: PortfolioHistoryPoint[];
+  /** Repos com gate FAILED (carry-forward) + builds do dia. */
+  gatePoints: PortfolioHistoryPoint[];
+  /** Rating score médio A=5…E=1 (carry-forward). */
+  ratingPoints: PortfolioHistoryPoint[];
+  /** Condições falhas no snapshot mais recente de cada repo. */
+  failedConditionCounts: Array<{ label: string; value: number; color?: string }>;
+};
+
+const RATING_SCORE: Record<string, number> = { A: 5, B: 4, C: 3, D: 2, E: 1 };
+
+function ratingScore(r: string | null | undefined): number | null {
+  if (!r) return null;
+  return RATING_SCORE[r.toUpperCase()] ?? null;
+}
+
+/**
+ * Agrega o portfólio por dia: em cada dia com ≥1 análise, soma o último
+ * snapshot conhecido de cada repo (carry-forward). Complexidade cognitiva /
+ * ciclomática usa média ponderada por funções arquiteturais.
+ */
+export function buildPortfolioTimeSeries(
+  byRepo: Map<string, AnalysisSnap[]>,
+): PortfolioHistorySeries {
+  const empty: PortfolioHistorySeries = {
+    analysisCount: 0,
+    repoCountWithHistory: byRepo.size,
+    smellPoints: [],
+    complexityPoints: [],
+    gatePoints: [],
+    ratingPoints: [],
+    failedConditionCounts: [],
+  };
+  if (byRepo.size === 0) return empty;
+
+  const daySet = new Set<string>();
+  let analysisCount = 0;
+  for (const rows of byRepo.values()) {
+    analysisCount += rows.length;
+    for (const r of rows) daySet.add(r.dayKey);
+  }
+  const days = [...daySet].sort();
+  if (days.length === 0) return { ...empty, analysisCount };
+
+  const cursors = new Map<string, number>();
+  const latest = new Map<string, AnalysisSnap>();
+
+  const smellPoints: PortfolioHistoryPoint[] = [];
+  const complexityPoints: PortfolioHistoryPoint[] = [];
+  const gatePoints: PortfolioHistoryPoint[] = [];
+  const ratingPoints: PortfolioHistoryPoint[] = [];
+
+  for (const day of days) {
+    let buildsDay = 0;
+    let buildsPassedDay = 0;
+    let buildsFailedDay = 0;
+
+    for (const [repoKey, rows] of byRepo) {
+      let idx = cursors.get(repoKey) ?? 0;
+      while (idx < rows.length && rows[idx]!.dayKey <= day) {
+        const snap = rows[idx]!;
+        if (snap.dayKey === day) {
+          buildsDay += 1;
+          if (snap.gatePassed) buildsPassedDay += 1;
+          else buildsFailedDay += 1;
+        }
+        latest.set(repoKey, snap);
+        idx += 1;
+      }
+      cursors.set(repoKey, idx);
+    }
+
+    let debtMinutes = 0;
+    let codeSmells = 0;
+    let smellsKnown = 0;
+    let findingsTotal = 0;
+    let functions = 0;
+    let calls = 0;
+    let edges = 0;
+    let maxFanIn = 0;
+    let modulosEmCiclo = 0;
+    let arestasInternas = 0;
+    let somaCog = 0;
+    let somaCiclo = 0;
+    let funcoesArq = 0;
+    let gateFailedRepos = 0;
+    let gatePassedRepos = 0;
+    let maintSum = 0;
+    let maintN = 0;
+    let secSum = 0;
+    let secN = 0;
+
+    for (const snap of latest.values()) {
+      debtMinutes += snap.debtMinutes;
+      findingsTotal += snap.findingsTotal;
+      functions += snap.functions;
+      calls += snap.calls;
+      edges += snap.edges;
+      maxFanIn = Math.max(maxFanIn, snap.maxFanIn);
+      modulosEmCiclo += snap.modulosEmCiclo;
+      arestasInternas += snap.arestasInternas;
+      if (snap.codeSmells != null) {
+        codeSmells += snap.codeSmells;
+        smellsKnown += 1;
+      }
+      if (snap.cognitivaMedia != null && snap.funcoesArq > 0) {
+        somaCog += snap.cognitivaMedia * snap.funcoesArq;
+        somaCiclo += (snap.ciclomaticaMedia ?? 0) * snap.funcoesArq;
+        funcoesArq += snap.funcoesArq;
+      }
+      if (snap.gatePassed) gatePassedRepos += 1;
+      else gateFailedRepos += 1;
+      const ms = ratingScore(snap.maintainabilityRating);
+      const ss = ratingScore(snap.securityRating);
+      if (ms != null) {
+        maintSum += ms;
+        maintN += 1;
+      }
+      if (ss != null) {
+        secSum += ss;
+        secN += 1;
+      }
+    }
+
+    const label = labelFromDayKey(day);
+    const t = new Date(`${day}T12:00:00`).getTime();
+    smellPoints.push({
+      t,
+      label,
+      values: {
+        debtHours: Math.round(debtMinutes / 60),
+        ...(smellsKnown > 0 ? { codeSmells } : {}),
+        findingsTotal,
+      },
+    });
+    complexityPoints.push({
+      t,
+      label,
+      values: {
+        functions,
+        calls,
+        edges,
+        maxFanIn,
+        modulosEmCiclo,
+        arestasInternas,
+        ...(funcoesArq > 0
+          ? {
+              cognitivaMedia: Number((somaCog / funcoesArq).toFixed(1)),
+              ciclomaticaMedia: Number((somaCiclo / funcoesArq).toFixed(1)),
+            }
+          : {}),
+      },
+    });
+    gatePoints.push({
+      t,
+      label,
+      values: {
+        gateFailedRepos,
+        gatePassedRepos,
+        buildsDay,
+        buildsPassedDay,
+        buildsFailedDay,
+      },
+    });
+    ratingPoints.push({
+      t,
+      label,
+      values: {
+        ...(maintN > 0 ? { maintScore: Number((maintSum / maintN).toFixed(2)) } : {}),
+        ...(secN > 0 ? { securityScore: Number((secSum / secN).toFixed(2)) } : {}),
+      },
+    });
+  }
+
+  const condCounts = new Map<string, number>();
+  for (const snap of latest.values()) {
+    for (const c of snap.failedConditions) {
+      condCounts.set(c, (condCounts.get(c) ?? 0) + 1);
+    }
+  }
+  const failedConditionCounts = [...condCounts.entries()]
+    .map(([label, value]) => ({ label, value, color: "#f85149" }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 10);
+
+  return {
+    analysisCount,
+    repoCountWithHistory: byRepo.size,
+    smellPoints,
+    complexityPoints,
+    gatePoints,
+    ratingPoints,
+    failedConditionCounts,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Frota de scan — stale / cadência / auto-scan
+// ---------------------------------------------------------------------------
+
+export type FleetRepoRow = {
+  key: string;
+  orgId: string;
+  orgName: string;
+  projectId: string;
+  projectName: string;
+  repoId: string;
+  repoName: string;
+  lastAnalyzedAt: string | null;
+  daysSinceScan: number | null;
+  stale: boolean;
+  neverScanned: boolean;
+  qualityGateStatus: string;
+  autoScanEnabled: boolean;
+  periodicityDays: number;
+  debtMinutes: number;
+  openIssues: number;
+};
+
+export type FleetStatus = {
+  staleAfterDays: number;
+  repos: FleetRepoRow[];
+  staleCount: number;
+  neverScanned: number;
+  failingGate: number;
+  autoScanOff: number;
+  fresh: number;
+};
+
+export function buildFleetStatus(
+  projects: AdminProjectRow[],
+  opts?: { staleAfterDays?: number; nowMs?: number },
+): FleetStatus {
+  const staleAfterDays = opts?.staleAfterDays ?? 7;
+  const now = opts?.nowMs ?? Date.now();
+  const msPerDay = 86_400_000;
+  const repos: FleetRepoRow[] = [];
+
+  for (const p of projects) {
+    for (const r of p.repos) {
+      const last = r.lastAnalyzedAt ? Date.parse(r.lastAnalyzedAt) : NaN;
+      const neverScanned = !Number.isFinite(last);
+      const daysSinceScan = neverScanned ? null : Math.floor((now - last) / msPerDay);
+      const stale = neverScanned || (daysSinceScan != null && daysSinceScan >= staleAfterDays);
+      repos.push({
+        key: `${p.orgId}/${p.projectId}/${r.repoId}`,
+        orgId: p.orgId,
+        orgName: p.orgName,
+        projectId: p.projectId,
+        projectName: p.name,
+        repoId: r.repoId,
+        repoName: r.name,
+        lastAnalyzedAt: r.lastAnalyzedAt,
+        daysSinceScan,
+        stale,
+        neverScanned,
+        qualityGateStatus: r.qualityGateStatus || "PASSED",
+        autoScanEnabled: !!r.autoScan?.enabled,
+        periodicityDays: r.autoScan?.periodicityDays ?? 7,
+        debtMinutes: r.debtMinutes || 0,
+        openIssues: r.openIssues || 0,
+      });
+    }
+  }
+
+  repos.sort((a, b) => {
+    if (a.stale !== b.stale) return a.stale ? -1 : 1;
+    const da = a.daysSinceScan ?? 9999;
+    const db = b.daysSinceScan ?? 9999;
+    return db - da;
+  });
+
+  return {
+    staleAfterDays,
+    repos,
+    staleCount: repos.filter((r) => r.stale).length,
+    neverScanned: repos.filter((r) => r.neverScanned).length,
+    failingGate: repos.filter((r) => r.qualityGateStatus !== "PASSED").length,
+    autoScanOff: repos.filter((r) => !r.autoScanEnabled).length,
+    fresh: repos.filter((r) => !r.stale).length,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// analyticsDaily — só platform admin (regras Firestore)
+// ---------------------------------------------------------------------------
+
+export type AnalyticsDailyRow = {
+  day: string;
+  builds: number;
+  findings: number;
+  linesOfCode: number;
+  debtMinutes: number;
+  gatePassed: number;
+  gateFailed: number;
+};
+
+function dayKeysLastN(n: number, now = new Date()): string[] {
+  const out: string[] = [];
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(now);
+    d.setUTCDate(d.getUTCDate() - i);
+    out.push(d.toISOString().slice(0, 10));
+  }
+  return out;
+}
+
+/** Lê `analyticsDaily/{YYYY-MM-DD}` dos últimos N dias (platform admin). */
+export async function loadPlatformAnalyticsDaily(days = 30): Promise<AnalyticsDailyRow[]> {
+  const keys = dayKeysLastN(days);
+  const rows: AnalyticsDailyRow[] = [];
+  const CONCURRENCY = 10;
+  for (let i = 0; i < keys.length; i += CONCURRENCY) {
+    const chunk = keys.slice(i, i + CONCURRENCY);
+    const snaps = await Promise.all(
+      chunk.map(async (day) => {
+        try {
+          const snap = await getDoc(doc(dbClient, "analyticsDaily", day));
+          if (!snap.exists()) {
+            return {
+              day,
+              builds: 0,
+              findings: 0,
+              linesOfCode: 0,
+              debtMinutes: 0,
+              gatePassed: 0,
+              gateFailed: 0,
+            } satisfies AnalyticsDailyRow;
+          }
+          const d = snap.data();
+          return {
+            day,
+            builds: Number(d.builds ?? 0),
+            findings: Number(d.findings ?? 0),
+            linesOfCode: Number(d.linesOfCode ?? 0),
+            debtMinutes: Number(d.debtMinutes ?? 0),
+            gatePassed: Number(d.gatePassed ?? 0),
+            gateFailed: Number(d.gateFailed ?? 0),
+          } satisfies AnalyticsDailyRow;
+        } catch {
+          return null;
+        }
+      }),
+    );
+    for (const row of snaps) {
+      if (row) rows.push(row);
+    }
+  }
+  return rows;
+}
+
+export function analyticsDailyToGatePoints(rows: AnalyticsDailyRow[]): PortfolioHistoryPoint[] {
+  return rows
+    .filter((r) => r.builds > 0 || r.gatePassed > 0 || r.gateFailed > 0)
+    .map((r) => ({
+      t: new Date(`${r.day}T12:00:00Z`).getTime(),
+      label: labelFromDayKey(r.day),
+      values: {
+        buildsDay: r.builds,
+        buildsPassedDay: r.gatePassed,
+        buildsFailedDay: r.gateFailed,
+        debtHours: Math.round(r.debtMinutes / 60),
+        findings: r.findings,
+      },
+    }));
+}
+

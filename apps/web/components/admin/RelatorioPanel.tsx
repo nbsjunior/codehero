@@ -1,17 +1,30 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Callout, DataSection, KpiCard, KpiGroup, PageHeader } from "@/components/AdminUi";
 import { CodeGraphPanel } from "@/components/CodeGraphPanel";
-import { VerticalBars } from "@/components/RepoHealthCharts";
+import { TimeSeriesChart, VerticalBars } from "@/components/RepoHealthCharts";
 import {
   adminGetPlatformSummary,
+  runRepoAutoScanNow,
+  setRepoAutoScan,
   type AdminIssuesResult,
   type AdminProjectRow,
   type AdminRepoFindingCount,
   type PlatformSummary,
 } from "@/lib/api";
-import { aggregateCodeGraphs, aggregateArquitetura } from "@/lib/workspaceInsights";
+import {
+  aggregateCodeGraphs,
+  aggregateArquitetura,
+  analyticsDailyToGatePoints,
+  buildFleetStatus,
+  buildPortfolioTimeSeries,
+  loadPlatformAnalyticsDaily,
+  loadWorkspaceAnalysisHistory,
+  type FleetRepoRow,
+  type PortfolioHistoryPoint,
+  type PortfolioHistorySeries,
+} from "@/lib/workspaceInsights";
 
 const ratingColor: Record<string, string> = {
   A: "var(--rating-a)",
@@ -214,7 +227,11 @@ export default function RelatorioPanel({
         </DataSection>
       </div>
 
+      <FrotaScanSection projects={projects} onOpenWorkspace={onOpenWorkspace} />
+
       <CodeGraphExecutiveSection projects={projects} onOpenWorkspace={onOpenWorkspace} />
+
+      <EvolucaoHistoricaSection projects={projects} scope={scope} />
 
       <DataSection
         title="Principais causas"
@@ -288,6 +305,548 @@ export default function RelatorioPanel({
           )}
         </DataSection>
       </div>
+    </>
+  );
+}
+
+const SMELL_SERIES = [
+  { key: "debtHours", label: "Débito (h)", color: "#db6d28" },
+  { key: "codeSmells", label: "Code smells", color: "#d29922" },
+  { key: "findingsTotal", label: "Findings totais", color: "#8b949e" },
+];
+
+const COMPLEXITY_SERIES = [
+  { key: "cognitivaMedia", label: "Cognitiva média", color: "#a371f7" },
+  { key: "ciclomaticaMedia", label: "Ciclomática média", color: "#388bfd" },
+  { key: "maxFanIn", label: "Fan-in máx.", color: "#db6d28" },
+  { key: "modulosEmCiclo", label: "Módulos em ciclo", color: "#f85149" },
+];
+
+const GRAPH_SIZE_SERIES = [
+  { key: "functions", label: "Funções", color: "#388bfd" },
+  { key: "calls", label: "Calls", color: "#a371f7" },
+  { key: "edges", label: "Arestas", color: "#3fb950" },
+];
+
+const GATE_STATE_SERIES = [
+  { key: "gateFailedRepos", label: "Repos com gate FAIL", color: "#f85149" },
+  { key: "gatePassedRepos", label: "Repos com gate PASS", color: "#3fb950" },
+];
+
+const GATE_BUILDS_SERIES = [
+  { key: "buildsPassedDay", label: "Builds PASS", color: "#3fb950" },
+  { key: "buildsFailedDay", label: "Builds FAIL", color: "#f85149" },
+  { key: "buildsDay", label: "Builds (dia)", color: "#8b949e" },
+];
+
+const RATING_SERIES = [
+  { key: "maintScore", label: "Manutenibilidade (A=5…E=1)", color: "#d29922" },
+  { key: "securityScore", label: "Segurança (A=5…E=1)", color: "#388bfd" },
+];
+
+const PLATFORM_DAILY_SERIES = [
+  { key: "buildsPassedDay", label: "Gate PASS (plataforma)", color: "#3fb950" },
+  { key: "buildsFailedDay", label: "Gate FAIL (plataforma)", color: "#f85149" },
+  { key: "buildsDay", label: "Builds", color: "#8b949e" },
+];
+
+function FrotaScanSection({
+  projects,
+  onOpenWorkspace,
+}: {
+  projects: AdminProjectRow[];
+  onOpenWorkspace: (orgId: string, projectId: string, repoId?: string) => void;
+}) {
+  const [staleDays, setStaleDays] = useState(7);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  const fleet = useMemo(() => buildFleetStatus(projects, { staleAfterDays: staleDays }), [projects, staleDays]);
+
+  function toggle(key: string) {
+    setSelected((prev) => {
+      const n = new Set(prev);
+      if (n.has(key)) n.delete(key);
+      else n.add(key);
+      return n;
+    });
+  }
+
+  function selectStale() {
+    setSelected(new Set(fleet.repos.filter((r) => r.stale).map((r) => r.key)));
+  }
+
+  function clearSelection() {
+    setSelected(new Set());
+  }
+
+  const selectedRows = useMemo(
+    () => fleet.repos.filter((r) => selected.has(r.key)),
+    [fleet.repos, selected],
+  );
+
+  async function enableAutoScanSelected() {
+    if (selectedRows.length === 0) return;
+    setBusy(true);
+    setMsg(null);
+    setErr(null);
+    let ok = 0;
+    const errors: string[] = [];
+    for (const r of selectedRows) {
+      try {
+        await setRepoAutoScan({
+          orgId: r.orgId,
+          projectId: r.projectId,
+          repoId: r.repoId,
+          enabled: true,
+          periodicityDays: Math.min(staleDays, r.periodicityDays || staleDays),
+        });
+        ok += 1;
+      } catch (e) {
+        errors.push(`${r.repoName}: ${e instanceof Error ? e.message : "erro"}`);
+      }
+    }
+    setBusy(false);
+    setMsg(`Auto-scan ligado em ${ok}/${selectedRows.length} repo(s). Use “Atualizar resumo” para refletir o estado.`);
+    if (errors.length) setErr(errors.slice(0, 3).join(" · "));
+  }
+
+  async function runNowSelected() {
+    if (selectedRows.length === 0) return;
+    const batch = selectedRows.slice(0, 5);
+    setBusy(true);
+    setMsg(null);
+    setErr(null);
+    let ok = 0;
+    const errors: string[] = [];
+    for (const r of batch) {
+      try {
+        await runRepoAutoScanNow({ orgId: r.orgId, projectId: r.projectId, repoId: r.repoId });
+        ok += 1;
+      } catch (e) {
+        errors.push(`${r.repoName}: ${e instanceof Error ? e.message : "erro"}`);
+      }
+    }
+    setBusy(false);
+    setMsg(
+      `Scan disparado em ${ok}/${batch.length} repo(s)` +
+        (selectedRows.length > 5 ? ` (limite 5 por lote; ${selectedRows.length - 5} ficaram de fora)` : "") +
+        ".",
+    );
+    if (errors.length) setErr(errors.slice(0, 3).join(" · "));
+  }
+
+  if (fleet.repos.length === 0) return null;
+
+  return (
+    <DataSection
+      title="Frota de scan"
+      description={`Cadência e risco operacional — stale após ${staleDays} dia(s) sem analysis. Ligue auto-scan ou dispare scan nos selecionados.`}
+    >
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", alignItems: "center", marginBottom: "0.75rem" }}>
+        <label className="hero-caption" style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}>
+          Stale após
+          <select
+            value={staleDays}
+            onChange={(e) => setStaleDays(Number(e.target.value))}
+            style={{ font: "inherit" }}
+          >
+            {[3, 7, 14, 30].map((d) => (
+              <option key={d} value={d}>
+                {d} dias
+              </option>
+            ))}
+          </select>
+        </label>
+        <button type="button" className="hero-btn hero-btn-outline" onClick={selectStale}>
+          Selecionar stale
+        </button>
+        <button type="button" className="hero-btn hero-btn-outline" onClick={clearSelection} disabled={selected.size === 0}>
+          Limpar seleção
+        </button>
+        <button
+          type="button"
+          className="hero-btn hero-btn-accent"
+          disabled={busy || selectedRows.length === 0}
+          onClick={() => void enableAutoScanSelected()}
+        >
+          {busy ? "Aplicando…" : `Ligar auto-scan (${selectedRows.length})`}
+        </button>
+        <button
+          type="button"
+          className="hero-btn hero-btn-outline"
+          disabled={busy || selectedRows.length === 0}
+          onClick={() => void runNowSelected()}
+        >
+          Rodar agora (máx. 5)
+        </button>
+      </div>
+
+      <KpiGroup>
+        <KpiCard label="Repos" value={fleet.repos.length} />
+        <KpiCard label="Stale" value={fleet.staleCount} tone={fleet.staleCount > 0 ? "warn" : "ok"} />
+        <KpiCard label="Nunca escaneados" value={fleet.neverScanned} tone={fleet.neverScanned > 0 ? "danger" : "ok"} />
+        <KpiCard label="Gate FAIL" value={fleet.failingGate} tone={fleet.failingGate > 0 ? "danger" : "ok"} />
+        <KpiCard label="Sem auto-scan" value={fleet.autoScanOff} tone={fleet.autoScanOff > 0 ? "warn" : "ok"} />
+        <KpiCard label="Frescos" value={fleet.fresh} tone="ok" />
+      </KpiGroup>
+
+      {msg && (
+        <Callout tone="neutral" title="Ação da frota">
+          {msg}
+        </Callout>
+      )}
+      {err && (
+        <Callout tone="warn" title="Algumas ações falharam">
+          {err}
+        </Callout>
+      )}
+
+      <div style={{ overflowX: "auto", marginTop: "0.75rem" }}>
+        <table className="hero-table">
+          <thead>
+            <tr>
+              <th />
+              <th>Repo</th>
+              <th>Projeto</th>
+              <th>Último scan</th>
+              <th>Dias</th>
+              <th>Gate</th>
+              <th>Auto-scan</th>
+              <th>Débito</th>
+              <th />
+            </tr>
+          </thead>
+          <tbody>
+            {fleet.repos.slice(0, 40).map((r) => (
+              <FleetRow
+                key={r.key}
+                row={r}
+                checked={selected.has(r.key)}
+                onToggle={() => toggle(r.key)}
+                onOpen={() => onOpenWorkspace(r.orgId, r.projectId, r.repoId)}
+              />
+            ))}
+          </tbody>
+        </table>
+        {fleet.repos.length > 40 && (
+          <p className="hero-caption" style={{ marginTop: "0.5rem" }}>
+            Mostrando 40 de {fleet.repos.length} repos (priorizados por stale).
+          </p>
+        )}
+      </div>
+    </DataSection>
+  );
+}
+
+function FleetRow({
+  row,
+  checked,
+  onToggle,
+  onOpen,
+}: {
+  row: FleetRepoRow;
+  checked: boolean;
+  onToggle: () => void;
+  onOpen: () => void;
+}) {
+  const daysLabel = row.neverScanned ? "—" : String(row.daysSinceScan);
+  const when = row.lastAnalyzedAt
+    ? new Date(row.lastAnalyzedAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })
+    : "nunca";
+  return (
+    <tr style={{ background: row.stale ? "rgba(248, 81, 73, 0.06)" : undefined }}>
+      <td>
+        <input type="checkbox" checked={checked} onChange={onToggle} aria-label={`Selecionar ${row.repoName}`} />
+      </td>
+      <td style={{ fontWeight: 600 }}>{row.repoName}</td>
+      <td className="hero-caption">
+        {row.projectName}
+        <div>{row.orgName}</div>
+      </td>
+      <td>{when}</td>
+      <td>
+        <span className="hero-badge" style={{ background: row.stale ? "var(--rating-d)" : "var(--rating-a)", color: "#fff" }}>
+          {daysLabel}
+        </span>
+      </td>
+      <td>
+        <span
+          className="hero-badge"
+          style={{
+            background: row.qualityGateStatus === "PASSED" ? "var(--rating-a)" : "var(--rating-e)",
+            color: "#fff",
+          }}
+        >
+          {row.qualityGateStatus}
+        </span>
+      </td>
+      <td>{row.autoScanEnabled ? `on · ${row.periodicityDays}d` : "off"}</td>
+      <td>{Math.round(row.debtMinutes / 60)}h</td>
+      <td>
+        <button type="button" className="hero-btn hero-btn-outline" style={{ padding: "0.25rem 0.55rem" }} onClick={onOpen}>
+          Abrir
+        </button>
+      </td>
+    </tr>
+  );
+}
+
+function EvolucaoHistoricaSection({
+  projects,
+  scope = "platform",
+}: {
+  projects: AdminProjectRow[];
+  scope?: "platform" | "workspace";
+}) {
+  const [history, setHistory] = useState<PortfolioHistorySeries | null>(null);
+  const [platformDaily, setPlatformDaily] = useState<PortfolioHistoryPoint[] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const projectKey = useMemo(
+    () =>
+      projects
+        .map((p) => `${p.orgId}/${p.projectId}:${p.repos.map((r) => r.repoId).join(",")}`)
+        .join("|"),
+    [projects],
+  );
+
+  useEffect(() => {
+    if (projects.length === 0) {
+      setHistory(null);
+      setError(null);
+      return;
+    }
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    const tasks: Promise<void>[] = [
+      loadWorkspaceAnalysisHistory(projects).then((byRepo) => {
+        if (cancelled) return;
+        setHistory(buildPortfolioTimeSeries(byRepo));
+      }),
+    ];
+    if (scope === "platform") {
+      tasks.push(
+        loadPlatformAnalyticsDaily(30)
+          .then((rows) => {
+            if (cancelled) return;
+            setPlatformDaily(analyticsDailyToGatePoints(rows));
+          })
+          .catch(() => {
+            if (!cancelled) setPlatformDaily(null);
+          }),
+      );
+    } else {
+      setPlatformDaily(null);
+    }
+    Promise.all(tasks)
+      .catch((err) => {
+        if (cancelled) return;
+        setHistory(null);
+        setError(err instanceof Error ? err.message : "Falha ao carregar histórico de análises.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [projectKey, projects, scope]);
+
+  const smellSeries = useMemo(() => {
+    if (!history?.smellPoints.some((p) => typeof p.values.codeSmells === "number")) {
+      return SMELL_SERIES.filter((s) => s.key !== "codeSmells");
+    }
+    return SMELL_SERIES;
+  }, [history]);
+
+  const complexitySeries = useMemo(() => {
+    const hasCog = history?.complexityPoints.some((p) => typeof p.values.cognitivaMedia === "number");
+    if (hasCog) return COMPLEXITY_SERIES;
+    return COMPLEXITY_SERIES.filter((s) => s.key === "maxFanIn" || s.key === "modulosEmCiclo");
+  }, [history]);
+
+  const hasGraphSize = history?.complexityPoints.some(
+    (p) => (p.values.functions ?? 0) > 0 || (p.values.calls ?? 0) > 0,
+  );
+
+  const lastGate = history?.gatePoints[history.gatePoints.length - 1];
+
+  return (
+    <>
+      <DataSection
+        title="Saúde do quality gate"
+        description="Estado do gate no portfólio (carry-forward por repo) e builds do dia. Condições falhas vêm do último snapshot de cada repositório."
+      >
+        {loading && <p className="hero-caption">Carregando gate e histórico…</p>}
+        {error && (
+          <Callout tone="warn" title="Histórico indisponível">
+            {error}
+          </Callout>
+        )}
+        {!loading && history && history.gatePoints.length === 0 && (
+          <Callout tone="neutral" title="Sem dados de gate ainda">
+            Após a primeira analysis sincronizada, a série de pass/fail e as condições falhas aparecem aqui.
+          </Callout>
+        )}
+        {!loading && history && history.gatePoints.length > 0 && (
+          <>
+            <KpiGroup>
+              <KpiCard
+                label="Repos gate FAIL"
+                value={lastGate?.values.gateFailedRepos ?? 0}
+                tone={(lastGate?.values.gateFailedRepos ?? 0) > 0 ? "danger" : "ok"}
+              />
+              <KpiCard label="Repos gate PASS" value={lastGate?.values.gatePassedRepos ?? 0} tone="ok" />
+              <KpiCard
+                label="Condições falhas (tipos)"
+                value={history.failedConditionCounts.length}
+                sub="no snapshot atual"
+              />
+            </KpiGroup>
+            <div
+              style={{
+                display: "grid",
+                gap: "1.25rem",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                marginTop: "1rem",
+              }}
+            >
+              <div className="ch-metric-card">
+                <h3>Repos PASS / FAIL ao longo do tempo</h3>
+                <p className="hero-caption" style={{ marginBottom: "0.65rem" }}>
+                  Carry-forward: quantos repos estavam FAIL ou PASS em cada dia com scan.
+                </p>
+                <TimeSeriesChart points={history.gatePoints} series={GATE_STATE_SERIES} />
+              </div>
+              <div className="ch-metric-card">
+                <h3>Builds do dia (amostra)</h3>
+                <p className="hero-caption" style={{ marginBottom: "0.65rem" }}>
+                  Contagem de analyses no dia — não é carry-forward.
+                </p>
+                <TimeSeriesChart points={history.gatePoints} series={GATE_BUILDS_SERIES} />
+              </div>
+              <div className="ch-metric-card">
+                <h3>Condições que derrubam o gate</h3>
+                {history.failedConditionCounts.length === 0 ? (
+                  <p className="hero-caption">Nenhuma condição falha no snapshot atual.</p>
+                ) : (
+                  <VerticalBars data={history.failedConditionCounts} maxBars={8} />
+                )}
+              </div>
+              {history.ratingPoints.some(
+                (p) => p.values.maintScore != null || p.values.securityScore != null,
+              ) ? (
+                <div className="ch-metric-card">
+                  <h3>Ratings médios (A=5 … E=1)</h3>
+                  <TimeSeriesChart points={history.ratingPoints} series={RATING_SERIES} />
+                </div>
+              ) : null}
+              {scope === "platform" && platformDaily && platformDaily.length > 0 ? (
+                <div className="ch-metric-card" style={{ gridColumn: "1 / -1" }}>
+                  <h3>analyticsDaily (plataforma · 30 dias)</h3>
+                  <p className="hero-caption" style={{ marginBottom: "0.65rem" }}>
+                    Rollup global de builds e gate — sobrevive ao purge de analyses detalhadas.
+                  </p>
+                  <TimeSeriesChart points={platformDaily} series={PLATFORM_DAILY_SERIES} height={160} />
+                </div>
+              ) : null}
+            </div>
+          </>
+        )}
+      </DataSection>
+
+      <DataSection
+        title="Evolução histórica"
+        description="Série temporal a partir das analyses gravadas — smells (débito / code smells) e complexidade estrutural (grafo + métricas arquiteturais). Carry-forward por repositório em cada dia com scan."
+      >
+        {loading && <p className="hero-caption">Carregando histórico de analyses…</p>}
+        {error && (
+          <Callout tone="warn" title="Histórico indisponível">
+            {error}
+          </Callout>
+        )}
+        {!loading && !error && history && history.smellPoints.length === 0 && (
+          <Callout tone="neutral" title="Ainda sem histórico">
+            Rode avaliações no CI ou no plugin e sincronize o SARIF. Cada analysis gera um ponto na série
+            (débito, smells e, quando houver métricas, complexidade do grafo).
+          </Callout>
+        )}
+        {!loading && history && history.smellPoints.length > 0 && (
+          <>
+            <KpiGroup>
+              <KpiCard
+                label="Analyses no período"
+                value={history.analysisCount.toLocaleString("pt-BR")}
+                sub={`${history.repoCountWithHistory} repo(s) com histórico`}
+              />
+              <KpiCard
+                label="Dias com scan"
+                value={String(history.smellPoints.length)}
+                sub="pontos na série"
+              />
+              <KpiCard
+                label="Débito atual (série)"
+                value={`${history.smellPoints[history.smellPoints.length - 1]?.values.debtHours ?? 0}h`}
+                sub="último dia com análise"
+                tone="warn"
+              />
+              <KpiCard
+                label="Cognitiva (série)"
+                value={
+                  history.complexityPoints[history.complexityPoints.length - 1]?.values.cognitivaMedia !=
+                  null
+                    ? String(
+                        history.complexityPoints[history.complexityPoints.length - 1]!.values
+                          .cognitivaMedia,
+                      )
+                    : "—"
+                }
+                sub="média ponderada do portfólio"
+              />
+            </KpiGroup>
+
+            <div
+              style={{
+                display: "grid",
+                gap: "1.25rem",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                marginTop: "1rem",
+              }}
+            >
+              <div className="ch-metric-card">
+                <h3>Smells e débito técnico</h3>
+                <p className="hero-caption" style={{ marginBottom: "0.65rem" }}>
+                  Débito em horas (somatório de effort de CODE_SMELL). Contagem de smells exige analyses
+                  recentes com `byType`.
+                </p>
+                <TimeSeriesChart points={history.smellPoints} series={smellSeries} />
+              </div>
+              <div className="ch-metric-card">
+                <h3>Complexidade (grafo / arquitetura)</h3>
+                <p className="hero-caption" style={{ marginBottom: "0.65rem" }}>
+                  Cognitiva e ciclomática médias (ponderadas), fan-in máximo e módulos em ciclo de
+                  importação.
+                </p>
+                <TimeSeriesChart points={history.complexityPoints} series={complexitySeries} />
+              </div>
+              {hasGraphSize ? (
+                <div className="ch-metric-card" style={{ gridColumn: "1 / -1" }}>
+                  <h3>Tamanho estrutural do grafo</h3>
+                  <p className="hero-caption" style={{ marginBottom: "0.65rem" }}>
+                    Funções, calls e arestas agregados do code-graph ao longo do tempo.
+                  </p>
+                  <TimeSeriesChart points={history.complexityPoints} series={GRAPH_SIZE_SERIES} height={160} />
+                </div>
+              ) : null}
+            </div>
+          </>
+        )}
+      </DataSection>
     </>
   );
 }
