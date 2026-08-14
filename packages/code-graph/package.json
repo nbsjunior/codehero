@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "npm run build && node test/graph.mjs",
+    "test": "npm run build && node test/graph.mjs && node test/arquitetura.mjs",
     "clean": "rimraf dist"
   },
   "dependencies": {
