@@ -99,6 +99,11 @@ for (const p of arquivos) {
     maiorFuncao: m.functions.reduce((a, f) => Math.max(a, f.cyclomatic), 0),
     exportacoesDeTipo: (fonte.match(SO_TIPO) ?? []).length,
     exportacoesTotais: (fonte.match(EXPORTACAO) ?? []).length,
+    linguagem: m.language,
+    halsteadVolume: m.halsteadVolume,
+    mi: m.maintainabilityIndex,
+    piorFuncaoMi: m.functions.length ? Math.min(...m.functions.map((x) => x.maintainabilityIndex)) : null,
+    comentarios: m.commentLines,
   });
 }
 console.log(`medidos: ${metricas.size}${comErro ? ` (${comErro} com erro de sintaxe)` : ""}`);

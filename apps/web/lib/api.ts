@@ -105,8 +105,24 @@ export interface ArquiteturaRepoSummary {
     modulosOrfaos: number;
   };
   ciclos: Array<{ id: number; modulos: string[] }>;
+  /** Uma linha por linguagem ANOTADA pelo parser, nao por extensao. */
+  porLinguagem?: Array<{
+    linguagem: string;
+    modulos: number;
+    linhasDeCodigo: number;
+    funcoes: number;
+    mi: number;
+    ciclomaticaMedia: number;
+    cognitivaMedia: number;
+    densidadeComentario: number;
+    modulosEmAtencao: number;
+    modulosCriticos: number;
+  }>;
   modulos: Array<{
     arquivo: string;
+    linguagem?: string;
+    mi?: number | null;
+    piorFuncaoMi?: number | null;
     ca: number;
     ce: number;
     instabilidade: number | null;

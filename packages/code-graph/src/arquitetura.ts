@@ -49,6 +49,22 @@ export interface MetricaDeArquivo {
   /** Exportações só-de-tipo e total, para a aproximação de abstratividade. */
   exportacoesDeTipo?: number;
   exportacoesTotais?: number;
+  /** Linguagem anotada pelo parser estrutural. */
+  linguagem?: string;
+  /** Volume de Halstead do arquivo. */
+  halsteadVolume?: number;
+  /** Indice de Manutenibilidade 0-100, media das funcoes ponderada por linha. */
+  mi?: number;
+  /**
+   * Menor MI entre as funcoes — o gargalo real do arquivo.
+   *
+   * `null` quando o arquivo nao tem funcao nenhuma (dado, configuracao). Nao e
+   * a mesma coisa que zero: zero seria "tem uma funcao terrivel", e ausencia
+   * de funcao nao e isso.
+   */
+  piorFuncaoMi?: number | null;
+  /** Linhas de comentario, para a densidade por linguagem. */
+  comentarios?: number;
 }
 
 export interface ModuloArquitetura {
@@ -72,6 +88,12 @@ export interface ModuloArquitetura {
   risco: number;
   /** Índice do ciclo a que pertence, quando pertence a algum. */
   ciclo: number | null;
+  /** Linguagem anotada. */
+  linguagem: string;
+  /** Indice de Manutenibilidade do arquivo. */
+  mi: number | null;
+  /** Menor MI entre as funcoes do arquivo. */
+  piorFuncaoMi: number | null;
 }
 
 export interface RelatorioArquitetura {
@@ -94,6 +116,31 @@ export interface RelatorioArquitetura {
   modulos: ModuloArquitetura[];
   /** Componentes fortemente conexos com mais de um módulo. */
   ciclos: Array<{ id: number; modulos: string[] }>;
+  /**
+   * Uma linha por linguagem ANOTADA pelo parser — não por extensão de arquivo.
+   *
+   * A distinção importa: `.ts` e `.tsx` são gramáticas diferentes (a de
+   * TypeScript REJEITA sintaxe JSX), e um relatório que os junta esconde que
+   * metade do código passou por outro analisador. Aqui cada linguagem aparece
+   * com o que o parser dela realmente conseguiu ler.
+   */
+  porLinguagem: Array<{
+    linguagem: string;
+    modulos: number;
+    linhasDeCodigo: number;
+    funcoes: number;
+    /** Média PONDERADA POR LINHA. Média simples deixaria um utilitário de dez
+     *  linhas pesar igual a um módulo de mil. */
+    mi: number;
+    ciclomaticaMedia: number;
+    cognitivaMedia: number;
+    /** Comentários sobre linhas de código, em pontos percentuais. */
+    densidadeComentario: number;
+    /** Módulos abaixo de 20 de MI — a faixa de atenção da convenção. */
+    modulosEmAtencao: number;
+    /** Módulos abaixo de 10 — a faixa vermelha. */
+    modulosCriticos: number;
+  }>;
 }
 
 const round = (n: number, casas = 3) => Number(n.toFixed(casas));
@@ -240,6 +287,9 @@ export function analisarArquitetura(
       maiorFuncao: m?.maiorFuncao ?? 0,
       risco,
       ciclo: cicloDe.get(f) ?? null,
+      linguagem: m?.linguagem ?? "desconhecida",
+      mi: typeof m?.mi === "number" ? m.mi : null,
+      piorFuncaoMi: typeof m?.piorFuncaoMi === "number" ? m.piorFuncaoMi : null,
     };
   });
 
@@ -270,5 +320,81 @@ export function analisarArquitetura(
     },
     modulos,
     ciclos,
+    porLinguagem: agregarPorLinguagem(modulos, metricas),
   };
+}
+
+function agregarPorLinguagem(
+  modulos: ModuloArquitetura[],
+  metricas: Map<string, MetricaDeArquivo>,
+): RelatorioArquitetura["porLinguagem"] {
+  const por = new Map<
+    string,
+    {
+      modulos: number;
+      linhas: number;
+      funcoes: number;
+      comentarios: number;
+      somaMi: number;
+      pesoMi: number;
+      somaCiclo: number;
+      somaCogn: number;
+      atencao: number;
+      criticos: number;
+    }
+  >();
+
+  for (const m of modulos) {
+    const met = metricas.get(m.arquivo);
+    const lang = m.linguagem || "desconhecida";
+    const a =
+      por.get(lang) ??
+      por
+        .set(lang, {
+          modulos: 0,
+          linhas: 0,
+          funcoes: 0,
+          comentarios: 0,
+          somaMi: 0,
+          pesoMi: 0,
+          somaCiclo: 0,
+          somaCogn: 0,
+          atencao: 0,
+          criticos: 0,
+        })
+        .get(lang)!;
+
+    a.modulos++;
+    a.linhas += m.linhasDeCodigo;
+    a.funcoes += m.funcoes;
+    a.comentarios += met?.comentarios ?? 0;
+    a.somaCiclo += m.ciclomatica;
+    a.somaCogn += m.cognitiva;
+    if (m.mi !== null) {
+      // Peso = linhas. Média simples deixaria um utilitário de dez linhas
+      // pesar igual a um módulo de mil, e o índice da linguagem passaria a
+      // descrever a quantidade de arquivinhos, não a saúde do código.
+      const peso = Math.max(m.linhasDeCodigo, 1);
+      a.somaMi += m.mi * peso;
+      a.pesoMi += peso;
+      if (m.mi < 10) a.criticos++;
+      else if (m.mi < 20) a.atencao++;
+    }
+  }
+
+  const r1 = (n: number) => Math.round(n * 10) / 10;
+  return [...por.entries()]
+    .map(([linguagem, a]) => ({
+      linguagem,
+      modulos: a.modulos,
+      linhasDeCodigo: a.linhas,
+      funcoes: a.funcoes,
+      mi: a.pesoMi > 0 ? r1(a.somaMi / a.pesoMi) : 0,
+      ciclomaticaMedia: a.funcoes ? r1(a.somaCiclo / a.funcoes) : 0,
+      cognitivaMedia: a.funcoes ? r1(a.somaCogn / a.funcoes) : 0,
+      densidadeComentario: a.linhas ? r1((a.comentarios * 100) / a.linhas) : 0,
+      modulosEmAtencao: a.atencao,
+      modulosCriticos: a.criticos,
+    }))
+    .sort((x, y) => y.linhasDeCodigo - x.linhasDeCodigo);
 }

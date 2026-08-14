@@ -45,6 +45,9 @@ const RulesCatalog = dynamic(() => import("@/components/admin/RulesCatalog"), { 
 const McpIntegrationPanel = dynamic(() => import("@/components/admin/McpIntegrationPanel"), { ssr: false });
 const RelatorioPanel = dynamic(() => import("@/components/admin/RelatorioPanel"), { ssr: false });
 const EsteiraPanel = dynamic(() => import("@/components/admin/EsteiraPanel"), { ssr: false });
+const ManutenibilidadePanel = dynamic(() => import("@/components/admin/ManutenibilidadePanel"), {
+  ssr: false,
+});
 const FindingsBrowser = dynamic(
   () => import("@/components/FindingsBrowser").then((m) => m.default),
   { ssr: false },
@@ -66,6 +69,7 @@ const SHARED_GROUPS: CockpitNavGroup[] = [
       { id: "visao-geral", label: "Visão geral" },
       { id: "apontamentos", label: "Apontamentos" },
       { id: "relatorio", label: "Relatório executivo" },
+      { id: "manutenibilidade", label: "Manutenibilidade" },
     ],
   },
   {
@@ -906,6 +910,10 @@ function AdminPanelInner() {
               )}
             </DataSection>
           </>
+        )}
+
+        {tab === "manutenibilidade" && (
+          <ManutenibilidadePanel projects={projects} isPlatformAdmin={isPlatformAdmin} />
         )}
 
         {tab === "esteira" && isPlatformAdmin && <EsteiraPanel />}

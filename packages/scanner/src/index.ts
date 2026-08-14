@@ -606,6 +606,13 @@ async function main(): Promise<void> {
             cognitiva: m.cognitive,
             funcoes: m.functions.length,
             maiorFuncao: m.functions.reduce((a, f) => Math.max(a, f.cyclomatic), 0),
+            linguagem: m.language,
+            halsteadVolume: m.halsteadVolume,
+            mi: m.maintainabilityIndex,
+            piorFuncaoMi: m.functions.length
+              ? Math.min(...m.functions.map((f) => f.maintainabilityIndex))
+              : null,
+            comentarios: m.commentLines,
             // Abstratividade fica de fora deste caminho de propósito: exigiria
             // reler a fonte só para contar exportação, e o valor dela é
             // aproximado de qualquer forma. Quem quer o número roda
@@ -621,6 +628,7 @@ async function main(): Promise<void> {
         geradoEm: rel.geradoEm,
         totais: rel.totais,
         ciclos: rel.ciclos.slice(0, 10),
+        porLinguagem: rel.porLinguagem,
         modulos: rel.modulos.slice(0, 40),
       };
     }

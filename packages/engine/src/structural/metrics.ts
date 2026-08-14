@@ -99,6 +99,10 @@ export interface FunctionMetrics {
   cognitive: number;
   maxNesting: number;
   params: number;
+  /** Volume de Halstead da funcao. */
+  halsteadVolume: number;
+  /** Indice de Manutenibilidade 0-100 desta funcao. */
+  maintainabilityIndex: number;
 }
 
 export interface FileMetrics {
@@ -112,6 +116,10 @@ export interface FileMetrics {
   cyclomatic: number;
   cognitive: number;
   maxNesting: number;
+  /** Volume de Halstead do arquivo — insumo do indice de manutenibilidade. */
+  halsteadVolume: number;
+  /** Indice de Manutenibilidade 0-100 (variante Microsoft). */
+  maintainabilityIndex: number;
   functions: FunctionMetrics[];
 }
 
@@ -234,6 +242,8 @@ const COMENTARIO = /comment/;
 
 export function computeFileMetrics(file: string, source: string, parsed: ParsedFile): FileMetrics {
   const doArquivo = calcula(parsed.root);
+  const hal = halsteadDe(parsed.root);
+  const loc = source.length ? source.split("\n").length : 0;
 
   const functions: FunctionMetrics[] = [];
   let commentLines = 0;
@@ -245,6 +255,8 @@ export function computeFileMetrics(file: string, source: string, parsed: ParsedF
     }
     if (!FUNCOES.has(n.type)) return;
     const m = calcula(n);
+    const h = halsteadDe(n);
+    const linhasFn = n.endPosition.row - n.startPosition.row + 1;
     functions.push({
       name: nodeName(n),
       startLine: n.startPosition.row + 1,
@@ -254,6 +266,8 @@ export function computeFileMetrics(file: string, source: string, parsed: ParsedF
       cognitive: m.cognitive,
       maxNesting: m.maxNesting,
       params: contaParametros(n),
+      halsteadVolume: h.volume,
+      maintainabilityIndex: indiceManutenibilidade(h.volume, m.cyclomatic, linhasFn),
     });
   });
 
@@ -268,6 +282,29 @@ export function computeFileMetrics(file: string, source: string, parsed: ParsedF
     cyclomatic: doArquivo.cyclomatic,
     cognitive: doArquivo.cognitive,
     maxNesting: doArquivo.maxNesting,
+    halsteadVolume: hal.volume,
+    // MI do arquivo = média das funções PONDERADA POR LINHA, e não o cálculo
+    // direto sobre o arquivo inteiro.
+    //
+    // A diferença não é cosmética. A fórmula tem um termo `16.2·ln(LOC)`, e
+    // num arquivo de novecentas linhas ele sozinho vale mais de cem pontos:
+    // TODO arquivo grande dá zero, inclusive um perfeitamente organizado em
+    // funções pequenas. Medido aqui: `lineTaint.ts` dava 0 e um utilitário de
+    // 23 linhas dava 51.8, o que diz mais sobre o tamanho do arquivo do que
+    // sobre a manutenibilidade dele.
+    //
+    // Visual Studio e as demais ferramentas calculam por MÉTODO. Usar outra
+    // unidade faria o número do CodeHero não bater com o que o time já viu em
+    // outro lugar, e um índice incomparável não serve para decidir nada.
+    //
+    // Arquivo sem função nenhuma (dado, configuração) cai no cálculo direto:
+    // ali o arquivo É a unidade.
+    maintainabilityIndex: functions.length
+      ? Math.round(
+          (functions.reduce((a, f) => a + f.maintainabilityIndex * Math.max(f.lines, 1), 0) /
+            functions.reduce((a, f) => a + Math.max(f.lines, 1), 0)) * 10,
+        ) / 10
+      : indiceManutenibilidade(hal.volume, doArquivo.cyclomatic, loc),
     functions: functions.sort((a, b) => a.startLine - b.startLine),
   };
 }
@@ -367,4 +404,125 @@ export function structuralFindings(
     }
   }
   return out;
+}
+
+// ---------------------------------------------------------------------------
+// Halstead e Índice de Manutenibilidade.
+//
+// Por que Halstead precisa existir aqui
+// ---------------------------------------------------------------------------
+// O Índice de Manutenibilidade clássico é
+//
+//   MI = 171 − 5.2·ln(V) − 0.23·G − 16.2·ln(LOC)
+//
+// e o `V` é o volume de Halstead. Sem ele não dá para calcular o índice; dá
+// para calcular OUTRA coisa e chamar pelo mesmo nome, que é pior, porque o
+// número vira incomparável com qualquer ferramenta do mercado e ninguém
+// percebe.
+//
+// Como operador e operando são separados sem `isNamed`
+// ---------------------------------------------------------------------------
+// A superfície de nó que este motor consome não expõe `isNamed`. Mas o
+// tree-sitter dá o mesmo sinal por outro caminho: em token anônimo o `type` É
+// o próprio texto (`+`, `if`, `{`), enquanto em nó nomeado o `type` é a
+// categoria e o texto é o conteúdo (`identifier` contra `usuario`).
+//
+//   folha e type === text   → operador
+//   folha e type !== text   → operando
+//
+// A exceção são os literais que também são palavras: `true`, `false`, `null`.
+// Neles type e text coincidem e mesmo assim são operandos — estão listados.
+//
+// Pontuação de agrupamento fica FORA das duas contagens. Contar `(`, `)`, `;`
+// e `,` como operador infla o vocabulário com ruído sintático que não diz
+// nada sobre a dificuldade de ler o código, e as implementações sérias
+// também os descartam.
+// ---------------------------------------------------------------------------
+
+/** Literais que o tree-sitter representa como token de texto igual ao tipo. */
+const OPERANDO_PALAVRA = new Set([
+  "true", "false", "null", "nil", "None", "True", "False", "undefined", "NULL",
+]);
+
+/** Agrupamento e separação: ruído sintático, não operador. */
+const PONTUACAO = new Set(["(", ")", "[", "]", "{", "}", ";", ",", ":", "."]);
+
+export interface Halstead {
+  /** Operadores distintos (n1). */
+  operadoresDistintos: number;
+  /** Operandos distintos (n2). */
+  operandosDistintos: number;
+  /** Total de operadores (N1). */
+  operadores: number;
+  /** Total de operandos (N2). */
+  operandos: number;
+  /** N · log2(n) — o tamanho em bits de uma implementação da mesma lógica. */
+  volume: number;
+}
+
+export function halsteadDe(root: SyntaxNode): Halstead {
+  const opDistintos = new Set<string>();
+  const odDistintos = new Set<string>();
+  let ops = 0;
+  let odds = 0;
+
+  walk(root, (n) => {
+    if (n.childCount > 0) return; // só folhas
+    const t = n.type;
+    const txt = n.text;
+    if (COMENTARIO.test(t)) return;
+    if (PONTUACAO.has(t)) return;
+    if (!txt.trim()) return;
+
+    if (t === txt && !OPERANDO_PALAVRA.has(t)) {
+      opDistintos.add(t);
+      ops++;
+    } else {
+      odDistintos.add(txt);
+      odds++;
+    }
+  });
+
+  const n = opDistintos.size + odDistintos.size;
+  const N = ops + odds;
+  return {
+    operadoresDistintos: opDistintos.size,
+    operandosDistintos: odDistintos.size,
+    operadores: ops,
+    operandos: odds,
+    volume: n > 0 ? Math.round(N * Math.log2(n) * 100) / 100 : 0,
+  };
+}
+
+/**
+ * Índice de Manutenibilidade na escala 0–100 (variante da Microsoft).
+ *
+ * A fórmula original de Coleman/Oman devolve algo entre −∞ e 171, o que é
+ * inútil numa tela: ninguém sabe se 94 é bom. A Microsoft normalizou para
+ * 0–100 cortando o negativo, e é essa a versão que Visual Studio e a maioria
+ * das ferramentas mostram — usar outra faria o número do CodeHero não bater
+ * com o que o time já viu em outro lugar.
+ *
+ * As faixas seguem a mesma convenção: abaixo de 10 é vermelho, até 20 é
+ * amarelo, acima disso é verde. São faixas ESTREITAS de propósito na ponta
+ * ruim, porque a queda de manutenibilidade é logarítmica: sair de 25 para 15
+ * dói muito mais que de 65 para 55.
+ */
+export function indiceManutenibilidade(
+  volumeHalstead: number,
+  ciclomatica: number,
+  linhasDeCodigo: number,
+): number {
+  if (linhasDeCodigo <= 0) return 100;
+  const v = Math.max(volumeHalstead, 1);
+  const loc = Math.max(linhasDeCodigo, 1);
+  const bruto = 171 - 5.2 * Math.log(v) - 0.23 * ciclomatica - 16.2 * Math.log(loc);
+  return Math.round(Math.max(0, (bruto * 100) / 171) * 10) / 10;
+}
+
+/** Faixa de leitura do índice, na convenção que o mercado já usa. */
+export function faixaManutenibilidade(mi: number): "boa" | "atencao" | "ruim" {
+  if (mi < 10) return "ruim";
+  if (mi < 20) return "atencao";
+  return "boa";
 }

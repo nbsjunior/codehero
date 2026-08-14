@@ -40,7 +40,11 @@ export {
   computeFileMetrics,
   structuralFindings,
   DEFAULT_STRUCTURAL_THRESHOLDS,
+  halsteadDe,
+  indiceManutenibilidade,
+  faixaManutenibilidade,
 } from "./structural/metrics.ts";
+export type { Halstead } from "./structural/metrics.ts";
 export type {
   FileMetrics,
   FunctionMetrics,
