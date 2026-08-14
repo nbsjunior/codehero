@@ -11,7 +11,7 @@ import {
   type AdminRepoFindingCount,
   type PlatformSummary,
 } from "@/lib/api";
-import { aggregateCodeGraphs } from "@/lib/workspaceInsights";
+import { aggregateCodeGraphs, aggregateArquitetura } from "@/lib/workspaceInsights";
 
 const ratingColor: Record<string, string> = {
   A: "var(--rating-a)",
@@ -315,6 +315,7 @@ function CodeGraphExecutiveSection({
   onOpenWorkspace: (orgId: string, projectId: string, repoId?: string) => void;
 }) {
   const graph = useMemo(() => aggregateCodeGraphs(projects), [projects]);
+  const arq = useMemo(() => aggregateArquitetura(projects), [projects]);
   const coveragePct =
     graph.repoCount > 0 ? Math.round((graph.reposWithGraph / graph.repoCount) * 100) : 0;
   const hopRows = (["entry", "hop1", "hop2", "hop3plus", "unknown"] as const)
@@ -440,6 +441,105 @@ function CodeGraphExecutiveSection({
             <CodeGraphPanel graph={mergedViz} title="Hotspots do portfólio (maior fan-in)" />
           </div>
         ) : null}
+      </DataSection>
+
+      <DataSection
+        title="Acoplamento e custo de mudança"
+        description="A outra metade do grafo. A seção acima mostra quais FUNÇÕES estão expostas; esta mostra em quais MÓDULOS mexer custa caro. Uma função exposta pode estar num módulo trivial de trocar, e um módulo caríssimo pode não ter função exposta nenhuma."
+      >
+        {arq.reposComLeitura === 0 ? (
+          <Callout tone="neutral" title="Ainda sem leitura arquitetural nesta amostra">
+            Ela sai do mesmo scan do code-graph, desde que a avaliação rode com métricas. Repositórios
+            analisados antes desta versão só passam a mostrar o dado no próximo scan.
+          </Callout>
+        ) : (
+          <>
+            <KpiGroup>
+              <KpiCard label="Módulos" value={arq.modulos.toLocaleString("pt-BR")} />
+              <KpiCard
+                label="Complexidade cognitiva"
+                value={String(arq.cognitivaMedia)}
+                sub="média por função — esforço de ler"
+              />
+              <KpiCard label="Arestas internas" value={arq.arestasInternas.toLocaleString("pt-BR")} />
+              <KpiCard
+                label="Dependências externas"
+                value={arq.dependenciasExternas.toLocaleString("pt-BR")}
+              />
+              <KpiCard
+                label="Módulos em ciclo"
+                value={arq.modulosEmCiclo.toLocaleString("pt-BR")}
+                sub={arq.modulosEmCiclo > 0 ? "importação circular" : "nenhum"}
+              />
+              <KpiCard
+                label="Módulos órfãos"
+                value={arq.modulosOrfaos.toLocaleString("pt-BR")}
+                sub="ninguém importa e não são entrada"
+              />
+            </KpiGroup>
+
+            {arq.ciclos.length > 0 && (
+              <div className="ch-metric-card" style={{ marginTop: "1rem" }}>
+                <h3>Importação circular</h3>
+                <p className="hero-caption" style={{ marginTop: 0 }}>
+                  Cada arquivo, olhado sozinho, parece razoável. Só o grafo mostra que eles se seguram
+                  em pé mutuamente e nenhum sai sem os outros.
+                </p>
+                <div style={{ display: "grid", gap: "0.5rem", marginTop: "0.6rem" }}>
+                  {arq.ciclos.map((c) => (
+                    <div key={`${c.repoName}-${c.id}`} className="hero-panel-sm" style={{ padding: "0.55rem 0.75rem" }}>
+                      <strong>{c.repoName}</strong>
+                      <span className="hero-caption"> · {c.modulos.length} módulos</span>
+                      <div className="hero-caption" style={{ marginTop: "0.3rem", lineHeight: 1.7 }}>
+                        {c.modulos.join(" → ")}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="ch-metric-card" style={{ marginTop: "1rem" }}>
+              <h3>Onde mexer custa caro</h3>
+              <p className="hero-caption" style={{ marginTop: 0 }}>
+                Ordenado por complexidade cognitiva × alcance. Complexidade sozinha ordena errado: uma
+                função complicada que ninguém importa custa zero para deixar quieta.
+              </p>
+              <div style={{ overflowX: "auto", marginTop: "0.7rem" }}>
+                <table className="arq-tabela">
+                  <thead>
+                    <tr>
+                      <th>Repositório</th>
+                      <th>Módulo</th>
+                      <th title="Quantos módulos dependem deste">Ca</th>
+                      <th title="De quantos módulos este depende">Ce</th>
+                      <th title="Instabilidade Ce/(Ca+Ce): 0 é rocha, 1 é folha">I</th>
+                      <th>Cogn.</th>
+                      <th>Risco</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {arq.risco.map((m) => (
+                      <tr key={`${m.repoName}-${m.arquivo}`}>
+                        <td>{m.repoName}</td>
+                        <td className="arq-caminho" title={m.arquivo}>
+                          {m.arquivo}
+                        </td>
+                        <td className="arq-num">{m.ca}</td>
+                        <td className="arq-num">{m.ce}</td>
+                        <td className="arq-num">
+                          {m.instabilidade === null ? "—" : m.instabilidade.toFixed(2)}
+                        </td>
+                        <td className="arq-num">{m.cognitiva}</td>
+                        <td className="arq-num arq-risco">{Math.round(m.risco).toLocaleString("pt-BR")}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        )}
       </DataSection>
     </div>
   );

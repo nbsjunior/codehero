@@ -79,6 +79,43 @@ export interface RepoRow {
   lastAnalyzedAt: string | null;
   autoScan?: RepoAutoScan;
   codeGraph?: CodeGraphRepoSummary | null;
+  arquitetura?: ArquiteturaRepoSummary | null;
+}
+
+/**
+ * Leitura arquitetural do repositório — a outra metade do code-graph.
+ *
+ * `CodeGraphRepoSummary` mede exposição por FUNÇÃO (fan-in, saltos até uma
+ * entrada). Esta mede acoplamento por MÓDULO. As duas perguntas são
+ * diferentes: "esta função está exposta" não responde "mexer neste módulo é
+ * caro", e é a segunda que decide onde o time gasta a semana.
+ */
+export interface ArquiteturaRepoSummary {
+  version?: number;
+  geradoEm?: string;
+  totais: {
+    modulos: number;
+    linhasDeCodigo: number;
+    funcoes: number;
+    ciclomaticaMedia: number;
+    cognitivaMedia: number;
+    arestasInternas: number;
+    dependenciasExternas: number;
+    modulosEmCiclo: number;
+    modulosOrfaos: number;
+  };
+  ciclos: Array<{ id: number; modulos: string[] }>;
+  modulos: Array<{
+    arquivo: string;
+    ca: number;
+    ce: number;
+    instabilidade: number | null;
+    cognitiva: number;
+    maiorFuncao: number;
+    linhasDeCodigo: number;
+    risco: number;
+    ciclo: number | null;
+  }>;
 }
 
 export interface AdminProjectRow {

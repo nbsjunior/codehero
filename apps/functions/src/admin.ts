@@ -106,6 +106,10 @@ export const adminListAllProjects = onCall(
                 openIssues: rd.openIssues ?? 0,
                 lastAnalyzedAt: rd.lastAnalyzedAt?.toDate?.().toISOString() ?? null,
                 codeGraph: slimCodeGraph(rd.codeGraph),
+                // Já vem compactado do ingest (25 módulos, 10 ciclos), então
+                // atravessa sem nova poda. O que precisava encolher encolheu
+                // onde o dado nasce, não em cada leitura do painel.
+                arquitetura: (rd.arquitetura as Record<string, unknown> | undefined) ?? null,
                 autoScan: rd.autoScan
                   ? {
                       enabled: !!rd.autoScan.enabled,

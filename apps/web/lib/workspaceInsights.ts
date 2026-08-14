@@ -292,3 +292,98 @@ export async function loadWorkspaceIssues(projects: AdminProjectRow[]): Promise<
     truncated: items.length >= MAX_ISSUES,
   };
 }
+
+// ---------------------------------------------------------------------------
+// Leitura arquitetural agregada — a outra metade do code-graph.
+//
+// `aggregateCodeGraphs` responde "quais funções estão expostas". Isto responde
+// "onde mexer custa caro", que é a pergunta que ordena a semana do time.
+//
+// As duas não se deduzem uma da outra. Uma função exposta pode estar num
+// módulo trivial de trocar; um módulo caríssimo de mexer pode não ter nenhuma
+// função exposta e ainda assim ser onde toda mudança trava.
+// ---------------------------------------------------------------------------
+
+export type PortfolioArquitetura = {
+  reposComLeitura: number;
+  modulos: number;
+  funcoes: number;
+  linhasDeCodigo: number;
+  /** Média ponderada por função entre os repositórios, não média de médias. */
+  cognitivaMedia: number;
+  ciclomaticaMedia: number;
+  arestasInternas: number;
+  dependenciasExternas: number;
+  modulosEmCiclo: number;
+  modulosOrfaos: number;
+  /** Ciclos de importação, com o repositório onde aparecem. */
+  ciclos: Array<{ repoName: string; id: number; modulos: string[] }>;
+  /** Módulos de maior risco no portfólio inteiro. */
+  risco: Array<{
+    repoName: string;
+    arquivo: string;
+    ca: number;
+    ce: number;
+    instabilidade: number | null;
+    cognitiva: number;
+    maiorFuncao: number;
+    risco: number;
+    ciclo: number | null;
+  }>;
+};
+
+export function aggregateArquitetura(projects: AdminProjectRow[]): PortfolioArquitetura {
+  const out: PortfolioArquitetura = {
+    reposComLeitura: 0,
+    modulos: 0,
+    funcoes: 0,
+    linhasDeCodigo: 0,
+    cognitivaMedia: 0,
+    ciclomaticaMedia: 0,
+    arestasInternas: 0,
+    dependenciasExternas: 0,
+    modulosEmCiclo: 0,
+    modulosOrfaos: 0,
+    ciclos: [],
+    risco: [],
+  };
+
+  // Média PONDERADA por função. Média de médias trataria um repositório de
+  // dez funções igual a um de duas mil, e o número deixaria de significar
+  // "quanto custa ler uma função deste portfólio".
+  let somaCognitiva = 0;
+  let somaCiclomatica = 0;
+
+  for (const p of projects) {
+    for (const r of p.repos) {
+      const a = r.arquitetura;
+      if (!a?.totais || a.totais.modulos <= 0) continue;
+      out.reposComLeitura += 1;
+      out.modulos += a.totais.modulos;
+      out.funcoes += a.totais.funcoes;
+      out.linhasDeCodigo += a.totais.linhasDeCodigo;
+      out.arestasInternas += a.totais.arestasInternas;
+      out.dependenciasExternas += a.totais.dependenciasExternas;
+      out.modulosEmCiclo += a.totais.modulosEmCiclo;
+      out.modulosOrfaos += a.totais.modulosOrfaos;
+      somaCognitiva += a.totais.cognitivaMedia * a.totais.funcoes;
+      somaCiclomatica += a.totais.ciclomaticaMedia * a.totais.funcoes;
+
+      for (const c of a.ciclos ?? []) {
+        out.ciclos.push({ repoName: r.name, id: c.id, modulos: c.modulos });
+      }
+      for (const m of a.modulos ?? []) {
+        out.risco.push({ repoName: r.name, ...m });
+      }
+    }
+  }
+
+  if (out.funcoes > 0) {
+    out.cognitivaMedia = Number((somaCognitiva / out.funcoes).toFixed(1));
+    out.ciclomaticaMedia = Number((somaCiclomatica / out.funcoes).toFixed(1));
+  }
+  out.risco.sort((a, b) => b.risco - a.risco);
+  out.risco = out.risco.slice(0, 15);
+  out.ciclos = out.ciclos.slice(0, 8);
+  return out;
+}

@@ -43,6 +43,8 @@ export interface PersistAnalysisInput {
   branchCoveragePercent?: number | null;
   /** Resumo do code-graph (SARIF run properties). */
   codeGraph?: Record<string, unknown> | null;
+  /** Leitura arquitetural: acoplamento por módulo, ciclos, risco. */
+  arquitetura?: Record<string, unknown> | null;
   analysisId?: string;
   /** Per-project gate thresholds (merged with defaults when omitted). */
   qualityGateThresholds?: QualityGateThresholds | null;
@@ -122,6 +124,81 @@ export function codeGraphFromSarif(sarif: SarifLog): Record<string, unknown> | n
     entries: Number(g.entries) || 0,
     hotspots: Array.isArray(g.hotspots) ? g.hotspots.slice(0, 40) : [],
     links: Array.isArray(g.links) ? g.links.slice(0, 120) : [],
+  };
+}
+
+/**
+ * Leitura arquitetural (SARIF run properties) — a outra metade do code-graph.
+ *
+ * `codeGraph` traz exposição por FUNÇÃO: fan-in, saltos até uma entrada. Isto
+ * traz acoplamento por MÓDULO: quem depende de quem, instabilidade, ciclos de
+ * importação, e complexidade cruzada com alcance.
+ *
+ * São perguntas diferentes e as duas precisam ser respondidas. "Esta função
+ * está exposta" e "mexer neste módulo é caro" não se deduzem uma da outra.
+ *
+ * O corte em 25 módulos é deliberado: o relatório completo de um monorepo
+ * passa de trezentos, isso fica no documento do repositório e viaja em toda
+ * leitura do painel. Vinte e cinco cobre o que alguém realmente vai olhar
+ * numa reunião.
+ */
+export function arquiteturaFromSarif(sarif: SarifLog): Record<string, unknown> | null {
+  const raw = sarif.runs?.[0]?.properties?.arquitetura;
+  if (!raw || typeof raw !== "object") return null;
+  const a = raw as {
+    geradoEm?: string;
+    totais?: Record<string, unknown>;
+    ciclos?: unknown;
+    modulos?: unknown;
+  };
+  if (!a.totais || typeof a.totais !== "object") return null;
+
+  const num = (v: unknown) => Number(v) || 0;
+  const t = a.totais as Record<string, unknown>;
+
+  const modulos = Array.isArray(a.modulos)
+    ? a.modulos
+        .filter((m): m is Record<string, unknown> => !!m && typeof m === "object")
+        .slice(0, 25)
+        .map((m) => ({
+          arquivo: String(m.arquivo ?? ""),
+          ca: num(m.ca),
+          ce: num(m.ce),
+          instabilidade: typeof m.instabilidade === "number" ? m.instabilidade : null,
+          cognitiva: num(m.cognitiva),
+          maiorFuncao: num(m.maiorFuncao),
+          linhasDeCodigo: num(m.linhasDeCodigo),
+          risco: num(m.risco),
+          ciclo: typeof m.ciclo === "number" ? m.ciclo : null,
+        }))
+    : [];
+
+  const ciclos = Array.isArray(a.ciclos)
+    ? a.ciclos
+        .filter((c): c is Record<string, unknown> => !!c && typeof c === "object")
+        .slice(0, 10)
+        .map((c) => ({
+          id: num(c.id),
+          modulos: Array.isArray(c.modulos) ? c.modulos.slice(0, 12).map(String) : [],
+        }))
+    : [];
+
+  return {
+    version: 1,
+    geradoEm: typeof a.geradoEm === "string" ? a.geradoEm : new Date().toISOString(),
+    totais: {
+      modulos: num(t.modulos),
+      linhasDeCodigo: num(t.linhasDeCodigo),
+      funcoes: num(t.funcoes),
+      ciclomaticaMedia: num(t.ciclomaticaMedia),
+      cognitivaMedia: num(t.cognitivaMedia),
+      arestasInternas: num(t.arestasInternas),
+      dependenciasExternas: num(t.dependenciasExternas),
+      modulosEmCiclo: num(t.modulosEmCiclo),
+      modulosOrfaos: num(t.modulosOrfaos),
+    },
+    ciclos,
+    modulos,
   };
 }
 
@@ -415,6 +492,7 @@ export async function persistAnalysisResults(input: PersistAnalysisInput): Promi
     idempotencyKey: input.idempotencyKey ?? null,
     issuesPending: !!input.deferIssueWrites,
     ...(input.codeGraph ? { codeGraph: input.codeGraph } : {}),
+    ...(input.arquitetura ? { arquitetura: input.arquitetura } : {}),
   });
 
   await rRef.set(
@@ -428,6 +506,7 @@ export async function persistAnalysisResults(input: PersistAnalysisInput): Promi
       qualityGateStatus: summary.qualityGate.status,
       openIssues: results.length,
       ...(input.codeGraph ? { codeGraph: input.codeGraph } : {}),
+    ...(input.arquitetura ? { arquitetura: input.arquitetura } : {}),
     },
     { merge: true },
   );
