@@ -153,6 +153,7 @@ export function arquiteturaFromSarif(sarif: SarifLog): Record<string, unknown> |
     totais?: Record<string, unknown>;
     ciclos?: unknown;
     modulos?: unknown;
+    porLinguagem?: unknown;
   };
   if (!a.totais || typeof a.totais !== "object") return null;
 
@@ -162,7 +163,7 @@ export function arquiteturaFromSarif(sarif: SarifLog): Record<string, unknown> |
   const modulos = Array.isArray(a.modulos)
     ? a.modulos
         .filter((m): m is Record<string, unknown> => !!m && typeof m === "object")
-        .slice(0, 25)
+        .slice(0, 40)
         .map((m) => ({
           arquivo: String(m.arquivo ?? ""),
           ca: num(m.ca),
@@ -173,6 +174,9 @@ export function arquiteturaFromSarif(sarif: SarifLog): Record<string, unknown> |
           linhasDeCodigo: num(m.linhasDeCodigo),
           risco: num(m.risco),
           ciclo: typeof m.ciclo === "number" ? m.ciclo : null,
+          linguagem: typeof m.linguagem === "string" ? m.linguagem : undefined,
+          mi: typeof m.mi === "number" ? m.mi : null,
+          piorFuncaoMi: typeof m.piorFuncaoMi === "number" ? m.piorFuncaoMi : null,
         }))
     : [];
 
@@ -183,6 +187,24 @@ export function arquiteturaFromSarif(sarif: SarifLog): Record<string, unknown> |
         .map((c) => ({
           id: num(c.id),
           modulos: Array.isArray(c.modulos) ? c.modulos.slice(0, 12).map(String) : [],
+        }))
+    : [];
+
+  const porLinguagem = Array.isArray(a.porLinguagem)
+    ? a.porLinguagem
+        .filter((l): l is Record<string, unknown> => !!l && typeof l === "object")
+        .slice(0, 24)
+        .map((l) => ({
+          linguagem: String(l.linguagem ?? "—"),
+          modulos: num(l.modulos),
+          linhasDeCodigo: num(l.linhasDeCodigo),
+          funcoes: num(l.funcoes),
+          mi: num(l.mi),
+          ciclomaticaMedia: num(l.ciclomaticaMedia),
+          cognitivaMedia: num(l.cognitivaMedia),
+          densidadeComentario: num(l.densidadeComentario),
+          modulosEmAtencao: num(l.modulosEmAtencao),
+          modulosCriticos: num(l.modulosCriticos),
         }))
     : [];
 
@@ -202,6 +224,7 @@ export function arquiteturaFromSarif(sarif: SarifLog): Record<string, unknown> |
     },
     ciclos,
     modulos,
+    ...(porLinguagem.length > 0 ? { porLinguagem } : {}),
   };
 }
 
