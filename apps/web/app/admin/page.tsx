@@ -59,7 +59,7 @@ const SHARED_GROUPS: CockpitNavGroup[] = [
     id: "instalacao",
     label: "Início",
     tier: "operation",
-    items: [{ id: "instalacao", label: "Instalação" }],
+    items: [{ id: "instalacao", label: "Começar" }],
   },
   {
     id: "visao",
@@ -602,61 +602,72 @@ function AdminPanelInner() {
         {tab === "visao-geral" && (
           <>
             <PageHeader
-              eyebrow="Visão"
+              eyebrow="Portfólio"
               title="Visão geral"
               description={
                 isPlatformAdmin
-                  ? `${orgCountDisplay} org(s) · ${projectCountDisplay} projeto(s) · ${repoCountDisplay} repo(s)`
-                  : `${orgCount} org(s) · ${projects.length} projeto(s) seus`
+                  ? `Snapshot da plataforma: ${orgCountDisplay} org(s), ${projectCountDisplay} projeto(s), ${repoCountDisplay} repo(s). Use o Relatório para aprofundar.`
+                  : `Seus workspaces: ${projects.length} projeto(s) em ${orgCount} org(s). Próximo passo: Relatório ou primeiro scan.`
               }
             />
             <KpiGroup>
               <KpiCard label="Organizações" value={orgCountDisplay} />
               <KpiCard label="Projetos" value={projectCountDisplay} />
               <KpiCard label="Repositórios" value={repoCountDisplay} />
-              <KpiCard label="Débito" value={`${totalDebtHours}h`} />
-              <KpiCard label="Issues" value={totalOpenIssues} />
-              <KpiCard label="Gates falhando" value={failingGates} tone={failingGates > 0 ? "danger" : "ok"} />
-              <KpiCard label="Pior segurança" value={worstSecurity} tone={worstSecurity === "A" ? "ok" : "warn"} />
+              <KpiCard label="Débito técnico" value={`${totalDebtHours}h`} />
+              <KpiCard label="Apontamentos abertos" value={totalOpenIssues} />
+              <KpiCard
+                label="Gates a corrigir"
+                value={failingGates}
+                tone={failingGates > 0 ? "danger" : "ok"}
+                sub={failingGates === 0 ? "Todos passando" : "Priorize no Relatório"}
+              />
+              <KpiCard
+                label="Nota de segurança"
+                value={worstSecurity}
+                tone={worstSecurity === "A" ? "ok" : "warn"}
+                sub="pior rating do portfólio"
+              />
             </KpiGroup>
-            <p className="hero-caption" style={{ marginTop: "1.25rem" }}>
-              Atalhos:{" "}
-              <button type="button" className="hero-link" style={{ background: "none", border: 0, cursor: "pointer", font: "inherit" }} onClick={() => selectTab("instalacao")}>
-                Instalação
-              </button>
-              {" · "}
-              <button type="button" className="hero-link" style={{ background: "none", border: 0, cursor: "pointer", font: "inherit" }} onClick={() => selectTab("todos-projetos")}>
-                Projetos
-              </button>
-              {" · "}
-              <button type="button" className="hero-link" style={{ background: "none", border: 0, cursor: "pointer", font: "inherit" }} onClick={() => selectTab("relatorio")}>
-                Relatório executivo
-              </button>
-              {" · "}
-              <button type="button" className="hero-link" style={{ background: "none", border: 0, cursor: "pointer", font: "inherit" }} onClick={() => selectTab("apontamentos")}>
-                Apontamentos
-              </button>
-              {isPlatformAdmin && (
-                <>
-                  {" · "}
-                  <button type="button" className="hero-link" style={{ background: "none", border: 0, cursor: "pointer", font: "inherit" }} onClick={() => selectTab("escala")}>
-                    Escala e filas
-                  </button>
-                </>
-              )}
-            </p>
+            <Callout tone="neutral" title="Por onde começar hoje">
+              <p className="hero-caption" style={{ margin: 0 }}>
+                <button type="button" className="hero-link" style={{ background: "none", border: 0, cursor: "pointer", font: "inherit" }} onClick={() => selectTab("instalacao")}>
+                  Começar
+                </button>
+                {" — setup e primeiro scan · "}
+                <button type="button" className="hero-link" style={{ background: "none", border: 0, cursor: "pointer", font: "inherit" }} onClick={() => selectTab("relatorio")}>
+                  Relatório
+                </button>
+                {" — saúde e tendências · "}
+                <button type="button" className="hero-link" style={{ background: "none", border: 0, cursor: "pointer", font: "inherit" }} onClick={() => selectTab("apontamentos")}>
+                  Apontamentos
+                </button>
+                {" — fila de achados · "}
+                <button type="button" className="hero-link" style={{ background: "none", border: 0, cursor: "pointer", font: "inherit" }} onClick={() => selectTab("todos-projetos")}>
+                  Projetos
+                </button>
+                {isPlatformAdmin && (
+                  <>
+                    {" · "}
+                    <button type="button" className="hero-link" style={{ background: "none", border: 0, cursor: "pointer", font: "inherit" }} onClick={() => selectTab("escala")}>
+                      Escala
+                    </button>
+                  </>
+                )}
+              </p>
+            </Callout>
           </>
         )}
 
         {tab === "apontamentos" && (
           <>
             <PageHeader
-              eyebrow="Visão"
+              eyebrow="Portfólio"
               title="Apontamentos"
               description={
                 isPlatformAdmin
-                  ? "Achados abertos em toda a plataforma — clique para abrir a ficha"
-                  : "Achados abertos nos seus projetos e repositórios — abra o workspace para a ficha"
+                  ? "Achados abertos em toda a plataforma — abra a ficha para entender risco e correção"
+                  : "Achados abertos nos seus projetos — abra a ficha; para marcar falso positivo, use o Workspace"
               }
             />
             {issuesError && <div className="hero-error">{issuesError}</div>}
@@ -676,7 +687,7 @@ function AdminPanelInner() {
                 }),
               )}
               loading={issuesLoading}
-              emptyMessage="Nenhum apontamento aberto."
+              emptyMessage="Nada aberto ainda. Rode o primeiro scan em Começar (plugin, Action ou prévia na nuvem)."
             />
           </>
         )}

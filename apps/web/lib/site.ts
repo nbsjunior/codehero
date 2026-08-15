@@ -1,5 +1,5 @@
 export const SITE_URL = "https://codehero.web.app";
 export const SITE_NAME = "CodeHero";
-export const SITE_TAGLINE = "Detecção competitiva. Loop fechado depois do finding.";
+export const SITE_TAGLINE = "Qualidade de código com prova — sem custo.";
 export const SITE_DESCRIPTION =
-  "Plataforma de qualidade com motor determinístico peer-competitive em segurança (OWASP F1 ~75%), evolução de regras auditável, SDD verificável e MCP nativo — sem IA no quality gate. Orquestra CodeQL/Semgrep; lê COBOL e DB2 como uma coisa só.";
+  "Detecte problemas como as melhores ferramentas, feche o ciclo até a correção e decida o merge sempre do mesmo jeito. Motor determinístico, open source, sem IA no quality gate e sem assinatura.";

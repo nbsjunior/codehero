@@ -316,9 +316,9 @@ function InstalacaoHome() {
   return (
     <div>
       <PageHeader
-        eyebrow="Instalação"
-        title="Instalação"
-        description="Plugin, dress code, prévia na nuvem e seus projetos"
+        eyebrow="Primeiros passos"
+        title="Começar"
+        description="Crie o projeto, conecte o CI ou o plugin e veja o primeiro resultado — em minutos"
         actions={
           <button type="button" className="hero-btn hero-btn-outline" onClick={() => setShowProvision((v) => !v)}>
             {showProvision ? "Fechar" : "Novo projeto"}
@@ -334,17 +334,26 @@ function InstalacaoHome() {
       {inviteMsg && <div className="hero-panel" style={{ padding: "0.85rem 1rem", marginBottom: "1rem" }}>{inviteMsg}</div>}
       {inviteError && <div className="hero-error">{inviteError}</div>}
 
-      <section className="hero-panel" style={{ padding: "1.35rem 1.5rem", marginTop: 0, marginBottom: "1rem" }}>
-        <h2 className="hero-display" style={{ fontSize: "1.25rem", margin: "0 0 0.35rem" }}>
-          Esteira que aprende regras
-        </h2>
-        <p className="hero-caption" style={{ marginTop: 0, marginBottom: "0.85rem" }}>
-          Observar → propor (offline) → provar no corpus (F1 ≥ 0,85) → publicar. A IA não julga o PR; o portão
-          determinístico decide. Cenário real: <code>evolve-all</code> rejeitou mutações sem ganho de F1.
+      <details className="hero-panel" style={{ padding: "1.1rem 1.35rem", marginTop: 0, marginBottom: "1rem" }}>
+        <summary
+          style={{
+            cursor: "pointer",
+            fontFamily: "var(--font-headline, inherit)",
+            fontSize: "1.15rem",
+            fontWeight: 600,
+            listStyle: "none",
+          }}
+        >
+          Como as regras evoluem (opcional)
+        </summary>
+        <p className="hero-caption" style={{ marginTop: "0.75rem", marginBottom: "0.85rem" }}>
+          O portal observa padrões, propõe melhorias offline e só publica regra nova depois de prova
+          objetiva. A IA ajuda a redigir; o quality gate continua determinístico — sem “opinião” no
+          merge.
         </p>
         <p style={{ margin: 0, display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
           <Link href="/docs/#aprendizado-continuo" className="hero-btn hero-btn-outline" style={{ textDecoration: "none" }}>
-            Ver passo a passo nas docs
+            Ver nas docs
           </Link>
           <a
             href="https://github.com/nbsjunior/codehero/blob/main/docs/wiki/Esteira-de-aprendizado-de-regras.md"
@@ -355,7 +364,7 @@ function InstalacaoHome() {
             Wiki (markdown)
           </a>
         </p>
-      </section>
+      </details>
 
       {/* Como usar — fluxo simples */}
       <section className="hero-panel" style={{ padding: "1.5rem", marginTop: 0 }}>

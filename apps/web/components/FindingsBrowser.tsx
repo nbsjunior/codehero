@@ -172,7 +172,7 @@ function resolveFicha(item: FindingsBrowserItem) {
 export default function FindingsBrowser({
   findings,
   loading = false,
-  emptyMessage = "Nenhum apontamento aberto.",
+  emptyMessage = "Nada aberto ainda. Rode o primeiro scan em Começar.",
   externalFilter = null,
   onClearExternalFilter,
   enableFeedback = false,

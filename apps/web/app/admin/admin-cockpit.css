@@ -1,4 +1,4 @@
-/* —— Admin cockpit: executive black / crimson —— */
+/* —— Admin cockpit: executive black / crimson (marca ≠ alarme) —— */
 :root {
   --ex-bg: #070707;
   --ex-surface: #0f0f0f;
@@ -7,11 +7,21 @@
   --ex-border: #2a2a2a;
   --ex-border-soft: #222;
   --ex-text: #f2f2f0;
-  --ex-muted: #8c8c86;
+  --ex-muted: #9a9a93;
   --ex-red: #d0121c;
   --ex-red-bright: #ef1a28;
   --ex-red-dim: rgba(208, 18, 28, 0.14);
   --ex-red-line: rgba(208, 18, 28, 0.45);
+  /* Semântica — não reutilizar o vermelho de marca em todo alerta */
+  --ex-ok: #3d9a5c;
+  --ex-ok-dim: rgba(61, 154, 92, 0.14);
+  --ex-ok-line: rgba(61, 154, 92, 0.45);
+  --ex-warn: #d29922;
+  --ex-warn-dim: rgba(210, 153, 34, 0.14);
+  --ex-warn-line: rgba(210, 153, 34, 0.5);
+  --ex-danger: #e85d04;
+  --ex-danger-dim: rgba(232, 93, 4, 0.14);
+  --ex-danger-line: rgba(232, 93, 4, 0.5);
   --ex-display: var(--font-display), "Cormorant Garamond", Georgia, "Times New Roman", serif;
   --ex-sans: var(--font-sans), "Manrope", system-ui, sans-serif;
   --ex-mono: var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
@@ -33,9 +43,7 @@
   display: grid;
   place-items: center;
   padding: 2rem 1.25rem;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(208, 18, 28, 0.18), transparent 55%),
-    var(--ex-bg);
+  background: var(--ex-bg);
   color: var(--ex-text);
   font-family: var(--ex-sans);
 }
@@ -410,6 +418,9 @@
   --muted: var(--ex-muted);
   --accent: var(--ex-red);
   --accent-ink: #fff;
+  --ok: var(--ex-ok);
+  --warn: var(--ex-warn);
+  --danger: var(--ex-danger);
   --shadow-hard: none;
   --shadow-hard-sm: none;
   --radius: 2px;
@@ -493,18 +504,44 @@
   color: var(--ex-text);
 }
 
+.ex-shell .hero-kpi--ok,
+.ex-main .hero-kpi--ok {
+  border-color: var(--ex-ok-line);
+  background: linear-gradient(180deg, var(--ex-ok-dim), var(--ex-surface-2));
+}
+.ex-shell .hero-kpi--warn,
+.ex-main .hero-kpi--warn {
+  border-color: var(--ex-warn-line);
+  background: linear-gradient(180deg, var(--ex-warn-dim), var(--ex-surface-2));
+}
 .ex-shell .hero-kpi--danger,
 .ex-main .hero-kpi--danger {
-  border-color: var(--ex-red-line);
-  background: linear-gradient(180deg, var(--ex-red-dim), var(--ex-surface-2));
+  border-color: var(--ex-danger-line);
+  background: linear-gradient(180deg, var(--ex-danger-dim), var(--ex-surface-2));
 }
 
 .ex-shell .hero-callout,
 .ex-main .hero-callout {
   background: var(--ex-surface-2);
   border: 1px solid var(--ex-border);
-  border-left: 3px solid var(--ex-red);
+  border-left: 3px solid var(--ex-border);
   box-shadow: none;
+}
+.ex-shell .hero-callout--ok,
+.ex-main .hero-callout--ok {
+  border-left-color: var(--ex-ok);
+}
+.ex-shell .hero-callout--warn,
+.ex-main .hero-callout--warn {
+  border-left-color: var(--ex-warn);
+}
+.ex-shell .hero-callout--danger,
+.ex-main .hero-callout--danger {
+  border-left-color: var(--ex-danger);
+}
+.ex-shell .hero-callout--neutral,
+.ex-main .hero-callout--neutral {
+  border-left-color: var(--ex-muted);
 }
 
 .ex-shell .hero-panel,
@@ -819,13 +856,13 @@
   background: var(--paper);
 }
 .hero-kpi--ok {
-  border-color: var(--rating-a);
+  border-color: var(--ok);
 }
 .hero-kpi--warn {
-  border-color: var(--rating-c);
+  border-color: var(--warn);
 }
 .hero-kpi--danger {
-  border-color: var(--rating-e);
+  border-color: var(--danger);
 }
 
 .hero-kpi__label {
@@ -853,16 +890,19 @@
   margin-bottom: 0.5rem;
 }
 .hero-callout--ok {
-  border-color: var(--rating-a);
-  background: color-mix(in srgb, var(--rating-a) 10%, var(--paper-raised));
+  border-color: var(--ok, var(--rating-a));
+  background: color-mix(in srgb, var(--ok, var(--rating-a)) 10%, var(--paper-raised));
 }
 .hero-callout--warn {
-  border-color: var(--rating-c);
-  background: color-mix(in srgb, var(--rating-c) 10%, var(--paper-raised));
+  border-color: var(--warn, var(--rating-c));
+  background: color-mix(in srgb, var(--warn, var(--rating-c)) 10%, var(--paper-raised));
 }
 .hero-callout--danger {
-  border-color: var(--rating-e);
-  background: color-mix(in srgb, var(--rating-e) 10%, var(--paper-raised));
+  border-color: var(--danger, var(--rating-e));
+  background: color-mix(in srgb, var(--danger, var(--rating-e)) 10%, var(--paper-raised));
+}
+.hero-callout--neutral {
+  border-color: var(--line);
 }
 
 .hero-callout__title {

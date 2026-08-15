@@ -166,12 +166,12 @@ export default function RelatorioPanel({
   return (
     <>
       <PageHeader
-        eyebrow="Visão"
+        eyebrow="Portfólio"
         title={isWorkspace ? "Relatório executivo" : "Relatório"}
         description={
           isWorkspace
-            ? "Ratings, débito, grafo estrutural e achados dos seus projetos"
-            : "Ratings, débito, grafo do código avaliado e onde a plataforma precisa de atenção"
+            ? "Saúde dos seus projetos: ratings, débito, frota de scan e evolução no tempo"
+            : "Saúde da amostra: onde investir atenção esta semana"
         }
         actions={
           <button type="button" className="hero-btn hero-btn-outline" disabled={retryBusy} onClick={() => void retrySummary()}>
@@ -181,12 +181,27 @@ export default function RelatorioPanel({
       />
 
       <KpiGroup>
-        <KpiCard label="Pior manutenibilidade" value={worstMaintainability} tone={ratingTone(worstMaintainability)} />
-        <KpiCard label="Pior segurança" value={worstSecurity} tone={ratingTone(worstSecurity)} />
-        <KpiCard label="Gates falhando" value={failingGates} tone={failingGates > 0 ? "danger" : "ok"} />
-        <KpiCard label="Issues abertas" value={openIssues} />
-        <KpiCard label="Débito" value={`${debtHours}h`} />
-        <KpiCard label="Projetos na amostra" value={projects.length} />
+        <KpiCard
+          label="Manutenibilidade"
+          value={worstMaintainability}
+          sub="pior nota do portfólio"
+          tone={ratingTone(worstMaintainability)}
+        />
+        <KpiCard
+          label="Segurança"
+          value={worstSecurity}
+          sub="pior nota do portfólio"
+          tone={ratingTone(worstSecurity)}
+        />
+        <KpiCard
+          label="Gates a corrigir"
+          value={failingGates}
+          tone={failingGates > 0 ? "danger" : "ok"}
+          sub={failingGates === 0 ? "Todos passando" : "Ver frota e condições"}
+        />
+        <KpiCard label="Apontamentos" value={openIssues} />
+        <KpiCard label="Débito técnico" value={`${debtHours}h`} tone={debtHours > 40 ? "warn" : undefined} />
+        <KpiCard label="Projetos" value={projects.length} />
       </KpiGroup>
 
       {summaryError && !isWorkspace && (
@@ -195,15 +210,14 @@ export default function RelatorioPanel({
         </Callout>
       )}
       {isWorkspace && projects.length > 0 && (
-        <Callout tone="neutral" title="Escopo do workspace">
-          Visão limitada às {projects.length} organização(ões)/projeto(s) em que você é membro — não inclui o
-          restante da plataforma.
+        <Callout tone="neutral" title="Escopo desta visão">
+          Só entram os {projects.length} projeto(s) em que você é membro — não o restante da plataforma.
         </Callout>
       )}
       {!summaryError && usingFallback && projects.length > 0 && (
         <Callout tone="neutral" title="Distribuição pela amostra carregada">
-          O contador global de ratings ainda não tem dados (ou está vazio). Mostrando a distribuição dos{" "}
-          {projects.length} projeto(s) listados no painel
+          O contador global de ratings ainda está vazio. Mostrando a distribuição dos{" "}
+          {projects.length} projeto(s) listados
           {platformSummary ? "" : " — o resumo agregado não respondeu"}.
         </Callout>
       )}
@@ -220,10 +234,10 @@ export default function RelatorioPanel({
           title="Manutenibilidade"
           description={`Distribuição A–E · ${maintainability.source}`}
         >
-          <RatingDistribution buckets={maintainability.buckets} emptyHint="Nenhum projeto com rating ainda." />
+          <RatingDistribution buckets={maintainability.buckets} emptyHint="Ainda sem rating — rode o primeiro scan em Começar." />
         </DataSection>
         <DataSection title="Segurança" description={`Distribuição A–E · ${security.source}`}>
-          <RatingDistribution buckets={security.buckets} emptyHint="Nenhum projeto com rating ainda." />
+          <RatingDistribution buckets={security.buckets} emptyHint="Ainda sem rating — rode o primeiro scan em Começar." />
         </DataSection>
       </div>
 
@@ -241,7 +255,7 @@ export default function RelatorioPanel({
         {issuesLoading ? (
           <p className="hero-caption">Carregando causas…</p>
         ) : !issues || issues.topCauses.length === 0 ? (
-          <p className="hero-caption">Nenhum apontamento aberto ainda.</p>
+          <p className="hero-caption">Sem apontamentos abertos. Rode um scan em Começar para popular esta lista.</p>
         ) : (
           <div style={{ overflowX: "auto" }}>
             <table className="hero-table">
@@ -443,7 +457,7 @@ function FrotaScanSection({
   return (
     <DataSection
       title="Frota de scan"
-      description={`Cadência e risco operacional — stale após ${staleDays} dia(s) sem analysis. Ligue auto-scan ou dispare scan nos selecionados.`}
+      description={`Quem está cego no portfólio — stale após ${staleDays} dia(s) sem analysis. Selecione e ligue auto-scan ou dispare agora.`}
     >
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", alignItems: "center", marginBottom: "0.75rem" }}>
         <label className="hero-caption" style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}>
@@ -680,7 +694,7 @@ function EvolucaoHistoricaSection({
     <>
       <DataSection
         title="Saúde do quality gate"
-        description="Estado do gate no portfólio (carry-forward por repo) e builds do dia. Condições falhas vêm do último snapshot de cada repositório."
+        description="Quantos repos passam ou falham ao longo do tempo, e quais condições derrubam o gate hoje."
       >
         {loading && <p className="hero-caption">Carregando gate e histórico…</p>}
         {error && (

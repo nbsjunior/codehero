@@ -138,7 +138,7 @@ export default function LandingComic({
       {/* Capa */}
       <section data-anima className="hq-capa" aria-labelledby="hq-capa-titulo">
         <div className="hq-capa-inner">
-          <p className="hq-kicker">Qualidade de código com prova — sem custo, open source</p>
+          <p className="hq-kicker">Qualidade de código com prova — grátis e open source</p>
           <h1 id="hq-capa-titulo" className="hq-marca">
             CodeHero
           </h1>
@@ -146,22 +146,21 @@ export default function LandingComic({
             Detecta como os pares. Fecha o ciclo que os outros deixam aberto.
           </p>
           <p className="hq-lede">
-            Motor determinístico competitivo em segurança, regras que evoluem offline com portão F1,
-            correção com contrato verificável e agentes via MCP — sem IA no quality gate. Junta o
-            sinal das ferramentas que você já usa e decide o merge sempre do mesmo jeito. Sem
-            assinatura, sem cartão, sem SKU escondido.
+            Um motor que decide o merge sempre do mesmo jeito — sem IA no quality gate, sem
+            assinatura. Junta o sinal das ferramentas que você já usa e leva o achado até a
+            correção verificável.
           </p>
           <div className="hq-ctas">
             <button type="button" className="hq-btn hq-btn--primario" onClick={onSignup}>
-              Criar conta — sem custo
+              Começar grátis
             </button>
             <a className="hq-btn hq-btn--fantasma" href="#historia">
               Ver como funciona
             </a>
           </div>
           <p className="hq-preco">
-            Apache-2.0 · portal e Action grátis · você só paga a infraestrutura que já tem (CI, GitHub,
-            agentes).
+            Apache-2.0 · portal e Action grátis · você só usa a infraestrutura que já tem (CI,
+            GitHub, agentes).
           </p>
         </div>
         {/*
@@ -371,7 +370,7 @@ export default function LandingComic({
         </p>
         <div className="hq-ctas">
           <button type="button" className="hq-btn hq-btn--primario" onClick={onSignup}>
-            Criar conta — sem custo
+            Começar grátis
           </button>
           <button type="button" className="hq-btn hq-btn--fantasma" onClick={onLogin}>
             Já tenho acesso

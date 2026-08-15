@@ -36,8 +36,8 @@ export function buildOnboardingSteps(input: {
       id: "verify",
       title: "Confirme o email",
       detail: verified
-        ? "Conta verificada — mutações na org estão liberadas."
-        : "Sem email verificado o portal bloqueia criar projeto e rotacionar token.",
+        ? "Conta verificada — você já pode criar projetos."
+        : "Confirme o email para liberar criação de projeto e tokens de CI.",
       done: verified,
     },
     {
@@ -45,7 +45,7 @@ export function buildOnboardingSteps(input: {
       title: "Crie o primeiro projeto",
       detail: hasProject
         ? `${input.projectCount} projeto(s) na conta.`
-        : "Org + projeto (e opcionalmente um repo GitHub) em Novo projeto.",
+        : "Organize org + projeto (e, se quiser, um repo GitHub) em Novo projeto.",
       done: hasProject,
       cta: hasProject ? undefined : "Novo projeto",
     },
@@ -54,7 +54,7 @@ export function buildOnboardingSteps(input: {
       title: "Ligue um repositório",
       detail: hasRepo
         ? `${input.repoCount} repo(s) sob gestão.`
-        : "Cada repo ganha um token de ingest para a Action / scanner / MCP.",
+        : "Cada repo recebe um token para a Action, o scanner ou o MCP.",
       done: hasRepo,
       href: hasRepo ? undefined : "#workspace",
       cta: hasRepo ? undefined : "Abrir workspace",
@@ -64,8 +64,8 @@ export function buildOnboardingSteps(input: {
       title: "Rode o primeiro scan",
       detail: hasScanSignal
         ? input.openIssues > 0
-          ? `${input.openIssues} apontamento(s) abertos — o loop já está vivo.`
-          : "Token emitido — configure a Action ou o plugin e rode o scan."
+          ? `${input.openIssues} apontamento(s) abertos — o painel já tem sinal.`
+          : "Token pronto — configure a Action ou o plugin e rode o scan."
         : "GitHub Action, plugin VS Code ou prévia na nuvem. Sem scan, o painel fica vazio.",
       done: hasScanSignal,
       href: "/docs/#github-action",
@@ -73,8 +73,8 @@ export function buildOnboardingSteps(input: {
     },
     {
       id: "channel",
-      title: "Escolha o canal diário",
-      detail: "Action no CI (gate de merge), plugin no editor, ou MCP para o agente aplicar SDD.",
+      title: "Escolha o canal do dia a dia",
+      detail: "Action no CI (gate de merge), plugin no editor, ou MCP para o agente aplicar a correção.",
       done: hasScanSignal,
       href: "#mcp",
       cta: "MCP / integração",
@@ -95,11 +95,11 @@ export default function OnboardingChecklist({
 
   return (
     <Callout
-      tone="warn"
-      title={`Primeira hora · ${doneCount}/${steps.length} passos`}
+      tone="neutral"
+      title={`Primeiros passos · ${doneCount}/${steps.length}`}
     >
       <p style={{ margin: "0 0 0.75rem" }}>
-        Objetivo: sair daqui com email ok, um projeto, um repo e um scan real (não só o catálogo).
+        Meta: email ok, um projeto, um repo e um scan real — aí o Relatório passa a ter o que mostrar.
       </p>
       <ol className="onboarding-checklist">
         {steps.map((s) => (

@@ -1,46 +1,54 @@
 :root {
   --ink: #0a0a0a;
-  --paper: #f4f3ee;
+  /* Papel levemente frio — evita o “creme genérico” de landing AI */
+  --paper: #f3f2ee;
   --paper-raised: #ffffff;
   --line: #0a0a0a;
-  --muted: #55534c;
-  --accent: #e8121f; /* the one color allowed to break black & white — hero red */
+  --muted: #5a5852;
+  /* Marca: o único vermelho de identidade */
+  --accent: #d0121c;
   --accent-ink: #ffffff;
-  --rating-a: #16a34a;
-  --rating-b: #65a30d;
-  --rating-c: #ca8a04;
-  --rating-d: #ea580c;
-  --rating-e: #dc2626;
+  /* Semântica ≠ marca — alarme e sucesso não competem com o brand */
+  --ok: #1a7f4b;
+  --warn: #b45309;
+  --danger: #c2410c;
+  --rating-a: #1a7f4b;
+  --rating-b: #4d7c0f;
+  --rating-c: #b45309;
+  --rating-d: #c2410c;
+  --rating-e: #b91c1c;
   --shadow-hard: 6px 6px 0 var(--ink);
   --shadow-hard-sm: 4px 4px 0 var(--ink);
   --radius: 2px;
+  --font-ui: var(--font-sans), "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-headline: var(--font-display), "Cormorant Garamond", Georgia, "Times New Roman", serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --ink: #f4f3ee;
+    --ink: #f2f2f0;
     --paper: #121212;
-    --paper-raised: #1b1b1b;
-    --line: #f4f3ee;
-    --muted: #a3a196;
+    --paper-raised: #1a1a1a;
+    --line: #e8e8e4;
+    --muted: #a8a89e;
     --accent-ink: #0a0a0a;
   }
 }
 
 :root[data-theme="dark"] {
-  --ink: #f4f3ee;
+  --ink: #f2f2f0;
   --paper: #121212;
-  --paper-raised: #1b1b1b;
-  --line: #f4f3ee;
-  --muted: #a3a196;
+  --paper-raised: #1a1a1a;
+  --line: #e8e8e4;
+  --muted: #a8a89e;
   --accent-ink: #0a0a0a;
 }
 :root[data-theme="light"] {
   --ink: #0a0a0a;
-  --paper: #f4f3ee;
+  --paper: #f3f2ee;
   --paper-raised: #ffffff;
   --line: #0a0a0a;
-  --muted: #55534c;
+  --muted: #5a5852;
   --accent-ink: #ffffff;
 }
 
@@ -54,7 +62,7 @@ body {
   padding: 0;
   background-color: var(--paper);
   color: var(--ink);
-  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-ui);
   min-height: 100%;
   overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
@@ -81,10 +89,11 @@ body {
 }
 
 .hero-display {
-  font-family: "Bangers", "Inter", system-ui, sans-serif;
-  letter-spacing: 0.03em;
-  line-height: 1;
-  text-transform: uppercase;
+  font-family: var(--font-headline);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  font-weight: 600;
+  text-transform: none;
 }
 
 .hero-shell {
@@ -698,29 +707,26 @@ a.hero-link {
   white-space: pre;
 }
 
-/* —— Landing (signed-out) — CodeRabbit-like structure, CodeHero identity —— */
+/* —— Docs / legacy dark chrome: alinhado ao cockpit (sem roxo / glow AI) —— */
 .cr-page {
-  --cr-bg: #09080c;
-  --cr-bg-2: #0f0d14;
-  --cr-bg-3: #16131d;
-  --cr-text: #ffffff;
-  --cr-muted: #c9c5d2;
-  --cr-faint: #8b8794;
-  --cr-border: #262433;
-  --cr-accent: #e8121f;
-  --cr-accent-soft: rgba(232, 18, 31, 0.14);
+  --cr-bg: #070707;
+  --cr-bg-2: #0f0f0f;
+  --cr-bg-3: #161616;
+  --cr-text: #f2f2f0;
+  --cr-muted: #a3a39a;
+  --cr-faint: #7a7a74;
+  --cr-border: #2a2a2a;
+  --cr-accent: #d0121c;
+  --cr-accent-soft: rgba(208, 18, 28, 0.12);
   --cr-cta: #ffffff;
-  --cr-cta-ink: #09080c;
-  --cr-ok: #3fb950;
-  --cr-radius: 4px;
-  --cr-font: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --cr-display: "Bangers", "Plus Jakarta Sans", system-ui, sans-serif;
+  --cr-cta-ink: #070707;
+  --cr-ok: #3d9a5c;
+  --cr-radius: 2px;
+  --cr-font: var(--font-sans), "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --cr-display: var(--font-display), "Cormorant Garamond", Georgia, serif;
 
   min-height: 100vh;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(232, 18, 31, 0.18), transparent 55%),
-    radial-gradient(ellipse 60% 40% at 100% 20%, rgba(255, 255, 255, 0.04), transparent 50%),
-    linear-gradient(180deg, var(--cr-bg) 0%, #050409 100%);
+  background: var(--cr-bg);
   color: var(--cr-text);
   font-family: var(--cr-font);
   overflow-x: hidden;
@@ -2479,28 +2485,28 @@ a.hero-link {
   }
 }
 
-/* �� Logged-in area: same visual language as landing (cr-page) �� */
+/* —— Área logada: mesmos neutros do cockpit (sem glow / roxo) —— */
 .hero-app-shell {
-  --ink: #f4f3ee;
-  --paper: #09080c;
-  --paper-raised: #16131d;
-  --line: #262433;
-  --muted: #c9c5d2;
-  --accent: #e8121f;
+  --ink: #f2f2f0;
+  --paper: #070707;
+  --paper-raised: #0f0f0f;
+  --line: #2a2a2a;
+  --muted: #9a9a93;
+  --accent: #d0121c;
   --accent-ink: #ffffff;
+  --ok: #3d9a5c;
+  --warn: #d29922;
+  --danger: #e85d04;
   --shadow-hard: 0 0 0 transparent;
   --shadow-hard-sm: 0 0 0 transparent;
-  --radius: 4px;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(232, 18, 31, 0.16), transparent 55%),
-    radial-gradient(ellipse 50% 35% at 100% 0%, rgba(255, 255, 255, 0.04), transparent 50%),
-    linear-gradient(180deg, #09080c 0%, #050409 100%);
+  --radius: 2px;
+  background: var(--paper);
   color: var(--ink);
-  font-family: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-ui);
 }
 
 .hero-app-shell .hero-sidebar {
-  background: rgba(15, 13, 20, 0.92);
+  background: rgba(15, 15, 15, 0.96);
   border-right: 1px solid var(--line);
   backdrop-filter: blur(12px);
 }
@@ -2517,7 +2523,7 @@ a.hero-link {
 }
 .hero-app-shell .hero-mobile-bar,
 .hero-app-shell .hero-bottom-nav {
-  background: rgba(15, 13, 20, 0.96);
+  background: rgba(15, 15, 15, 0.97);
   border-color: var(--line);
   backdrop-filter: blur(12px);
 }

@@ -233,7 +233,7 @@ export default function AuthGate({
             className="lx-nav-cta lx-nav-cta--primary"
             onClick={() => goAuth("signup")}
           >
-            Criar conta — sem custo
+            Começar grátis
           </button>
         </nav>
       </header>
@@ -248,7 +248,7 @@ export default function AuthGate({
                 Entrar
               </TabButton>
               <TabButton active={mode === "signup"} onClick={() => setMode("signup")}>
-                Criar conta — sem custo
+                Começar grátis
               </TabButton>
               <TabButton active={mode === "forgot"} onClick={() => setMode("forgot")}>
                 Recuperar
@@ -257,7 +257,7 @@ export default function AuthGate({
 
             <h2 id="auth-title" className="lx-auth-title">
               {mode === "login" && "Acesso à plataforma"}
-              {mode === "signup" && "Criar conta CodeHero — sem custo"}
+              {mode === "signup" && "Começar no CodeHero — grátis"}
               {mode === "forgot" && "Recuperar senha"}
             </h2>
             <p className="lx-auth-sub">
@@ -313,7 +313,7 @@ export default function AuthGate({
                   : mode === "login"
                     ? "Entrar"
                     : mode === "signup"
-                      ? "Criar conta — sem custo"
+                      ? "Começar grátis"
                       : "Enviar link"}
               </button>
             </form>
