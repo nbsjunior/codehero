@@ -65,6 +65,16 @@ export interface MetricaDeArquivo {
   piorFuncaoMi?: number | null;
   /** Linhas de comentario, para a densidade por linguagem. */
   comentarios?: number;
+  /** Classes / interfaces (0 em COBOL). */
+  classes?: number;
+  /** Métodos de classe. */
+  metodos?: number;
+  /** Funções livres / top-level. */
+  funcoesLivres?: number;
+  /** Parágrafos COBOL. */
+  paragrafos?: number;
+  /** Procedures SQL. */
+  procedimentos?: number;
 }
 
 export interface ModuloArquitetura {
@@ -140,6 +150,23 @@ export interface RelatorioArquitetura {
     modulosEmAtencao: number;
     /** Módulos abaixo de 10 — a faixa vermelha. */
     modulosCriticos: number;
+    /** Acoplamento aferente médio (Ca) — quem depende deste módulo. */
+    caMedia: number;
+    /** Acoplamento eferente médio (Ce) — de quem este módulo depende. */
+    ceMedia: number;
+    /** Soma de Ca / Ce no recorte da linguagem. */
+    caTotal: number;
+    ceTotal: number;
+    /** Classes / interfaces (Java, C#, TS…). 0 em COBOL. */
+    classes: number;
+    /** Métodos de classe. */
+    metodos: number;
+    /** Funções livres / top-level. */
+    funcoesLivres: number;
+    /** Parágrafos (COBOL). */
+    paragrafos: number;
+    /** Procedures (SQL). */
+    procedimentos: number;
   }>;
 }
 
@@ -341,6 +368,13 @@ function agregarPorLinguagem(
       somaCogn: number;
       atencao: number;
       criticos: number;
+      somaCa: number;
+      somaCe: number;
+      classes: number;
+      metodos: number;
+      funcoesLivres: number;
+      paragrafos: number;
+      procedimentos: number;
     }
   >();
 
@@ -361,6 +395,13 @@ function agregarPorLinguagem(
           somaCogn: 0,
           atencao: 0,
           criticos: 0,
+          somaCa: 0,
+          somaCe: 0,
+          classes: 0,
+          metodos: 0,
+          funcoesLivres: 0,
+          paragrafos: 0,
+          procedimentos: 0,
         })
         .get(lang)!;
 
@@ -370,6 +411,13 @@ function agregarPorLinguagem(
     a.comentarios += met?.comentarios ?? 0;
     a.somaCiclo += m.ciclomatica;
     a.somaCogn += m.cognitiva;
+    a.somaCa += m.ca;
+    a.somaCe += m.ce;
+    a.classes += met?.classes ?? 0;
+    a.metodos += met?.metodos ?? 0;
+    a.funcoesLivres += met?.funcoesLivres ?? 0;
+    a.paragrafos += met?.paragrafos ?? 0;
+    a.procedimentos += met?.procedimentos ?? 0;
     if (m.mi !== null) {
       // Peso = linhas. Média simples deixaria um utilitário de dez linhas
       // pesar igual a um módulo de mil, e o índice da linguagem passaria a
@@ -395,6 +443,15 @@ function agregarPorLinguagem(
       densidadeComentario: a.linhas ? r1((a.comentarios * 100) / a.linhas) : 0,
       modulosEmAtencao: a.atencao,
       modulosCriticos: a.criticos,
+      caMedia: a.modulos ? r1(a.somaCa / a.modulos) : 0,
+      ceMedia: a.modulos ? r1(a.somaCe / a.modulos) : 0,
+      caTotal: a.somaCa,
+      ceTotal: a.somaCe,
+      classes: a.classes,
+      metodos: a.metodos,
+      funcoesLivres: a.funcoesLivres,
+      paragrafos: a.paragrafos,
+      procedimentos: a.procedimentos,
     }))
     .sort((x, y) => y.linhasDeCodigo - x.linhasDeCodigo);
 }

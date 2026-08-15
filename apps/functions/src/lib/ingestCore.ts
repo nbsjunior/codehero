@@ -205,6 +205,15 @@ export function arquiteturaFromSarif(sarif: SarifLog): Record<string, unknown> |
           densidadeComentario: num(l.densidadeComentario),
           modulosEmAtencao: num(l.modulosEmAtencao),
           modulosCriticos: num(l.modulosCriticos),
+          caMedia: num(l.caMedia),
+          ceMedia: num(l.ceMedia),
+          caTotal: num(l.caTotal),
+          ceTotal: num(l.ceTotal),
+          classes: num(l.classes),
+          metodos: num(l.metodos),
+          funcoesLivres: num(l.funcoesLivres),
+          paragrafos: num(l.paragrafos),
+          procedimentos: num(l.procedimentos),
         }))
     : [];
 

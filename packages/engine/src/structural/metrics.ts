@@ -83,6 +83,37 @@ const FUNCOES = new Set([
   "procedure_definition", // T-SQL
 ]);
 
+/** Métodos de classe (Java, C#, TS, etc.) — subset de FUNCOES. */
+const METODOS = new Set([
+  "method_definition",
+  "method_declaration",
+  "constructor_declaration",
+]);
+
+/** Funções livres / top-level (não métodos). */
+const FUNCOES_LIVRES = new Set([
+  "function_declaration",
+  "function_definition",
+  "function_item",
+  "local_function_statement",
+  "arrow_function",
+  "function_expression",
+  "generator_function_declaration",
+  "func_literal",
+  "lambda",
+]);
+
+/** Classes / tipos com corpo (Java, C#, TS, Python…). COBOL não tem. */
+const CLASSES = new Set([
+  "class_declaration",
+  "class_definition",
+  "class",
+  "interface_declaration",
+  "enum_declaration",
+  "record_declaration",
+  "annotation_type_declaration",
+]);
+
 const PARAMETROS = new Set([
   "formal_parameters",
   "parameters",
@@ -120,6 +151,16 @@ export interface FileMetrics {
   halsteadVolume: number;
   /** Indice de Manutenibilidade 0-100 (variante Microsoft). */
   maintainabilityIndex: number;
+  /** Classes / interfaces / records no arquivo (0 em COBOL). */
+  classes: number;
+  /** Métodos de classe (Java/C#/TS…). */
+  methods: number;
+  /** Funções livres / top-level. */
+  freeFunctions: number;
+  /** Parágrafos COBOL. */
+  paragraphs: number;
+  /** Procedures (T-SQL / SQL PL). */
+  procedures: number;
   functions: FunctionMetrics[];
 }
 
@@ -247,12 +288,23 @@ export function computeFileMetrics(file: string, source: string, parsed: ParsedF
 
   const functions: FunctionMetrics[] = [];
   let commentLines = 0;
+  let classes = 0;
+  let methods = 0;
+  let freeFunctions = 0;
+  let paragraphs = 0;
+  let procedures = 0;
 
   walk(parsed.root, (n) => {
     if (COMENTARIO.test(n.type)) {
       commentLines += n.endPosition.row - n.startPosition.row + 1;
       return;
     }
+    if (CLASSES.has(n.type)) classes += 1;
+    if (METODOS.has(n.type)) methods += 1;
+    if (FUNCOES_LIVRES.has(n.type)) freeFunctions += 1;
+    if (n.type === "paragraph") paragraphs += 1;
+    if (n.type === "procedure_definition") procedures += 1;
+
     if (!FUNCOES.has(n.type)) return;
     const m = calcula(n);
     const h = halsteadDe(n);
@@ -305,6 +357,11 @@ export function computeFileMetrics(file: string, source: string, parsed: ParsedF
             functions.reduce((a, f) => a + Math.max(f.lines, 1), 0)) * 10,
         ) / 10
       : indiceManutenibilidade(hal.volume, doArquivo.cyclomatic, loc),
+    classes,
+    methods,
+    freeFunctions,
+    paragraphs,
+    procedures,
     functions: functions.sort((a, b) => a.startLine - b.startLine),
   };
 }

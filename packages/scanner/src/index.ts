@@ -613,10 +613,11 @@ async function main(): Promise<void> {
               ? Math.min(...m.functions.map((f) => f.maintainabilityIndex))
               : null,
             comentarios: m.commentLines,
-            // Abstratividade fica de fora deste caminho de propósito: exigiria
-            // reler a fonte só para contar exportação, e o valor dela é
-            // aproximado de qualquer forma. Quem quer o número roda
-            // `scripts/relatorio-arquitetura.mjs`.
+            classes: m.classes,
+            metodos: m.methods,
+            funcoesLivres: m.freeFunctions,
+            paragrafos: m.paragraphs,
+            procedimentos: m.procedures,
           },
         ]),
       );

@@ -117,6 +117,16 @@ export interface ArquiteturaRepoSummary {
     densidadeComentario: number;
     modulosEmAtencao: number;
     modulosCriticos: number;
+    /** Ca / Ce — acoplamento aferente e eferente (Martin). */
+    caMedia?: number;
+    ceMedia?: number;
+    caTotal?: number;
+    ceTotal?: number;
+    classes?: number;
+    metodos?: number;
+    funcoesLivres?: number;
+    paragrafos?: number;
+    procedimentos?: number;
   }>;
   modulos: Array<{
     arquivo: string;

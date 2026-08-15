@@ -37,12 +37,60 @@ type AccLang = {
   somaCog: number;
   somaComent: number;
   pesoLoc: number;
+  somaCa: number;
+  somaCe: number;
+  classes: number;
+  metodos: number;
+  funcoesLivres: number;
+  paragrafos: number;
+  procedimentos: number;
 };
+
+const LABEL_LANG: Record<string, string> = {
+  java: "Java",
+  cobol: "COBOL",
+  typescript: "TypeScript",
+  tsx: "TSX",
+  javascript: "JavaScript",
+  python: "Python",
+  csharp: "C#",
+  go: "Go",
+  tsql: "T-SQL",
+  sqlpl: "SQL PL",
+  desconhecida: "Desconhecida",
+};
+
+function nomeLang(id: string): string {
+  return LABEL_LANG[id.toLowerCase()] ?? id;
+}
 
 const COR_MI = (mi: number) =>
   mi < 10 ? "var(--rating-e)" : mi < 20 ? "var(--rating-d)" : mi < 40 ? "var(--rating-c)" : "var(--rating-a)";
 
 const faixa = (mi: number) => (mi < 10 ? "crítico" : mi < 20 ? "atenção" : mi < 40 ? "aceitável" : "bom");
+
+function emptyAcc(linguagem: string): AccLang {
+  return {
+    linguagem,
+    modulos: 0,
+    linhasDeCodigo: 0,
+    funcoes: 0,
+    modulosEmAtencao: 0,
+    modulosCriticos: 0,
+    somaMi: 0,
+    somaCiclo: 0,
+    somaCog: 0,
+    somaComent: 0,
+    pesoLoc: 0,
+    somaCa: 0,
+    somaCe: 0,
+    classes: 0,
+    metodos: 0,
+    funcoesLivres: 0,
+    paragrafos: 0,
+    procedimentos: 0,
+  };
+}
 
 function isArquitetura(a: unknown): a is ArquiteturaRepoSummary {
   return !!a && typeof a === "object" && !!(a as ArquiteturaRepoSummary).totais;
@@ -104,7 +152,7 @@ export default function ManutenibilidadePanel({ projects, isPlatformAdmin }: Pro
   const arq = useMemo(() => aggregateArquitetura(projects), [projects]);
   const graph = useMemo(() => aggregateCodeGraphs(projects), [projects]);
 
-  const { porLinguagem, pioresMi, topRisco, faixaMi, reposComArq } = useMemo(() => {
+  const { porLinguagem, pioresMi, topRisco, faixaMi, reposComArq, totaisQ } = useMemo(() => {
     const acc = new Map<string, AccLang>();
     const pioresMi: Array<{
       repo: string;
@@ -124,6 +172,18 @@ export default function ManutenibilidadePanel({ projects, isPlatformAdmin }: Pro
     }> = [];
     const faixaMi = { critico: 0, atencao: 0, aceitavel: 0, bom: 0, semMi: 0 };
     let reposComArq = 0;
+    const totaisQ = {
+      loc: 0,
+      funcoes: 0,
+      classes: 0,
+      metodos: 0,
+      paragrafos: 0,
+      procedimentos: 0,
+      funcoesLivres: 0,
+      ca: 0,
+      ce: 0,
+      modulos: 0,
+    };
 
     for (const p of projects) {
       for (const r of p.repos) {
@@ -133,19 +193,7 @@ export default function ManutenibilidadePanel({ projects, isPlatformAdmin }: Pro
         reposComArq += 1;
 
         for (const l of a.porLinguagem ?? []) {
-          const cur = acc.get(l.linguagem) ?? {
-            linguagem: l.linguagem,
-            modulos: 0,
-            linhasDeCodigo: 0,
-            funcoes: 0,
-            modulosEmAtencao: 0,
-            modulosCriticos: 0,
-            somaMi: 0,
-            somaCiclo: 0,
-            somaCog: 0,
-            somaComent: 0,
-            pesoLoc: 0,
-          };
+          const cur = acc.get(l.linguagem) ?? emptyAcc(l.linguagem);
           const pesoLoc = Math.max(l.linhasDeCodigo, 1);
           const pesoFn = Math.max(l.funcoes, 1);
           cur.modulos += l.modulos;
@@ -158,10 +206,44 @@ export default function ManutenibilidadePanel({ projects, isPlatformAdmin }: Pro
           cur.somaCog += l.cognitivaMedia * pesoFn;
           cur.somaComent += l.densidadeComentario * pesoLoc;
           cur.pesoLoc += pesoLoc;
+          if (l.caTotal != null || l.caMedia != null) {
+            cur.somaCa += l.caTotal ?? (l.caMedia ?? 0) * l.modulos;
+            cur.somaCe += l.ceTotal ?? (l.ceMedia ?? 0) * l.modulos;
+          }
+          cur.classes += l.classes ?? 0;
+          cur.metodos += l.metodos ?? 0;
+          cur.funcoesLivres += l.funcoesLivres ?? 0;
+          cur.paragrafos += l.paragrafos ?? 0;
+          cur.procedimentos += l.procedimentos ?? 0;
           acc.set(l.linguagem, cur);
         }
 
+        const langsComCa = new Set(
+          (a.porLinguagem ?? [])
+            .filter((l) => l.caTotal != null || l.caMedia != null)
+            .map((l) => l.linguagem),
+        );
+
         for (const m of a.modulos ?? []) {
+          const lang = m.linguagem || "desconhecida";
+          if (!acc.has(lang)) {
+            const cur = emptyAcc(lang);
+            cur.modulos += 1;
+            cur.linhasDeCodigo += m.linhasDeCodigo || 0;
+            cur.funcoes += 0;
+            if (typeof m.mi === "number") {
+              const peso = Math.max(m.linhasDeCodigo, 1);
+              cur.somaMi += m.mi * peso;
+              cur.pesoLoc += peso;
+            }
+            acc.set(lang, cur);
+          }
+          if (!langsComCa.has(lang)) {
+            const cur = acc.get(lang)!;
+            cur.somaCa += m.ca;
+            cur.somaCe += m.ce;
+          }
+
           const mi = typeof m.mi === "number" ? m.mi : null;
           if (mi == null) faixaMi.semMi += 1;
           else if (mi < 10) faixaMi.critico += 1;
@@ -188,12 +270,27 @@ export default function ManutenibilidadePanel({ projects, isPlatformAdmin }: Pro
             mi,
           });
         }
+
+        totaisQ.loc += a.totais?.linhasDeCodigo ?? 0;
+        totaisQ.funcoes += a.totais?.funcoes ?? 0;
+        totaisQ.modulos += a.totais?.modulos ?? 0;
       }
+    }
+
+    for (const c of acc.values()) {
+      totaisQ.classes += c.classes;
+      totaisQ.metodos += c.metodos;
+      totaisQ.paragrafos += c.paragrafos;
+      totaisQ.procedimentos += c.procedimentos;
+      totaisQ.funcoesLivres += c.funcoesLivres;
+      totaisQ.ca += c.somaCa;
+      totaisQ.ce += c.somaCe;
     }
 
     const porLinguagem = [...acc.values()]
       .map((c) => ({
         linguagem: c.linguagem,
+        label: nomeLang(c.linguagem),
         modulos: c.modulos,
         linhasDeCodigo: c.linhasDeCodigo,
         funcoes: c.funcoes,
@@ -203,6 +300,15 @@ export default function ManutenibilidadePanel({ projects, isPlatformAdmin }: Pro
         densidadeComentario: c.pesoLoc > 0 ? Math.round((c.somaComent / c.pesoLoc) * 10) / 10 : 0,
         modulosEmAtencao: c.modulosEmAtencao,
         modulosCriticos: c.modulosCriticos,
+        caMedia: c.modulos > 0 ? Math.round((c.somaCa / c.modulos) * 10) / 10 : 0,
+        ceMedia: c.modulos > 0 ? Math.round((c.somaCe / c.modulos) * 10) / 10 : 0,
+        caTotal: Math.round(c.somaCa * 10) / 10,
+        ceTotal: Math.round(c.somaCe * 10) / 10,
+        classes: c.classes,
+        metodos: c.metodos,
+        funcoesLivres: c.funcoesLivres,
+        paragrafos: c.paragrafos,
+        procedimentos: c.procedimentos,
       }))
       .sort((a, b) => b.linhasDeCodigo - a.linhasDeCodigo);
 
@@ -212,6 +318,7 @@ export default function ManutenibilidadePanel({ projects, isPlatformAdmin }: Pro
       topRisco: topRisco.sort((a, b) => b.risco - a.risco).slice(0, 12),
       faixaMi,
       reposComArq,
+      totaisQ,
     };
   }, [projects]);
 
@@ -291,25 +398,33 @@ export default function ManutenibilidadePanel({ projects, isPlatformAdmin }: Pro
               }
             />
             <KpiCard
-              label="Cognitiva média"
-              value={arq.cognitivaMedia || "—"}
-              sub="ponderada por função"
+              label="Linhas de código"
+              value={totaisQ.loc.toLocaleString("pt-BR")}
+              sub={`${totaisQ.modulos.toLocaleString("pt-BR")} módulos`}
             />
             <KpiCard
-              label="Ciclomática média"
-              value={arq.ciclomaticaMedia || "—"}
-              sub="ponderada por função"
+              label="Unidades (fn/mét/par)"
+              value={totaisQ.funcoes.toLocaleString("pt-BR")}
+              sub={
+                [
+                  totaisQ.classes ? `${totaisQ.classes} classes` : null,
+                  totaisQ.metodos ? `${totaisQ.metodos} métodos` : null,
+                  totaisQ.paragrafos ? `${totaisQ.paragrafos} parágrafos` : null,
+                  totaisQ.funcoesLivres ? `${totaisQ.funcoesLivres} fn livres` : null,
+                ]
+                  .filter(Boolean)
+                  .join(" · ") || "todas as linguagens"
+              }
             />
             <KpiCard
-              label="Módulos · funções"
-              value={`${arq.modulos.toLocaleString("pt-BR")} · ${arq.funcoes.toLocaleString("pt-BR")}`}
-              sub={`${arq.linhasDeCodigo.toLocaleString("pt-BR")} LOC`}
+              label="Ca · Ce (totais)"
+              value={`${Math.round(totaisQ.ca)} · ${Math.round(totaisQ.ce)}`}
+              sub="aferente · eferente (Martin)"
             />
             <KpiCard
-              label="Em ciclo · órfãos"
-              value={`${arq.modulosEmCiclo} · ${arq.modulosOrfaos}`}
-              tone={arq.modulosEmCiclo > 0 ? "warn" : "ok"}
-              sub="circular · sem uso"
+              label="Cognitiva · ciclomática"
+              value={`${arq.cognitivaMedia || "—"} · ${arq.ciclomaticaMedia || "—"}`}
+              sub="médias ponderadas"
             />
             <KpiCard
               label="Grafo (fn · calls)"
@@ -365,60 +480,82 @@ export default function ManutenibilidadePanel({ projects, isPlatformAdmin }: Pro
 
           {porLinguagem.length > 0 ? (
             <DataSection
-              title="Índice por linguagem"
-              description="Linguagem anotada pelo parser (TypeScript ≠ TSX). MI ponderado por LOC."
+              title="Quantitativo por linguagem"
+              description="Java, COBOL, TypeScript e demais — LOC, MI, acoplamento aferente (Ca) e eferente (Ce), classes, métodos, funções e parágrafos. Linguagem anotada pelo parser, não pela extensão."
             >
               <div
                 style={{
                   display: "grid",
                   gap: "1.25rem",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                  marginBottom: "1rem",
                 }}
               >
                 <div className="ch-metric-card">
-                  <h3>MI médio</h3>
+                  <h3>LOC por linguagem</h3>
                   <VerticalBars
                     data={porLinguagem.map((l) => ({
-                      label: l.linguagem,
+                      label: l.label,
+                      value: l.linhasDeCodigo,
+                      color: "#388bfd",
+                    }))}
+                    maxBars={12}
+                  />
+                </div>
+                <div className="ch-metric-card">
+                  <h3>Índice MI</h3>
+                  <VerticalBars
+                    data={porLinguagem.map((l) => ({
+                      label: l.label,
                       value: l.mi,
                       color: COR_MI(l.mi),
                     }))}
-                    maxBars={10}
+                    maxBars={12}
                   />
                 </div>
                 <div className="ch-metric-card">
-                  <h3>Volume (LOC)</h3>
-                  <VerticalBars
-                    data={porLinguagem.map((l) => ({ label: l.linguagem, value: l.linhasDeCodigo }))}
-                    maxBars={10}
-                  />
-                </div>
-                <div className="ch-metric-card">
-                  <h3>Complexidade cognitiva</h3>
+                  <h3>Ca médio (aferente)</h3>
                   <VerticalBars
                     data={porLinguagem.map((l) => ({
-                      label: l.linguagem,
-                      value: l.cognitivaMedia,
+                      label: l.label,
+                      value: l.caMedia,
+                      color: "#d29922",
+                    }))}
+                    maxBars={12}
+                  />
+                </div>
+                <div className="ch-metric-card">
+                  <h3>Ce médio (eferente)</h3>
+                  <VerticalBars
+                    data={porLinguagem.map((l) => ({
+                      label: l.label,
+                      value: l.ceMedia,
                       color: "#a371f7",
                     }))}
-                    maxBars={10}
+                    maxBars={12}
                   />
                 </div>
               </div>
 
-              <div style={{ overflowX: "auto", marginTop: "1rem" }}>
-                <table className="arq-tabela">
+              <div style={{ overflowX: "auto" }}>
+                <table className="arq-tabela" style={{ minWidth: 1100 }}>
                   <thead>
                     <tr>
                       <th>Linguagem</th>
-                      <th>MI</th>
+                      <th title="Linhas de código">LOC</th>
+                      <th title="Índice de manutenibilidade 0–100">MI</th>
                       <th>Faixa</th>
+                      <th title="Acoplamento aferente médio — quem depende deste módulo">Ca</th>
+                      <th title="Acoplamento eferente médio — de quem este módulo depende">Ce</th>
                       <th>Módulos</th>
-                      <th>LOC</th>
-                      <th>Funções</th>
+                      <th title="Classes / interfaces / records (0 em COBOL)">Classes</th>
+                      <th title="Métodos de classe (Java, C#, TS…)">Métodos</th>
+                      <th title="Funções livres / top-level">Fn livres</th>
+                      <th title="Parágrafos COBOL">Parágrafos</th>
+                      <th title="Procedures SQL">Procs</th>
+                      <th title="Total de unidades medidas (fn+métodos+parágrafos)">Unidades</th>
                       <th>Ciclo.</th>
                       <th>Cogn.</th>
-                      <th>Coment.</th>
                       <th>Atenção</th>
                       <th>Crítico</th>
                     </tr>
@@ -426,7 +563,8 @@ export default function ManutenibilidadePanel({ projects, isPlatformAdmin }: Pro
                   <tbody>
                     {porLinguagem.map((l) => (
                       <tr key={l.linguagem}>
-                        <td style={{ fontWeight: 600 }}>{l.linguagem}</td>
+                        <td style={{ fontWeight: 600 }}>{l.label}</td>
+                        <td className="arq-num">{l.linhasDeCodigo.toLocaleString("pt-BR")}</td>
                         <td className="arq-num" style={{ color: COR_MI(l.mi), fontWeight: 600 }}>
                           {l.mi}
                         </td>
@@ -435,12 +573,17 @@ export default function ManutenibilidadePanel({ projects, isPlatformAdmin }: Pro
                             {faixa(l.mi)}
                           </span>
                         </td>
+                        <td className="arq-num">{l.caMedia}</td>
+                        <td className="arq-num">{l.ceMedia}</td>
                         <td className="arq-num">{l.modulos}</td>
-                        <td className="arq-num">{l.linhasDeCodigo.toLocaleString("pt-BR")}</td>
+                        <td className="arq-num">{l.classes || "—"}</td>
+                        <td className="arq-num">{l.metodos || "—"}</td>
+                        <td className="arq-num">{l.funcoesLivres || "—"}</td>
+                        <td className="arq-num">{l.paragrafos || "—"}</td>
+                        <td className="arq-num">{l.procedimentos || "—"}</td>
                         <td className="arq-num">{l.funcoes}</td>
                         <td className="arq-num">{l.ciclomaticaMedia}</td>
                         <td className="arq-num">{l.cognitivaMedia}</td>
-                        <td className="arq-num">{l.densidadeComentario}%</td>
                         <td className="arq-num">{l.modulosEmAtencao}</td>
                         <td className="arq-num">{l.modulosCriticos}</td>
                       </tr>
@@ -448,6 +591,11 @@ export default function ManutenibilidadePanel({ projects, isPlatformAdmin }: Pro
                   </tbody>
                 </table>
               </div>
+              <p className="hero-caption" style={{ marginTop: "0.75rem" }}>
+                Em COBOL, “unidades” são parágrafos; em Java/C#/TS, classes + métodos; em JavaScript/Python,
+                funções. Ca/Ce seguem Robert Martin (1994). Classes/métodos/parágrafos detalhados exigem scan
+                com o medidor atualizado.
+              </p>
             </DataSection>
           ) : (
             <Callout tone="neutral" title="Índice por linguagem ainda não gravado">
@@ -646,14 +794,15 @@ export default function ManutenibilidadePanel({ projects, isPlatformAdmin }: Pro
 
       <Callout tone="neutral" title="Como ler estes números">
         <p style={{ marginTop: 0 }}>
-          <strong>MI</strong> (0–100, Microsoft/Visual Studio):{" "}
-          <code>max(0, (171 − 5.2·ln(V) − 0.23·G − 16.2·ln(LOC)) · 100/171)</code> por função,
-          agregado por linha. Faixas: &lt;10 crítico, &lt;20 atenção, &lt;40 aceitável.
+          <strong>MI</strong> (0–100):{" "}
+          <code>max(0, (171 − 5.2·ln(V) − 0.23·G − 16.2·ln(LOC)) · 100/171)</code> por função/método/parágrafo,
+          agregado por linha. <strong>Ca</strong> = aferente (quem depende de mim); <strong>Ce</strong> =
+          eferente (de quem eu dependo).
         </p>
         <p style={{ marginBottom: 0, opacity: 0.9 }}>
-          <strong>Risco</strong> = complexidade cognitiva × alcance no grafo de módulos.{" "}
-          <strong>Fan-in / hops</strong> vêm do code-graph de funções. As duas metades não se
-          substituem.
+          Vale para <strong>Java</strong> (classes + métodos), <strong>COBOL</strong> (parágrafos), TypeScript,
+          JavaScript, Python, C#, Go e SQL. Cada linguagem usa a gramática do parser — não a extensão do
+          arquivo.
         </p>
       </Callout>
     </>
