@@ -186,6 +186,7 @@ export async function loadWorkspaceIssues(projects: AdminProjectRow[]): Promise<
   const items: AdminIssueRow[] = [];
   const byRuleId = new Map<string, AdminRuleCause>();
   const byRepoId = new Map<string, AdminRepoFindingCount>();
+  const cutoff30d = Date.now() - 30 * 86_400_000;
 
   for (const p of projects) {
     for (const r of p.repos) {
@@ -249,13 +250,19 @@ export async function loadWorkspaceIssues(projects: AdminProjectRow[]): Promise<
         bySeverity[severity] = (bySeverity[severity] ?? 0) + 1;
         bySource[source] = (bySource[source] ?? 0) + 1;
 
+        const firstSeenIso = data.firstSeen?.toDate?.()?.toISOString?.() ?? null;
+        const firstSeenMs = firstSeenIso ? Date.parse(firstSeenIso) : NaN;
+        const isNew30d = Number.isFinite(firstSeenMs) && firstSeenMs >= cutoff30d;
+
         const ruleAgg = byRuleId.get(ruleId) ?? {
           ruleId,
           message: (data.message as string | undefined) ?? "",
           severity,
           count: 0,
+          newLast30d: 0,
         };
         ruleAgg.count += 1;
+        if (isNew30d) ruleAgg.newLast30d = (ruleAgg.newLast30d ?? 0) + 1;
         byRuleId.set(ruleId, ruleAgg);
 
         const lastSeen = data.lastSeen?.toDate?.()?.toISOString?.() ?? null;
@@ -275,6 +282,10 @@ export async function loadWorkspaceIssues(projects: AdminProjectRow[]): Promise<
           line: (data.line as number | undefined) ?? 0,
           source: source as AdminIssueRow["source"],
           lastSeen,
+          firstSeen: firstSeenIso,
+          assertiveness: typeof data.assertiveness === "number" ? data.assertiveness : null,
+          fpLikelihood: typeof data.fpLikelihood === "number" ? data.fpLikelihood : null,
+          gateSuppressed: data.gateSuppressed === true,
         });
       }
     }
@@ -398,6 +409,8 @@ export type AnalysisSnap = {
   at: number;
   dayKey: string;
   debtMinutes: number;
+  debtRatio: number | null;
+  linesOfCode: number;
   codeSmells: number | null;
   findingsTotal: number;
   functions: number;
@@ -413,6 +426,10 @@ export type AnalysisSnap = {
   failedConditions: string[];
   maintainabilityRating: string | null;
   securityRating: string | null;
+  coveragePercent: number | null;
+  duplicationPercent: number | null;
+  branchCoveragePercent: number | null;
+  gateSuppressedCount: number;
 };
 
 function dayKeyFromMs(ms: number): string {
@@ -463,10 +480,14 @@ function snapFromAnalysisDoc(data: Record<string, unknown>): AnalysisSnap | null
   const g = data.codeGraph as CodeGraphRepoSummary | null | undefined;
   const a = data.arquitetura as ArquiteturaRepoSummary | null | undefined;
   const gate = summary.qualityGate as { status?: string; failedConditions?: string[] } | undefined;
+  const numOrNull = (v: unknown): number | null =>
+    typeof v === "number" && Number.isFinite(v) ? v : null;
   return {
     at,
     dayKey: dayKeyFromMs(at),
     debtMinutes: typeof summary.debtMinutes === "number" ? summary.debtMinutes : 0,
+    debtRatio: numOrNull(summary.debtRatio),
+    linesOfCode: typeof data.linesOfCode === "number" ? data.linesOfCode : 0,
     codeSmells: codeSmellCount,
     findingsTotal: typeof summary.total === "number" ? summary.total : 0,
     functions: g?.functions ?? 0,
@@ -485,6 +506,11 @@ function snapFromAnalysisDoc(data: Record<string, unknown>): AnalysisSnap | null
     maintainabilityRating:
       typeof summary.maintainabilityRating === "string" ? summary.maintainabilityRating : null,
     securityRating: typeof summary.securityRating === "string" ? summary.securityRating : null,
+    coveragePercent: numOrNull(summary.coveragePercent),
+    duplicationPercent: numOrNull(summary.duplicationPercent),
+    branchCoveragePercent: numOrNull(summary.branchCoveragePercent),
+    gateSuppressedCount:
+      typeof summary.gateSuppressedCount === "number" ? summary.gateSuppressedCount : 0,
   };
 }
 
@@ -560,6 +586,11 @@ export type PortfolioHistorySeries = {
   gatePoints: PortfolioHistoryPoint[];
   /** Rating score médio A=5…E=1 (carry-forward). */
   ratingPoints: PortfolioHistoryPoint[];
+  /**
+   * Cobertura / duplicação / debtRatio / LOC — médias ponderadas por LOC
+   * quando há medida; repos sem coverage não entram na média.
+   */
+  qualityPoints: PortfolioHistoryPoint[];
   /** Condições falhas no snapshot mais recente de cada repo. */
   failedConditionCounts: Array<{ label: string; value: number; color?: string }>;
 };
@@ -586,6 +617,7 @@ export function buildPortfolioTimeSeries(
     complexityPoints: [],
     gatePoints: [],
     ratingPoints: [],
+    qualityPoints: [],
     failedConditionCounts: [],
   };
   if (byRepo.size === 0) return empty;
@@ -606,6 +638,7 @@ export function buildPortfolioTimeSeries(
   const complexityPoints: PortfolioHistoryPoint[] = [];
   const gatePoints: PortfolioHistoryPoint[] = [];
   const ratingPoints: PortfolioHistoryPoint[] = [];
+  const qualityPoints: PortfolioHistoryPoint[] = [];
 
   for (const day of days) {
     let buildsDay = 0;
@@ -646,6 +679,18 @@ export function buildPortfolioTimeSeries(
     let maintN = 0;
     let secSum = 0;
     let secN = 0;
+    let linesOfCode = 0;
+    let debtRatioWeighted = 0;
+    let debtRatioLoc = 0;
+    let covSum = 0;
+    let covLoc = 0;
+    let dupeSum = 0;
+    let dupeLoc = 0;
+    let branchSum = 0;
+    let branchLoc = 0;
+    let gateSuppressed = 0;
+    let reposWithCoverage = 0;
+    let reposWithDupe = 0;
 
     for (const snap of latest.values()) {
       debtMinutes += snap.debtMinutes;
@@ -656,6 +701,33 @@ export function buildPortfolioTimeSeries(
       maxFanIn = Math.max(maxFanIn, snap.maxFanIn);
       modulosEmCiclo += snap.modulosEmCiclo;
       arestasInternas += snap.arestasInternas;
+      gateSuppressed += snap.gateSuppressedCount;
+      const loc = Math.max(0, snap.linesOfCode);
+      linesOfCode += loc;
+      if (snap.debtRatio != null && loc > 0) {
+        debtRatioWeighted += snap.debtRatio * loc;
+        debtRatioLoc += loc;
+      } else if (snap.debtRatio != null) {
+        debtRatioWeighted += snap.debtRatio;
+        debtRatioLoc += 1;
+      }
+      if (snap.coveragePercent != null) {
+        reposWithCoverage += 1;
+        const w = loc > 0 ? loc : 1;
+        covSum += snap.coveragePercent * w;
+        covLoc += w;
+      }
+      if (snap.duplicationPercent != null) {
+        reposWithDupe += 1;
+        const w = loc > 0 ? loc : 1;
+        dupeSum += snap.duplicationPercent * w;
+        dupeLoc += w;
+      }
+      if (snap.branchCoveragePercent != null) {
+        const w = loc > 0 ? loc : 1;
+        branchSum += snap.branchCoveragePercent * w;
+        branchLoc += w;
+      }
       if (snap.codeSmells != null) {
         codeSmells += snap.codeSmells;
         smellsKnown += 1;
@@ -688,6 +760,10 @@ export function buildPortfolioTimeSeries(
         debtHours: Math.round(debtMinutes / 60),
         ...(smellsKnown > 0 ? { codeSmells } : {}),
         findingsTotal,
+        ...(debtRatioLoc > 0
+          ? { debtRatioPct: Number(((debtRatioWeighted / debtRatioLoc) * 100).toFixed(2)) }
+          : {}),
+        ...(linesOfCode > 0 ? { linesOfCode } : {}),
       },
     });
     complexityPoints.push({
@@ -717,6 +793,7 @@ export function buildPortfolioTimeSeries(
         buildsDay,
         buildsPassedDay,
         buildsFailedDay,
+        gateSuppressed,
       },
     });
     ratingPoints.push({
@@ -725,6 +802,21 @@ export function buildPortfolioTimeSeries(
       values: {
         ...(maintN > 0 ? { maintScore: Number((maintSum / maintN).toFixed(2)) } : {}),
         ...(secN > 0 ? { securityScore: Number((secSum / secN).toFixed(2)) } : {}),
+      },
+    });
+    qualityPoints.push({
+      t,
+      label,
+      values: {
+        ...(covLoc > 0 ? { coveragePercent: Number((covSum / covLoc).toFixed(1)) } : {}),
+        ...(dupeLoc > 0 ? { duplicationPercent: Number((dupeSum / dupeLoc).toFixed(1)) } : {}),
+        ...(branchLoc > 0 ? { branchCoveragePercent: Number((branchSum / branchLoc).toFixed(1)) } : {}),
+        reposWithCoverage,
+        reposWithDupe,
+        ...(linesOfCode > 0 ? { linesOfCode } : {}),
+        ...(debtRatioLoc > 0
+          ? { debtRatioPct: Number(((debtRatioWeighted / debtRatioLoc) * 100).toFixed(2)) }
+          : {}),
       },
     });
   }
@@ -747,6 +839,7 @@ export function buildPortfolioTimeSeries(
     complexityPoints,
     gatePoints,
     ratingPoints,
+    qualityPoints,
     failedConditionCounts,
   };
 }
@@ -920,5 +1013,108 @@ export function analyticsDailyToGatePoints(rows: AnalyticsDailyRow[]): Portfolio
         findings: r.findings,
       },
     }));
+}
+
+// ---------------------------------------------------------------------------
+// Sinal vs ruído (FP) + tendência de regras — portfólio a partir de issues
+// ---------------------------------------------------------------------------
+
+export type SignalNoisePortfolio = {
+  total: number;
+  ranked: number;
+  gateSuppressed: number;
+  highFp: number;
+  highAssertiveness: number;
+  medium: number;
+  /** Buckets de fpLikelihood para barras. */
+  fpBuckets: Array<{ label: string; value: number; color?: string }>;
+  /** Resumo para KPIs. */
+  triageBuckets: Array<{ label: string; value: number; color?: string }>;
+};
+
+export function buildSignalNoisePortfolio(issues: AdminIssuesResult | null): SignalNoisePortfolio {
+  const empty: SignalNoisePortfolio = {
+    total: 0,
+    ranked: 0,
+    gateSuppressed: 0,
+    highFp: 0,
+    highAssertiveness: 0,
+    medium: 0,
+    fpBuckets: [],
+    triageBuckets: [],
+  };
+  if (!issues || issues.items.length === 0) return empty;
+
+  const fpBands = [
+    { label: "FP ≥70%", min: 0.7, max: 1.01, color: "#f85149", value: 0 },
+    { label: "FP 55–70%", min: 0.55, max: 0.7, color: "#db6d28", value: 0 },
+    { label: "FP 30–55%", min: 0.3, max: 0.55, color: "#d29922", value: 0 },
+    { label: "FP <30%", min: 0, max: 0.3, color: "#3fb950", value: 0 },
+  ];
+
+  let gateSuppressed = 0;
+  let highFp = 0;
+  let highAssertiveness = 0;
+  let medium = 0;
+  let ranked = 0;
+
+  for (const item of issues.items) {
+    if (item.gateSuppressed) gateSuppressed += 1;
+    const fp = item.fpLikelihood;
+    const as = item.assertiveness;
+    if (typeof fp === "number") {
+      ranked += 1;
+      for (const b of fpBands) {
+        if (fp >= b.min && fp < b.max) {
+          b.value += 1;
+          break;
+        }
+      }
+      if (fp >= 0.55) highFp += 1;
+      else if (typeof as === "number" && as >= 0.7) highAssertiveness += 1;
+      else medium += 1;
+    } else if (typeof as === "number") {
+      ranked += 1;
+      if (as >= 0.7) highAssertiveness += 1;
+      else medium += 1;
+    }
+  }
+
+  return {
+    total: issues.items.length,
+    ranked,
+    gateSuppressed,
+    highFp,
+    highAssertiveness,
+    medium,
+    fpBuckets: fpBands.filter((b) => b.value > 0).map(({ label, value, color }) => ({ label, value, color })),
+    triageBuckets: [
+      { label: "Fora do gate (FP local)", value: gateSuppressed, color: "#8b949e" },
+      { label: "Possível FP (≥55%)", value: highFp, color: "#db6d28" },
+      { label: "Assertivo (≥70%)", value: highAssertiveness, color: "#3fb950" },
+      { label: "Meio-termo", value: medium, color: "#388bfd" },
+    ].filter((b) => b.value > 0),
+  };
+}
+
+export type RuleTrendRow = AdminRuleCause & { newLast30d: number; deltaShare: number };
+
+/** Top regras ordenadas por crescimento recente (firstSeen ≤30d). */
+export function buildTopRulesDelta(
+  issues: AdminIssuesResult | null,
+  limit = 15,
+): RuleTrendRow[] {
+  if (!issues?.topCauses?.length) return [];
+  return [...issues.topCauses]
+    .map((c) => {
+      const newLast30d = c.newLast30d ?? 0;
+      return {
+        ...c,
+        newLast30d,
+        deltaShare: c.count > 0 ? newLast30d / c.count : 0,
+      };
+    })
+    .sort((a, b) => b.newLast30d - a.newLast30d || b.count - a.count)
+    .slice(0, limit);
 }
 

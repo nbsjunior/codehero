@@ -19,6 +19,8 @@ import {
   analyticsDailyToGatePoints,
   buildFleetStatus,
   buildPortfolioTimeSeries,
+  buildSignalNoisePortfolio,
+  buildTopRulesDelta,
   loadPlatformAnalyticsDaily,
   loadWorkspaceAnalysisHistory,
   type FleetRepoRow,
@@ -247,9 +249,11 @@ export default function RelatorioPanel({
 
       <EvolucaoHistoricaSection projects={projects} scope={scope} />
 
+      <SinalRuidoSection issues={issues} issuesLoading={issuesLoading} issuesError={issuesError} />
+
       <DataSection
         title="Principais causas"
-        description="Regras que mais geram apontamentos abertos"
+        description="Regras que mais geram apontamentos abertos — com Δ dos últimos 30 dias (firstSeen)"
       >
         {issuesError && <div className="hero-error" style={{ marginBottom: "0.75rem" }}>{issuesError}</div>}
         {issuesLoading ? (
@@ -257,38 +261,7 @@ export default function RelatorioPanel({
         ) : !issues || issues.topCauses.length === 0 ? (
           <p className="hero-caption">Sem apontamentos abertos. Rode um scan em Começar para popular esta lista.</p>
         ) : (
-          <div style={{ overflowX: "auto" }}>
-            <table className="hero-table">
-              <thead>
-                <tr>
-                  <th>Regra</th>
-                  <th>Severidade</th>
-                  <th style={{ textAlign: "right" }}>Ocorrências</th>
-                </tr>
-              </thead>
-              <tbody>
-                {issues.topCauses.map((c) => (
-                  <tr key={c.ruleId}>
-                    <td>
-                      <code style={{ fontSize: "0.8rem" }}>{c.ruleId}</code>
-                      <div className="hero-caption" style={{ marginTop: "0.15rem" }}>
-                        {c.message}
-                      </div>
-                    </td>
-                    <td>
-                      <span
-                        className="hero-badge"
-                        style={{ background: severityColor[c.severity] ?? "var(--muted)", color: "#fff" }}
-                      >
-                        {c.severity}
-                      </span>
-                    </td>
-                    <td style={{ textAlign: "right", fontWeight: 700 }}>{c.count}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <TopCausesTable issues={issues} />
         )}
       </DataSection>
 
@@ -325,12 +298,13 @@ export default function RelatorioPanel({
 
 const SMELL_SERIES = [
   { key: "debtHours", label: "Débito (h)", color: "#db6d28" },
+  { key: "debtRatioPct", label: "Debt ratio (%)", color: "#f85149" },
   { key: "codeSmells", label: "Code smells", color: "#d29922" },
   { key: "findingsTotal", label: "Findings totais", color: "#8b949e" },
 ];
 
 const COMPLEXITY_SERIES = [
-  { key: "cognitivaMedia", label: "Cognitiva média", color: "#a371f7" },
+  { key: "cognitivaMedia", label: "Cognitiva média", color: "#58a6ff" },
   { key: "ciclomaticaMedia", label: "Ciclomática média", color: "#388bfd" },
   { key: "maxFanIn", label: "Fan-in máx.", color: "#db6d28" },
   { key: "modulosEmCiclo", label: "Módulos em ciclo", color: "#f85149" },
@@ -338,7 +312,7 @@ const COMPLEXITY_SERIES = [
 
 const GRAPH_SIZE_SERIES = [
   { key: "functions", label: "Funções", color: "#388bfd" },
-  { key: "calls", label: "Calls", color: "#a371f7" },
+  { key: "calls", label: "Calls", color: "#79c0ff" },
   { key: "edges", label: "Arestas", color: "#3fb950" },
 ];
 
@@ -364,6 +338,20 @@ const PLATFORM_DAILY_SERIES = [
   { key: "buildsDay", label: "Builds", color: "#8b949e" },
 ];
 
+const QUALITY_COVERAGE_SERIES = [
+  { key: "coveragePercent", label: "Cobertura linhas %", color: "#3fb950" },
+  { key: "branchCoveragePercent", label: "Cobertura branches %", color: "#388bfd" },
+  { key: "duplicationPercent", label: "Duplicação %", color: "#db6d28" },
+];
+
+const QUALITY_DEBT_SERIES = [
+  { key: "debtRatioPct", label: "Debt ratio (%)", color: "#f85149" },
+  { key: "linesOfCode", label: "LOC (portfólio)", color: "#8b949e" },
+];
+
+const GATE_SUPPRESSED_SERIES = [
+  { key: "gateSuppressed", label: "Findings fora do gate (FP)", color: "#8b949e" },
+];
 function FrotaScanSection({
   projects,
   onOpenWorkspace,
@@ -672,10 +660,14 @@ function EvolucaoHistoricaSection({
   }, [projectKey, projects, scope]);
 
   const smellSeries = useMemo(() => {
+    let series = SMELL_SERIES;
     if (!history?.smellPoints.some((p) => typeof p.values.codeSmells === "number")) {
-      return SMELL_SERIES.filter((s) => s.key !== "codeSmells");
+      series = series.filter((s) => s.key !== "codeSmells");
     }
-    return SMELL_SERIES;
+    if (!history?.smellPoints.some((p) => typeof p.values.debtRatioPct === "number")) {
+      series = series.filter((s) => s.key !== "debtRatioPct");
+    }
+    return series;
   }, [history]);
 
   const complexitySeries = useMemo(() => {
@@ -688,8 +680,21 @@ function EvolucaoHistoricaSection({
     (p) => (p.values.functions ?? 0) > 0 || (p.values.calls ?? 0) > 0,
   );
 
-  const lastGate = history?.gatePoints[history.gatePoints.length - 1];
+  const hasCoverage = history?.qualityPoints.some(
+    (p) => typeof p.values.coveragePercent === "number" || typeof p.values.duplicationPercent === "number",
+  );
+  const hasDebtRatio = history?.qualityPoints.some((p) => typeof p.values.debtRatioPct === "number");
+  const hasGateSuppressed = history?.gatePoints.some((p) => (p.values.gateSuppressed ?? 0) > 0);
 
+  const coverageSeries = useMemo(() => {
+    if (!history) return QUALITY_COVERAGE_SERIES;
+    return QUALITY_COVERAGE_SERIES.filter((s) =>
+      history.qualityPoints.some((p) => typeof p.values[s.key] === "number"),
+    );
+  }, [history]);
+
+  const lastGate = history?.gatePoints[history.gatePoints.length - 1];
+  const lastQuality = history?.qualityPoints[history.qualityPoints.length - 1];
   return (
     <>
       <DataSection
@@ -721,6 +726,14 @@ function EvolucaoHistoricaSection({
                 value={history.failedConditionCounts.length}
                 sub="no snapshot atual"
               />
+              {hasGateSuppressed ? (
+                <KpiCard
+                  label="Fora do gate (FP)"
+                  value={lastGate?.values.gateSuppressed ?? 0}
+                  tone="warn"
+                  sub="último dia (carry-forward)"
+                />
+              ) : null}
             </KpiGroup>
             <div
               style={{
@@ -744,6 +757,15 @@ function EvolucaoHistoricaSection({
                 </p>
                 <TimeSeriesChart points={history.gatePoints} series={GATE_BUILDS_SERIES} />
               </div>
+              {hasGateSuppressed ? (
+                <div className="ch-metric-card">
+                  <h3>Findings fora do gate (FP local)</h3>
+                  <p className="hero-caption" style={{ marginBottom: "0.65rem" }}>
+                    Somatório carry-forward de findings com gateSuppressed (taxa FP alta no repo).
+                  </p>
+                  <TimeSeriesChart points={history.gatePoints} series={GATE_SUPPRESSED_SERIES} />
+                </div>
+              ) : null}
               <div className="ch-metric-card">
                 <h3>Condições que derrubam o gate</h3>
                 {history.failedConditionCounts.length === 0 ? (
@@ -776,7 +798,7 @@ function EvolucaoHistoricaSection({
 
       <DataSection
         title="Evolução histórica"
-        description="Série temporal a partir das analyses gravadas — smells (débito / code smells) e complexidade estrutural (grafo + métricas arquiteturais). Carry-forward por repositório em cada dia com scan."
+        description="Série temporal a partir das analyses — smells, debt ratio, cobertura/duplicação e complexidade. Carry-forward por repositório em cada dia com scan."
       >
         {loading && <p className="hero-caption">Carregando histórico de analyses…</p>}
         {error && (
@@ -810,17 +832,17 @@ function EvolucaoHistoricaSection({
                 tone="warn"
               />
               <KpiCard
-                label="Cognitiva (série)"
+                label="Cobertura (série)"
                 value={
-                  history.complexityPoints[history.complexityPoints.length - 1]?.values.cognitivaMedia !=
-                  null
-                    ? String(
-                        history.complexityPoints[history.complexityPoints.length - 1]!.values
-                          .cognitivaMedia,
-                      )
+                  lastQuality?.values.coveragePercent != null
+                    ? `${lastQuality.values.coveragePercent}%`
                     : "—"
                 }
-                sub="média ponderada do portfólio"
+                sub={
+                  lastQuality?.values.reposWithCoverage
+                    ? `${lastQuality.values.reposWithCoverage} repo(s) medidos`
+                    : "ainda sem medida"
+                }
               />
             </KpiGroup>
 
@@ -857,11 +879,168 @@ function EvolucaoHistoricaSection({
                   <TimeSeriesChart points={history.complexityPoints} series={GRAPH_SIZE_SERIES} height={160} />
                 </div>
               ) : null}
+              {hasCoverage || hasDebtRatio ? (
+                <>
+                  {hasCoverage && coverageSeries.length > 0 ? (
+                    <div className="ch-metric-card">
+                      <h3>Cobertura e duplicação</h3>
+                      <p className="hero-caption" style={{ marginBottom: "0.65rem" }}>
+                        Média ponderada por LOC nos repos que enviaram medida. Ausência = gate pula a
+                        condição (não conta como 100%).
+                      </p>
+                      <TimeSeriesChart points={history.qualityPoints} series={coverageSeries} />
+                      {lastQuality?.values.reposWithCoverage != null ? (
+                        <p className="hero-caption" style={{ marginTop: "0.5rem" }}>
+                          Último dia: {lastQuality.values.reposWithCoverage} repo(s) com cobertura
+                          {lastQuality.values.reposWithDupe != null
+                            ? ` · ${lastQuality.values.reposWithDupe} com duplicação`
+                            : ""}
+                        </p>
+                      ) : null}
+                    </div>
+                  ) : null}
+                  {hasDebtRatio ? (
+                    <div className="ch-metric-card">
+                      <h3>Debt ratio e LOC</h3>
+                      <p className="hero-caption" style={{ marginBottom: "0.65rem" }}>
+                        Ratio normalizado pelo tamanho — horas absolutas mentem quando o repo cresce.
+                      </p>
+                      <TimeSeriesChart points={history.qualityPoints} series={QUALITY_DEBT_SERIES} />
+                    </div>
+                  ) : null}
+                </>
+              ) : (
+                <div className="ch-metric-card" style={{ gridColumn: "1 / -1" }}>
+                  <h3>Cobertura / duplicação / debt ratio</h3>
+                  <Callout tone="neutral" title="Aguardando analyses com métricas">
+                    Depois do deploy, novos scans gravam cobertura %, duplicação % e debt ratio no
+                    summary. Repos antigos só mostram LOC/débito até reanalisar.
+                  </Callout>
+                </div>
+              )}
             </div>
           </>
         )}
       </DataSection>
     </>
+  );
+}
+
+function TopCausesTable({ issues }: { issues: AdminIssuesResult }) {
+  const rows = useMemo(() => buildTopRulesDelta(issues, 25), [issues]);
+  const hasDelta = rows.some((r) => r.newLast30d > 0);
+  return (
+    <div style={{ overflowX: "auto" }}>
+      <table className="hero-table">
+        <thead>
+          <tr>
+            <th>Regra</th>
+            <th>Severidade</th>
+            <th style={{ textAlign: "right" }}>Abertos</th>
+            {hasDelta ? <th style={{ textAlign: "right" }}>Novos 30d</th> : null}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((c) => (
+            <tr key={c.ruleId}>
+              <td>
+                <code style={{ fontSize: "0.8rem" }}>{c.ruleId}</code>
+                <div className="hero-caption" style={{ marginTop: "0.15rem" }}>
+                  {c.message}
+                </div>
+              </td>
+              <td>
+                <span
+                  className="hero-badge"
+                  style={{ background: severityColor[c.severity] ?? "var(--muted)", color: "#fff" }}
+                >
+                  {c.severity}
+                </span>
+              </td>
+              <td style={{ textAlign: "right", fontWeight: 700 }}>{c.count}</td>
+              {hasDelta ? (
+                <td style={{ textAlign: "right", fontWeight: c.newLast30d > 0 ? 700 : 400 }}>
+                  {c.newLast30d > 0 ? `+${c.newLast30d}` : "—"}
+                </td>
+              ) : null}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function SinalRuidoSection({
+  issues,
+  issuesLoading,
+  issuesError,
+}: {
+  issues: AdminIssuesResult | null;
+  issuesLoading: boolean;
+  issuesError: string | null;
+}) {
+  const signal = useMemo(() => buildSignalNoisePortfolio(issues), [issues]);
+  return (
+    <DataSection
+      title="Sinal vs ruído"
+      description="Triagem do ranker FP e findings fora do gate por feedback local — priorize o que é assertivo."
+    >
+      {issuesError && <div className="hero-error" style={{ marginBottom: "0.75rem" }}>{issuesError}</div>}
+      {issuesLoading ? (
+        <p className="hero-caption">Carregando apontamentos…</p>
+      ) : signal.total === 0 ? (
+        <p className="hero-caption">Sem apontamentos abertos para classificar.</p>
+      ) : (
+        <>
+          <KpiGroup>
+            <KpiCard label="Abertos na amostra" value={signal.total.toLocaleString("pt-BR")} />
+            <KpiCard
+              label="Com ranker FP"
+              value={signal.ranked.toLocaleString("pt-BR")}
+              sub={`${signal.total > 0 ? Math.round((signal.ranked / signal.total) * 100) : 0}% ranqueados`}
+            />
+            <KpiCard
+              label="Fora do gate"
+              value={signal.gateSuppressed}
+              tone={signal.gateSuppressed > 0 ? "warn" : "ok"}
+              sub="FP local alto"
+            />
+            <KpiCard
+              label="Possível FP"
+              value={signal.highFp}
+              tone={signal.highFp > 0 ? "warn" : undefined}
+              sub="fpLikelihood ≥ 55%"
+            />
+          </KpiGroup>
+          <div
+            style={{
+              display: "grid",
+              gap: "1.25rem",
+              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+              marginTop: "1rem",
+            }}
+          >
+            <div className="ch-metric-card">
+              <h3>Triagem</h3>
+              {signal.triageBuckets.length === 0 ? (
+                <p className="hero-caption">Sem scores de assertividade/FP nesta amostra.</p>
+              ) : (
+                <VerticalBars data={signal.triageBuckets} maxBars={4} />
+              )}
+            </div>
+            <div className="ch-metric-card">
+              <h3>Distribuição fpLikelihood</h3>
+              {signal.fpBuckets.length === 0 ? (
+                <p className="hero-caption">Ranker ainda não pontuou estes findings.</p>
+              ) : (
+                <VerticalBars data={signal.fpBuckets} maxBars={4} />
+              )}
+            </div>
+          </div>
+        </>
+      )}
+    </DataSection>
   );
 }
 

@@ -326,8 +326,9 @@ export const adminListAllIssues = onCall({ memory: "1GiB", timeoutSeconds: 540 }
   const bySource: Record<string, number> = {};
   const items: Array<Record<string, unknown>> = [];
 
-  type RuleAgg = { ruleId: string; message: string; severity: string; count: number };
+  type RuleAgg = { ruleId: string; message: string; severity: string; count: number; newLast30d: number };
   const byRuleId = new Map<string, RuleAgg>();
+  const cutoff30d = Date.now() - 30 * 86_400_000;
   type RepoAgg = {
     repoId: string;
     repoName: string;
@@ -386,8 +387,13 @@ export const adminListAllIssues = onCall({ memory: "1GiB", timeoutSeconds: 540 }
           message: (data.message as string | undefined) ?? "",
           severity,
           count: 0,
+          newLast30d: 0,
         };
         ruleAgg.count += 1;
+        const firstSeenMs = data.firstSeen?.toDate?.()?.getTime?.() ?? NaN;
+        if (Number.isFinite(firstSeenMs) && firstSeenMs >= cutoff30d) {
+          ruleAgg.newLast30d += 1;
+        }
         byRuleId.set(ruleId, ruleAgg);
 
         items.push({
@@ -406,6 +412,10 @@ export const adminListAllIssues = onCall({ memory: "1GiB", timeoutSeconds: 540 }
           line: data.line ?? 0,
           source,
           lastSeen: data.lastSeen?.toDate?.().toISOString() ?? null,
+          firstSeen: data.firstSeen?.toDate?.().toISOString() ?? null,
+          assertiveness: typeof data.assertiveness === "number" ? data.assertiveness : null,
+          fpLikelihood: typeof data.fpLikelihood === "number" ? data.fpLikelihood : null,
+          gateSuppressed: data.gateSuppressed === true,
         });
       }
     }

@@ -765,6 +765,10 @@ export interface AdminIssueRow {
   line: number;
   source: "github-action" | "auto-scan" | "cli";
   lastSeen: string | null;
+  firstSeen?: string | null;
+  assertiveness?: number | null;
+  fpLikelihood?: number | null;
+  gateSuppressed?: boolean | null;
 }
 
 export interface AdminRuleCause {
@@ -772,6 +776,8 @@ export interface AdminRuleCause {
   message: string;
   severity: string;
   count: number;
+  /** Achados com firstSeen nos últimos 30 dias (quando disponível). */
+  newLast30d?: number;
 }
 
 export interface AdminRepoFindingCount {

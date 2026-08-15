@@ -63,6 +63,14 @@ export interface PersistAnalysisResult {
     maintainabilityRating: string;
     securityRating: string;
     qualityGate: { status: "PASSED" | "FAILED"; failedConditions: string[] };
+    /** Cobertura de linhas medida; `null` = não enviada (gate pula a condição). */
+    coveragePercent: number | null;
+    /** Duplicação % medida; `null` = não enviada. */
+    duplicationPercent: number | null;
+    /** Cobertura de branches; `null` = não enviada. */
+    branchCoveragePercent: number | null;
+    /** Findings fora do gate por FP local alto (ruleRepoFpRate). */
+    gateSuppressedCount: number;
   };
 }
 
@@ -259,6 +267,7 @@ export function computeAnalysisSummary(
   const vulnSeverities: Severity[] = [];
   let newBlockerIssues = 0;
   let codeSmellCount = 0;
+  let gateSuppressedCount = 0;
 
   for (const r of results) {
     const sev = (r.properties?.severity as Severity) ?? "INFO";
@@ -272,6 +281,7 @@ export function computeAnalysisSummary(
     if (SEVERITIES.includes(sev)) bySeverity[sev] += 1;
     byType[issueType] = (byType[issueType] ?? 0) + 1;
     if (issueType === "CODE_SMELL") codeSmellCount += 1;
+    if (gateSuppressed) gateSuppressedCount += 1;
     // Política: regra com FP local alto (≥minFeedback e rate≥0.6) não conta no gate.
     if (!gateSuppressed && sev === "BLOCKER" && isNew) newBlockerIssues += 1;
 
@@ -287,11 +297,21 @@ export function computeAnalysisSummary(
   const debtRatio = technicalDebtRatio(debtMin, linesOfCode);
   const maintRating = maintainabilityRating(debtRatio);
   const securityRating = ratingFromWorstSeverity(vulnSeverities);
+  const cov =
+    typeof coveragePercent === "number" && Number.isFinite(coveragePercent) ? coveragePercent : null;
+  const dupe =
+    typeof duplicationPercent === "number" && Number.isFinite(duplicationPercent)
+      ? duplicationPercent
+      : null;
+  const branchCov =
+    typeof branchCoveragePercent === "number" && Number.isFinite(branchCoveragePercent)
+      ? branchCoveragePercent
+      : null;
   const gate = evaluateQualityGate(
     {
-      newCodeCoverage: coveragePercent ?? null,
-      branchCoverage: branchCoveragePercent ?? null,
-      newCodeDuplication: duplicationPercent ?? null,
+      newCodeCoverage: cov,
+      branchCoverage: branchCov,
+      newCodeDuplication: dupe,
       newBlockerIssues,
       securityRating,
       maintainabilityRating: maintRating,
@@ -309,6 +329,10 @@ export function computeAnalysisSummary(
     maintainabilityRating: maintRating,
     securityRating,
     qualityGate: gate,
+    coveragePercent: cov,
+    duplicationPercent: dupe,
+    branchCoveragePercent: branchCov,
+    gateSuppressedCount,
   };
 }
 
@@ -542,12 +566,18 @@ export async function persistAnalysisResults(input: PersistAnalysisInput): Promi
       lastAnalyzedAt: now,
       lastAnalysisSource: source,
       debtMinutes: summary.debtMinutes,
+      debtRatio: summary.debtRatio,
+      linesOfCode,
       maintainabilityRating: summary.maintainabilityRating,
       securityRating: summary.securityRating,
       qualityGateStatus: summary.qualityGate.status,
       openIssues: results.length,
+      coveragePercent: summary.coveragePercent,
+      duplicationPercent: summary.duplicationPercent,
+      branchCoveragePercent: summary.branchCoveragePercent,
+      gateSuppressedCount: summary.gateSuppressedCount,
       ...(input.codeGraph ? { codeGraph: input.codeGraph } : {}),
-    ...(input.arquitetura ? { arquitetura: input.arquitetura } : {}),
+      ...(input.arquitetura ? { arquitetura: input.arquitetura } : {}),
     },
     { merge: true },
   );

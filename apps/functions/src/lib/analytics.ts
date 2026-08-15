@@ -9,6 +9,9 @@ export interface AnalysisSummaryLike {
   maintainabilityRating: string;
   securityRating: string;
   qualityGate: { status: string; failedConditions?: string[] };
+  coveragePercent?: number | null;
+  duplicationPercent?: number | null;
+  gateSuppressedCount?: number;
 }
 
 /** Increment daily + per-repo analytical rollups (survives detail purge). */
