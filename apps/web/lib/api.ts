@@ -262,6 +262,22 @@ export async function getOrgQuotasCallable(input: {
   }
 }
 
+/** Cotas read-only para membro do workspace (não exige platform admin). */
+export async function getWorkspaceOrgQuotas(input: {
+  orgId: string;
+}): Promise<{ orgId: string; orgName: string; quotas: OrgQuotasView }> {
+  const fn = httpsCallable<typeof input, { orgId: string; orgName: string; quotas: OrgQuotasView }>(
+    functions,
+    "getWorkspaceOrgQuotas",
+  );
+  try {
+    const res = await fn(input);
+    return res.data;
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha ao carregar uso da organização."));
+  }
+}
+
 export async function setOrgQuotas(input: {
   orgId: string;
   maxRepos?: number;

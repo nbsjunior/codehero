@@ -6,11 +6,13 @@ import { CodeGraphPanel } from "@/components/CodeGraphPanel";
 import { TimeSeriesChart, VerticalBars } from "@/components/RepoHealthCharts";
 import {
   adminGetPlatformSummary,
+  getWorkspaceOrgQuotas,
   runRepoAutoScanNow,
   setRepoAutoScan,
   type AdminIssuesResult,
   type AdminProjectRow,
   type AdminRepoFindingCount,
+  type OrgQuotasView,
   type PlatformSummary,
 } from "@/lib/api";
 import {
@@ -106,8 +108,79 @@ export default function RelatorioPanel({
 }: Props) {
   const [retryBusy, setRetryBusy] = useState(false);
   const isWorkspace = scope === "workspace";
+  const [orgQuotas, setOrgQuotas] = useState<OrgQuotasView | null>(null);
 
   const summaryLabel = isWorkspace ? "seus projetos" : "plataforma";
+
+  const primaryOrgId = useMemo(() => {
+    const ids = [...new Set(projects.map((p) => p.orgId).filter(Boolean))];
+    return ids[0] ?? null;
+  }, [projects]);
+
+  const repoCount = useMemo(
+    () => projects.reduce((s, p) => s + (p.repos?.length ?? 0), 0),
+    [projects],
+  );
+
+  useEffect(() => {
+    if (!isWorkspace || !primaryOrgId) {
+      setOrgQuotas(null);
+      return;
+    }
+    let cancelled = false;
+    getWorkspaceOrgQuotas({ orgId: primaryOrgId })
+      .then((res) => {
+        if (!cancelled) setOrgQuotas(res.quotas);
+      })
+      .catch(() => {
+        if (!cancelled) setOrgQuotas(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isWorkspace, primaryOrgId]);
+
+  function exportExecutiveCsv() {
+    const rows: string[][] = [
+      ["org", "project", "repo", "gate", "maint", "security", "debtMinutes", "openIssues", "lastAnalyzedAt"],
+    ];
+    for (const p of projects) {
+      for (const r of p.repos) {
+        rows.push([
+          p.orgName || p.orgId,
+          p.name,
+          r.name,
+          r.qualityGateStatus || "",
+          r.maintainabilityRating || p.maintainabilityRating || "",
+          r.securityRating || p.securityRating || "",
+          String(r.debtMinutes ?? p.debtMinutes ?? 0),
+          String(r.openIssues ?? 0),
+          r.lastAnalyzedAt || "",
+        ]);
+      }
+    }
+    if (issues?.topCauses?.length) {
+      rows.push([]);
+      rows.push(["ruleId", "severity", "count", "newLast30d", "message"]);
+      for (const c of issues.topCauses) {
+        rows.push([
+          c.ruleId,
+          c.severity,
+          String(c.count),
+          String(c.newLast30d ?? ""),
+          (c.message || "").replace(/"/g, "'"),
+        ]);
+      }
+    }
+    const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `codehero-relatorio-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
   const maintainability = useMemo(() => {
     const fromSummary = platformSummary?.byMaintainabilityRating;
@@ -176,11 +249,32 @@ export default function RelatorioPanel({
             : "Saúde da amostra: onde investir atenção esta semana"
         }
         actions={
-          <button type="button" className="hero-btn hero-btn-outline" disabled={retryBusy} onClick={() => void retrySummary()}>
-            {retryBusy ? "Atualizando…" : "Atualizar resumo"}
-          </button>
+          <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+            <button type="button" className="hero-btn hero-btn-outline" onClick={exportExecutiveCsv}>
+              Exportar CSV
+            </button>
+            <button type="button" className="hero-btn hero-btn-outline" disabled={retryBusy} onClick={() => void retrySummary()}>
+              {retryBusy ? "Atualizando…" : "Atualizar resumo"}
+            </button>
+          </div>
         }
       />
+
+      {isWorkspace && orgQuotas ? (
+        <Callout
+          tone={
+            orgQuotas.buildsThisMonth / Math.max(1, orgQuotas.maxBuildsPerMonth) >= 0.85
+              ? "warn"
+              : "neutral"
+          }
+          title="Uso da organização"
+        >
+          Builds este mês: {orgQuotas.buildsThisMonth.toLocaleString("pt-BR")} /{" "}
+          {orgQuotas.maxBuildsPerMonth.toLocaleString("pt-BR")}
+          {" · "}
+          Repos na amostra: {repoCount.toLocaleString("pt-BR")} (limite {orgQuotas.maxRepos.toLocaleString("pt-BR")})
+        </Callout>
+      ) : null}
 
       <KpiGroup>
         <KpiCard

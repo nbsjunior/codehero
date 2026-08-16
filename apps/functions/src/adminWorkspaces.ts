@@ -188,6 +188,25 @@ export const getOrgQuotasCallable = onCall<{ orgId: string }>(async (request) =>
   };
 });
 
+/** Leitura de cotas para membro da org (sem editar) — uso no Relatório workspace. */
+export const getWorkspaceOrgQuotas = onCall<{ orgId: string }>(async (request) => {
+  const uid = request.auth?.uid;
+  if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
+  await requireVerifiedEmail(uid);
+  const orgId = String(request.data?.orgId ?? "").trim();
+  if (!orgId) throw new HttpsError("invalid-argument", "orgId is required");
+  await requireOrgRole(orgId, uid, ["owner", "admin", "member"]);
+  await consumeRateLimit(`ws-quotas:${uid}:${orgId}`, 60);
+  const orgSnap = await db.doc(`orgs/${orgId}`).get();
+  if (!orgSnap.exists) throw new HttpsError("not-found", "org not found");
+  const quotas = await getOrgQuotas(orgId);
+  return {
+    orgId,
+    orgName: (orgSnap.get("name") as string) ?? orgId,
+    quotas,
+  };
+});
+
 export const setOrgQuotas = onCall<{
   orgId: string;
   maxRepos?: number;

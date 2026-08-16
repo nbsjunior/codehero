@@ -142,13 +142,18 @@ try {
   /* best-effort */
 }
 
-// New-code fingerprints: prefer LINE-level (git diff -U0); fall back to file-level.
+// New-code fingerprints + changedLines (cobertura no gate): prefer LINE-level.
 let newCodeFingerprints = [];
+/** @type {Record<string, number[]>} */
+let changedLines = {};
 try {
   const base = process.env.GITHUB_BASE_REF ? `origin/${process.env.GITHUB_BASE_REF}` : "HEAD~1";
   const lineMap = changedLinesByFile(base);
   const results = sarif.runs?.[0]?.results ?? [];
   if (lineMap.size > 0) {
+    for (const [path, set] of lineMap) {
+      if (set.size > 0) changedLines[path] = [...set].sort((a, b) => a - b);
+    }
     newCodeFingerprints = results
       .filter((r) => {
         const loc = r.locations?.[0]?.physicalLocation;
@@ -160,7 +165,10 @@ try {
       })
       .map((r) => r.partialFingerprints?.["heroHash/v1"])
       .filter(Boolean);
-    console.log(`CodeHero: new-code line-level → ${newCodeFingerprints.length} fingerprint(s) in ${lineMap.size} file(s)`);
+    console.log(
+      `CodeHero: new-code line-level → ${newCodeFingerprints.length} fingerprint(s) · ` +
+        `${Object.keys(changedLines).length} arquivo(s) para cobertura`,
+    );
   } else {
     const changed = new Set(
       execFileSync("git", ["diff", "--name-only", `${base}...HEAD`], { encoding: "utf8" })
@@ -195,6 +203,7 @@ const res = await fetch(`${HERO_URL}/ingestAnalysis`, {
     commit: process.env.GITHUB_SHA,
     linesOfCode,
     newCodeFingerprints,
+    ...(Object.keys(changedLines).length > 0 ? { changedLines } : {}),
     sarif,
   }),
 });

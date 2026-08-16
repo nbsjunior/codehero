@@ -296,7 +296,7 @@ function normalizeCodeGraph(raw: unknown): CodeGraphSummary | null {
 function profileToScannerArgs(profile: string): string[] {
   switch (profile) {
     case "presence":
-      return ["--metrics", "--code-graph", "--with-oxlint", "--with-opengrep", "--with-sca"];
+      return ["--metrics", "--code-graph", "--with-oxlint", "--with-opengrep", "--with-sca", "--with-secrets"];
     case "java":
       return ["--metrics", "--code-graph", "--with-pmd", "--with-spotbugs"];
     case "full":

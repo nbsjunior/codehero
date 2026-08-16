@@ -6,9 +6,15 @@ import {
   evaluateQualityGate,
   mergeQualityGate,
   SEVERITIES,
+  coverageOnNewCode,
+  coveragePercent as coveragePct,
   type Severity,
   type QualityGateThresholds,
   type SarifResult,
+  type SarifLog,
+  type CoverageReport,
+  type CoverageCounter,
+  type ChangedLines,
 } from "@codehero/contracts";
 
 export type AnalysisSummary = {
@@ -24,6 +30,8 @@ export type AnalysisSummary = {
   qualityGate: { status: "PASSED" | "FAILED"; failedConditions: string[] };
   /** Cobertura de linhas medida; `null` = não enviada (gate pula a condição). */
   coveragePercent: number | null;
+  /** new-code = diff; overall = relatório global; none = não medido. */
+  coverageScope: "new-code" | "overall" | "none";
   /** Duplicação % medida; `null` = não enviada. */
   duplicationPercent: number | null;
   /** Cobertura de branches; `null` = não enviada. */
@@ -32,31 +40,98 @@ export type AnalysisSummary = {
   gateSuppressedCount: number;
 };
 
+/** Reconstrói CoverageReport a partir das properties do run SARIF. */
+export function coverageReportFromSarif(sarif: SarifLog): CoverageReport | null {
+  const raw = (
+    sarif.runs?.[0] as {
+      properties?: {
+        coverage?: {
+          format?: string;
+          lines?: CoverageCounter;
+          branches?: CoverageCounter;
+          files?: Array<{
+            path?: string;
+            lines?: CoverageCounter;
+            branches?: CoverageCounter;
+            uncoveredLines?: number[];
+            coveredLines?: number[];
+          }>;
+        };
+      };
+    }
+  )?.properties?.coverage;
+  if (!raw || typeof raw !== "object") return null;
+  const filesRaw = Array.isArray(raw.files) ? raw.files : [];
+  if (filesRaw.length === 0 && (!raw.lines || raw.lines.total <= 0)) return null;
+  const files = filesRaw
+    .filter((f) => f && typeof f.path === "string")
+    .map((f) => ({
+      path: f.path!,
+      lines: f.lines ?? { covered: 0, total: 0 },
+      ...(f.branches ? { branches: f.branches } : {}),
+      uncoveredLines: Array.isArray(f.uncoveredLines) ? f.uncoveredLines : [],
+      coveredLines: Array.isArray(f.coveredLines) ? f.coveredLines : [],
+    }));
+  const lines =
+    raw.lines && typeof raw.lines.total === "number"
+      ? raw.lines
+      : files.reduce<CoverageCounter>(
+          (acc, f) => ({
+            covered: acc.covered + f.lines.covered,
+            total: acc.total + f.lines.total,
+          }),
+          { covered: 0, total: 0 },
+        );
+  return {
+    format: (raw.format as CoverageReport["format"]) ?? "unknown",
+    lines,
+    ...(raw.branches ? { branches: raw.branches } : {}),
+    files,
+  };
+}
+
+/**
+ * Percentual que alimenta o gate: prefere cobertura em código novo quando o CI
+ * envia `changedLines`; senão usa o agregado global do relatório.
+ */
+export function resolveCoverageForGate(
+  sarif: SarifLog,
+  changedLines?: ChangedLines | null,
+): { percent: number | null; scope: AnalysisSummary["coverageScope"] } {
+  const hasDiff = changedLines && Object.keys(changedLines).length > 0;
+  if (hasDiff) {
+    const report = coverageReportFromSarif(sarif);
+    const nc = coverageOnNewCode(report, changedLines!);
+    if (!nc.applicable) return { percent: null, scope: "none" };
+    return { percent: nc.percent, scope: "new-code" };
+  }
+  const raw = (
+    sarif.runs?.[0] as { properties?: { coverage?: { lines?: CoverageCounter } } }
+  )?.properties?.coverage?.lines;
+  if (!raw || typeof raw.total !== "number" || raw.total <= 0) {
+    return { percent: null, scope: "none" };
+  }
+  return { percent: coveragePct(raw), scope: "overall" };
+}
+
 /**
  * Calcula o summary da analysis (puro — sem I/O).
  *
  * Regras de escopo:
- * - Débito / maintainabilityRating: sempre o inventário completo (evita PR
- *   “limpo” zerar a dívida do repo no dashboard).
+ * - Débito / maintainabilityRating: sempre o inventário completo.
  * - Blockers no gate: com fingerprints → só código novo; sem → todos.
- * - Security no gate: com fingerprints → só vulns novas; rating persistido
- *   continua overall.
+ * - Security no gate: com fingerprints → só vulns novas; rating persistido overall.
  * - gateSuppressed: fora do gate e fora da dívida/ratings.
  */
 export function computeAnalysisSummary(
   results: SarifResult[],
   linesOfCode: number,
   newCodeFingerprints?: string[],
-  /**
-   * Percentual de cobertura medido, ou `null` quando o build não enviou
-   * relatório. `null` PULA a condição no gate.
-   *
-   * Hoje o SARIF carrega cobertura **global** do relatório (não “código novo”).
-   */
   coveragePercent?: number | null,
   duplicationPercent?: number | null,
   qualityGateThresholds?: QualityGateThresholds | null,
   branchCoveragePercent?: number | null,
+  coverageScope: AnalysisSummary["coverageScope"] = "none",
 ): AnalysisSummary {
   const newSet = new Set(newCodeFingerprints ?? []);
   const scopeToNewCode = newSet.size > 0;
@@ -112,6 +187,8 @@ export function computeAnalysisSummary(
     typeof branchCoveragePercent === "number" && Number.isFinite(branchCoveragePercent)
       ? branchCoveragePercent
       : null;
+  const scope: AnalysisSummary["coverageScope"] =
+    cov == null ? "none" : coverageScope === "none" ? "overall" : coverageScope;
   const gate = evaluateQualityGate(
     {
       newCodeCoverage: cov,
@@ -124,6 +201,14 @@ export function computeAnalysisSummary(
     mergeQualityGate(qualityGateThresholds),
   );
 
+  if (scope === "new-code") {
+    gate.failedConditions = gate.failedConditions.map((c) =>
+      c.startsWith("Cobertura ") && !c.startsWith("Cobertura de branch")
+        ? c.replace(/^Cobertura /, "Cobertura em código novo ")
+        : c,
+    );
+  }
+
   return {
     total: results.length,
     bySeverity,
@@ -135,6 +220,7 @@ export function computeAnalysisSummary(
     securityRating,
     qualityGate: gate,
     coveragePercent: cov,
+    coverageScope: scope,
     duplicationPercent: dupe,
     branchCoveragePercent: branchCov,
     gateSuppressedCount,

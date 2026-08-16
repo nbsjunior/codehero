@@ -97,6 +97,7 @@ interface CliOptions {
   spotbugsClasses: string | null;
   withSca: boolean;
   scaTool: "trivy" | "osv";
+  withSecrets: boolean;
 }
 
 function parseArgs(argv: string[]): CliOptions {
@@ -132,6 +133,7 @@ function parseArgs(argv: string[]): CliOptions {
     spotbugsClasses: null,
     withSca: false,
     scaTool: "trivy",
+    withSecrets: false,
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -165,6 +167,7 @@ function parseArgs(argv: string[]): CliOptions {
     else if (a === "--with-semgrep") opts.withSemgrep = true;
     else if (a === "--with-opengrep") opts.withOpengrep = true;
     else if (a === "--with-sca") opts.withSca = true;
+    else if (a === "--with-secrets") opts.withSecrets = true;
     else if (a === "--sca-tool") {
       const v = (argv[++i] ?? "trivy").toLowerCase();
       opts.scaTool = v === "osv" ? "osv" : "trivy";
@@ -217,6 +220,7 @@ async function main(): Promise<void> {
       pmd: opts.withPmd,
       spotbugs: opts.withSpotbugs,
       sca: opts.withSca,
+      secrets: opts.withSecrets,
     });
     opts.metrics = engines.metrics;
     opts.semantic = engines.semantic;
@@ -228,6 +232,7 @@ async function main(): Promise<void> {
     opts.withPmd = engines.pmd;
     opts.withSpotbugs = engines.spotbugs;
     opts.withSca = engines.sca;
+    opts.withSecrets = engines.secrets;
     process.stderr.write(`CodeHero: profile=${opts.profile}\n`);
   }
 
@@ -407,7 +412,8 @@ async function main(): Promise<void> {
     opts.withSemgrep ||
     opts.withPmd ||
     opts.withSpotbugs ||
-    opts.withSca;
+    opts.withSca ||
+    opts.withSecrets;
   if (querAlgumExterno) {
     const ext = collectExternalSarifs({
       oxlint: opts.withOxlint,
@@ -419,6 +425,7 @@ async function main(): Promise<void> {
       spotbugsClasses: opts.spotbugsClasses ?? undefined,
       sca: opts.withSca,
       scaTool: opts.scaTool,
+      secrets: opts.withSecrets,
       // O ALVO do scan, nao o diretorio de trabalho. Passar `cwd` fazia toda
       // ferramenta externa analisar a raiz do repositorio enquanto o CodeHero
       // analisava o subcaminho pedido — e o ESLint chegava a nao rodar por nao

@@ -16,6 +16,7 @@ Isso sustenta a tese comercial: motor nativo **peer-competitive em segurança** 
 | **Oxlint** | `npx oxlint . -f sarif -o oxlint.sarif` | `oxlint.sarif` | `oxlint: true` / `--with-oxlint` |
 | **Trivy** (SCA) | `trivy fs --format sarif -o trivy.sarif .` | `trivy.sarif` | `sca: true` / `--with-sca` |
 | **osv-scanner** | `osv-scanner --format sarif -o osv.sarif .` | `osv.sarif` | `sca-tool: osv` |
+| **Gitleaks** (secrets) | `gitleaks detect --report-format sarif -o gitleaks.sarif` | `gitleaks.sarif` | `secrets: true` / `--with-secrets` / `profile: presence` |
 | **Joern** | via `--joern` | embutido | `joern: true` |
 | **ESLint** | `eslint -f json` | convertido | `eslint: true` |
 | **PMD** | `pmd check -f sarif` | SARIF | `pmd: true` / `profile: java` |
@@ -26,7 +27,7 @@ Isso sustenta a tese comercial: motor nativo **peer-competitive em segurança** 
 | Perfil | Engines | Quando o TL escolhe |
 |---|---|---|
 | `native` | Só CodeHero | Gate rápido + legado + agentes |
-| `presence` | metrics + oxlint + opengrep + sca | Amplitude sem instalar JVM de análise |
+| `presence` | metrics + oxlint + opengrep + sca + secrets | Amplitude + SCA + secrets sem JVM |
 | `java` | metrics + pmd + spotbugs | Stack Java no mesmo juiz |
 | `full` | adapters (exceto Joern) | Máxima presença no PR noturno / scheduled |
 

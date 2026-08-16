@@ -82,4 +82,13 @@ describe("computeAnalysisSummary — escopo código novo", () => {
     assert.equal(summary.debtMinutes, 0);
     assert.ok(!summary.qualityGate.failedConditions.some((c) => /Blocker/i.test(c)));
   });
+
+  it("coverageScope new-code rotula falha de cobertura", () => {
+    const summary = computeAnalysisSummary([], 1000, [], 40, null, null, null, "new-code");
+    assert.equal(summary.coverageScope, "new-code");
+    assert.equal(summary.qualityGate.status, "FAILED");
+    assert.ok(
+      summary.qualityGate.failedConditions.some((c) => /Cobertura em código novo 40%/.test(c)),
+    );
+  });
 });

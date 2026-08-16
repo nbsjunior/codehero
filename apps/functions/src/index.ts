@@ -30,7 +30,7 @@ export {
   adminUpdateUser,
   adminResetUserPassword,
 } from "./adminUsers.ts";
-export { adminCreateProject, getOrgQuotasCallable, setOrgQuotas } from "./adminWorkspaces.ts";
+export { adminCreateProject, getOrgQuotasCallable, getWorkspaceOrgQuotas, setOrgQuotas } from "./adminWorkspaces.ts";
 export { ruleforgeDaily, runRuleforgeDaily, listRuleforgeRuns } from "./ruleforgeDaily.ts";
 export { submitDressCode, listDressCodes } from "./dressCode.ts";
 export { listMotorRules, deleteOverlayRule } from "./rulesCatalog.ts";

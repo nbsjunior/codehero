@@ -19,6 +19,8 @@ export interface ScanProfileEngines {
   pmd: boolean;
   spotbugs: boolean;
   sca: boolean;
+  /** Gitleaks — secrets no working tree (soft-fail). */
+  secrets: boolean;
 }
 
 export interface ScanProfile {
@@ -41,6 +43,7 @@ const OFF: ScanProfileEngines = {
   pmd: false,
   spotbugs: false,
   sca: false,
+  secrets: false,
 };
 
 export const SCAN_PROFILES: Record<ScanProfileId, ScanProfile> = {
@@ -53,13 +56,14 @@ export const SCAN_PROFILES: Record<ScanProfileId, ScanProfile> = {
   presence: {
     id: "presence",
     label: "Presença",
-    summary: "Pack OSS: métricas + Oxlint + Opengrep + SCA (Trivy). Soft-fail.",
+    summary: "Pack OSS: métricas + Oxlint + Opengrep + SCA (Trivy) + secrets (Gitleaks). Soft-fail.",
     engines: {
       ...OFF,
       metrics: true,
       oxlint: true,
       opengrep: true,
       sca: true,
+      secrets: true,
     },
   },
   java: {
@@ -88,6 +92,7 @@ export const SCAN_PROFILES: Record<ScanProfileId, ScanProfile> = {
       pmd: true,
       spotbugs: true,
       sca: true,
+      secrets: true,
     },
   },
 };
@@ -117,6 +122,7 @@ export function mergeScanEngines(
     pmd: overrides.pmd === true || profile.pmd,
     spotbugs: overrides.spotbugs === true || profile.spotbugs,
     sca: overrides.sca === true || profile.sca,
+    secrets: overrides.secrets === true || profile.secrets,
   };
 }
 
@@ -136,6 +142,7 @@ export function scanEnginesToCliArgs(engines: ScanProfileEngines): string[] {
   if (engines.pmd) args.push("--with-pmd");
   if (engines.spotbugs) args.push("--with-spotbugs");
   if (engines.sca) args.push("--with-sca");
+  if (engines.secrets) args.push("--with-secrets");
   return args;
 }
 

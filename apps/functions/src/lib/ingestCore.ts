@@ -34,6 +34,8 @@ export interface PersistAnalysisInput {
   deferIssueWrites?: boolean;
   /** Cobertura medida no build; `null`/ausente pula a condição do gate. */
   coveragePercent?: number | null;
+  /** Escopo da cobertura passada ao gate (new-code vs overall). */
+  coverageScope?: "new-code" | "overall" | "none";
   /** Duplicação medida (--metrics); `null`/ausente pula a condição. */
   duplicationPercent?: number | null;
   /** Branch % (JaCoCo/JCov/lcov); null/0 pula a condição. */
@@ -417,6 +419,7 @@ export async function persistAnalysisResults(input: PersistAnalysisInput): Promi
     input.duplicationPercent,
     thresholds,
     input.branchCoveragePercent,
+    input.coverageScope ?? "none",
   );
 
   if (!input.deferIssueWrites) {
@@ -460,6 +463,7 @@ export async function persistAnalysisResults(input: PersistAnalysisInput): Promi
       qualityGateStatus: summary.qualityGate.status,
       openIssues: results.length,
       coveragePercent: summary.coveragePercent,
+      coverageScope: summary.coverageScope,
       duplicationPercent: summary.duplicationPercent,
       branchCoveragePercent: summary.branchCoveragePercent,
       gateSuppressedCount: summary.gateSuppressedCount,

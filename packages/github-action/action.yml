@@ -81,6 +81,12 @@ inputs:
     description: "trivy | osv — qual scanner SCA usar quando sca=true"
     required: false
     default: "trivy"
+  secrets:
+    description: >
+      Gitleaks (secrets no working tree) → EXT:gitleaks:*. Soft-fail se ausente.
+      Ligado em profile=presence|full.
+    required: false
+    default: "false"
   import-sarif:
     description: >
       Caminho(s) de SARIF produzido por OUTRA ferramenta, um por linha —
@@ -196,6 +202,7 @@ runs:
         HERO_SPOTBUGS_CLASSES: ${{ inputs.spotbugs-classes }}
         HERO_SCA: ${{ inputs.sca }}
         HERO_SCA_TOOL: ${{ inputs.sca-tool }}
+        HERO_SECRETS: ${{ inputs.secrets }}
         HERO_PROFILE: ${{ inputs.profile }}
         HERO_LLM_BUDGET: ${{ inputs.llm-budget }}
       run: |
@@ -222,6 +229,7 @@ runs:
           EXTRA_ARGS+=(--with-sca)
           [ -n "$HERO_SCA_TOOL" ] && EXTRA_ARGS+=(--sca-tool "$HERO_SCA_TOOL")
         fi
+        [ "$HERO_SECRETS" = "true" ] && EXTRA_ARGS+=(--with-secrets)
         if [ -n "$HERO_LLM_BUDGET" ] && [ "$HERO_LLM_BUDGET" != "0" ]; then
           EXTRA_ARGS+=(--llm-budget "$HERO_LLM_BUDGET")
         fi

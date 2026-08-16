@@ -42,10 +42,12 @@ jobs:
           path: .
           metrics: "true"
           semantic: "true"
+          profile: "presence"
           oxlint: "true"
           opengrep: "true"
           semgrep: "false"
-          sca: "false"
+          sca: "true"
+          secrets: "true"
           import-sarif: |
             codehero-ext/oxlint.sarif
 

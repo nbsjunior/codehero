@@ -7,12 +7,12 @@ import {
   persistAnalysisResults,
   enqueueIssueUpsertJob,
   upsertIssuesFromResults,
-  coverageFromSarif,
   duplicationFromSarif,
   branchCoverageFromSarif,
   codeGraphFromSarif,
   arquiteturaFromSarif,
 } from "./lib/ingestCore.ts";
+import { resolveCoverageForGate } from "./lib/analysisSummary.ts";
 import { ingestIdempotencyKey, findRecentIngest } from "./lib/ingestIdempotency.ts";
 import { assertBuildQuota, incrementBuildQuota } from "./lib/quotas.ts";
 import { getPlatformOpsConfig } from "./lib/platformOps.ts";
@@ -29,6 +29,8 @@ const IngestSchema = z.object({
   commit: z.string().optional(),
   linesOfCode: z.number().int().positive().default(1),
   newCodeFingerprints: z.array(z.string()).optional(),
+  /** Linhas alteradas no diff (path → linhas) para cobertura em código novo. */
+  changedLines: z.record(z.array(z.number().int().positive())).optional(),
   sarif: z.custom<SarifLog>((v) => !!v && typeof v === "object"),
 });
 
@@ -54,7 +56,7 @@ export const ingestAnalysis = onRequest(
       res.status(400).json({ error: "invalid_payload", details: parsed.error.flatten() });
       return;
     }
-    const { orgId, projectId, repoId, branch, commit, linesOfCode, newCodeFingerprints, sarif } =
+    const { orgId, projectId, repoId, branch, commit, linesOfCode, newCodeFingerprints, changedLines, sarif } =
       parsed.data;
 
     const rRef = repoRef(orgId, projectId, repoId);
@@ -136,6 +138,8 @@ export const ingestAnalysis = onRequest(
     const ops = await getPlatformOpsConfig();
     const deferIssues = ops.deferIssueWrites;
 
+    const coverage = resolveCoverageForGate(sarif, changedLines ?? null);
+
     const { summary } = await persistAnalysisResults({
       orgId,
       projectId,
@@ -145,7 +149,8 @@ export const ingestAnalysis = onRequest(
       commit: commit ?? null,
       linesOfCode,
       newCodeFingerprints,
-      coveragePercent: coverageFromSarif(sarif),
+      coveragePercent: coverage.percent,
+      coverageScope: coverage.scope,
       duplicationPercent: duplicationFromSarif(sarif),
       branchCoveragePercent: branchCoverageFromSarif(sarif),
       codeGraph: codeGraphFromSarif(sarif),

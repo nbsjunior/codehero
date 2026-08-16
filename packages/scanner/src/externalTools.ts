@@ -186,6 +186,36 @@ export function runSca(cwd = process.cwd(), tool: ScaTool = "trivy"): ExternalRu
 }
 
 /**
+ * Gitleaks — secrets no working tree (SARIF nativo). Soft-fail se o binário
+ * não estiver instalado; Presence Pack liga via --with-secrets / profile=presence.
+ */
+export function runGitleaks(cwd = process.cwd()): ExternalRunResult {
+  const dir = mkdtempSync(join(tmpdir(), "hero-gitleaks-"));
+  const out = join(dir, "gitleaks.sarif");
+  // exit 1 = leaks found (still produces report); exit 0 = clean.
+  const r = runCapture("gitleaks", [
+    "detect",
+    "--source",
+    cwd,
+    "--report-path",
+    out,
+    "--report-format",
+    "sarif",
+    "--no-git",
+  ]);
+  if (!existsSync(out)) {
+    return {
+      tool: "gitleaks",
+      ok: false,
+      sarifPath: null,
+      hint: "Instale Gitleaks (https://github.com/gitleaks/gitleaks) ou importe um SARIF via --import",
+      stderr: (r.stderr || r.error?.message || "").slice(0, 800),
+    };
+  }
+  return { tool: "gitleaks", ok: true, sarifPath: out };
+}
+
+/**
  * ESLint — o padrão de fato em Node.
  *
  * Competir com o ESLint escrevendo regras de JS é perder duas vezes: ele tem
@@ -299,6 +329,7 @@ export function collectExternalSarifs(opts: {
   spotbugsClasses?: string;
   sca?: boolean;
   scaTool?: ScaTool;
+  secrets?: boolean;
   cwd?: string;
 }): { paths: string[]; logs: ExternalRunResult[] } {
   const cwd = opts.cwd ?? process.cwd();
@@ -315,5 +346,6 @@ export function collectExternalSarifs(opts: {
   if (opts.pmd) rodar(runPmd(cwd));
   if (opts.spotbugs) rodar(runSpotbugs(cwd, opts.spotbugsClasses));
   if (opts.sca) rodar(runSca(cwd, opts.scaTool ?? "trivy"));
+  if (opts.secrets) rodar(runGitleaks(cwd));
   return { paths, logs };
 }
