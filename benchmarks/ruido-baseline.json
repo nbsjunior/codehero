@@ -1,0 +1,54 @@
+{
+  "_porque": "Ruido em codigo real e bem mantido. Regravar e ato deliberado: so faca depois de conferir que a mudanca de numero e melhoria, e diga no commit por que.",
+  "_medidoEm": "2026-08-16",
+  "projetos": [
+    "express",
+    "axios",
+    "flask",
+    "gson"
+  ],
+  "loc": 39672,
+  "total": 516,
+  "graves": 30,
+  "porKloc": 13,
+  "gravesPorKloc": 0.8,
+  "porProjeto": [
+    {
+      "nome": "express",
+      "arquivos": 7,
+      "loc": 2351,
+      "achados": 230,
+      "graves": 0,
+      "porKloc": 97.8,
+      "gravesPorKloc": 0
+    },
+    {
+      "nome": "axios",
+      "arquivos": 79,
+      "loc": 8545,
+      "achados": 106,
+      "graves": 3,
+      "porKloc": 12.4,
+      "gravesPorKloc": 0.4
+    },
+    {
+      "nome": "flask",
+      "arquivos": 24,
+      "loc": 7569,
+      "achados": 31,
+      "graves": 9,
+      "porKloc": 4.1,
+      "gravesPorKloc": 1.2
+    },
+    {
+      "nome": "gson",
+      "arquivos": 121,
+      "loc": 21207,
+      "achados": 149,
+      "graves": 18,
+      "porKloc": 7,
+      "gravesPorKloc": 0.8
+    }
+  ],
+  "suspeitas": []
+}

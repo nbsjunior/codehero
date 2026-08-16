@@ -48,3 +48,21 @@ jobs:
       # ser gate no primeiro problema de rede.
       - name: Precisao e recall contra a linha de base
         run: node scripts/benchmark-gate.mjs --exige-acervo
+
+      # O acervo do OWASP e sintetico: mede se a regra reconhece o defeito
+      # plantado. Nao mede o que decide a adocao, que e quanto a ferramenta
+      # grita em codigo real.
+      #
+      # Com 75.6% de precisao no OWASP, o axios levava 15.7 BLOCKER por mil
+      # linhas — 73% deles de UMA regra cujo regex casava `../`, ou seja, todo
+      # import relativo. Nada pegava, porque nenhum acervo sintetico tem o
+      # idioma de um projeto de verdade.
+      - name: Baixar acervo de codigo real
+        run: |
+          git clone --depth 1 --quiet https://github.com/expressjs/express.git .tmp/real/express
+          git clone --depth 1 --quiet https://github.com/axios/axios.git .tmp/real/axios
+          git clone --depth 1 --quiet https://github.com/pallets/flask.git .tmp/real/flask
+          git clone --depth 1 --quiet https://github.com/google/gson.git .tmp/real/gson
+
+      - name: Ruido em codigo real contra a linha de base
+        run: node scripts/ruido-gate.mjs --exige-acervo

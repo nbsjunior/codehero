@@ -86,12 +86,10 @@
     "SONAR-java-S1075",
     "SONAR-java-S1111",
     "SONAR-java-S1113",
-    "SONAR-java-S1128",
     "SONAR-java-S1134",
     "SONAR-java-S1135",
     "SONAR-java-S1174",
     "SONAR-java-S1175",
-    "SONAR-java-S1206",
     "SONAR-java-S1217",
     "SONAR-java-S131",
     "SONAR-java-S1313",
@@ -179,7 +177,6 @@
     "SONAR-java-S6035",
     "SONAR-java-S6096",
     "SONAR-java-S6173",
-    "SONAR-java-S6201",
     "SONAR-java-S6219",
     "SONAR-java-S6242",
     "SONAR-java-S6263",
@@ -1525,8 +1522,9 @@
     },
     "SONAR-cs-S2083": {
       "pattern": {
-        "regex": "(?i)(\\.\\./|\\.\\.\\\\|path\\.join\\([^)]*req\\.|getParameter\\([^)]*\\)\\s*\\+)",
-        "scope": "any"
+        "regex": "(?i)((File\\.(Open|ReadAll|WriteAll|Delete|Copy|Move)|Path\\.Combine|new\\s+(StreamReader|StreamWriter|FileStream))\\s*\\([^)]{0,120}\\.\\.[\\\\/]|(path\\.(join|resolve)|os\\.path\\.join|Path\\.Combine|Paths\\.get)\\s*\\([^)]*\\b(req|request|params|query|body|args|form)\\b|getParameter\\s*\\([^)]*\\)\\s*\\+|[+=]\\s*[\"'][^\"'\\n]{0,80}\\.\\.[\\\\/])",
+        "scope": "any",
+        "unless": "^\\s*(//|\\*|#|--)"
       }
     },
     "SONAR-cs-S5542": {
@@ -1545,14 +1543,16 @@
     },
     "SONAR-cs-S6096": {
       "pattern": {
-        "regex": "(?i)(\\.\\./|\\.\\.\\\\|path\\.join\\([^)]*req\\.|getParameter\\([^)]*\\)\\s*\\+)",
-        "scope": "any"
+        "regex": "(?i)((File\\.(Open|ReadAll|WriteAll|Delete|Copy|Move)|Path\\.Combine|new\\s+(StreamReader|StreamWriter|FileStream))\\s*\\([^)]{0,120}\\.\\.[\\\\/]|(path\\.(join|resolve)|os\\.path\\.join|Path\\.Combine|Paths\\.get)\\s*\\([^)]*\\b(req|request|params|query|body|args|form)\\b|getParameter\\s*\\([^)]*\\)\\s*\\+|[+=]\\s*[\"'][^\"'\\n]{0,80}\\.\\.[\\\\/])",
+        "scope": "any",
+        "unless": "^\\s*(//|\\*|#|--)"
       }
     },
     "SONAR-java-S2083": {
       "pattern": {
-        "regex": "(?i)(\\.\\./|\\.\\.\\\\|path\\.join\\([^)]*req\\.|getParameter\\([^)]*\\)\\s*\\+)",
-        "scope": "any"
+        "regex": "(?i)((new\\s+(File|FileInputStream|FileOutputStream|FileReader|FileWriter)|Paths\\.get|Files\\.(read|write|copy|delete|newInputStream|newOutputStream))\\s*\\([^)]{0,120}\\.\\.[\\\\/]|(path\\.(join|resolve)|os\\.path\\.join|Path\\.Combine|Paths\\.get)\\s*\\([^)]*\\b(req|request|params|query|body|args|form)\\b|getParameter\\s*\\([^)]*\\)\\s*\\+|[+=]\\s*[\"'][^\"'\\n]{0,80}\\.\\.[\\\\/])",
+        "scope": "any",
+        "unless": "^\\s*(//|\\*|#|--)"
       }
     },
     "SONAR-java-S5542": {
@@ -1571,14 +1571,16 @@
     },
     "SONAR-java-S6096": {
       "pattern": {
-        "regex": "(?i)(\\.\\./|\\.\\.\\\\|path\\.join\\([^)]*req\\.|getParameter\\([^)]*\\)\\s*\\+)",
-        "scope": "any"
+        "regex": "(?i)((new\\s+(File|FileInputStream|FileOutputStream|FileReader|FileWriter)|Paths\\.get|Files\\.(read|write|copy|delete|newInputStream|newOutputStream))\\s*\\([^)]{0,120}\\.\\.[\\\\/]|(path\\.(join|resolve)|os\\.path\\.join|Path\\.Combine|Paths\\.get)\\s*\\([^)]*\\b(req|request|params|query|body|args|form)\\b|getParameter\\s*\\([^)]*\\)\\s*\\+|[+=]\\s*[\"'][^\"'\\n]{0,80}\\.\\.[\\\\/])",
+        "scope": "any",
+        "unless": "^\\s*(//|\\*|#|--)"
       }
     },
     "SONAR-js-S2083": {
       "pattern": {
-        "regex": "(?i)(\\.\\./|\\.\\.\\\\|path\\.join\\([^)]*req\\.|getParameter\\([^)]*\\)\\s*\\+)",
-        "scope": "any"
+        "regex": "(?i)((readFile|writeFile|readFileSync|writeFileSync|createReadStream|createWriteStream|sendFile|unlink|rmdir|readdir|open)\\s*\\([^)]{0,120}\\.\\.[\\\\/]|(path\\.(join|resolve)|os\\.path\\.join|Path\\.Combine|Paths\\.get)\\s*\\([^)]*\\b(req|request|params|query|body|args|form)\\b|getParameter\\s*\\([^)]*\\)\\s*\\+|[+=]\\s*[\"'][^\"'\\n]{0,80}\\.\\.[\\\\/])",
+        "scope": "any",
+        "unless": "^\\s*(//|\\*|#|--)"
       }
     },
     "SONAR-js-S5542": {
@@ -1597,14 +1599,16 @@
     },
     "SONAR-js-S6096": {
       "pattern": {
-        "regex": "(?i)(\\.\\./|\\.\\.\\\\|path\\.join\\([^)]*req\\.|getParameter\\([^)]*\\)\\s*\\+)",
-        "scope": "any"
+        "regex": "(?i)((readFile|writeFile|readFileSync|writeFileSync|createReadStream|createWriteStream|sendFile|unlink|rmdir|readdir|open)\\s*\\([^)]{0,120}\\.\\.[\\\\/]|(path\\.(join|resolve)|os\\.path\\.join|Path\\.Combine|Paths\\.get)\\s*\\([^)]*\\b(req|request|params|query|body|args|form)\\b|getParameter\\s*\\([^)]*\\)\\s*\\+|[+=]\\s*[\"'][^\"'\\n]{0,80}\\.\\.[\\\\/])",
+        "scope": "any",
+        "unless": "^\\s*(//|\\*|#|--)"
       }
     },
     "SONAR-js-S8707": {
       "pattern": {
-        "regex": "(?i)(\\.\\./|\\.\\.\\\\|path\\.join\\([^)]*req\\.|getParameter\\([^)]*\\)\\s*\\+)",
-        "scope": "any"
+        "regex": "(?i)((readFile|writeFile|readFileSync|writeFileSync|createReadStream|createWriteStream|sendFile|unlink|rmdir|readdir|open)\\s*\\([^)]{0,120}\\.\\.[\\\\/]|(path\\.(join|resolve)|os\\.path\\.join|Path\\.Combine|Paths\\.get)\\s*\\([^)]*\\b(req|request|params|query|body|args|form)\\b|getParameter\\s*\\([^)]*\\)\\s*\\+|[+=]\\s*[\"'][^\"'\\n]{0,80}\\.\\.[\\\\/])",
+        "scope": "any",
+        "unless": "^\\s*(//|\\*|#|--)"
       }
     },
     "SONAR-plsql-S5547": {
@@ -1616,8 +1620,9 @@
     },
     "SONAR-py-S2083": {
       "pattern": {
-        "regex": "(?i)(\\.\\./|\\.\\.\\\\|path\\.join\\([^)]*req\\.|getParameter\\([^)]*\\)\\s*\\+)",
-        "scope": "any"
+        "regex": "(?i)((open|os\\.remove|os\\.rename|shutil\\.(copy|move)|send_file|send_from_directory)\\s*\\([^)]{0,120}\\.\\.[\\\\/]|(path\\.(join|resolve)|os\\.path\\.join|Path\\.Combine|Paths\\.get)\\s*\\([^)]*\\b(req|request|params|query|body|args|form)\\b|getParameter\\s*\\([^)]*\\)\\s*\\+|[+=]\\s*[\"'][^\"'\\n]{0,80}\\.\\.[\\\\/])",
+        "scope": "any",
+        "unless": "^\\s*(//|\\*|#|--)"
       }
     },
     "SONAR-py-S5542": {
@@ -1636,20 +1641,23 @@
     },
     "SONAR-py-S6096": {
       "pattern": {
-        "regex": "(?i)(\\.\\./|\\.\\.\\\\|path\\.join\\([^)]*req\\.|getParameter\\([^)]*\\)\\s*\\+)",
-        "scope": "any"
+        "regex": "(?i)((open|os\\.remove|os\\.rename|shutil\\.(copy|move)|send_file|send_from_directory)\\s*\\([^)]{0,120}\\.\\.[\\\\/]|(path\\.(join|resolve)|os\\.path\\.join|Path\\.Combine|Paths\\.get)\\s*\\([^)]*\\b(req|request|params|query|body|args|form)\\b|getParameter\\s*\\([^)]*\\)\\s*\\+|[+=]\\s*[\"'][^\"'\\n]{0,80}\\.\\.[\\\\/])",
+        "scope": "any",
+        "unless": "^\\s*(//|\\*|#|--)"
       }
     },
     "SONAR-py-S8707": {
       "pattern": {
-        "regex": "(?i)(\\.\\./|\\.\\.\\\\|path\\.join\\([^)]*req\\.|getParameter\\([^)]*\\)\\s*\\+)",
-        "scope": "any"
+        "regex": "(?i)((open|os\\.remove|os\\.rename|shutil\\.(copy|move)|send_file|send_from_directory)\\s*\\([^)]{0,120}\\.\\.[\\\\/]|(path\\.(join|resolve)|os\\.path\\.join|Path\\.Combine|Paths\\.get)\\s*\\([^)]*\\b(req|request|params|query|body|args|form)\\b|getParameter\\s*\\([^)]*\\)\\s*\\+|[+=]\\s*[\"'][^\"'\\n]{0,80}\\.\\.[\\\\/])",
+        "scope": "any",
+        "unless": "^\\s*(//|\\*|#|--)"
       }
     },
     "SONAR-ts-S2083": {
       "pattern": {
-        "regex": "(?i)(\\.\\./|\\.\\.\\\\|path\\.join\\([^)]*req\\.|getParameter\\([^)]*\\)\\s*\\+)",
-        "scope": "any"
+        "regex": "(?i)((readFile|writeFile|readFileSync|writeFileSync|createReadStream|createWriteStream|sendFile|unlink|rmdir|readdir|open)\\s*\\([^)]{0,120}\\.\\.[\\\\/]|(path\\.(join|resolve)|os\\.path\\.join|Path\\.Combine|Paths\\.get)\\s*\\([^)]*\\b(req|request|params|query|body|args|form)\\b|getParameter\\s*\\([^)]*\\)\\s*\\+|[+=]\\s*[\"'][^\"'\\n]{0,80}\\.\\.[\\\\/])",
+        "scope": "any",
+        "unless": "^\\s*(//|\\*|#|--)"
       }
     },
     "SONAR-ts-S5542": {
@@ -1668,15 +1676,42 @@
     },
     "SONAR-ts-S6096": {
       "pattern": {
-        "regex": "(?i)(\\.\\./|\\.\\.\\\\|path\\.join\\([^)]*req\\.|getParameter\\([^)]*\\)\\s*\\+)",
-        "scope": "any"
+        "regex": "(?i)((readFile|writeFile|readFileSync|writeFileSync|createReadStream|createWriteStream|sendFile|unlink|rmdir|readdir|open)\\s*\\([^)]{0,120}\\.\\.[\\\\/]|(path\\.(join|resolve)|os\\.path\\.join|Path\\.Combine|Paths\\.get)\\s*\\([^)]*\\b(req|request|params|query|body|args|form)\\b|getParameter\\s*\\([^)]*\\)\\s*\\+|[+=]\\s*[\"'][^\"'\\n]{0,80}\\.\\.[\\\\/])",
+        "scope": "any",
+        "unless": "^\\s*(//|\\*|#|--)"
       }
     },
     "SONAR-ts-S8707": {
       "pattern": {
-        "regex": "(?i)(\\.\\./|\\.\\.\\\\|path\\.join\\([^)]*req\\.|getParameter\\([^)]*\\)\\s*\\+)",
-        "scope": "any"
+        "regex": "(?i)((readFile|writeFile|readFileSync|writeFileSync|createReadStream|createWriteStream|sendFile|unlink|rmdir|readdir|open)\\s*\\([^)]{0,120}\\.\\.[\\\\/]|(path\\.(join|resolve)|os\\.path\\.join|Path\\.Combine|Paths\\.get)\\s*\\([^)]*\\b(req|request|params|query|body|args|form)\\b|getParameter\\s*\\([^)]*\\)\\s*\\+|[+=]\\s*[\"'][^\"'\\n]{0,80}\\.\\.[\\\\/])",
+        "scope": "any",
+        "unless": "^\\s*(//|\\*|#|--)"
+      }
+    },
+    "SONAR-js-S6109": {
+      "pattern": {
+        "regex": "(?i)(__proto__\\s*[:=](?!\\s*null\\b)|\\[\\s*[\"']__proto__[\"']\\s*\\]|constructor\\s*\\[\\s*[\"']prototype|Object\\.assign\\s*\\([^,]+,\\s*\\b(req|request)\\.)",
+        "scope": "any",
+        "unless": "^\\s*(//|\\*|#)"
+      }
+    },
+    "SONAR-java-S2112": {
+      "pattern": {
+        "regex": "(?i)\\bURL\\b[^;\\n]{0,60}\\.\\s*(equals|hashCode)\\s*\\(",
+        "scope": "code"
+      }
+    },
+    "SONAR-ts-S6109": {
+      "pattern": {
+        "regex": "(?i)(__proto__\\s*[:=](?!\\s*null\\b)|\\[\\s*[\"']__proto__[\"']\\s*\\]|constructor\\s*\\[\\s*[\"']prototype|Object\\.assign\\s*\\([^,]+,\\s*\\b(req|request)\\.)",
+        "scope": "any",
+        "unless": "^\\s*(//|\\*|#)"
       }
     }
+  },
+  "_quarentena": {
+    "SONAR-java-S1128": "import desnecessario exige saber se o simbolo e usado; o regex casa TODO import (84% dos arquivos Java do gson)",
+    "SONAR-java-S6201": "pattern matching de instanceof exige ver o cast seguinte; o regex casa TODO instanceof (26% dos arquivos)",
+    "SONAR-java-S1206": "equals e hashCode juntos exige a classe inteira; o regex casa TODA chamada a equals ou hashCode"
   }
 }
