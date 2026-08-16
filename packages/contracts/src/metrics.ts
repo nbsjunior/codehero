@@ -160,9 +160,13 @@ export function evaluateQualityGate(
   thresholds: QualityGateThresholds = DEFAULT_QUALITY_GATE,
 ): QualityGateResult {
   const failed: string[] = [];
+  // Nomes dos campos ainda dizem "newCode*" por compatibilidade com o schema do
+  // portal; o valor ingerido hoje é cobertura/duplicação do relatório global
+  // (ver coverageFromSarif). Mensagens honestas evitam o gestor achar que o
+  // gate já mede só o diff.
   if (input.newCodeCoverage !== null && input.newCodeCoverage < thresholds.minNewCodeCoverage)
     failed.push(
-      `Cobertura em código novo ${input.newCodeCoverage}% < ${thresholds.minNewCodeCoverage}%`,
+      `Cobertura ${input.newCodeCoverage}% < ${thresholds.minNewCodeCoverage}%`,
     );
   const minBranch = thresholds.minBranchCoverage ?? 0;
   if (
@@ -174,10 +178,10 @@ export function evaluateQualityGate(
     failed.push(`Cobertura de branch ${input.branchCoverage}% < ${minBranch}%`);
   if (input.newCodeDuplication !== null && input.newCodeDuplication > thresholds.maxNewCodeDuplication)
     failed.push(
-      `Duplicação em código novo ${input.newCodeDuplication}% > ${thresholds.maxNewCodeDuplication}%`,
+      `Duplicação ${input.newCodeDuplication}% > ${thresholds.maxNewCodeDuplication}%`,
     );
   if (input.newBlockerIssues > thresholds.maxNewBlockerIssues)
-    failed.push(`New blocker issues ${input.newBlockerIssues} > ${thresholds.maxNewBlockerIssues}`);
+    failed.push(`Blocker issues ${input.newBlockerIssues} > ${thresholds.maxNewBlockerIssues}`);
   if (ratingIsWorseThan(input.securityRating, thresholds.maxSecurityRating))
     failed.push(`Security rating ${input.securityRating} worse than ${thresholds.maxSecurityRating}`);
   if (ratingIsWorseThan(input.maintainabilityRating, thresholds.maxMaintainabilityRating))

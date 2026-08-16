@@ -1,12 +1,6 @@
 import { FieldValue } from "firebase-admin/firestore";
 import {
-  technicalDebtMinutes,
-  technicalDebtRatio,
-  maintainabilityRating,
-  ratingFromWorstSeverity,
-  evaluateQualityGate,
   mergeQualityGate,
-  SEVERITIES,
   type Severity,
   type QualityGateThresholds,
   coveragePercent as coveragePct,
@@ -19,6 +13,9 @@ import { db, repoRef } from "./firebase.ts";
 import { recomputeProjectAggregate } from "./projectAggregate.ts";
 import { recordAnalysisAnalytics } from "./analytics.ts";
 import { annotateGateSuppression, loadRuleFpStats } from "./ruleFpStats.ts";
+import { computeAnalysisSummary, type AnalysisSummary } from "./analysisSummary.ts";
+
+export { computeAnalysisSummary, type AnalysisSummary } from "./analysisSummary.ts";
 
 export interface PersistAnalysisInput {
   orgId: string;
@@ -52,26 +49,7 @@ export interface PersistAnalysisInput {
 
 export interface PersistAnalysisResult {
   analysisId: string;
-  summary: {
-    total: number;
-    bySeverity: Record<Severity, number>;
-    /** Contagem por tipo (CODE_SMELL, BUG, …) — base da série histórica de smells. */
-    byType: Record<string, number>;
-    codeSmellCount: number;
-    debtMinutes: number;
-    debtRatio: number;
-    maintainabilityRating: string;
-    securityRating: string;
-    qualityGate: { status: "PASSED" | "FAILED"; failedConditions: string[] };
-    /** Cobertura de linhas medida; `null` = não enviada (gate pula a condição). */
-    coveragePercent: number | null;
-    /** Duplicação % medida; `null` = não enviada. */
-    duplicationPercent: number | null;
-    /** Cobertura de branches; `null` = não enviada. */
-    branchCoveragePercent: number | null;
-    /** Findings fora do gate por FP local alto (ruleRepoFpRate). */
-    gateSuppressedCount: number;
-  };
+  summary: AnalysisSummary;
 }
 
 /**
@@ -242,97 +220,6 @@ export function arquiteturaFromSarif(sarif: SarifLog): Record<string, unknown> |
     ciclos,
     modulos,
     ...(porLinguagem.length > 0 ? { porLinguagem } : {}),
-  };
-}
-
-export function computeAnalysisSummary(
-  results: SarifResult[],
-  linesOfCode: number,
-  newCodeFingerprints?: string[],
-  /**
-   * Percentual de cobertura medido, ou `null` quando o build não enviou
-   * relatório. `null` PULA a condição no gate — antes daqui passava um `100`
-   * fixo, que fazia a condição existir no papel e nunca reprovar nada.
-   */
-  coveragePercent?: number | null,
-  duplicationPercent?: number | null,
-  qualityGateThresholds?: QualityGateThresholds | null,
-  branchCoveragePercent?: number | null,
-): PersistAnalysisResult["summary"] {
-  const newSet = new Set(newCodeFingerprints ?? []);
-  const scopeToNewCode = newSet.size > 0;
-  const bySeverity: Record<Severity, number> = { BLOCKER: 0, CRITICAL: 0, MAJOR: 0, MINOR: 0, INFO: 0 };
-  const byType: Record<string, number> = {};
-  const codeSmellEfforts: number[] = [];
-  const vulnSeverities: Severity[] = [];
-  let newBlockerIssues = 0;
-  let codeSmellCount = 0;
-  let gateSuppressedCount = 0;
-
-  for (const r of results) {
-    const sev = (r.properties?.severity as Severity) ?? "INFO";
-    const issueType = r.properties?.issueType ?? "CODE_SMELL";
-    const fp =
-      r.partialFingerprints?.["heroHash/v1"] ??
-      `${r.ruleId}:${r.locations?.[0]?.physicalLocation?.region?.startLine}`;
-    const isNew = newSet.has(fp);
-    const gateSuppressed = r.properties?.gateSuppressed === true;
-
-    if (SEVERITIES.includes(sev)) bySeverity[sev] += 1;
-    byType[issueType] = (byType[issueType] ?? 0) + 1;
-    if (issueType === "CODE_SMELL") codeSmellCount += 1;
-    if (gateSuppressed) gateSuppressedCount += 1;
-    // Política: regra com FP local alto (≥minFeedback e rate≥0.6) não conta no gate.
-    if (!gateSuppressed && sev === "BLOCKER" && isNew) newBlockerIssues += 1;
-
-    // Gate ratings: when CI sent fingerprints, score only new-code issues.
-    if (scopeToNewCode && !isNew) continue;
-    if (gateSuppressed) continue;
-    if (issueType === "CODE_SMELL") codeSmellEfforts.push(r.properties?.remediationEffortMin ?? 0);
-    if (issueType === "VULNERABILITY" && SEVERITIES.includes(sev)) vulnSeverities.push(sev);
-  }
-
-  const debtMin = technicalDebtMinutes(codeSmellEfforts);
-  // Debt ratio still uses full LOC (new-code LOC is not always available).
-  const debtRatio = technicalDebtRatio(debtMin, linesOfCode);
-  const maintRating = maintainabilityRating(debtRatio);
-  const securityRating = ratingFromWorstSeverity(vulnSeverities);
-  const cov =
-    typeof coveragePercent === "number" && Number.isFinite(coveragePercent) ? coveragePercent : null;
-  const dupe =
-    typeof duplicationPercent === "number" && Number.isFinite(duplicationPercent)
-      ? duplicationPercent
-      : null;
-  const branchCov =
-    typeof branchCoveragePercent === "number" && Number.isFinite(branchCoveragePercent)
-      ? branchCoveragePercent
-      : null;
-  const gate = evaluateQualityGate(
-    {
-      newCodeCoverage: cov,
-      branchCoverage: branchCov,
-      newCodeDuplication: dupe,
-      newBlockerIssues,
-      securityRating,
-      maintainabilityRating: maintRating,
-    },
-    mergeQualityGate(qualityGateThresholds),
-  );
-
-  return {
-    total: results.length,
-    bySeverity,
-    byType,
-    codeSmellCount,
-    debtMinutes: debtMin,
-    debtRatio,
-    maintainabilityRating: maintRating,
-    securityRating,
-    qualityGate: gate,
-    coveragePercent: cov,
-    duplicationPercent: dupe,
-    branchCoveragePercent: branchCov,
-    gateSuppressedCount,
   };
 }
 
