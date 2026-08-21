@@ -4,6 +4,9 @@ import type { PatternScope } from "./lexicalMask.ts";
 import { SONAR_WAY_LIVE_RULES } from "./sonarWayLive.ts";
 import { QUANTUM_SAFE_RULES } from "./quantumSafe.ts";
 import { COBOL_CORE_RULES } from "./cobolRules.ts";
+import { MAINTAINABILITY_RULES, METRIC_SMELL_HERO_RULES } from "./maintainabilityRules.ts";
+import { AGENT_INSTRUCTION_RULES } from "./agentInstructionRules.ts";
+import { SKILL_STRUCTURE_RULES } from "./skillStructure.ts";
 import { STRUCTURAL_RULES } from "./structuralCatalog.ts";
 
 // ---------------------------------------------------------------------------
@@ -23,6 +26,8 @@ export type RuleLanguage =
   | "cobol"
   | "tsql"
   | "db2sql"
+  /** Instruções de agente (AGENTS.md, SKILL.md, .cursor/rules, AIDLC…). */
+  | "markdown"
   | "any";
 
 export interface AstRuleSpec {
@@ -873,29 +878,48 @@ const _CORE_BASE: HeroRule[] = (
 ] as HeroRule[]
 ).map((r) => ({ ...r, implementation: "core" as const }));
 
-/** Core hand-authored rules (JS/TS/Java/… + COBOL IBM-aligned pack). */
-export const CORE_RULES: HeroRule[] = [..._CORE_BASE, ...COBOL_CORE_RULES];
+/** Core hand-authored rules (JS/TS/Java/… + manutenibilidade + agentes + COBOL). */
+export const CORE_RULES: HeroRule[] = [
+  ..._CORE_BASE,
+  ...MAINTAINABILITY_RULES,
+  ...AGENT_INSTRUCTION_RULES,
+  ...COBOL_CORE_RULES,
+];
 
 /**
  * Tree-sitter structural rules as HeroRule rows (catalog / ficha / SARIF).
  * Not in L0 RULES — they run only under `--metrics` via the structural engine.
+ * Inclui limiares HERO-SMELL-CYCLOMATIC / LONG-FUNCTION / … (métricas).
  */
-export const STRUCTURAL_HERO_RULES: HeroRule[] = STRUCTURAL_RULES.map((r) => ({
-  id: r.id,
-  name: r.name,
-  languages: ["javascript", "typescript", "python", "java", "go", "csharp", "cobol", "tsql"] as RuleLanguage[],
-  severity: r.severity,
-  type: r.type,
-  remediationEffortMin: r.remediationEffortMin,
-  cwe: r.cwe,
-  owasp: r.owasp,
-  message: r.message,
-  sddTemplateId: r.sddTemplateId,
-  category: r.category,
-  // Never matches in L0; structural engine owns detection.
-  pattern: { regex: "(?!)" },
-  implementation: "structural" as const,
-}));
+export const STRUCTURAL_HERO_RULES: HeroRule[] = [
+  ...STRUCTURAL_RULES.map((r) => ({
+    id: r.id,
+    name: r.name,
+    languages: [
+      "javascript",
+      "typescript",
+      "python",
+      "java",
+      "go",
+      "csharp",
+      "cobol",
+      "tsql",
+    ] as RuleLanguage[],
+    severity: r.severity,
+    type: r.type,
+    remediationEffortMin: r.remediationEffortMin,
+    cwe: r.cwe,
+    owasp: r.owasp,
+    message: r.message,
+    sddTemplateId: r.sddTemplateId,
+    category: r.category,
+    // Never matches in L0; structural engine owns detection.
+    pattern: { regex: "(?!)" },
+    implementation: "structural" as const,
+  })),
+  ...METRIC_SMELL_HERO_RULES,
+  ...SKILL_STRUCTURE_RULES,
+];
 
 /**
  * Live detection set: core + Sonar way L0 ports (stubs excluded — catalog only).
@@ -915,6 +939,10 @@ export function getCatalogRules(): HeroRule[] {
   }
   return _catalogRules;
 }
+
+export { MAINTAINABILITY_RULES, METRIC_SMELL_HERO_RULES };
+export { AGENT_INSTRUCTION_RULES };
+export { SKILL_STRUCTURE_RULES };
 
 /**
  * Sync catalog access (forces lazy load of full Sonar way JSON on first touch).

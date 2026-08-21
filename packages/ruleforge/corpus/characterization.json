@@ -3,7 +3,7 @@
   "_geradoPor": "node scripts/mine-characterization.mjs",
   "_acervo": {
     "raiz": ".",
-    "arquivos": 289
+    "arquivos": 326
   },
   "casos": [
     {
@@ -31,20 +31,12 @@
       "note": "caracterizacao: extraido de examples/vulnerable_sample.py:16. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
-      "id": "car-HERO-SEC-0079-xss-sink",
-      "ruleId": "HERO-SEC-0079-xss-sink",
-      "expected": "match",
-      "code": "document.getElementById(\"x\").innerHTML = q;",
-      "profile": "clike",
-      "note": "caracterizacao: extraido de tmp/smoke/vuln.js:7. Congela o comportamento atual, nao afirma que o apontamento esta correto."
-    },
-    {
       "id": "car-HERO-SEC-0078-os-command",
       "ruleId": "HERO-SEC-0078-os-command",
       "expected": "match",
       "code": "message: \"Uso de eval()/exec() com entrada potencialmente controlada (code injection).\",",
       "profile": "clike",
-      "note": "caracterizacao: extraido de packages/contracts/src/rules.ts:176. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/contracts/src/rules.ts:182. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-HERO-SEC-0918-ssrf",
@@ -76,7 +68,7 @@
       "expected": "match",
       "code": "message: \"Verificação TLS desabilitada (NODE_TLS_REJECT_UNAUTHORIZED=0).\",",
       "profile": "clike",
-      "note": "caracterizacao: extraido de packages/contracts/src/rules.ts:390. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/contracts/src/rules.ts:396. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-HERO-SEC-0506-pipe-to-shell",
@@ -84,7 +76,7 @@
       "expected": "match",
       "code": "// \"Sem curl | bash em scripts de setup\". Prosa não é comando.",
       "profile": "clike",
-      "note": "caracterizacao: extraido de packages/contracts/src/rules.ts:437. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/contracts/src/rules.ts:443. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-HERO-SMELL-0489-debug-statement",
@@ -92,7 +84,7 @@
       "expected": "match",
       "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:307. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:402. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-HERO-SMELL-0546-todo-marker",
@@ -140,7 +132,7 @@
       "expected": "match",
       "code": "else process.stdout.write(json + \"\\n\");",
       "profile": "clike",
-      "note": "caracterizacao: extraido de packages/scanner/src/index.ts:522. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/src/index.ts:655. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-HERO-SEC-0327-weak-hash-java",
@@ -159,12 +151,132 @@
       "note": "caracterizacao: extraido de packages/scanner/test/evalSonarV2.mjs:28. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
+      "id": "car-HERO-SEC-0501-trust-boundary-java",
+      "ruleId": "HERO-SEC-0501-trust-boundary-java",
+      "expected": "match",
+      "code": "// OWASP trustbound: `request.getSession().setAttribute(param, ...)` — chave tainted.",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/engine/src/lineTaint.ts:167. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
       "id": "car-HERO-SEC-0078-xp-cmdshell-tsql",
       "ruleId": "HERO-SEC-0078-xp-cmdshell-tsql",
       "expected": "match",
       "code": "re: /os command|command injection|shell injection|processbuilder|runtime\\.exec|child_process|xp_cmdshell/i,",
       "profile": "clike",
       "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:69. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-hardcoded-absolute-path",
+      "ruleId": "HERO-SMELL-hardcoded-absolute-path",
+      "expected": "match",
+      "code": "filePath: \"C:\\\\proj\\\\src\\\\a.js\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/scanner/test/externalTools.mjs:10. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-loose-equality",
+      "ruleId": "HERO-SMELL-loose-equality",
+      "expected": "match",
+      "code": "/(?:^|\\s)(?:[\\w<>\\[\\],.?]+\\s+)?(\\w+)\\s*=(?!=)\\s*(.+?);?\\s*$/;",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/engine/src/lineTaint.ts:184. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-non-null-assertion",
+      "ruleId": "HERO-SMELL-non-null-assertion",
+      "expected": "match",
+      "code": "path: f.path!,",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de apps/functions/src/lib/analysisSummary.ts:69. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-var-declaration",
+      "ruleId": "HERO-SMELL-var-declaration",
+      "expected": "match",
+      "code": "var cmd = new SqlCommand(\"SELECT * FROM Customers WHERE Name = '\" + name + \"'\");",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de examples/legacy/Sample.cs:9. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-ignored-error-go",
+      "ruleId": "HERO-SMELL-ignored-error-go",
+      "expected": "match",
+      "code": "const require_ = createRequire(import.meta.url);",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/engine/src/structural/parser.ts:109. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-select-star",
+      "ruleId": "HERO-SMELL-select-star",
+      "expected": "match",
+      "code": "var cmd = new SqlCommand(\"SELECT * FROM Customers WHERE Name = '\" + name + \"'\");",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de examples/legacy/Sample.cs:9. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-nolock",
+      "ruleId": "HERO-SMELL-nolock",
+      "expected": "match",
+      "code": "title: \"Hint WITH (NOLOCK)\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/lintKnowledgeBase.ts:400. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-dml-without-where",
+      "ruleId": "HERO-SMELL-dml-without-where",
+      "expected": "match",
+      "code": "DELETE FROM CUSTOMERS",
+      "profile": "cobol",
+      "note": "caracterizacao: extraido de examples/legacy/sample.cbl:37. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-agent-prompt-injection",
+      "ruleId": "HERO-SEC-agent-prompt-injection",
+      "expected": "match",
+      "code": "hint: \"Frases ignore previous instructions / jailbreak / marcadores falsos de sistema em AGENTS.md, SKILL.md ou steering.\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/lintKnowledgeBase.ts:452. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-agent-role-hijack",
+      "ruleId": "HERO-SEC-agent-role-hijack",
+      "expected": "match",
+      "code": "\"Sequestro de persona/papel em instrução de agente (you are now / DAN / jailbreak) — risco de desvio do system prompt.\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/agentInstructionRules.ts:47. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-agent-fake-chat-markers",
+      "ruleId": "HERO-SEC-agent-fake-chat-markers",
+      "expected": "match",
+      "code": "\"Marcadores falsos de turno/sistema (`</system>`, `<|im_start|>`, `[INST]`) em instrução — clássico de prompt injection.\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/agentInstructionRules.ts:67. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SEC-agent-disable-safety",
+      "ruleId": "HERO-SEC-agent-disable-safety",
+      "expected": "match",
+      "code": "\"Instrução pede para desligar recusas/safety (`never refuse`, `ignore safety`) — enfraquece o guardrail do agente.\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/agentInstructionRules.ts:107. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-agent-skip-human-gate",
+      "ruleId": "HERO-SMELL-agent-skip-human-gate",
+      "expected": "match",
+      "code": "\"Instrução pula gate humano (AIDLC decision gate / HITL): `don't ask` / `skip confirmation` / `auto-approve`.\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/agentInstructionRules.ts:127. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-SMELL-agent-unbounded-shell",
+      "ruleId": "HERO-SMELL-agent-unbounded-shell",
+      "expected": "match",
+      "code": "\"Substitua 'any command / unrestricted shell' por allowlist explícita de ferramentas, diretórios e comandos permitidos.\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/sdd.ts:382. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-HERO-SEC-cobol-accept-console",
@@ -212,7 +324,7 @@
       "expected": "match",
       "code": "<li>Ex.: debug em produção, TODO abandonado, GO TO</li>",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:326. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:542. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-HERO-SMELL-alter-cobol",
@@ -292,7 +404,7 @@
       "expected": "match",
       "code": "* repos) at a time. Fanning out to EVERY org/project/repo in one call breaks",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/admin.ts:15. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/functions/src/admin.ts:67. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-HERO-SMELL-exec-sql-no-sqlcode-hint-cobol",
@@ -343,12 +455,44 @@
       "note": "caracterizacao: extraido de examples/legacy/sample.cbl:23. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
+      "id": "car-HERO-PQC-0327-algoritmo-quebrado",
+      "ruleId": "HERO-PQC-0327-algoritmo-quebrado",
+      "expected": "match",
+      "code": "\"(?i)\\\\b(SIKEp?[0-9]{3}|SIKE-p[0-9]{3}|SIDHp?[0-9]{3}|SIDH-p[0-9]{3}|Rainbow-?(I|III|V)[a-z-]*|OQS_KEM_alg_sike|OQS_SIG_alg_rainbow)\\\\b\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/quantumSafe.ts:59. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-PQC-0327-nome-pre-padronizacao",
+      "ruleId": "HERO-PQC-0327-nome-pre-padronizacao",
+      "expected": "match",
+      "code": "\"(?i)\\\\b(Kyber(512|768|1024)|Kyber-(512|768|1024)|OQS_KEM_alg_kyber|Dilithium(2|3|5)|Dilithium-(2|3|5)|OQS_SIG_alg_dilithium)\\\\b\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/quantumSafe.ts:83. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-HERO-PQC-0326-nivel-insuficiente",
+      "ruleId": "HERO-PQC-0326-nivel-insuficiente",
+      "expected": "match",
+      "code": "\"Parâmetro pós-quântico de nível 1 (ML-KEM-512, ML-DSA-44). É o piso da escala do NIST e fica abaixo do que a CNSA 2.0 exige para sistema sensível, que pede nível 3 ou acima. Para dado com sigilo longo, o custo de subir para ML-KEM-768 é pequeno perto de refazer a migração depois.\",",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/contracts/src/quantumSafe.ts:98. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cobol-S1686",
+      "ruleId": "SONAR-cobol-S1686",
+      "expected": "match",
+      "code": "CALL WS-PROG-NAME",
+      "profile": "cobol",
+      "note": "caracterizacao: extraido de examples/legacy/sample.cbl:29. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
       "id": "car-SONAR-cobol-S4507",
       "ruleId": "SONAR-cobol-S4507",
       "expected": "match",
       "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:307. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:402. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-cobol-SQL.DynamicSqlCheck",
@@ -402,9 +546,9 @@
       "id": "car-SONAR-cs-S2083",
       "ruleId": "SONAR-cs-S2083",
       "expected": "match",
-      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "code": "[\"SONAR-js-S2083\", 'fs.readFileSync(path.join(\"/data\", req.query.f));', C.js],",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/evalSonarV2.mjs:33. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-cs-S2245",
@@ -412,7 +556,7 @@
       "expected": "match",
       "code": "Descreva a política em português (“sem console.log em produção”, “sem Math.random em token”). As Dress",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:1194. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:1402. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-cs-S2259",
@@ -426,17 +570,17 @@
       "id": "car-SONAR-cs-S2612",
       "ruleId": "SONAR-cs-S2612",
       "expected": "match",
-      "code": "re: /world-accessible|file permission|chmod\\s*777/i,",
+      "code": "h = Math.imul(h, 16777619);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:246. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/ruleforge/src/corpusOnline.ts:306. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-cs-S2631",
       "ruleId": "SONAR-cs-S2631",
       "expected": "match",
-      "code": "const guardaNull = new RegExp(`if\\\\s*\\\\(\\\\s*${v}\\\\s*[=!]=\\\\s*null`).test(linha);",
+      "code": "for (const k of env.keys()) limpa = limpa.replace(new RegExp(`\\\\b${k}\\\\b`, \"g\"), \"1\");",
       "profile": "clike",
-      "note": "caracterizacao: extraido de packages/engine/src/lineTaint.ts:283. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/engine/src/lineTaint.ts:203. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-cs-S3241",
@@ -453,6 +597,14 @@
       "code": "if (!lattice.equals(inFact[s] as F, joined)) {",
       "profile": "clike",
       "note": "caracterizacao: extraido de packages/engine/src/dataflow.ts:51. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-cs-S3649",
+      "ruleId": "SONAR-cs-S3649",
+      "expected": "match",
+      "code": "var cmd = new SqlCommand(\"SELECT * FROM Customers WHERE Name = '\" + name + \"'\");",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de examples/legacy/Sample.cs:9. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-cs-S3926",
@@ -476,7 +628,7 @@
       "expected": "match",
       "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:307. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:402. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-cs-S4790",
@@ -530,17 +682,17 @@
       "id": "car-SONAR-cs-S5542",
       "ruleId": "SONAR-cs-S5542",
       "expected": "match",
-      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "code": "if (/weak.?crypt|des\\b|rc4|blowfish|insecure.?cipher|aes.?ecb/.test(s)) return [\"327\"];",
       "profile": "clike",
-      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/benchmarkPresence.mjs:45. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-cs-S5547",
       "ruleId": "SONAR-cs-S5547",
       "expected": "match",
-      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "code": "if (/weak.?crypt|des\\b|rc4|blowfish|insecure.?cipher|aes.?ecb/.test(s)) return [\"327\"];",
       "profile": "clike",
-      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/benchmarkPresence.mjs:45. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-cs-S5766",
@@ -570,9 +722,9 @@
       "id": "car-SONAR-cs-S6096",
       "ruleId": "SONAR-cs-S6096",
       "expected": "match",
-      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "code": "[\"SONAR-js-S2083\", 'fs.readFileSync(path.join(\"/data\", req.query.f));', C.js],",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/evalSonarV2.mjs:33. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-cs-S6173",
@@ -599,6 +751,14 @@
       "note": "caracterizacao: extraido de apps/functions/src/adminUsers.ts:100. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
+      "id": "car-SONAR-cs-S6776",
+      "ruleId": "SONAR-cs-S6776",
+      "expected": "match",
+      "code": "process.stderr.write(String(err instanceof Error ? err.stack ?? err.message : err) + \"\\n\");",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/code-graph/src/cli.ts:114. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
       "id": "car-SONAR-cs-S7039",
       "ruleId": "SONAR-cs-S7039",
       "expected": "match",
@@ -612,7 +772,7 @@
       "expected": "match",
       "code": "<li>Ex.: debug em produção, TODO abandonado, GO TO</li>",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:326. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:542. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-java-S1075",
@@ -621,14 +781,6 @@
       "code": "\"http://localhost:3000\",",
       "profile": "clike",
       "note": "caracterizacao: extraido de apps/functions/src/githubActionInstall.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
-    },
-    {
-      "id": "car-SONAR-java-S1206",
-      "ruleId": "SONAR-java-S1206",
-      "expected": "match",
-      "code": "if (!lattice.equals(inFact[s] as F, joined)) {",
-      "profile": "clike",
-      "note": "caracterizacao: extraido de packages/engine/src/dataflow.ts:51. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-java-S1313",
@@ -650,17 +802,9 @@
       "id": "car-SONAR-java-S2083",
       "ruleId": "SONAR-java-S2083",
       "expected": "match",
-      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "code": "[\"SONAR-js-S2083\", 'fs.readFileSync(path.join(\"/data\", req.query.f));', C.js],",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
-    },
-    {
-      "id": "car-SONAR-java-S2112",
-      "ruleId": "SONAR-java-S2112",
-      "expected": "match",
-      "code": "if (!lattice.equals(inFact[s] as F, joined)) {",
-      "profile": "clike",
-      "note": "caracterizacao: extraido de packages/engine/src/dataflow.ts:51. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/evalSonarV2.mjs:33. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-java-S2245",
@@ -668,23 +812,23 @@
       "expected": "match",
       "code": "Descreva a política em português (“sem console.log em produção”, “sem Math.random em token”). As Dress",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:1194. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:1402. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-java-S2612",
       "ruleId": "SONAR-java-S2612",
       "expected": "match",
-      "code": "re: /world-accessible|file permission|chmod\\s*777/i,",
+      "code": "h = Math.imul(h, 16777619);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:246. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/ruleforge/src/corpusOnline.ts:306. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-java-S2631",
       "ruleId": "SONAR-java-S2631",
       "expected": "match",
-      "code": "const guardaNull = new RegExp(`if\\\\s*\\\\(\\\\s*${v}\\\\s*[=!]=\\\\s*null`).test(linha);",
+      "code": "for (const k of env.keys()) limpa = limpa.replace(new RegExp(`\\\\b${k}\\\\b`, \"g\"), \"1\");",
       "profile": "clike",
-      "note": "caracterizacao: extraido de packages/engine/src/lineTaint.ts:283. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/engine/src/lineTaint.ts:203. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-java-S2639",
@@ -703,12 +847,20 @@
       "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:127. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
+      "id": "car-SONAR-java-S3649",
+      "ruleId": "SONAR-java-S3649",
+      "expected": "match",
+      "code": "var cmd = new SqlCommand(\"SELECT * FROM Customers WHERE Name = '\" + name + \"'\");",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de examples/legacy/Sample.cs:9. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
       "id": "car-SONAR-java-S4274",
       "ruleId": "SONAR-java-S4274",
       "expected": "match",
       "code": "import assert from \"node:assert/strict\";",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/test/security-unit.test.mjs:1. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/functions/test/analysisSummary.test.mjs:1. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-java-S4423",
@@ -732,7 +884,7 @@
       "expected": "match",
       "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:307. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:402. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-java-S4544",
@@ -818,17 +970,17 @@
       "id": "car-SONAR-java-S5542",
       "ruleId": "SONAR-java-S5542",
       "expected": "match",
-      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "code": "if (/weak.?crypt|des\\b|rc4|blowfish|insecure.?cipher|aes.?ecb/.test(s)) return [\"327\"];",
       "profile": "clike",
-      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/benchmarkPresence.mjs:45. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-java-S5547",
       "ruleId": "SONAR-java-S5547",
       "expected": "match",
-      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "code": "if (/weak.?crypt|des\\b|rc4|blowfish|insecure.?cipher|aes.?ecb/.test(s)) return [\"327\"];",
       "profile": "clike",
-      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/benchmarkPresence.mjs:45. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-java-S5689",
@@ -930,9 +1082,9 @@
       "id": "car-SONAR-java-S6096",
       "ruleId": "SONAR-java-S6096",
       "expected": "match",
-      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "code": "[\"SONAR-js-S2083\", 'fs.readFileSync(path.join(\"/data\", req.query.f));', C.js],",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/evalSonarV2.mjs:33. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-java-S6173",
@@ -941,14 +1093,6 @@
       "code": "const require = createRequire(import.meta.url);",
       "profile": "clike",
       "note": "caracterizacao: extraido de apps/functions/src/lib/githubApi.ts:6. Congela o comportamento atual, nao afirma que o apontamento esta correto."
-    },
-    {
-      "id": "car-SONAR-java-S6201",
-      "ruleId": "SONAR-java-S6201",
-      "expected": "match",
-      "code": "if (err instanceof HttpsError) throw err;",
-      "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/adminUsers.ts:61. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-java-S6219",
@@ -988,7 +1132,7 @@
       "expected": "match",
       "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:307. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:402. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-java-S8786",
@@ -1026,9 +1170,9 @@
       "id": "car-SONAR-js-S2083",
       "ruleId": "SONAR-js-S2083",
       "expected": "match",
-      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "code": "[\"SONAR-js-S2083\", 'fs.readFileSync(path.join(\"/data\", req.query.f));', C.js],",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/evalSonarV2.mjs:33. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-js-S2245",
@@ -1036,31 +1180,39 @@
       "expected": "match",
       "code": "Descreva a política em português (“sem console.log em produção”, “sem Math.random em token”). As Dress",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:1194. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:1402. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-js-S2612",
       "ruleId": "SONAR-js-S2612",
       "expected": "match",
-      "code": "re: /world-accessible|file permission|chmod\\s*777/i,",
+      "code": "h = Math.imul(h, 16777619);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:246. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/ruleforge/src/corpusOnline.ts:306. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-js-S2631",
       "ruleId": "SONAR-js-S2631",
       "expected": "match",
-      "code": "const guardaNull = new RegExp(`if\\\\s*\\\\(\\\\s*${v}\\\\s*[=!]=\\\\s*null`).test(linha);",
+      "code": "for (const k of env.keys()) limpa = limpa.replace(new RegExp(`\\\\b${k}\\\\b`, \"g\"), \"1\");",
       "profile": "clike",
-      "note": "caracterizacao: extraido de packages/engine/src/lineTaint.ts:283. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/engine/src/lineTaint.ts:203. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-js-S3403",
       "ruleId": "SONAR-js-S3403",
       "expected": "match",
-      "code": "ownPrecision: ownEval == null ? null : ownEval.precision,",
+      "code": "cov == null ? \"none\" : coverageScope === \"none\" ? \"overall\" : coverageScope;",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/ruleProposals.ts:178. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/functions/src/lib/analysisSummary.ts:191. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-js-S3649",
+      "ruleId": "SONAR-js-S3649",
+      "expected": "match",
+      "code": "var cmd = new SqlCommand(\"SELECT * FROM Customers WHERE Name = '\" + name + \"'\");",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de examples/legacy/Sample.cs:9. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-js-S4423",
@@ -1076,7 +1228,7 @@
       "expected": "match",
       "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:307. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:402. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-js-S4790",
@@ -1130,17 +1282,17 @@
       "id": "car-SONAR-js-S5542",
       "ruleId": "SONAR-js-S5542",
       "expected": "match",
-      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "code": "if (/weak.?crypt|des\\b|rc4|blowfish|insecure.?cipher|aes.?ecb/.test(s)) return [\"327\"];",
       "profile": "clike",
-      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/benchmarkPresence.mjs:45. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-js-S5547",
       "ruleId": "SONAR-js-S5547",
       "expected": "match",
-      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "code": "if (/weak.?crypt|des\\b|rc4|blowfish|insecure.?cipher|aes.?ecb/.test(s)) return [\"327\"];",
       "profile": "clike",
-      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/benchmarkPresence.mjs:45. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-js-S5689",
@@ -1234,17 +1386,9 @@
       "id": "car-SONAR-js-S6096",
       "ruleId": "SONAR-js-S6096",
       "expected": "match",
-      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "code": "[\"SONAR-js-S2083\", 'fs.readFileSync(path.join(\"/data\", req.query.f));', C.js],",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
-    },
-    {
-      "id": "car-SONAR-js-S6109",
-      "ruleId": "SONAR-js-S6109",
-      "expected": "match",
-      "code": "re: /prototype pollution|__proto__/i,",
-      "profile": "clike",
-      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:133. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/evalSonarV2.mjs:33. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-js-S6323",
@@ -1303,6 +1447,14 @@
       "note": "caracterizacao: extraido de apps/web/app/layout.tsx:166. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
+      "id": "car-SONAR-js-S6776",
+      "ruleId": "SONAR-js-S6776",
+      "expected": "match",
+      "code": "process.stderr.write(String(err instanceof Error ? err.stack ?? err.message : err) + \"\\n\");",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/code-graph/src/cli.ts:114. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
       "id": "car-SONAR-js-S8702",
       "ruleId": "SONAR-js-S8702",
       "expected": "match",
@@ -1322,9 +1474,9 @@
       "id": "car-SONAR-js-S8707",
       "ruleId": "SONAR-js-S8707",
       "expected": "match",
-      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "code": "[\"SONAR-js-S2083\", 'fs.readFileSync(path.join(\"/data\", req.query.f));', C.js],",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/evalSonarV2.mjs:33. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-js-S8786",
@@ -1340,7 +1492,7 @@
       "expected": "match",
       "code": "<li>Ex.: debug em produção, TODO abandonado, GO TO</li>",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:326. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:542. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-plsql-ExecuteImmediateTrapExceptionsCheck",
@@ -1356,7 +1508,7 @@
       "expected": "match",
       "code": "<li>Ex.: debug em produção, TODO abandonado, GO TO</li>",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:326. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:542. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-plsql-PlSql.Goto",
@@ -1364,7 +1516,7 @@
       "expected": "match",
       "code": "<li>Ex.: debug em produção, TODO abandonado, GO TO</li>",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:326. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:542. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-plsql-PreferExecuteImmediateToDbmsSqlCheck",
@@ -1402,9 +1554,9 @@
       "id": "car-SONAR-plsql-S5547",
       "ruleId": "SONAR-plsql-S5547",
       "expected": "match",
-      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "code": "if (/weak.?crypt|des\\b|rc4|blowfish|insecure.?cipher|aes.?ecb/.test(s)) return [\"327\"];",
       "profile": "clike",
-      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/benchmarkPresence.mjs:45. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-py-PrintStatementUsage",
@@ -1442,9 +1594,9 @@
       "id": "car-SONAR-py-S2083",
       "ruleId": "SONAR-py-S2083",
       "expected": "match",
-      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "code": "[\"SONAR-js-S2083\", 'fs.readFileSync(path.join(\"/data\", req.query.f));', C.js],",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/evalSonarV2.mjs:33. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-py-S2245",
@@ -1452,23 +1604,31 @@
       "expected": "match",
       "code": "Descreva a política em português (“sem console.log em produção”, “sem Math.random em token”). As Dress",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:1194. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:1402. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-py-S2612",
       "ruleId": "SONAR-py-S2612",
       "expected": "match",
-      "code": "re: /world-accessible|file permission|chmod\\s*777/i,",
+      "code": "h = Math.imul(h, 16777619);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:246. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/ruleforge/src/corpusOnline.ts:306. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-py-S2631",
       "ruleId": "SONAR-py-S2631",
       "expected": "match",
-      "code": "const guardaNull = new RegExp(`if\\\\s*\\\\(\\\\s*${v}\\\\s*[=!]=\\\\s*null`).test(linha);",
+      "code": "for (const k of env.keys()) limpa = limpa.replace(new RegExp(`\\\\b${k}\\\\b`, \"g\"), \"1\");",
       "profile": "clike",
-      "note": "caracterizacao: extraido de packages/engine/src/lineTaint.ts:283. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/engine/src/lineTaint.ts:203. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S3649",
+      "ruleId": "SONAR-py-S3649",
+      "expected": "match",
+      "code": "var cmd = new SqlCommand(\"SELECT * FROM Customers WHERE Name = '\" + name + \"'\");",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de examples/legacy/Sample.cs:9. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-py-S4423",
@@ -1484,7 +1644,7 @@
       "expected": "match",
       "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:307. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:402. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-py-S4790",
@@ -1546,17 +1706,17 @@
       "id": "car-SONAR-py-S5542",
       "ruleId": "SONAR-py-S5542",
       "expected": "match",
-      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "code": "if (/weak.?crypt|des\\b|rc4|blowfish|insecure.?cipher|aes.?ecb/.test(s)) return [\"327\"];",
       "profile": "clike",
-      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/benchmarkPresence.mjs:45. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-py-S5547",
       "ruleId": "SONAR-py-S5547",
       "expected": "match",
-      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "code": "if (/weak.?crypt|des\\b|rc4|blowfish|insecure.?cipher|aes.?ecb/.test(s)) return [\"327\"];",
       "profile": "clike",
-      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/benchmarkPresence.mjs:45. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-py-S5842",
@@ -1626,9 +1786,9 @@
       "id": "car-SONAR-py-S6096",
       "ruleId": "SONAR-py-S6096",
       "expected": "match",
-      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "code": "[\"SONAR-js-S2083\", 'fs.readFileSync(path.join(\"/data\", req.query.f));', C.js],",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/evalSonarV2.mjs:33. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-py-S6323",
@@ -1661,6 +1821,14 @@
       "code": "return new RegExp(body, [...collected].join(\"\"));",
       "profile": "clike",
       "note": "caracterizacao: extraido de packages/contracts/src/matcher.ts:36. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-py-S6776",
+      "ruleId": "SONAR-py-S6776",
+      "expected": "match",
+      "code": "process.stderr.write(String(err instanceof Error ? err.stack ?? err.message : err) + \"\\n\");",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/code-graph/src/cli.ts:114. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-py-S6886",
@@ -1714,9 +1882,9 @@
       "id": "car-SONAR-py-S8707",
       "ruleId": "SONAR-py-S8707",
       "expected": "match",
-      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "code": "[\"SONAR-js-S2083\", 'fs.readFileSync(path.join(\"/data\", req.query.f));', C.js],",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/evalSonarV2.mjs:33. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-py-S8786",
@@ -1746,9 +1914,9 @@
       "id": "car-SONAR-ts-S2083",
       "ruleId": "SONAR-ts-S2083",
       "expected": "match",
-      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "code": "[\"SONAR-js-S2083\", 'fs.readFileSync(path.join(\"/data\", req.query.f));', C.js],",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/evalSonarV2.mjs:33. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-ts-S2245",
@@ -1756,23 +1924,31 @@
       "expected": "match",
       "code": "Descreva a política em português (“sem console.log em produção”, “sem Math.random em token”). As Dress",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:1194. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:1402. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-ts-S2612",
       "ruleId": "SONAR-ts-S2612",
       "expected": "match",
-      "code": "re: /world-accessible|file permission|chmod\\s*777/i,",
+      "code": "h = Math.imul(h, 16777619);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:246. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/ruleforge/src/corpusOnline.ts:306. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-ts-S2631",
       "ruleId": "SONAR-ts-S2631",
       "expected": "match",
-      "code": "const guardaNull = new RegExp(`if\\\\s*\\\\(\\\\s*${v}\\\\s*[=!]=\\\\s*null`).test(linha);",
+      "code": "for (const k of env.keys()) limpa = limpa.replace(new RegExp(`\\\\b${k}\\\\b`, \"g\"), \"1\");",
       "profile": "clike",
-      "note": "caracterizacao: extraido de packages/engine/src/lineTaint.ts:283. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/engine/src/lineTaint.ts:203. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
+      "id": "car-SONAR-ts-S3649",
+      "ruleId": "SONAR-ts-S3649",
+      "expected": "match",
+      "code": "var cmd = new SqlCommand(\"SELECT * FROM Customers WHERE Name = '\" + name + \"'\");",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de examples/legacy/Sample.cs:9. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-ts-S4423",
@@ -1788,7 +1964,7 @@
       "expected": "match",
       "code": "console.log(`CodeHero: gate-suppress ${suppressed} finding(s) por ruleRepoFpRate local`);",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:307. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/functions/src/lib/ingestCore.ts:402. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-ts-S4790",
@@ -1842,17 +2018,17 @@
       "id": "car-SONAR-ts-S5542",
       "ruleId": "SONAR-ts-S5542",
       "expected": "match",
-      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "code": "if (/weak.?crypt|des\\b|rc4|blowfish|insecure.?cipher|aes.?ecb/.test(s)) return [\"327\"];",
       "profile": "clike",
-      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/benchmarkPresence.mjs:45. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-ts-S5547",
       "ruleId": "SONAR-ts-S5547",
       "expected": "match",
-      "code": "regex: \"(?i)\\\\b(md5|sha1|SHA1|MD5|DES|RC4)\\\\b\\\\s*(\\\\(|Managed|Crypto)\",",
+      "code": "if (/weak.?crypt|des\\b|rc4|blowfish|insecure.?cipher|aes.?ecb/.test(s)) return [\"327\"];",
       "profile": "clike",
-      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:101. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/benchmarkPresence.mjs:45. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-ts-S5689",
@@ -1946,17 +2122,9 @@
       "id": "car-SONAR-ts-S6096",
       "ruleId": "SONAR-ts-S6096",
       "expected": "match",
-      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "code": "[\"SONAR-js-S2083\", 'fs.readFileSync(path.join(\"/data\", req.query.f));', C.js],",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
-    },
-    {
-      "id": "car-SONAR-ts-S6109",
-      "ruleId": "SONAR-ts-S6109",
-      "expected": "match",
-      "code": "re: /prototype pollution|__proto__/i,",
-      "profile": "clike",
-      "note": "caracterizacao: extraido de scripts/generate-sonar-way-rules.mjs:133. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/evalSonarV2.mjs:33. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-ts-S6323",
@@ -2023,6 +2191,14 @@
       "note": "caracterizacao: extraido de apps/web/app/layout.tsx:166. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
+      "id": "car-SONAR-ts-S6776",
+      "ruleId": "SONAR-ts-S6776",
+      "expected": "match",
+      "code": "process.stderr.write(String(err instanceof Error ? err.stack ?? err.message : err) + \"\\n\");",
+      "profile": "clike",
+      "note": "caracterizacao: extraido de packages/code-graph/src/cli.ts:114. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+    },
+    {
       "id": "car-SONAR-ts-S8702",
       "ruleId": "SONAR-ts-S8702",
       "expected": "match",
@@ -2042,9 +2218,9 @@
       "id": "car-SONAR-ts-S8707",
       "ruleId": "SONAR-ts-S8707",
       "expected": "match",
-      "code": ".describe(\"fonte de regex JS (sem delimitadores /.../) para match por linha\"),",
+      "code": "[\"SONAR-js-S2083\", 'fs.readFileSync(path.join(\"/data\", req.query.f));', C.js],",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/functions/src/genkit/dressCodeFlow.ts:25. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de packages/scanner/test/evalSonarV2.mjs:33. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     },
     {
       "id": "car-SONAR-ts-S8786",
@@ -2100,278 +2276,223 @@
       "expected": "match",
       "code": "<li>Ex.: debug em produção, TODO abandonado, GO TO</li>",
       "profile": "clike",
-      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:326. Congela o comportamento atual, nao afirma que o apontamento esta correto."
+      "note": "caracterizacao: extraido de apps/web/app/docs/page.tsx:542. Congela o comportamento atual, nao afirma que o apontamento esta correto."
     }
   ],
   "orcamentos": [
     {
       "ruleId": "HERO-SEC-cobol-string-no-overflow",
-      "acertos": 2379,
+      "acertos": 2841,
       "severidade": "MAJOR"
     },
     {
       "ruleId": "HERO-SMELL-string-no-overflow-cobol",
-      "acertos": 2378,
+      "acertos": 2840,
       "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-cs-S1696",
-      "acertos": 1125,
+      "acertos": 1374,
       "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-cs-S2259",
-      "acertos": 1125,
+      "acertos": 1374,
       "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-cobol-S4507",
-      "acertos": 616,
+      "acertos": 811,
       "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-cs-S4507",
-      "acertos": 616,
+      "acertos": 811,
       "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-java-S4507",
-      "acertos": 616,
+      "acertos": 811,
       "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-java-S8469",
-      "acertos": 616,
+      "acertos": 811,
       "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-js-S4507",
-      "acertos": 616,
+      "acertos": 811,
       "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-py-S4507",
-      "acertos": 616,
+      "acertos": 811,
       "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-ts-S4507",
-      "acertos": 616,
+      "acertos": 811,
       "severidade": "MINOR"
     },
     {
       "ruleId": "HERO-SMELL-0489-debug-statement",
-      "acertos": 614,
-      "severidade": "MINOR"
-    },
-    {
-      "ruleId": "SONAR-cs-S2083",
-      "acertos": 62,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-cs-S6096",
-      "acertos": 62,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-java-S2083",
-      "acertos": 62,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-java-S6096",
-      "acertos": 62,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-js-S2083",
-      "acertos": 62,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-js-S6096",
-      "acertos": 62,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-js-S8707",
-      "acertos": 62,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-py-S2083",
-      "acertos": 62,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-py-S6096",
-      "acertos": 62,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-py-S8707",
-      "acertos": 62,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-ts-S2083",
-      "acertos": 62,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-ts-S6096",
-      "acertos": 62,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-ts-S8707",
-      "acertos": 62,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-java-S6201",
-      "acertos": 60,
-      "severidade": "MINOR"
-    },
-    {
-      "ruleId": "SONAR-cs-S1075",
-      "acertos": 54,
-      "severidade": "MINOR"
-    },
-    {
-      "ruleId": "SONAR-java-S1075",
-      "acertos": 54,
+      "acertos": 809,
       "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-cobol-S1134",
-      "acertos": 47,
+      "acertos": 83,
       "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-cobol-S1135",
-      "acertos": 47,
+      "acertos": 83,
       "severidade": "INFO"
     },
     {
       "ruleId": "SONAR-cs-S1134",
-      "acertos": 47,
+      "acertos": 83,
       "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-cs-S1135",
-      "acertos": 47,
+      "acertos": 83,
       "severidade": "INFO"
     },
     {
       "ruleId": "SONAR-java-S1134",
-      "acertos": 47,
+      "acertos": 83,
       "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-java-S1135",
-      "acertos": 47,
+      "acertos": 83,
       "severidade": "INFO"
     },
     {
       "ruleId": "SONAR-js-S1134",
-      "acertos": 47,
+      "acertos": 83,
       "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-js-S1135",
-      "acertos": 47,
+      "acertos": 83,
       "severidade": "INFO"
     },
     {
       "ruleId": "SONAR-plsql-S1134",
-      "acertos": 47,
+      "acertos": 83,
       "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-plsql-S1135",
-      "acertos": 47,
+      "acertos": 83,
       "severidade": "INFO"
     },
     {
       "ruleId": "SONAR-py-S1134",
-      "acertos": 47,
+      "acertos": 83,
       "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-py-S1135",
-      "acertos": 47,
+      "acertos": 83,
       "severidade": "INFO"
     },
     {
       "ruleId": "SONAR-ts-S1134",
-      "acertos": 47,
+      "acertos": 83,
       "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-ts-S1135",
-      "acertos": 47,
+      "acertos": 83,
       "severidade": "INFO"
     },
     {
       "ruleId": "SONAR-tsql-S1134",
-      "acertos": 47,
+      "acertos": 83,
       "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-tsql-S1135",
-      "acertos": 47,
+      "acertos": 83,
       "severidade": "INFO"
     },
     {
+      "ruleId": "SONAR-cs-S1075",
+      "acertos": 66,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-java-S1075",
+      "acertos": 66,
+      "severidade": "MINOR"
+    },
+    {
       "ruleId": "SONAR-cs-S6561",
-      "acertos": 38,
+      "acertos": 53,
       "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-py-S6886",
-      "acertos": 38,
+      "acertos": 53,
       "severidade": "CRITICAL"
     },
     {
       "ruleId": "SONAR-py-S6903",
-      "acertos": 38,
+      "acertos": 53,
       "severidade": "CRITICAL"
     },
     {
       "ruleId": "SONAR-ts-S6568",
-      "acertos": 32,
+      "acertos": 43,
       "severidade": "MINOR"
     },
     {
+      "ruleId": "HERO-SMELL-non-null-assertion",
+      "acertos": 34,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-todo-cobol",
+      "acertos": 33,
+      "severidade": "INFO"
+    },
+    {
       "ruleId": "HERO-SMELL-call-dynamic-cobol",
+      "acertos": 25,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-select-star",
+      "acertos": 23,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-js-S3403",
       "acertos": 23,
       "severidade": "MAJOR"
     },
     {
-      "ruleId": "HERO-SMELL-todo-cobol",
-      "acertos": 22,
-      "severidade": "INFO"
-    },
-    {
       "ruleId": "SONAR-cobol-SQL.DynamicSqlCheck",
-      "acertos": 14,
+      "acertos": 13,
       "severidade": "BLOCKER"
     },
     {
       "ruleId": "SONAR-js-S8702",
-      "acertos": 14,
+      "acertos": 13,
       "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-py-S8702",
-      "acertos": 14,
+      "acertos": 13,
       "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-ts-S8702",
-      "acertos": 14,
+      "acertos": 13,
       "severidade": "MAJOR"
     },
     {
@@ -2535,14 +2656,14 @@
       "severidade": "MINOR"
     },
     {
+      "ruleId": "SONAR-java-S4274",
+      "acertos": 11,
+      "severidade": "MAJOR"
+    },
+    {
       "ruleId": "SONAR-js-S1313",
       "acertos": 11,
       "severidade": "MINOR"
-    },
-    {
-      "ruleId": "SONAR-js-S3403",
-      "acertos": 11,
-      "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-py-S1313",
@@ -2885,11 +3006,6 @@
       "severidade": "MAJOR"
     },
     {
-      "ruleId": "HERO-SEC-0089-sql-injection",
-      "acertos": 8,
-      "severidade": "CRITICAL"
-    },
-    {
       "ruleId": "HERO-SEC-0327-weak-hash",
       "acertos": 8,
       "severidade": "MAJOR"
@@ -2900,8 +3016,38 @@
       "severidade": "INFO"
     },
     {
-      "ruleId": "HERO-SEC-0078-os-command",
+      "ruleId": "SONAR-cs-S2631",
+      "acertos": 8,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-java-S2631",
+      "acertos": 8,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-js-S2631",
+      "acertos": 8,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-py-S2631",
+      "acertos": 8,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-ts-S2631",
+      "acertos": 8,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SEC-0089-sql-injection",
       "acertos": 7,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SEC-0078-os-command",
+      "acertos": 6,
       "severidade": "BLOCKER"
     },
     {
@@ -2920,19 +3066,29 @@
       "severidade": "MAJOR"
     },
     {
+      "ruleId": "HERO-SMELL-0546-todo-marker",
+      "acertos": 5,
+      "severidade": "INFO"
+    },
+    {
       "ruleId": "HERO-SEC-0089-dynamic-sql-tsql",
       "acertos": 5,
       "severidade": "CRITICAL"
     },
     {
-      "ruleId": "SONAR-java-S4274",
-      "acertos": 5,
-      "severidade": "MAJOR"
+      "ruleId": "HERO-SMELL-loose-equality",
+      "acertos": 4,
+      "severidade": "MINOR"
     },
     {
-      "ruleId": "HERO-SEC-0918-ssrf",
+      "ruleId": "HERO-SEC-agent-role-hijack",
       "acertos": 4,
       "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SMELL-agent-commit-secrets-ok",
+      "acertos": 4,
+      "severidade": "BLOCKER"
     },
     {
       "ruleId": "HERO-SMELL-stop-run-cobol",
@@ -2940,9 +3096,14 @@
       "severidade": "MINOR"
     },
     {
-      "ruleId": "SONAR-cs-S2631",
+      "ruleId": "SONAR-cs-S2083",
       "acertos": 4,
-      "severidade": "CRITICAL"
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-cs-S6096",
+      "acertos": 4,
+      "severidade": "BLOCKER"
     },
     {
       "ruleId": "SONAR-cs-S907",
@@ -2950,14 +3111,29 @@
       "severidade": "MAJOR"
     },
     {
-      "ruleId": "SONAR-java-S2631",
+      "ruleId": "SONAR-java-S2083",
       "acertos": 4,
-      "severidade": "CRITICAL"
+      "severidade": "BLOCKER"
     },
     {
-      "ruleId": "SONAR-js-S2631",
+      "ruleId": "SONAR-java-S6096",
       "acertos": 4,
-      "severidade": "CRITICAL"
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-js-S2083",
+      "acertos": 4,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-js-S6096",
+      "acertos": 4,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-js-S8707",
+      "acertos": 4,
+      "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-plsql-BackwardsGoto",
@@ -2975,14 +3151,34 @@
       "severidade": "MAJOR"
     },
     {
-      "ruleId": "SONAR-py-S2631",
+      "ruleId": "SONAR-py-S2083",
       "acertos": 4,
-      "severidade": "CRITICAL"
+      "severidade": "BLOCKER"
     },
     {
-      "ruleId": "SONAR-ts-S2631",
+      "ruleId": "SONAR-py-S6096",
       "acertos": 4,
-      "severidade": "CRITICAL"
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-py-S8707",
+      "acertos": 4,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S2083",
+      "acertos": 4,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-ts-S6096",
+      "acertos": 4,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-ts-S8707",
+      "acertos": 4,
+      "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-tsql-S907",
@@ -2990,7 +3186,7 @@
       "severidade": "MAJOR"
     },
     {
-      "ruleId": "HERO-SEC-0095-code-injection-eval",
+      "ruleId": "HERO-SEC-0918-ssrf",
       "acertos": 3,
       "severidade": "CRITICAL"
     },
@@ -3005,9 +3201,14 @@
       "severidade": "BLOCKER"
     },
     {
-      "ruleId": "HERO-SMELL-0546-todo-marker",
+      "ruleId": "HERO-SEC-0501-trust-boundary-java",
       "acertos": 3,
-      "severidade": "INFO"
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-agent-skip-human-gate",
+      "acertos": 3,
+      "severidade": "MAJOR"
     },
     {
       "ruleId": "HERO-SEC-cobol-sql-no-where",
@@ -3016,6 +3217,11 @@
     },
     {
       "ruleId": "HERO-SMELL-0goto-cobol",
+      "acertos": 3,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S2612",
       "acertos": 3,
       "severidade": "MAJOR"
     },
@@ -3030,9 +3236,14 @@
       "severidade": "BLOCKER"
     },
     {
-      "ruleId": "SONAR-cs-S5334",
+      "ruleId": "SONAR-cs-S5542",
       "acertos": 3,
-      "severidade": "BLOCKER"
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-cs-S5547",
+      "acertos": 3,
+      "severidade": "CRITICAL"
     },
     {
       "ruleId": "SONAR-cs-S5766",
@@ -3041,6 +3252,11 @@
     },
     {
       "ruleId": "SONAR-cs-S5773",
+      "acertos": 3,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-java-S2612",
       "acertos": 3,
       "severidade": "MAJOR"
     },
@@ -3070,29 +3286,39 @@
       "severidade": "MINOR"
     },
     {
-      "ruleId": "SONAR-java-S5334",
-      "acertos": 3,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-js-S1523",
+      "ruleId": "SONAR-java-S5542",
       "acertos": 3,
       "severidade": "CRITICAL"
     },
     {
-      "ruleId": "SONAR-js-S5334",
+      "ruleId": "SONAR-java-S5547",
       "acertos": 3,
-      "severidade": "BLOCKER"
+      "severidade": "CRITICAL"
     },
     {
-      "ruleId": "SONAR-js-S8704",
+      "ruleId": "SONAR-js-S2612",
       "acertos": 3,
       "severidade": "MAJOR"
     },
     {
-      "ruleId": "SONAR-plsql-S1523",
+      "ruleId": "SONAR-js-S5542",
       "acertos": 3,
       "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-js-S5547",
+      "acertos": 3,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-plsql-S5547",
+      "acertos": 3,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-py-S2612",
+      "acertos": 3,
+      "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-py-S5135",
@@ -3100,14 +3326,14 @@
       "severidade": "BLOCKER"
     },
     {
-      "ruleId": "SONAR-py-S5334",
+      "ruleId": "SONAR-py-S5542",
       "acertos": 3,
-      "severidade": "BLOCKER"
+      "severidade": "CRITICAL"
     },
     {
-      "ruleId": "SONAR-py-S6982",
+      "ruleId": "SONAR-py-S5547",
       "acertos": 3,
-      "severidade": "MAJOR"
+      "severidade": "CRITICAL"
     },
     {
       "ruleId": "SONAR-py-S6985",
@@ -3115,27 +3341,17 @@
       "severidade": "CRITICAL"
     },
     {
-      "ruleId": "SONAR-py-S8704",
+      "ruleId": "SONAR-ts-S2612",
       "acertos": 3,
       "severidade": "MAJOR"
     },
     {
-      "ruleId": "SONAR-ts-S1523",
+      "ruleId": "SONAR-ts-S5542",
       "acertos": 3,
       "severidade": "CRITICAL"
     },
     {
-      "ruleId": "SONAR-ts-S5334",
-      "acertos": 3,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-ts-S8704",
-      "acertos": 3,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-tsql-S1523",
+      "ruleId": "SONAR-ts-S5547",
       "acertos": 3,
       "severidade": "CRITICAL"
     },
@@ -3175,6 +3391,31 @@
       "severidade": "BLOCKER"
     },
     {
+      "ruleId": "HERO-SMELL-hardcoded-absolute-path",
+      "acertos": 2,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-var-declaration",
+      "acertos": 2,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-nolock",
+      "acertos": 2,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SEC-agent-fake-chat-markers",
+      "acertos": 2,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SEC-agent-exfiltrate-secrets",
+      "acertos": 2,
+      "severidade": "BLOCKER"
+    },
+    {
       "ruleId": "HERO-SEC-0798-cobol-value-secret",
       "acertos": 2,
       "severidade": "BLOCKER"
@@ -3185,14 +3426,14 @@
       "severidade": "MAJOR"
     },
     {
+      "ruleId": "HERO-PQC-0326-nivel-insuficiente",
+      "acertos": 2,
+      "severidade": "MAJOR"
+    },
+    {
       "ruleId": "SONAR-cs-S1481",
       "acertos": 2,
       "severidade": "MINOR"
-    },
-    {
-      "ruleId": "SONAR-cs-S2612",
-      "acertos": 2,
-      "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-cs-S3241",
@@ -3200,44 +3441,9 @@
       "severidade": "MINOR"
     },
     {
-      "ruleId": "SONAR-cs-S5131",
-      "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-cs-S5542",
-      "acertos": 2,
-      "severidade": "CRITICAL"
-    },
-    {
-      "ruleId": "SONAR-cs-S5547",
-      "acertos": 2,
-      "severidade": "CRITICAL"
-    },
-    {
       "ruleId": "SONAR-java-S1481",
       "acertos": 2,
       "severidade": "MINOR"
-    },
-    {
-      "ruleId": "SONAR-java-S2612",
-      "acertos": 2,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-java-S5131",
-      "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-java-S5542",
-      "acertos": 2,
-      "severidade": "CRITICAL"
-    },
-    {
-      "ruleId": "SONAR-java-S5547",
-      "acertos": 2,
-      "severidade": "CRITICAL"
     },
     {
       "ruleId": "SONAR-js-S1481",
@@ -3245,44 +3451,9 @@
       "severidade": "MINOR"
     },
     {
-      "ruleId": "SONAR-js-S2612",
-      "acertos": 2,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-js-S5131",
-      "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-js-S5542",
-      "acertos": 2,
-      "severidade": "CRITICAL"
-    },
-    {
-      "ruleId": "SONAR-js-S5547",
-      "acertos": 2,
-      "severidade": "CRITICAL"
-    },
-    {
-      "ruleId": "SONAR-js-S5696",
-      "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-js-S6761",
-      "acertos": 2,
-      "severidade": "MAJOR"
-    },
-    {
       "ruleId": "SONAR-plsql-S1481",
       "acertos": 2,
       "severidade": "MINOR"
-    },
-    {
-      "ruleId": "SONAR-plsql-S5547",
-      "acertos": 2,
-      "severidade": "CRITICAL"
     },
     {
       "ruleId": "SONAR-py-S1481",
@@ -3290,62 +3461,12 @@
       "severidade": "MINOR"
     },
     {
-      "ruleId": "SONAR-py-S2612",
-      "acertos": 2,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-py-S5131",
-      "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-py-S5542",
-      "acertos": 2,
-      "severidade": "CRITICAL"
-    },
-    {
-      "ruleId": "SONAR-py-S5547",
-      "acertos": 2,
-      "severidade": "CRITICAL"
-    },
-    {
-      "ruleId": "SONAR-ts-S2612",
-      "acertos": 2,
-      "severidade": "MAJOR"
-    },
-    {
-      "ruleId": "SONAR-ts-S5131",
-      "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-ts-S5542",
-      "acertos": 2,
-      "severidade": "CRITICAL"
-    },
-    {
-      "ruleId": "SONAR-ts-S5547",
-      "acertos": 2,
-      "severidade": "CRITICAL"
-    },
-    {
-      "ruleId": "SONAR-ts-S5696",
-      "acertos": 2,
-      "severidade": "BLOCKER"
-    },
-    {
-      "ruleId": "SONAR-ts-S6761",
-      "acertos": 2,
-      "severidade": "MAJOR"
-    },
-    {
       "ruleId": "SONAR-tsql-S1481",
       "acertos": 2,
       "severidade": "MINOR"
     },
     {
-      "ruleId": "HERO-SEC-0079-xss-sink",
+      "ruleId": "HERO-SEC-0095-code-injection-eval",
       "acertos": 1,
       "severidade": "CRITICAL"
     },
@@ -3363,6 +3484,31 @@
       "ruleId": "HERO-SEC-0090-ldap-injection-java",
       "acertos": 1,
       "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SMELL-ignored-error-go",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "HERO-SMELL-dml-without-where",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "HERO-SEC-agent-prompt-injection",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SEC-agent-disable-safety",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "HERO-SMELL-agent-unbounded-shell",
+      "acertos": 1,
+      "severidade": "MAJOR"
     },
     {
       "ruleId": "HERO-SEC-0798-cobol-hardcoded-secret",
@@ -3445,6 +3591,21 @@
       "severidade": "MINOR"
     },
     {
+      "ruleId": "HERO-PQC-0327-algoritmo-quebrado",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "HERO-PQC-0327-nome-pre-padronizacao",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-cobol-S1686",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
       "ruleId": "SONAR-cs-S1206",
       "acertos": 1,
       "severidade": "MINOR"
@@ -3453,6 +3614,11 @@
       "ruleId": "SONAR-cs-S3249",
       "acertos": 1,
       "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-cs-S3649",
+      "acertos": 1,
+      "severidade": "BLOCKER"
     },
     {
       "ruleId": "SONAR-cs-S4423",
@@ -3470,9 +3636,24 @@
       "severidade": "CRITICAL"
     },
     {
+      "ruleId": "SONAR-cs-S5131",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
       "ruleId": "SONAR-cs-S5147",
       "acertos": 1,
       "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-cs-S5334",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-cs-S6776",
+      "acertos": 1,
+      "severidade": "MINOR"
     },
     {
       "ruleId": "SONAR-cs-S7039",
@@ -3480,14 +3661,9 @@
       "severidade": "MAJOR"
     },
     {
-      "ruleId": "SONAR-java-S1206",
+      "ruleId": "SONAR-java-S3649",
       "acertos": 1,
-      "severidade": "MINOR"
-    },
-    {
-      "ruleId": "SONAR-java-S2112",
-      "acertos": 1,
-      "severidade": "MAJOR"
+      "severidade": "BLOCKER"
     },
     {
       "ruleId": "SONAR-java-S4423",
@@ -3505,7 +3681,17 @@
       "severidade": "CRITICAL"
     },
     {
+      "ruleId": "SONAR-java-S5131",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
       "ruleId": "SONAR-java-S5147",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-java-S5334",
       "acertos": 1,
       "severidade": "BLOCKER"
     },
@@ -3525,6 +3711,16 @@
       "severidade": "MINOR"
     },
     {
+      "ruleId": "SONAR-js-S1523",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-js-S3649",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
       "ruleId": "SONAR-js-S4423",
       "acertos": 1,
       "severidade": "CRITICAL"
@@ -3540,7 +3736,17 @@
       "severidade": "CRITICAL"
     },
     {
+      "ruleId": "SONAR-js-S5131",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
       "ruleId": "SONAR-js-S5147",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-js-S5334",
       "acertos": 1,
       "severidade": "BLOCKER"
     },
@@ -3555,19 +3761,34 @@
       "severidade": "MINOR"
     },
     {
+      "ruleId": "SONAR-js-S5696",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
       "ruleId": "SONAR-js-S5728",
       "acertos": 1,
       "severidade": "MINOR"
     },
     {
-      "ruleId": "SONAR-js-S6109",
-      "acertos": 1,
-      "severidade": "BLOCKER"
-    },
-    {
       "ruleId": "SONAR-js-S6654",
       "acertos": 1,
       "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-js-S6761",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-js-S6776",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-js-S8704",
+      "acertos": 1,
+      "severidade": "MAJOR"
     },
     {
       "ruleId": "SONAR-plsql-ExecuteImmediateTrapExceptionsCheck",
@@ -3578,6 +3799,11 @@
       "ruleId": "SONAR-plsql-PreferExecuteImmediateToDbmsSqlCheck",
       "acertos": 1,
       "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-plsql-S1523",
+      "acertos": 1,
+      "severidade": "CRITICAL"
     },
     {
       "ruleId": "SONAR-plsql-S4790",
@@ -3595,6 +3821,11 @@
       "severidade": "MAJOR"
     },
     {
+      "ruleId": "SONAR-py-S3649",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
       "ruleId": "SONAR-py-S4423",
       "acertos": 1,
       "severidade": "CRITICAL"
@@ -3610,7 +3841,17 @@
       "severidade": "CRITICAL"
     },
     {
+      "ruleId": "SONAR-py-S5131",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
       "ruleId": "SONAR-py-S5147",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-py-S5334",
       "acertos": 1,
       "severidade": "BLOCKER"
     },
@@ -3618,6 +3859,31 @@
       "ruleId": "SONAR-py-S5527",
       "acertos": 1,
       "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-py-S6776",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-py-S6982",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-py-S8704",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S1523",
+      "acertos": 1,
+      "severidade": "CRITICAL"
+    },
+    {
+      "ruleId": "SONAR-ts-S3649",
+      "acertos": 1,
+      "severidade": "BLOCKER"
     },
     {
       "ruleId": "SONAR-ts-S4423",
@@ -3635,7 +3901,17 @@
       "severidade": "CRITICAL"
     },
     {
+      "ruleId": "SONAR-ts-S5131",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
       "ruleId": "SONAR-ts-S5147",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
+      "ruleId": "SONAR-ts-S5334",
       "acertos": 1,
       "severidade": "BLOCKER"
     },
@@ -3650,19 +3926,39 @@
       "severidade": "MINOR"
     },
     {
+      "ruleId": "SONAR-ts-S5696",
+      "acertos": 1,
+      "severidade": "BLOCKER"
+    },
+    {
       "ruleId": "SONAR-ts-S5728",
       "acertos": 1,
       "severidade": "MINOR"
     },
     {
-      "ruleId": "SONAR-ts-S6109",
-      "acertos": 1,
-      "severidade": "BLOCKER"
-    },
-    {
       "ruleId": "SONAR-ts-S6654",
       "acertos": 1,
       "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S6761",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S6776",
+      "acertos": 1,
+      "severidade": "MINOR"
+    },
+    {
+      "ruleId": "SONAR-ts-S8704",
+      "acertos": 1,
+      "severidade": "MAJOR"
+    },
+    {
+      "ruleId": "SONAR-tsql-S1523",
+      "acertos": 1,
+      "severidade": "CRITICAL"
     },
     {
       "ruleId": "SONAR-tsql-S4109",

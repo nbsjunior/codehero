@@ -84,6 +84,17 @@ const IGNORA = new Set([
   // afins). Medir o orcamento sobre ele faria o numero variar conforme o que
   // esta baixado no momento, e o orcamento so serve se for estavel.
   ".tmp",
+  // `.claude/worktrees/` guarda COPIAS INTEIRAS do repositorio, uma por tarefa
+  // em segundo plano. Sem esta linha o minerador conta o projeto duas vezes e
+  // todo orcamento dobra — foi o que aconteceu: 43 regras "passaram a apontar
+  // muito mais", com `SONAR-ts-S1134` indo de 47 para 151 acertos, sem que
+  // nenhum detector tivesse mudado.
+  //
+  // O sintoma engana porque parece regressao de regra. Regravar o orcamento
+  // ali teria congelado a contagem dobrada, e a proxima medicao real
+  // apareceria como QUEDA.
+  ".claude",
+  "tmp",
 ]);
 
 function varre(dir, acc = []) {

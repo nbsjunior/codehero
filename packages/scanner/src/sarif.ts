@@ -5,10 +5,12 @@ import {
   severityToSarifLevel,
   buildFindingFicha,
   formatFindingFichaHelp,
+  RULES_BY_ID,
   type SarifLog,
   type SarifReportingDescriptor,
   type SarifResult,
   type StructuralRule,
+  type HeroRule,
 } from "@codehero/contracts";
 import type { CoverageReport } from "@codehero/contracts";
 import { createHash } from "node:crypto";
@@ -48,6 +50,24 @@ export interface StructuralForSarif {
     startColumn: number;
     endColumn: number;
     snippet: string;
+  }>;
+  /** Limiares HERO-SMELL-CYCLOMATIC / LONG-FUNCTION / … — entram como CODE_SMELL. */
+  metricFindings?: Array<{
+    ruleId: string;
+    file: string;
+    startLine: number;
+    message: string;
+    measured: number;
+    threshold: number;
+  }>;
+  /** Alias usado por `StructuralSummary.findings` do scanner. */
+  findings?: Array<{
+    ruleId: string;
+    file: string;
+    startLine: number;
+    message: string;
+    measured: number;
+    threshold: number;
   }>;
 }
 
@@ -227,6 +247,92 @@ export function buildSarif(
         remediationEffortMin: rule.remediationEffortMin,
         sddTemplateId: rule.sddTemplateId,
         snippet: sf.snippet,
+        risk: ficha.risk,
+        reason: ficha.reason,
+        howToFix: ficha.howToFix,
+        strategy: ficha.strategy,
+        constraints: ficha.constraints,
+        referenceExample: ficha.referenceExample,
+        cwe: ficha.cwe,
+        tool: TOOL_NAME,
+        engine: "structural",
+      },
+    });
+  }
+
+  // Limiares de complexidade / tamanho / params (HERO-SMELL-CYCLOMATIC…).
+  for (const mf of structural?.metricFindings ?? structural?.findings ?? []) {
+    const meta: HeroRule | undefined = RULES_BY_ID[mf.ruleId];
+    const severity = meta?.severity ?? "MAJOR";
+    const issueType = meta?.type ?? "CODE_SMELL";
+    const remediationEffortMin = meta?.remediationEffortMin ?? 20;
+    const sddTemplateId = meta?.sddTemplateId ?? "sdd.smell.reduce-complexity";
+    const cwe = meta?.cwe ?? [];
+    const owasp = meta?.owasp ?? [];
+    const ruleName = meta?.name ?? mf.ruleId;
+    const fileUri = mf.file.replace(/\\/g, "/");
+    const snippet = `${mf.message} (medido ${mf.measured} > ${mf.threshold})`;
+    const fp = heroFingerprint(mf.ruleId, fileUri, snippet);
+    const ficha = buildFindingFicha({
+      ruleId: mf.ruleId,
+      ruleName,
+      message: mf.message,
+      severity,
+      issueType,
+      sddTemplateId,
+      cwe,
+      owasp,
+      remediationEffortMin,
+      file: fileUri,
+      line: mf.startLine,
+      snippet,
+    });
+
+    if (!seenRules.has(mf.ruleId)) {
+      const helpText = formatFindingFichaHelp(ficha);
+      seenRules.set(mf.ruleId, {
+        id: mf.ruleId,
+        name: ruleName,
+        shortDescription: { text: meta?.message ?? mf.message },
+        fullDescription: { text: ficha.reason },
+        help: { text: helpText, markdown: helpText },
+        defaultConfiguration: { level: severityToSarifLevel(severity) },
+        properties: {
+          cwe,
+          owasp,
+          tags: [issueType, "structural", "maintainability", ...cwe],
+          risk: ficha.risk,
+          howToFix: ficha.howToFix,
+          strategy: ficha.strategy,
+        },
+      });
+    }
+
+    results.push({
+      ruleId: mf.ruleId,
+      level: severityToSarifLevel(severity),
+      message: { text: mf.message },
+      locations: [
+        {
+          physicalLocation: {
+            artifactLocation: { uri: fileUri },
+            region: {
+              startLine: mf.startLine,
+              startColumn: 1,
+              endLine: mf.startLine,
+              endColumn: 1,
+              snippet: { text: snippet },
+            },
+          },
+        },
+      ],
+      partialFingerprints: { [HERO_FINGERPRINT_ALGO]: fp },
+      properties: {
+        severity,
+        issueType,
+        remediationEffortMin,
+        sddTemplateId,
+        snippet,
         risk: ficha.risk,
         reason: ficha.reason,
         howToFix: ficha.howToFix,

@@ -20,6 +20,7 @@ import { spawnSync } from "node:child_process";
 import { relative, resolve } from "node:path";
 import {
   RULES,
+  RULES_BY_ID,
   mergeCoverageReports,
   coveragePercent,
   type CoverageReport,
@@ -871,9 +872,19 @@ function printPretty(
     );
   }
 
-  const debtMin = technicalDebtMinutes(
-    findings.filter((f) => f.rule.type === "CODE_SMELL").map((f) => f.rule.remediationEffortMin),
-  );
+  const smellEfforts = findings
+    .filter((f) => f.rule.type === "CODE_SMELL")
+    .map((f) => f.rule.remediationEffortMin);
+  if (structural) {
+    for (const rf of structural.ruleFindings) {
+      if (rf.rule.type === "CODE_SMELL") smellEfforts.push(rf.rule.remediationEffortMin);
+    }
+    for (const mf of structural.findings) {
+      const meta = RULES_BY_ID[mf.ruleId];
+      smellEfforts.push(meta?.remediationEffortMin ?? 20);
+    }
+  }
+  const debtMin = technicalDebtMinutes(smellEfforts);
 
   process.stdout.write(`\n${"─".repeat(60)}\n`);
   process.stdout.write(
@@ -943,6 +954,17 @@ function printPretty(
       for (const [id, n] of [...porRegra].sort((a, b) => b[1] - a[1])) {
         process.stdout.write(`  ${String(n).padStart(4)}  ${id}
 `);
+      }
+    }
+    if (structural.findings.length > 0) {
+      const porLimiar = new Map<string, number>();
+      for (const f of structural.findings)
+        porLimiar.set(f.ruleId, (porLimiar.get(f.ruleId) ?? 0) + 1);
+      process.stdout.write(
+        `Limiares de manutenibilidade (complexidade/tamanho): ${structural.findings.length} apontamento(s)\n`,
+      );
+      for (const [id, n] of [...porLimiar].sort((a, b) => b[1] - a[1])) {
+        process.stdout.write(`  ${String(n).padStart(4)}  ${id}\n`);
       }
     }
     const d = structural.duplication;

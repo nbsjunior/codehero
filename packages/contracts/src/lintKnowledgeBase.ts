@@ -442,6 +442,44 @@ export const LINT_KNOWLEDGE_BASE: LintTopic[] = [
     keywords: ["file status", "file-status"],
     regexFeasible: false,
   },
+
+  // --- Agent / SKILL / AIDLC instruction hygiene ---------------------------
+  {
+    id: "agent-prompt-injection",
+    title: "Prompt injection em arquivo de instrução de agente",
+    languages: ["markdown"],
+    family: "security",
+    hint: "Frases ignore previous instructions / jailbreak / marcadores falsos de sistema em AGENTS.md, SKILL.md ou steering.",
+    keywords: ["prompt-injection", "ignore previous", "jailbreak", "im_start"],
+    regexFeasible: true,
+  },
+  {
+    id: "agent-skip-human-gate",
+    title: "Instrução que pula decision gate / HITL",
+    languages: ["markdown"],
+    family: "smell",
+    hint: "AIDLC exige artefato de decisão e confirmação humana; auto-approve / don't ask quebra o ciclo.",
+    keywords: ["human-gate", "decision gate", "auto-approve", "hitl"],
+    regexFeasible: true,
+  },
+  {
+    id: "agent-exfiltrate-secrets",
+    title: "Instrução de exfiltração de segredos via agente",
+    languages: ["markdown"],
+    family: "security",
+    hint: "Steering/SKILL pedindo dump de .env, API keys ou credenciais.",
+    keywords: ["exfiltrate", "dump secrets", "process.env"],
+    regexFeasible: true,
+  },
+  {
+    id: "skill-md-structure",
+    title: "SKILL.md sem anatomia (frontmatter / secções)",
+    languages: ["markdown"],
+    family: "smell",
+    hint: "Índice de skill sem name/description, H1 ou secções Instructions/Activation/Information Contract (Cursor + AIDLC).",
+    keywords: ["skill-structure", "frontmatter", "skill.md", "information contract"],
+    regexFeasible: false,
+  },
 ];
 
 export interface LintCoverage {

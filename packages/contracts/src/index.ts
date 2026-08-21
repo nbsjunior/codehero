@@ -19,6 +19,9 @@ export * from "./structuralCatalog.ts";
 export * from "./sonarWayLive.ts";
 export * from "./quantumSafe.ts";
 export * from "./gateSuppress.ts";
+export * from "./agentInstructionRules.ts";
+export * from "./agentPaths.ts";
+export * from "./skillStructure.ts";
 // Full Sonar catalog + SARIF normalize: import `@codehero/contracts/catalog` (Node).
 
 export const TOOL_NAME = "CodeHero";

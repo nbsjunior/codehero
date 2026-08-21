@@ -1,9 +1,13 @@
 import { createHash } from "node:crypto";
 import {
   RULES,
+  RULES_BY_ID,
   matchPattern,
   buildLexicalMask,
   lexicalProfileFor,
+  isAgentInstructionPath,
+  isSkillMdPath,
+  validateSkillMd,
   type HeroRule,
   type RuleLanguage,
 } from "@codehero/contracts";
@@ -17,7 +21,7 @@ export interface Finding {
   endColumn: number;
   snippet: string;
   fingerprint: string;
-  engine?: "pattern" | "ast" | "taint";
+  engine?: "pattern" | "ast" | "taint" | "structural";
   taintPath?: string[];
   /** Regras que compartilhavam o mesmo detector nesta posicao (ver dedupe). */
   alsoRuleIds?: string[];
@@ -45,13 +49,27 @@ const EXT_TO_LANG: Record<string, RuleLanguage> = {
   ".db2": "db2sql",
   ".sqlpl": "db2sql",
   ".spl": "db2sql",
+  ".md": "markdown",
+  ".mdc": "markdown",
 };
 
 export function languageForFile(path: string): RuleLanguage | null {
+  // Instruções de agente primeiro: AGENTS.md / SKILL.md / .cursor/rules / AIDLC.
+  // README e docs genéricos NÃO entram (isAgentInstructionPath filtra).
+  if (isAgentInstructionPath(path)) return "markdown";
+
+  const base = path.replace(/\\/g, "/").split("/").pop()?.toLowerCase() ?? "";
+  if (base === ".cursorrules" || base === "cursorrules") return "markdown";
+
   const dot = path.lastIndexOf(".");
   if (dot < 0) return null;
-  return EXT_TO_LANG[path.slice(dot).toLowerCase()] ?? null;
+  const ext = path.slice(dot).toLowerCase();
+  // .md genérico (README, docs) fica de fora do scan — só agent paths acima.
+  if (ext === ".md") return null;
+  return EXT_TO_LANG[ext] ?? null;
 }
+
+export { isAgentInstructionPath };
 
 function ruleApplies(rule: HeroRule, lang: RuleLanguage): boolean {
   return rule.languages.includes("any") || rule.languages.includes(lang);
@@ -72,7 +90,31 @@ export function analyzeSource(file: string, source: string, rules: HeroRule[] = 
   const lang = languageForFile(file);
   if (!lang) return [];
   const active = rules.filter((r) => ruleApplies(r, lang) && r.implementation !== "stub");
-  return runRulesAgainstSource(active, file, source, lang);
+  const findings = runRulesAgainstSource(active, file, source, lang);
+
+  // Estrutura de SKILL.md (frontmatter + secções) — barato, sempre no scan do arquivo.
+  if (isSkillMdPath(file)) {
+    for (const sf of validateSkillMd(source)) {
+      const rule =
+        RULES_BY_ID[sf.ruleId] ??
+        active.find((r) => r.id === sf.ruleId) ??
+        rules.find((r) => r.id === sf.ruleId);
+      if (!rule) continue;
+      const snippet = sf.snippet || sf.message;
+      findings.push({
+        rule: { ...rule, message: sf.message },
+        file,
+        startLine: sf.startLine,
+        startColumn: 1,
+        endColumn: Math.max(2, snippet.length + 1),
+        snippet,
+        fingerprint: fingerprint(sf.ruleId, file, snippet),
+        engine: "structural",
+      });
+    }
+  }
+
+  return findings;
 }
 
 export function runRulesAgainstSource(

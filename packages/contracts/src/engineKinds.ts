@@ -19,7 +19,9 @@ export type SecurityCategory =
   // "colher agora, decifrar depois". Misturar as duas categorias esconderia
   // isso: um time que ja corrigiu MD5 acha que resolveu criptografia.
   | "quantum-safe"
-  | "code-smell";
+  | "code-smell"
+  /** Instruções de agente / LLM (OWASP LLM01 e higiene AIDLC/SKILL). */
+  | "prompt-injection";
 
 export type TaintSourceKind =
   | "http.param"

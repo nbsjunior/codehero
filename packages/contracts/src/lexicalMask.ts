@@ -119,6 +119,8 @@ const EXT_PERFIL: Record<string, string> = {
   db2: "sql", sqlpl: "sql", spl: "sql",
   cbl: "cobol", cob: "cobol", cpy: "cobol",
   vb: "vbnet",
+  // Instruções de agente: regras usam scope `any`; perfil só evita máscara absurda.
+  md: "clike", mdc: "clike",
 };
 
 /** Perfil léxico pelo caminho do arquivo. Desconhecido cai em C-like. */
