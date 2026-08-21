@@ -42,6 +42,6 @@
     "@codehero/contracts": "^0.1.0",
     "@codehero/code-graph": "^0.1.0",
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "zod": "^3.24.1"
+    "zod": "^4.4.3"
   }
 }
