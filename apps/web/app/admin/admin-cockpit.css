@@ -1167,3 +1167,186 @@
 .arq-papel--warn { color: var(--warn); }
 .arq-papel--danger { color: var(--danger); }
 .arq-papel--neutro { color: var(--muted); }
+
+/* —— UX: credencial HERO_TOKEN + atalhos + nav hints —— */
+.ex-nav__link-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.12rem;
+  min-width: 0;
+}
+.ex-nav__link-label {
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: inherit;
+}
+.ex-nav__link-hint {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--ex-muted);
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  white-space: normal;
+}
+.ex-nav__link.is-active .ex-nav__link-hint {
+  color: rgba(242, 242, 240, 0.55);
+}
+
+.ex-cred {
+  margin-bottom: 1.5rem;
+  padding: 1.15rem 1.25rem;
+  border: 1px solid var(--ex-red-line, rgba(208, 18, 28, 0.45));
+  border-left: 3px solid var(--ex-red, #d0121c);
+  border-radius: 2px;
+  background: var(--ex-surface-2, #161616);
+}
+.ex-cred--dense {
+  margin-top: 1rem;
+  margin-bottom: 0;
+}
+.ex-cred__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.55rem;
+}
+.ex-cred__eyebrow {
+  margin: 0 0 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ex-red, #d0121c);
+  font-family: var(--ex-sans);
+}
+.ex-cred__title {
+  margin: 0;
+  font-family: var(--ex-sans);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ex-text, #f2f2f0);
+}
+.ex-cred__mask {
+  font-family: var(--ex-mono);
+  font-size: 0.78rem;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--ex-border, #2a2a2a);
+  background: var(--ex-bg, #070707);
+  color: var(--ex-muted);
+}
+.ex-cred__help {
+  margin: 0 0 0.9rem;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--ex-muted);
+  max-width: 62ch;
+}
+.ex-cred__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+}
+.ex-cred__cancel {
+  background: none;
+  border: none;
+  color: var(--ex-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: underline;
+  font-family: var(--ex-sans);
+}
+.ex-cred__hint {
+  font-size: 0.78rem;
+  color: var(--ex-muted);
+}
+.ex-cred__gh {
+  margin-top: 0.95rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--ex-border, #2a2a2a);
+}
+.ex-cred__gh-label {
+  margin: 0 0 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ex-muted);
+}
+
+.ex-quick-actions {
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--ex-border, #2a2a2a);
+  border-radius: 2px;
+  background: var(--ex-surface, #0f0f0f);
+}
+.ex-quick-actions__label,
+.ex-quick-actions__label {
+  margin: 0 0 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ex-muted);
+  font-family: var(--ex-sans);
+}
+.ex-quick-actions__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Tipografia admin: display só no título de página; UI em sans */
+.ex-main .hero-panel h2.hero-display,
+.ex-main .hero-panel h3 {
+  font-family: var(--ex-sans) !important;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  text-transform: none;
+}
+.ex-main .hero-caption,
+.ex-main .howto-steps p {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--ex-muted);
+}
+.ex-main .howto-steps {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ex-main .howto-steps li {
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--ex-border);
+  border-radius: 2px;
+  background: var(--ex-surface-2);
+}
+.ex-main .howto-steps strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.95rem;
+  color: var(--ex-text);
+}
+.ex-main label,
+.ex-main .hero-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ex-muted);
+}
+.ex-workspace-tabs.hero-tabs {
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--ex-border);
+  padding-bottom: 0;
+}

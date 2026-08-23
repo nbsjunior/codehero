@@ -9,6 +9,7 @@ import {
   buildHeroTokenSecretCommand,
 } from "@codehero/contracts";
 import CopyButton from "@/components/CopyButton";
+import HeroTokenCard from "@/components/admin/HeroTokenCard";
 import FindingsBrowser, { type FindingsBrowserItem } from "@/components/FindingsBrowser";
 import {
   DebtMeter,
@@ -332,14 +333,14 @@ export default function ProjectWorkspace({
   useEffect(() => {
     const gha = search.get("gha");
     if (gha === "ok") {
-      setTab("action");
+      goToTab("action");
       setGhaBanner({
         kind: "ok",
         text: "GitHub Action configurada: workflow + HERO_TOKEN + HERO_CORE_URL. O próximo push/PR já roda o scan.",
       });
       void load();
     } else if (gha === "error") {
-      setTab("action");
+      goToTab("action");
       setGhaBanner({
         kind: "error",
         text: search.get("msg") || "Não consegui instalar a Action. Verifique se você tem permissão de admin no repositório.",
@@ -666,7 +667,7 @@ export default function ProjectWorkspace({
         kind: "ok",
         text: "HERO_TOKEN rotacionado. Copie o token ou o comando gh abaixo e atualize o secret no GitHub (o valor completo só aparece agora).",
       });
-      setTab("action");
+      goToTab("action");
     } catch (err) {
       setRotateError(
         err instanceof Error
@@ -676,6 +677,16 @@ export default function ProjectWorkspace({
     } finally {
       setRotating(false);
     }
+  }
+
+  function goToTab(next: Tab) {
+    setTab(next);
+    const q = new URLSearchParams(search.toString());
+    if (orgId) q.set("org", orgId);
+    if (projectId) q.set("id", projectId);
+    if (selectedRepoId) q.set("repo", selectedRepoId);
+    q.set("tab", next);
+    router.replace(`/admin/?${q.toString()}#workspace`, { scroll: false });
   }
 
   if (loading) {
@@ -980,22 +991,23 @@ export default function ProjectWorkspace({
         </section>
       ) : (
         <>
-          <div className="hero-tabs" style={{ marginTop: "1.75rem" }}>
-            <button type="button" className={`hero-tab${tab === "overview" ? " is-active" : ""}`} onClick={() => setTab("overview")}>
+          <div className="hero-tabs ex-workspace-tabs" style={{ marginTop: "1.75rem" }} role="tablist" aria-label="Configuração do repositório">
+            <button type="button" role="tab" aria-selected={tab === "overview"} className={`hero-tab${tab === "overview" ? " is-active" : ""}`} onClick={() => goToTab("overview")}>
               Visão geral
             </button>
-            <button type="button" className={`hero-tab${tab === "vscode" ? " is-active" : ""}`} onClick={() => setTab("vscode")}>
-              Plugin VS Code
+            <button type="button" role="tab" aria-selected={tab === "action"} className={`hero-tab${tab === "action" ? " is-active" : ""}`} onClick={() => goToTab("action")}>
+              Token &amp; Action
             </button>
-            <button type="button" className={`hero-tab${tab === "action" ? " is-active" : ""}`} onClick={() => setTab("action")}>
-              GitHub Action
+            <button type="button" role="tab" aria-selected={tab === "vscode"} className={`hero-tab${tab === "vscode" ? " is-active" : ""}`} onClick={() => goToTab("vscode")}>
+              Plugin
             </button>
-            <button type="button" className={`hero-tab${tab === "mcp" ? " is-active" : ""}`} onClick={() => setTab("mcp")}>
-              MCP integração
+            <button type="button" role="tab" aria-selected={tab === "mcp"} className={`hero-tab${tab === "mcp" ? " is-active" : ""}`} onClick={() => goToTab("mcp")}>
+              Agentes (MCP)
             </button>
           </div>
-          <p className="hero-caption" style={{ margin: "-1.25rem 0 1rem" }}>
-            configurando: <strong>{selectedRepo.name}</strong>
+          <p className="hero-caption" style={{ margin: "0.35rem 0 1.25rem" }}>
+            Repo: <strong>{selectedRepo.name}</strong>
+            {tab === "action" ? " · gere o HERO_TOKEN e ligue o CI" : null}
           </p>
 
           {tab === "overview" && (
@@ -1007,6 +1019,21 @@ export default function ProjectWorkspace({
                     Abrir no GitHub
                   </a>
                 ) : null}
+              </div>
+
+              <div className="ex-quick-actions">
+                <p className="ex-quick-actions__label">Próximo passo neste repo</p>
+                <div className="ex-quick-actions__row">
+                  <button type="button" className="hero-btn hero-btn-accent" onClick={() => goToTab("action")}>
+                    HERO_TOKEN &amp; Action
+                  </button>
+                  <button type="button" className="hero-btn hero-btn-outline" onClick={() => goToTab("vscode")}>
+                    Plugin VS Code
+                  </button>
+                  <button type="button" className="hero-btn hero-btn-outline" onClick={() => goToTab("mcp")}>
+                    Agentes MCP
+                  </button>
+                </div>
               </div>
 
               <div className="ch-metric-grid">
@@ -1309,11 +1336,11 @@ export default function ProjectWorkspace({
 
           {tab === "action" && (
             <section className="hero-panel" style={{ padding: "1.75rem" }}>
-              <h2 className="hero-display" style={{ fontSize: "1.4rem", margin: "0 0 0.35rem" }}>
-                Esteira GitHub Action
+              <h2 className="hero-display" style={{ fontSize: "1.35rem", margin: "0 0 0.35rem" }}>
+                Token e GitHub Action
               </h2>
-              <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1.5rem" }}>
-                vincule este repositório em 1 clique · quality gate bloqueia o merge
+              <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1.35rem" }}>
+                1) Gere o HERO_TOKEN · 2) Copie para o GitHub · 3) Instale a Action
               </p>
 
               {ghaBanner && (
@@ -1322,73 +1349,16 @@ export default function ProjectWorkspace({
                 </div>
               )}
 
-              <div
-                style={{
-                  marginBottom: "1.5rem",
-                  padding: "1rem 1.1rem",
-                  border: "1px solid var(--border)",
-                  borderRadius: 8,
-                  background: "var(--surface-2, transparent)",
-                }}
-              >
-                <h3 style={{ margin: "0 0 0.35rem", fontSize: "1rem" }}>HERO_TOKEN</h3>
-                <p className="hero-caption" style={{ marginTop: 0, marginBottom: "0.75rem" }}>
-                  Secret do Actions deste repositório. Rotacione para ver o valor completo uma vez, copie e grave no
-                  GitHub. Não confundir com <code>HARNESS_TOKEN</code> (RoqueOS).
-                </p>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
-                  <code className="hero-badge">
-                    ••••••••{selectedRepo.ingestTokenHint || selectedRepo.ingestToken.slice(-6) || "??????"}
-                  </code>
-                  {selectedRepo.ingestToken ? (
-                    <CopyButton text={selectedRepo.ingestToken} label="Copiar token" />
-                  ) : (
-                    <span className="hero-muted" style={{ fontSize: "0.8rem" }}>
-                      Valor completo só após criar ou rotacionar.
-                    </span>
-                  )}
-                  <button
-                    type="button"
-                    className="hero-btn hero-btn-outline"
-                    onClick={handleRotate}
-                    disabled={rotating}
-                    style={{
-                      borderColor: rotateConfirm ? "var(--accent)" : undefined,
-                      color: rotateConfirm ? "var(--accent)" : undefined,
-                    }}
-                  >
-                    {rotating ? "Rotacionando…" : rotateConfirm ? "Confirmar rotação" : "Rotacionar token"}
-                  </button>
-                  {rotateConfirm && !rotating && (
-                    <button
-                      type="button"
-                      className="hero-link"
-                      style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.8rem" }}
-                      onClick={() => setRotateConfirm(false)}
-                    >
-                      cancelar
-                    </button>
-                  )}
-                </div>
-                {selectedRepo.ingestToken && heroTokenGhCmd ? (
-                  <div style={{ marginTop: "0.85rem" }}>
-                    <p className="hero-caption" style={{ margin: "0 0 0.4rem" }}>
-                      Atualizar só o secret no GitHub:
-                    </p>
-                    <div className="hero-copyrow">
-                      <pre className="hero-code" style={{ maxHeight: 72 }}>
-                        {heroTokenGhCmd}
-                      </pre>
-                      <CopyButton text={heroTokenGhCmd} label="Copiar comando gh" />
-                    </div>
-                  </div>
-                ) : null}
-                {rotateError && (
-                  <div className="hero-error" style={{ marginTop: "0.75rem" }}>
-                    {rotateError}
-                  </div>
-                )}
-              </div>
+              <HeroTokenCard
+                hint={selectedRepo.ingestTokenHint || selectedRepo.ingestToken.slice(-6) || ""}
+                fullToken={selectedRepo.ingestToken}
+                ghCommand={heroTokenGhCmd}
+                rotating={rotating}
+                rotateConfirm={rotateConfirm}
+                rotateError={rotateError}
+                onRotate={handleRotate}
+                onCancelConfirm={() => setRotateConfirm(false)}
+              />
 
               {selectedRepo.githubActionRepo && (
                 <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1.25rem" }}>
@@ -1582,44 +1552,17 @@ Aplique o retorno no contexto e só então gere/edite o código.`}
 
               <hr className="hero-divider" />
 
-              <div>
-                <h3 style={{ margin: "0 0 0.5rem", fontSize: "1rem" }}>Token de acesso</h3>
-                <p className="hero-caption" style={{ marginTop: 0 }}>
-                  o mesmo token usado por CI, IDE e MCP — rotacione na aba Action para copiar o valor e o comando{" "}
-                  <code>gh secret set</code>
-                </p>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap", marginTop: "0.75rem" }}>
-                  <code className="hero-badge">
-                    ••••••••{selectedRepo.ingestTokenHint || selectedRepo.ingestToken.slice(-6) || "??????"}
-                  </code>
-                  {selectedRepo.ingestToken ? (
-                    <CopyButton text={selectedRepo.ingestToken} label="Copiar token completo" />
-                  ) : (
-                    <span className="hero-muted" style={{ fontSize: "0.8rem" }}>
-                      Rotacione o token para copiar o valor completo (não fica armazenado no browser).
-                    </span>
-                  )}
-                  <button
-                    type="button"
-                    className="hero-btn hero-btn-outline"
-                    onClick={handleRotate}
-                    disabled={rotating}
-                    style={{ borderColor: rotateConfirm ? "var(--accent)" : undefined, color: rotateConfirm ? "var(--accent)" : undefined }}
-                  >
-                    {rotating ? "Rotacionando…" : rotateConfirm ? "Confirmar rotação" : "Rotacionar token"}
-                  </button>
-                  {rotateConfirm && !rotating && (
-                    <button type="button" className="hero-link" style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.8rem" }} onClick={() => setRotateConfirm(false)}>
-                      cancelar
-                    </button>
-                  )}
-                </div>
-                {rotateError && (
-                  <div className="hero-error" style={{ marginTop: "0.75rem" }}>
-                    {rotateError}
-                  </div>
-                )}
-              </div>
+              <HeroTokenCard
+                dense
+                hint={selectedRepo.ingestTokenHint || selectedRepo.ingestToken.slice(-6) || ""}
+                fullToken={selectedRepo.ingestToken}
+                ghCommand={heroTokenGhCmd}
+                rotating={rotating}
+                rotateConfirm={rotateConfirm}
+                rotateError={rotateError}
+                onRotate={handleRotate}
+                onCancelConfirm={() => setRotateConfirm(false)}
+              />
             </section>
           )}
         </>

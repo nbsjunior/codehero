@@ -85,7 +85,10 @@ export default function AdminCockpitShell({
         onClick={() => selectTab(item.id)}
         aria-current={tab === item.id ? "page" : undefined}
       >
-        {item.label}
+        <span className="ex-nav__link-text">
+          <span className="ex-nav__link-label">{item.label}</span>
+          {item.hint ? <span className="ex-nav__link-hint">{item.hint}</span> : null}
+        </span>
       </button>
     );
   }

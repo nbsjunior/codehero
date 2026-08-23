@@ -47,8 +47,13 @@ const PLUGIN_HREF = "/downloads/codehero-vscode.vsix";
 export interface InstalacaoHomeProps {
   /** Abre o wizard único de criação (org → projeto → repos → tokens). */
   onNewWorkspace: () => void;
-  /** Abre o workspace de um projeto (config por repositório). */
-  onOpenWorkspace: (orgId: string, projectId: string, repoId?: string | null) => void;
+  /** Abre o workspace; `workspaceTab` = action | vscode | mcp | overview. */
+  onOpenWorkspace: (
+    orgId: string,
+    projectId: string,
+    repoId?: string | null,
+    workspaceTab?: string,
+  ) => void;
 }
 
 function InstalacaoHome({ onNewWorkspace, onOpenWorkspace }: InstalacaoHomeProps) {
@@ -288,15 +293,40 @@ function InstalacaoHome({ onNewWorkspace, onOpenWorkspace }: InstalacaoHomeProps
   return (
     <div>
       <PageHeader
-        eyebrow="Primeiros passos"
-        title="Começar"
-        description="Workspace = projeto. Cada repositório tem token, Action e plugin próprios — configure no workspace."
+        eyebrow="Primeiro uso"
+        title="Guia rápido"
+        description="Crie o projeto, abra o repositório e gere o HERO_TOKEN na aba Token & Action. Em seguida ligue a GitHub Action."
         actions={
           <button type="button" className="hero-btn hero-btn-accent" onClick={onNewWorkspace}>
-            Novo workspace
+            Criar projeto
           </button>
         }
       />
+
+      {firstWorkspace ? (
+        <div className="ex-quick-actions" style={{ marginBottom: "1.25rem" }}>
+          <p className="ex-quick-actions__label">Atalhos do seu projeto</p>
+          <div className="ex-quick-actions__row">
+            <button
+              type="button"
+              className="hero-btn hero-btn-accent"
+              onClick={() => onOpenWorkspace(firstWorkspace.orgId, firstWorkspace.projectId, null, "action")}
+            >
+              Gerar HERO_TOKEN
+            </button>
+            <button
+              type="button"
+              className="hero-btn hero-btn-outline"
+              onClick={() => onOpenWorkspace(firstWorkspace.orgId, firstWorkspace.projectId)}
+            >
+              Abrir projeto
+            </button>
+            <a className="hero-btn hero-btn-outline" href={PLUGIN_HREF} download style={{ textDecoration: "none" }}>
+              Baixar plugin
+            </a>
+          </div>
+        </div>
+      ) : null}
 
       <OnboardingChecklist
         steps={onboardingSteps}
@@ -339,8 +369,17 @@ function InstalacaoHome({ onNewWorkspace, onOpenWorkspace }: InstalacaoHomeProps
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.5rem" }}>
               <button type="button" className="hero-btn hero-btn-outline" onClick={openFirstOrList}>
-                {firstWorkspace ? "Abrir workspace" : "Criar primeiro workspace"}
+                {firstWorkspace ? "Abrir projeto" : "Criar primeiro projeto"}
               </button>
+              {firstWorkspace ? (
+                <button
+                  type="button"
+                  className="hero-btn hero-btn-accent"
+                  onClick={() => onOpenWorkspace(firstWorkspace.orgId, firstWorkspace.projectId, null, "action")}
+                >
+                  Gerar / renovar HERO_TOKEN
+                </button>
+              ) : null}
               <a
                 className="hero-btn hero-btn-outline"
                 href={PLUGIN_HREF}
@@ -635,14 +674,24 @@ function InstalacaoHome({ onNewWorkspace, onOpenWorkspace }: InstalacaoHomeProps
                   <td>{p.openIssues ?? 0}</td>
                   <td>
                     {p.orgId && p.projectId ? (
-                      <button
-                        type="button"
-                        className="hero-btn hero-btn-outline"
-                        style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem" }}
-                        onClick={() => onOpenWorkspace(p.orgId!, p.projectId!)}
-                      >
-                        Abrir workspace
-                      </button>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+                        <button
+                          type="button"
+                          className="hero-btn hero-btn-accent"
+                          style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem" }}
+                          onClick={() => onOpenWorkspace(p.orgId!, p.projectId!, null, "action")}
+                        >
+                          Token &amp; Action
+                        </button>
+                        <button
+                          type="button"
+                          className="hero-btn hero-btn-outline"
+                          style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem" }}
+                          onClick={() => onOpenWorkspace(p.orgId!, p.projectId!)}
+                        >
+                          Abrir
+                        </button>
+                      </div>
                     ) : null}
                   </td>
                 </tr>

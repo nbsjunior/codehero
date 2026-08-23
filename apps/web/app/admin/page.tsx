@@ -57,36 +57,36 @@ type FindingsBrowserItem = import("@/components/FindingsBrowser").FindingsBrowse
 const SHARED_GROUPS: CockpitNavGroup[] = [
   {
     id: "instalacao",
-    label: "Início",
+    label: "Comece aqui",
     tier: "operation",
-    items: [{ id: "instalacao", label: "Começar" }],
+    items: [{ id: "instalacao", label: "Guia rápido", hint: "Projeto, token e Action" }],
   },
   {
     id: "visao",
-    label: "Inteligência",
+    label: "Qualidade",
     tier: "operation",
     items: [
-      { id: "visao-geral", label: "Visão geral" },
-      { id: "apontamentos", label: "Apontamentos" },
-      { id: "relatorio", label: "Relatório executivo" },
+      { id: "visao-geral", label: "Painel" },
+      { id: "apontamentos", label: "Achados" },
+      { id: "relatorio", label: "Relatório" },
       { id: "manutenibilidade", label: "Manutenibilidade" },
     ],
   },
   {
     id: "projetos",
-    label: "Entrega",
+    label: "Projetos",
     tier: "portfolio",
     items: [
-      { id: "todos-projetos", label: "Todos os projetos" },
-      { id: "novo-workspace", label: "Novo workspace" },
-      { id: "workspace", label: "Workspace ativo" },
-      { id: "regras", label: "Regras do motor" },
-      { id: "mcp-integracao", label: "Integração MCP" },
+      { id: "todos-projetos", label: "Lista de projetos" },
+      { id: "novo-workspace", label: "Criar projeto" },
+      { id: "workspace", label: "Configurar repo", hint: "Token · Action · plugin" },
+      { id: "regras", label: "Regras" },
+      { id: "mcp-integracao", label: "Agentes (MCP)" },
     ],
   },
   {
     id: "docs",
-    label: "Referência",
+    label: "Ajuda",
     tier: "resources",
     items: [{ id: "docs", label: "Documentação", href: "/docs/" }],
   },
@@ -95,28 +95,28 @@ const SHARED_GROUPS: CockpitNavGroup[] = [
 const ADMIN_ONLY_GROUPS: CockpitNavGroup[] = [
   {
     id: "plataforma",
-    label: "Política",
+    label: "Governança",
     tier: "governance",
     items: [
       { id: "dress-code", label: "Dress code" },
       { id: "esteira", label: "Esteira de regras" },
-      { id: "feature-toggles", label: "Feature toggles" },
+      { id: "feature-toggles", label: "Feature flags" },
     ],
   },
   {
     id: "operacoes",
-    label: "Infraestrutura",
+    label: "Operação",
     tier: "governance",
     items: [
-      { id: "escala", label: "Escala e filas" },
+      { id: "escala", label: "Filas e escala" },
       { id: "cotas", label: "Cotas" },
     ],
   },
   {
     id: "usuarios",
-    label: "Pessoas",
+    label: "Equipe",
     tier: "governance",
-    items: [{ id: "usuarios", label: "Todos os usuários" }],
+    items: [{ id: "usuarios", label: "Usuários" }],
   },
 ];
 
@@ -210,9 +210,10 @@ function AdminPanelInner() {
   }, [isPlatformAdmin]);
 
   const navigateWorkspace = useCallback(
-    (orgId: string, projectId: string, repoId?: string | null) => {
+    (orgId: string, projectId: string, repoId?: string | null, workspaceTab?: string) => {
       const q = new URLSearchParams({ org: orgId, id: projectId });
       if (repoId) q.set("repo", repoId);
+      if (workspaceTab) q.set("tab", workspaceTab);
       router.replace(`/admin/?${q.toString()}#workspace`);
       setTab("workspace");
     },
