@@ -4,7 +4,7 @@ import Link from "next/link";
 import { collection, collectionGroup, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import FindingFichaCard from "@/components/FindingFichaCard";
 import FindingsBrowser, { type FindingsBrowserItem } from "@/components/FindingsBrowser";
-import { PageHeader } from "@/components/AdminUi";
+import { PageHeader, SectionTitle } from "@/components/AdminUi";
 import { dbClient } from "@/lib/firebaseDb";
 import {
   adminListAllProjects,
@@ -332,6 +332,11 @@ function InstalacaoHome({ onNewWorkspace, onOpenWorkspace }: InstalacaoHomeProps
         steps={onboardingSteps}
         onCreateWorkspace={onNewWorkspace}
         onOpenWorkspace={firstWorkspace ? () => openFirstOrList() : undefined}
+        onOpenWorkspaceAction={
+          firstWorkspace
+            ? () => onOpenWorkspace(firstWorkspace.orgId, firstWorkspace.projectId, null, "action")
+            : undefined
+        }
       />
 
       {inviteMsg && (
@@ -343,9 +348,9 @@ function InstalacaoHome({ onNewWorkspace, onOpenWorkspace }: InstalacaoHomeProps
 
       {/* Fluxo principal — ordem alinhada ao modelo de dados */}
       <section className="hero-panel" style={{ padding: "1.5rem", marginTop: 0 }}>
-        <h2 className="hero-display" style={{ fontSize: "1.5rem", margin: "0 0 0.35rem" }}>
+        <SectionTitle as="h2" style={{ fontSize: "1.25rem", margin: "0 0 0.35rem" }}>
           Como usar
-        </h2>
+        </SectionTitle>
         <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1.25rem" }}>
           Organização → projeto (workspace) → repositórios → CI/plugin por repo
         </p>
@@ -425,9 +430,9 @@ function InstalacaoHome({ onNewWorkspace, onOpenWorkspace }: InstalacaoHomeProps
 
       {/* Dress code — escopo = projeto, não repo */}
       <section className="hero-panel" style={{ padding: "1.5rem", marginTop: "1rem" }}>
-        <h2 className="hero-display" style={{ fontSize: "1.5rem", margin: "0 0 0.35rem" }}>
+        <SectionTitle as="h2" style={{ fontSize: "1.25rem", margin: "0 0 0.35rem" }}>
           Dress code (opcional)
-        </h2>
+        </SectionTitle>
         <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1rem" }}>
           Política em português no <strong>projeto</strong>. Regras propostas aplicam a todos os
           repositórios daquele workspace (CI e plugin).
@@ -514,9 +519,9 @@ function InstalacaoHome({ onNewWorkspace, onOpenWorkspace }: InstalacaoHomeProps
 
       {/* Prévia — secundária */}
       <section className="hero-panel" style={{ padding: "1.5rem", marginTop: "1rem" }}>
-        <h2 className="hero-display" style={{ fontSize: "1.5rem", margin: "0 0 0.35rem" }}>
+        <SectionTitle as="h2" style={{ fontSize: "1.25rem", margin: "0 0 0.35rem" }}>
           Prévia na nuvem (opcional)
-        </h2>
+        </SectionTitle>
         <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1rem" }}>
           Repo GitHub público, sem instalar CI. Para gate de merge, use a Action no workspace do
           repositório.
@@ -606,9 +611,9 @@ function InstalacaoHome({ onNewWorkspace, onOpenWorkspace }: InstalacaoHomeProps
       <hr className="hero-divider" />
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "0.75rem", marginBottom: "0.75rem" }}>
-        <h2 className="hero-display" style={{ fontSize: "1.35rem", margin: 0 }}>
+        <SectionTitle as="h2" style={{ fontSize: "1.2rem", margin: 0 }}>
           Seus workspaces
-        </h2>
+        </SectionTitle>
         <button type="button" className="hero-btn hero-btn-outline" onClick={onNewWorkspace}>
           Novo workspace
         </button>

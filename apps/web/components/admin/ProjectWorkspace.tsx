@@ -38,6 +38,8 @@ import {
 } from "@/lib/api";
 import { HERO_CORE_URL } from "@/lib/heroCoreUrl";
 import OrgMembersPanel from "@/components/admin/OrgMembersPanel";
+import RepoSetupWorkflow, { SETUP_STEPS, SetupStepNav, type SetupStepId } from "@/components/admin/RepoSetupWorkflow";
+import { SectionTitle } from "@/components/AdminUi";
 import { CodeGraphPanel, vizFromIssues } from "@/components/CodeGraphPanel";
 
 interface ProjectData {
@@ -689,6 +691,12 @@ export default function ProjectWorkspace({
     router.replace(`/admin/?${q.toString()}#workspace`, { scroll: false });
   }
 
+  function goSetupStep(delta: -1 | 1) {
+    const idx = SETUP_STEPS.findIndex((s) => s.id === tab);
+    const next = SETUP_STEPS[idx + delta];
+    if (next) goToTab(next.id);
+  }
+
   if (loading) {
     return (
       <main className="hero-shell">
@@ -804,15 +812,12 @@ export default function ProjectWorkspace({
         style={{ marginTop: "0.75rem", alignItems: "flex-start" }}
       >
         <div>
-          <p className="hero-caption" style={{ margin: "0 0 0.35rem" }}>
-            Workspace do projeto
+          <p className="ex-eyebrow" style={{ margin: "0 0 0.35rem" }}>
+            Projeto
           </p>
-          <h1 className="hero-display" style={{ fontSize: "clamp(1.8rem, 5vw, 2.4rem)", margin: "0 0 0.35rem" }}>
-            {project.name}
-          </h1>
+          <h1 className="ex-page-title">{project.name}</h1>
           <p className="hero-caption" style={{ margin: 0 }}>
-            {orgId} / {projectId} · {project.repoCount} repositório(s) — Action, plugin e token são do repo
-            selecionado abaixo
+            {project.repoCount} repositório(s) · selecione um repo e siga o fluxo de configuração
           </p>
         </div>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.5rem" }}>
@@ -822,8 +827,10 @@ export default function ProjectWorkspace({
       </header>
 
       {gate && (
-        <section className="hero-panel" style={{ padding: "1.25rem", marginTop: "1.25rem" }}>
-          <h2 style={{ fontSize: "1.2rem", margin: "0 0 0.35rem" }}>Quality gate do projeto</h2>
+        <details className="ex-advanced" style={{ marginTop: "1.25rem" }}>
+          <summary>Quality gate do projeto (avançado)</summary>
+        <section className="hero-panel" style={{ padding: "1.25rem", marginTop: "0.75rem" }}>
+          <SectionTitle as="h3">Limites do gate</SectionTitle>
           <p className="hero-caption" style={{ marginTop: 0 }}>
             Usado no ingest (Action/CLI). Defaults: cobertura {gateDefaults?.minNewCodeCoverage}% · blockers{" "}
             {gateDefaults?.maxNewBlockerIssues} · ratings {gateDefaults?.maxSecurityRating}/
@@ -903,13 +910,14 @@ export default function ProjectWorkspace({
           {gateError && <div className="hero-error">{gateError}</div>}
           {gateMsg && <p className="hero-caption">{gateMsg}</p>}
         </section>
+        </details>
       )}
 
       <OrgMembersPanel orgId={orgId} />
 
       <section className="hero-panel" style={{ padding: "1.25rem", marginTop: "1.5rem" }}>
         <div className="ch-section-title">
-          <h2 style={{ fontSize: "1.2rem" }}>Repositórios</h2>
+          <SectionTitle as="h2">Repositórios</SectionTitle>
           <button
             type="button"
             className="hero-btn hero-btn-outline"
@@ -990,50 +998,27 @@ export default function ProjectWorkspace({
           <p style={{ margin: 0 }}>Adicione um repositório acima para configurar o plugin, a GitHub Action e o MCP.</p>
         </section>
       ) : (
-        <>
-          <div className="hero-tabs ex-workspace-tabs" style={{ marginTop: "1.75rem" }} role="tablist" aria-label="Configuração do repositório">
-            <button type="button" role="tab" aria-selected={tab === "overview"} className={`hero-tab${tab === "overview" ? " is-active" : ""}`} onClick={() => goToTab("overview")}>
-              Visão geral
-            </button>
-            <button type="button" role="tab" aria-selected={tab === "action"} className={`hero-tab${tab === "action" ? " is-active" : ""}`} onClick={() => goToTab("action")}>
-              Token &amp; Action
-            </button>
-            <button type="button" role="tab" aria-selected={tab === "vscode"} className={`hero-tab${tab === "vscode" ? " is-active" : ""}`} onClick={() => goToTab("vscode")}>
-              Plugin
-            </button>
-            <button type="button" role="tab" aria-selected={tab === "mcp"} className={`hero-tab${tab === "mcp" ? " is-active" : ""}`} onClick={() => goToTab("mcp")}>
-              Agentes (MCP)
-            </button>
-          </div>
-          <p className="hero-caption" style={{ margin: "0.35rem 0 1.25rem" }}>
-            Repo: <strong>{selectedRepo.name}</strong>
-            {tab === "action" ? " · gere o HERO_TOKEN e ligue o CI" : null}
-          </p>
+        <div className="ex-setup-shell" style={{ marginTop: "1.5rem" }}>
+          <RepoSetupWorkflow
+            activeStep={tab as SetupStepId}
+            hasRepo
+            hasToken={!!selectedRepo.ingestToken}
+            actionInstalled={!!selectedRepo.githubActionRepo}
+            hasScan={selectedRepo.openIssues > 0 || issues.length > 0}
+            repoName={selectedRepo.name}
+            onSelectStep={(step) => goToTab(step)}
+          />
 
+          <div className="ex-setup-panel hero-panel" style={{ padding: "1.5rem", marginTop: "1rem" }}>
           {tab === "overview" && (
-            <section className="hero-panel" style={{ padding: "1.5rem" }}>
+            <>
               <div className="ch-section-title">
-                <h2>Saúde do repositório</h2>
+                <SectionTitle as="h2">Saúde do repositório</SectionTitle>
                 {selectedRepo.repoUrl ? (
                   <a href={selectedRepo.repoUrl} target="_blank" rel="noreferrer" className="hero-link">
                     Abrir no GitHub
                   </a>
                 ) : null}
-              </div>
-
-              <div className="ex-quick-actions">
-                <p className="ex-quick-actions__label">Próximo passo neste repo</p>
-                <div className="ex-quick-actions__row">
-                  <button type="button" className="hero-btn hero-btn-accent" onClick={() => goToTab("action")}>
-                    HERO_TOKEN &amp; Action
-                  </button>
-                  <button type="button" className="hero-btn hero-btn-outline" onClick={() => goToTab("vscode")}>
-                    Plugin VS Code
-                  </button>
-                  <button type="button" className="hero-btn hero-btn-outline" onClick={() => goToTab("mcp")}>
-                    Agentes MCP
-                  </button>
-                </div>
               </div>
 
               <div className="ch-metric-grid">
@@ -1279,14 +1264,13 @@ export default function ProjectWorkspace({
                   if (issue) await handleIssueFeedback(issue, verdict);
                 }}
               />
-            </section>
+
+            </>
           )}
 
           {tab === "vscode" && (
-            <section className="hero-panel" style={{ padding: "1.75rem" }}>
-              <h2 className="hero-display" style={{ fontSize: "1.4rem", margin: "0 0 0.35rem" }}>
-                Plugin VS Code / Cursor
-              </h2>
+            <>
+              <SectionTitle>Plugin VS Code / Cursor</SectionTitle>
               <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1.5rem" }}>
                 Scan local com regras determinísticas · gráficos de compliance · Problems no editor
               </p>
@@ -1331,14 +1315,12 @@ export default function ProjectWorkspace({
                   </div>
                 </div>
               </div>
-            </section>
+            </>
           )}
 
           {tab === "action" && (
-            <section className="hero-panel" style={{ padding: "1.75rem" }}>
-              <h2 className="hero-display" style={{ fontSize: "1.35rem", margin: "0 0 0.35rem" }}>
-                Token e GitHub Action
-              </h2>
+            <>
+              <SectionTitle>Token e GitHub Action</SectionTitle>
               <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1.35rem" }}>
                 1) Gere o HERO_TOKEN · 2) Copie para o GitHub · 3) Instale a Action
               </p>
@@ -1470,14 +1452,12 @@ export default function ProjectWorkspace({
                   </div>
                 </div>
               </div>
-            </section>
+            </>
           )}
 
           {tab === "mcp" && (
-            <section className="hero-panel" style={{ padding: "1.75rem" }}>
-              <h2 className="hero-display" style={{ fontSize: "1.4rem", margin: "0 0 0.35rem" }}>
-                MCP — conectar seu agente de IA
-              </h2>
+            <>
+              <SectionTitle>MCP — conectar seu agente de IA</SectionTitle>
               <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1.5rem" }}>
                 get_generation_context · get_active_rules · get_issues · get_sdd_spec · run_scan · submit_fix_result
               </p>
@@ -1563,9 +1543,17 @@ Aplique o retorno no contexto e só então gere/edite o código.`}
                 onRotate={handleRotate}
                 onCancelConfirm={() => setRotateConfirm(false)}
               />
-            </section>
+            </>
           )}
-        </>
+
+          <SetupStepNav
+            activeStep={tab as SetupStepId}
+            hasRepo
+            onPrev={() => goSetupStep(-1)}
+            onNext={() => goSetupStep(1)}
+          />
+          </div>
+        </div>
       )}
     </main>
   );

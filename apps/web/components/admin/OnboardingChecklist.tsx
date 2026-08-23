@@ -12,7 +12,7 @@ export interface OnboardingStep {
   done: boolean;
   href?: string;
   cta?: string;
-  action?: "create-workspace" | "open-workspace";
+  action?: "create-workspace" | "open-workspace" | "open-workspace-action";
 }
 
 export function buildOnboardingSteps(input: {
@@ -61,10 +61,10 @@ export function buildOnboardingSteps(input: {
       title: "Rode o primeiro scan",
       detail: hasScanSignal
         ? `${input.openIssues} apontamento(s) abertos — o painel já tem sinal.`
-        : "No workspace: aba GitHub Action (CI) ou Plugin VS Code — sempre no contexto do repo selecionado.",
+        : "No projeto: fluxo Token & CI → rode a Action ou o plugin no repo selecionado.",
       done: hasScanSignal,
-      cta: hasScanSignal ? undefined : input.hasWorkspace ? "Abrir workspace" : undefined,
-      action: hasScanSignal || !input.hasWorkspace ? undefined : "open-workspace",
+      cta: hasScanSignal ? undefined : input.hasWorkspace ? "Token & Action" : undefined,
+      action: hasScanSignal || !input.hasWorkspace ? undefined : "open-workspace-action",
       href: hasScanSignal || input.hasWorkspace ? undefined : "/docs/#github-action",
     },
     {
@@ -82,10 +82,12 @@ export default function OnboardingChecklist({
   steps,
   onCreateWorkspace,
   onOpenWorkspace,
+  onOpenWorkspaceAction,
 }: {
   steps: OnboardingStep[];
   onCreateWorkspace?: () => void;
   onOpenWorkspace?: () => void;
+  onOpenWorkspaceAction?: () => void;
 }) {
   const doneCount = steps.filter((s) => s.done).length;
   const allDone = doneCount === steps.length;
@@ -94,6 +96,7 @@ export default function OnboardingChecklist({
   function runAction(action?: OnboardingStep["action"]) {
     if (action === "create-workspace") onCreateWorkspace?.();
     if (action === "open-workspace") onOpenWorkspace?.();
+    if (action === "open-workspace-action") onOpenWorkspaceAction?.();
   }
 
   return (

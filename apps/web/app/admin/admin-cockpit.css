@@ -1350,3 +1350,216 @@
   border-bottom: 1px solid var(--ex-border);
   padding-bottom: 0;
 }
+
+/* —— Sistema tipográfico admin (Manrope-first) —— */
+.ex-main {
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.ex-eyebrow {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ex-red);
+  font-family: var(--ex-sans);
+}
+
+.ex-page-title {
+  margin: 0 0 0.35rem;
+  font-family: var(--ex-display);
+  font-size: clamp(1.65rem, 2.8vw, 2.1rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+  color: var(--ex-text);
+}
+
+.ex-section-title {
+  margin: 0 0 0.5rem;
+  font-family: var(--ex-sans) !important;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  color: var(--ex-text);
+}
+
+.ex-main .hero-display {
+  font-family: var(--ex-sans) !important;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.ex-main .hero-page-header__title {
+  font-family: var(--ex-display);
+}
+
+.ex-main .hero-caption {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--ex-muted);
+  max-width: 65ch;
+}
+
+.ex-advanced {
+  border: 1px solid var(--ex-border);
+  border-radius: 2px;
+  background: var(--ex-surface);
+  padding: 0.65rem 1rem;
+}
+.ex-advanced > summary {
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: var(--ex-muted);
+  list-style: none;
+}
+.ex-advanced > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* —— Workflow integrado (início ? fim) —— */
+.ex-workflow {
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--ex-border);
+  border-radius: 2px;
+  background: var(--ex-surface);
+}
+.ex-workflow__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.ex-workflow__eyebrow {
+  margin: 0 0 0.2rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ex-red);
+}
+.ex-workflow__title {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ex-text);
+}
+.ex-workflow__progress {
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ex-muted);
+  white-space: nowrap;
+}
+.ex-workflow__steps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (max-width: 900px) {
+  .ex-workflow__steps {
+    grid-template-columns: 1fr;
+  }
+}
+.ex-workflow__step {
+  position: relative;
+  min-width: 0;
+}
+.ex-workflow__btn {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--ex-border);
+  border-radius: 2px;
+  background: var(--ex-surface-2);
+  color: var(--ex-text);
+  font-family: var(--ex-sans);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.ex-workflow__step:not(.is-blocked) .ex-workflow__btn:hover {
+  border-color: var(--ex-red-line);
+}
+.ex-workflow__step.is-active .ex-workflow__btn {
+  border-color: var(--ex-red);
+  background: var(--ex-red-dim);
+}
+.ex-workflow__step.is-done .ex-workflow__btn,
+.ex-workflow__step.is-done:not(:has(.ex-workflow__btn)) {
+  border-color: var(--ex-ok-line);
+}
+.ex-workflow__step.is-blocked .ex-workflow__btn {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.ex-workflow__step.is-done .ex-workflow__num {
+  color: var(--ex-ok);
+  border-color: var(--ex-ok-line);
+}
+.ex-workflow__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  margin-bottom: 0.2rem;
+  border: 1px solid var(--ex-border);
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-family: var(--ex-mono);
+}
+.ex-workflow__label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.ex-workflow__detail {
+  font-size: 0.68rem;
+  color: var(--ex-muted);
+  line-height: 1.25;
+}
+.ex-workflow__step:not(:has(.ex-workflow__btn)) {
+  display: flex;
+  flex-direction: column;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--ex-border);
+  border-radius: 2px;
+  background: var(--ex-surface-2);
+}
+.ex-workflow__step.is-done:not(:has(.ex-workflow__btn)) {
+  border-color: var(--ex-ok-line);
+}
+
+.ex-setup-panel {
+  border-top: 2px solid var(--ex-border);
+}
+.ex-setup-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--ex-border-soft);
+}
+.ex-setup-nav__hint {
+  font-size: 0.8rem;
+  color: var(--ex-muted);
+}

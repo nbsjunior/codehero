@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 /** Peças de UI compartilhadas do cockpit de admin (hierarquia executiva, estilo CodeHero). */
 
@@ -97,5 +97,24 @@ export function Callout({
       {title && <strong className="hero-callout__title">{title}</strong>}
       <div className="hero-callout__body">{children}</div>
     </aside>
+  );
+}
+
+/** Título de seção no admin — sempre sans (não usar hero-display em painéis). */
+export function SectionTitle({
+  children,
+  as: Tag = "h2",
+  className,
+  style,
+}: {
+  children: ReactNode;
+  as?: "h2" | "h3";
+  className?: string;
+  style?: CSSProperties;
+}) {
+  return (
+    <Tag className={`ex-section-title${className ? ` ${className}` : ""}`} style={style}>
+      {children}
+    </Tag>
   );
 }
