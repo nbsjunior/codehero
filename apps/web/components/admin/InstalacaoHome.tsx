@@ -186,13 +186,14 @@ function InstalacaoHome({ onNewWorkspace, onOpenWorkspace }: InstalacaoHomeProps
   useEffect(() => {
     if (!user) return;
     const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
-    const invite = params.get("invite");
-    const orgId = params.get("org");
-    if (!invite || !orgId) return;
+    const orgId = params.get("inviteOrg") ?? params.get("org");
+    const inviteId = params.get("inviteId");
+    const token = params.get("token") ?? params.get("invite");
+    if (!orgId || !inviteId || !token) return;
     let cancelled = false;
     (async () => {
       try {
-        await acceptOrgInvite({ orgId, token: invite });
+        await acceptOrgInvite({ orgId, inviteId, token });
         if (!cancelled) {
           setInviteMsg("Convite aceito — a organização já aparece nos seus projetos.");
           setInviteError(null);
@@ -226,7 +227,7 @@ function InstalacaoHome({ onNewWorkspace, onOpenWorkspace }: InstalacaoHomeProps
           ? dressTarget.split("/")
           : [undefined, undefined];
       const res = await submitDressCode({
-        text: dressText.trim(),
+        naturalLanguage: dressText.trim(),
         scope: dressScope,
         orgId,
         projectId,
