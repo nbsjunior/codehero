@@ -243,7 +243,19 @@ function AdminPanelInner() {
 
   function selectTab(id: string) {
     setTab(id);
-    window.history.replaceState(null, "", `#${id}`);
+    const q = new URLSearchParams(searchParams.toString());
+    if (id === "workspace") {
+      if (!q.get("org") || !q.get("id")) {
+        const first = projects[0];
+        if (first) {
+          q.set("org", first.orgId);
+          q.set("id", first.projectId);
+        }
+      }
+      if (!q.get("tab")) q.set("tab", "action");
+    }
+    const qs = q.toString();
+    router.replace(qs ? `/admin/?${qs}#${id}` : `/admin/#${id}`, { scroll: false });
   }
 
   async function loadMemberProjects(uid: string): Promise<AdminProjectRow[]> {

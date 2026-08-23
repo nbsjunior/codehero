@@ -334,22 +334,32 @@ export default function ProjectWorkspace({
 
   useEffect(() => {
     const gha = search.get("gha");
+    if (gha !== "ok" && gha !== "error") return;
+
+    setTab("action");
     if (gha === "ok") {
-      goToTab("action");
       setGhaBanner({
         kind: "ok",
         text: "GitHub Action configurada: workflow + HERO_TOKEN + HERO_CORE_URL. O próximo push/PR já roda o scan.",
       });
       void load();
-    } else if (gha === "error") {
-      goToTab("action");
+    } else {
       setGhaBanner({
         kind: "error",
         text: search.get("msg") || "Não consegui instalar a Action. Verifique se você tem permissão de admin no repositório.",
       });
     }
+
+    const q = new URLSearchParams(search.toString());
+    q.delete("gha");
+    q.delete("msg");
+    q.set("tab", "action");
+    if (orgId) q.set("org", orgId);
+    if (projectId) q.set("id", projectId);
+    if (selectedRepoId) q.set("repo", selectedRepoId);
+    router.replace(`/admin/?${q.toString()}#workspace`, { scroll: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search]);
+  }, [search.get("gha"), search.get("msg")]);
 
   const selectedRepo = repos.find((r) => r.repoId === selectedRepoId) ?? null;
 

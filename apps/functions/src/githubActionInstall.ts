@@ -169,13 +169,14 @@ export const startGithubActionInstall = onCall<StartInput>({ cors: true }, async
  */
 export const githubOAuthCallback = onRequest({ cors: false }, async (req, res) => {
     const fail = (origin: string, message: string, orgId?: string, projectId?: string, slug?: string) => {
-      const url = new URL("/projects", origin);
+      const url = new URL("/admin/", origin);
       if (orgId) url.searchParams.set("org", orgId);
       if (projectId) url.searchParams.set("id", projectId);
       if (slug) url.searchParams.set("slug", slug);
       url.searchParams.set("tab", "action");
       url.searchParams.set("gha", "error");
       url.searchParams.set("msg", message.slice(0, 180));
+      url.hash = "workspace";
       res.redirect(302, url.toString());
     };
 
@@ -331,13 +332,14 @@ export const githubOAuthCallback = onRequest({ cors: false }, async (req, res) =
 
       await stateRef.delete().catch(() => undefined);
 
-      const ok = new URL("/projects", returnOrigin);
+      const ok = new URL("/admin/", returnOrigin);
       ok.searchParams.set("org", st.orgId);
       ok.searchParams.set("id", st.projectId);
       ok.searchParams.set("repo", st.repoId);
       ok.searchParams.set("slug", st.projectSlug);
       ok.searchParams.set("tab", "action");
       ok.searchParams.set("gha", "ok");
+      ok.hash = "workspace";
       res.redirect(302, ok.toString());
     } catch (err) {
       console.error("githubOAuthCallback failed", err);

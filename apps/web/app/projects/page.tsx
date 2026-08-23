@@ -6,15 +6,8 @@ function RedirectInner() {
   const router = useRouter();
   const sp = useSearchParams();
   useEffect(() => {
-    const q = new URLSearchParams();
-    const org = sp.get("org");
-    const id = sp.get("id");
-    const repo = sp.get("repo");
-    if (org) q.set("org", org);
-    if (id) q.set("id", id);
-    if (repo) q.set("repo", repo);
-    const qs = q.toString();
-    router.replace(`/admin/${qs ? `?${qs}` : ""}#workspace`);
+    const qs = sp.toString();
+    router.replace(qs ? `/admin/?${qs}#workspace` : "/admin/#workspace");
   }, [router, sp]);
   return <p className="hero-caption" style={{ padding: "2rem" }}>Redirecionando para o painel…</p>;
 }
