@@ -3,12 +3,7 @@
 import type { User } from "firebase/auth";
 import { Callout } from "@/components/AdminUi";
 
-export type OnboardingStepId =
-  | "verify"
-  | "project"
-  | "repo"
-  | "scan"
-  | "channel";
+export type OnboardingStepId = "verify" | "workspace" | "repo" | "scan" | "channel";
 
 export interface OnboardingStep {
   id: OnboardingStepId;
@@ -17,6 +12,7 @@ export interface OnboardingStep {
   done: boolean;
   href?: string;
   cta?: string;
+  action?: "create-workspace" | "open-workspace";
 }
 
 export function buildOnboardingSteps(input: {
@@ -24,82 +20,87 @@ export function buildOnboardingSteps(input: {
   projectCount: number;
   repoCount: number;
   openIssues: number;
-  hasIngestTokenFlash: boolean;
+  hasWorkspace: boolean;
 }): OnboardingStep[] {
   const verified = !!input.user?.emailVerified;
   const hasProject = input.projectCount > 0;
   const hasRepo = input.repoCount > 0;
-  const hasScanSignal = input.openIssues > 0 || input.hasIngestTokenFlash;
+  const hasScanSignal = input.openIssues > 0;
 
   return [
     {
       id: "verify",
       title: "Confirme o email",
       detail: verified
-        ? "Conta verificada — você já pode criar projetos."
-        : "Confirme o email para liberar criação de projeto e tokens de CI.",
+        ? "Conta verificada — você já pode criar workspaces."
+        : "Confirme o email para liberar criação de workspace e tokens de CI.",
       done: verified,
     },
     {
-      id: "project",
-      title: "Crie o primeiro projeto",
+      id: "workspace",
+      title: "Crie o workspace",
       detail: hasProject
         ? `${input.projectCount} projeto(s) na conta.`
-        : "Organize org + projeto (e, se quiser, um repo GitHub) em Novo projeto.",
+        : "Organização + projeto + repositórios no assistente — um caminho só.",
       done: hasProject,
-      cta: hasProject ? undefined : "Novo projeto",
+      cta: hasProject ? undefined : "Novo workspace",
+      action: hasProject ? undefined : "create-workspace",
     },
     {
       id: "repo",
-      title: "Ligue um repositório",
+      title: "Ligue e configure repositórios",
       detail: hasRepo
-        ? `${input.repoCount} repo(s) sob gestão.`
-        : "Cada repo recebe um token para a Action, o scanner ou o MCP.",
+        ? `${input.repoCount} repo(s) — cada um com token/Action próprios no workspace.`
+        : "No workspace, adicione o repo e copie o token daquele repositório.",
       done: hasRepo,
-      href: hasRepo ? undefined : "#workspace",
-      cta: hasRepo ? undefined : "Abrir workspace",
+      cta: hasRepo ? undefined : input.hasWorkspace ? "Abrir workspace" : "Novo workspace",
+      action: hasRepo ? undefined : input.hasWorkspace ? "open-workspace" : "create-workspace",
     },
     {
       id: "scan",
       title: "Rode o primeiro scan",
       detail: hasScanSignal
-        ? input.openIssues > 0
-          ? `${input.openIssues} apontamento(s) abertos — o painel já tem sinal.`
-          : "Token pronto — configure a Action ou o plugin e rode o scan."
-        : "GitHub Action, plugin VS Code ou prévia na nuvem. Sem scan, o painel fica vazio.",
+        ? `${input.openIssues} apontamento(s) abertos — o painel já tem sinal.`
+        : "No workspace: aba GitHub Action (CI) ou Plugin VS Code — sempre no contexto do repo selecionado.",
       done: hasScanSignal,
-      href: "/docs/#github-action",
-      cta: "Ver Action nas docs",
+      cta: hasScanSignal ? undefined : input.hasWorkspace ? "Abrir workspace" : undefined,
+      action: hasScanSignal || !input.hasWorkspace ? undefined : "open-workspace",
+      href: hasScanSignal || input.hasWorkspace ? undefined : "/docs/#github-action",
     },
     {
       id: "channel",
-      title: "Escolha o canal do dia a dia",
-      detail: "Action no CI (gate de merge), plugin no editor, ou MCP para o agente aplicar a correção.",
+      title: "Canal do dia a dia",
+      detail: "Action no CI (gate), plugin no editor, ou MCP para o agente aplicar a correção.",
       done: hasScanSignal,
-      href: "#mcp",
-      cta: "MCP / integração",
+      href: "#mcp-integracao",
+      cta: "Integração MCP",
     },
   ];
 }
 
 export default function OnboardingChecklist({
   steps,
-  onCreateProject,
+  onCreateWorkspace,
+  onOpenWorkspace,
 }: {
   steps: OnboardingStep[];
-  onCreateProject?: () => void;
+  onCreateWorkspace?: () => void;
+  onOpenWorkspace?: () => void;
 }) {
   const doneCount = steps.filter((s) => s.done).length;
   const allDone = doneCount === steps.length;
   if (allDone) return null;
 
+  function runAction(action?: OnboardingStep["action"]) {
+    if (action === "create-workspace") onCreateWorkspace?.();
+    if (action === "open-workspace") onOpenWorkspace?.();
+  }
+
   return (
-    <Callout
-      tone="neutral"
-      title={`Primeiros passos · ${doneCount}/${steps.length}`}
-    >
+    <Callout tone="neutral" title={`Primeiros passos · ${doneCount}/${steps.length}`}>
       <p style={{ margin: "0 0 0.75rem" }}>
-        Meta: email ok, um projeto, um repo e um scan real — aí o Relatório passa a ter o que mostrar.
+        Ordem: workspace → repos (config por repo) → scan. Dress code e prévia na nuvem são
+        opcionais.
       </p>
       <ol className="onboarding-checklist">
         {steps.map((s) => (
@@ -112,12 +113,16 @@ export default function OnboardingChecklist({
               <p className="hero-caption" style={{ margin: "0.15rem 0 0.35rem" }}>
                 {s.detail}
               </p>
-              {!s.done && s.id === "project" && onCreateProject ? (
-                <button type="button" className="hero-btn hero-btn-outline" onClick={onCreateProject}>
-                  {s.cta ?? "Novo projeto"}
+              {!s.done && s.action ? (
+                <button
+                  type="button"
+                  className="hero-btn hero-btn-outline"
+                  onClick={() => runAction(s.action)}
+                >
+                  {s.cta ?? "Continuar"}
                 </button>
               ) : null}
-              {!s.done && s.href ? (
+              {!s.done && !s.action && s.href ? (
                 <a className="hero-link" href={s.href}>
                   {s.cta ?? "Abrir"}
                 </a>

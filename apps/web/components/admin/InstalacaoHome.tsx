@@ -10,7 +10,6 @@ import {
   adminListAllProjects,
   checkPlatformAdmin,
   previewRepoScan,
-  provisionProject,
   submitDressCode,
   type AdminProjectRow,
   type DressCodeRule,
@@ -45,35 +44,38 @@ const ratingColor: Record<string, string> = {
 
 const PLUGIN_HREF = "/downloads/codehero-vscode.vsix";
 
-function InstalacaoHome() {
+export interface InstalacaoHomeProps {
+  /** Abre o wizard único de criação (org → projeto → repos → tokens). */
+  onNewWorkspace: () => void;
+  /** Abre o workspace de um projeto (config por repositório). */
+  onOpenWorkspace: (orgId: string, projectId: string, repoId?: string | null) => void;
+}
+
+function InstalacaoHome({ onNewWorkspace, onOpenWorkspace }: InstalacaoHomeProps) {
   const { user } = useAuth();
   const cloudPreviewFlag = useFeatureFlag("cloud-preview-scan");
   const [projects, setProjects] = useState<ProjectRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [orgName, setOrgName] = useState("");
-  const [projectName, setProjectName] = useState("");
-  const [repoUrl, setRepoUrl] = useState("");
-  const [provisioning, setProvisioning] = useState(false);
-  const [provisionError, setProvisionError] = useState<string | null>(null);
-  const [ingestToken, setIngestToken] = useState<string | null>(null);
-  const [showProvision, setShowProvision] = useState(false);
   const [inviteMsg, setInviteMsg] = useState<string | null>(null);
   const [inviteError, setInviteError] = useState<string | null>(null);
 
-  // Dress code
   const [dressText, setDressText] = useState("");
-  const [dressScope, setDressScope] = useState<"global" | "project">("global");
-  const [dressTarget, setDressTarget] = useState(""); // orgId/projectId
+  const [dressScope, setDressScope] = useState<"global" | "project">("project");
+  const [dressTarget, setDressTarget] = useState("");
   const [dressBusy, setDressBusy] = useState(false);
   const [dressError, setDressError] = useState<string | null>(null);
   const [dressResult, setDressResult] = useState<{ summary: string; rules: DressCodeRule[] } | null>(null);
 
-  // One-click preview
   const [previewUrl, setPreviewUrl] = useState("");
   const [previewBusy, setPreviewBusy] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [preview, setPreview] = useState<PreviewRepoScanResult | null>(null);
+
+  const firstWorkspace = useMemo(() => {
+    const p = projects.find((x) => x.orgId && x.projectId);
+    return p?.orgId && p.projectId ? { orgId: p.orgId, projectId: p.projectId } : null;
+  }, [projects]);
 
   const previewFindings: FindingsBrowserItem[] = useMemo(
     () =>
@@ -106,9 +108,9 @@ function InstalacaoHome() {
         projectCount: projects.length,
         repoCount: projects.reduce((n, p) => n + (p.repoCount || 0), 0),
         openIssues: projects.reduce((n, p) => n + (p.openIssues || 0), 0),
-        hasIngestTokenFlash: !!ingestToken,
+        hasWorkspace: !!firstWorkspace,
       }),
-    [user, projects, ingestToken],
+    [user, projects, firstWorkspace],
   );
 
   const loadProjects = useCallback(async (admin: boolean) => {
@@ -119,9 +121,9 @@ function InstalacaoHome() {
         setProjects(
           rows.map((p: AdminProjectRow) => ({
             id: `${p.orgId}/${p.projectId}`,
+            name: p.name,
             orgId: p.orgId,
             projectId: p.projectId,
-            name: p.name,
             orgName: p.orgName,
             repoCount: p.repoCount,
             debtMinutes: p.debtMinutes,
@@ -133,48 +135,31 @@ function InstalacaoHome() {
         );
         return;
       }
-
       if (!user) {
         setProjects([]);
         return;
       }
-
-      // Firestore security rules are NOT query filters: an unconstrained
-      // collectionGroup("projects") scan across every org would be denied
-      // outright (verified against the emulator's Requests log), since the
-      // rule's isOrgMember(orgId) can't be proven for an unbounded result
-      // set. Instead, find which orgs this user belongs to via a `members`
-      // collectionGroup query filtered by uid (a pattern Firestore CAN
-      // evaluate per-document), then read each org's own projects
-      // subcollection — a plain, rule-legal single-collection read.
-      const membershipSnap = await getDocs(
-        query(collectionGroup(dbClient, "members"), where("uid", "==", user.uid)),
-      );
-      const orgIds = [
-        ...new Set(
-          membershipSnap.docs.map((d) => d.ref.parent.parent?.id).filter((id): id is string => Boolean(id)),
-        ),
-      ];
-
+      const memSnap = await getDocs(query(collectionGroup(dbClient, "members"), where("uid", "==", user.uid)));
+      const orgIds = [...new Set(memSnap.docs.map((d) => d.ref.parent.parent?.id).filter(Boolean))] as string[];
       const rows: ProjectRow[] = [];
       for (const orgId of orgIds) {
         const orgSnap = await getDoc(doc(dbClient, "orgs", orgId));
-        const orgName = orgSnap.exists() ? (orgSnap.data().name as string | undefined) : undefined;
-        const projectsSnap = await getDocs(collection(dbClient, "orgs", orgId, "projects"));
-        for (const p of projectsSnap.docs) {
-          const data = p.data() as Omit<ProjectRow, "id">;
+        const orgName = (orgSnap.data()?.name as string) ?? orgId;
+        const projSnap = await getDocs(collection(dbClient, "orgs", orgId, "projects"));
+        for (const pd of projSnap.docs) {
+          const data = pd.data();
           rows.push({
-            id: `${orgId}/${p.id}`,
+            id: `${orgId}/${pd.id}`,
+            name: (data.name as string) ?? pd.id,
             orgId,
-            projectId: p.id,
-            name: data.name,
+            projectId: pd.id,
             orgName,
-            repoCount: data.repoCount ?? 0,
-            debtMinutes: data.debtMinutes ?? 0,
-            maintainabilityRating: data.maintainabilityRating ?? "A",
-            securityRating: data.securityRating ?? "A",
-            qualityGateStatus: data.qualityGateStatus ?? "PASSED",
-            openIssues: data.openIssues ?? 0,
+            repoCount: (data.repoCount as number) ?? 0,
+            debtMinutes: (data.debtMinutes as number) ?? 0,
+            maintainabilityRating: (data.maintainabilityRating as string) ?? "—",
+            securityRating: (data.securityRating as string) ?? "—",
+            qualityGateStatus: (data.qualityGateStatus as string) ?? "NONE",
+            openIssues: (data.openIssues as number) ?? 0,
           });
         }
       }
@@ -185,39 +170,32 @@ function InstalacaoHome() {
   }, [user]);
 
   useEffect(() => {
-    if (!user) return;
     let cancelled = false;
     (async () => {
-      let admin = false;
-      try {
-        admin = await checkPlatformAdmin();
-      } catch {
-        admin = false;
-      }
+      const admin = await checkPlatformAdmin().then((r) => r.isPlatformAdmin).catch(() => false);
       if (cancelled) return;
       setIsAdmin(admin);
-      if (admin) setDressScope("global");
-      else setDressScope("project");
+      if (!admin) setDressScope("project");
       await loadProjects(admin);
     })();
     return () => {
       cancelled = true;
     };
-  }, [user, loadProjects]);
+  }, [loadProjects]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const sp = new URLSearchParams(window.location.search);
-    const inviteOrg = sp.get("inviteOrg");
-    const inviteId = sp.get("inviteId");
-    const token = sp.get("token");
-    if (!inviteOrg || !inviteId || !token || !user) return;
+    if (!user) return;
+    const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
+    const invite = params.get("invite");
+    const orgId = params.get("org");
+    if (!invite || !orgId) return;
     let cancelled = false;
-    void (async () => {
+    (async () => {
       try {
-        await acceptOrgInvite({ orgId: inviteOrg, inviteId, token });
+        await acceptOrgInvite({ orgId, token: invite });
         if (!cancelled) {
-          setInviteMsg("Convite aceito — a org já aparece na lista.");
+          setInviteMsg("Convite aceito — a organização já aparece nos seus projetos.");
+          setInviteError(null);
           await loadProjects(isAdmin);
         }
       } catch (err) {
@@ -231,29 +209,11 @@ function InstalacaoHome() {
     };
   }, [user, isAdmin, loadProjects]);
 
-  async function handleProvision(e: FormEvent) {
-    e.preventDefault();
-    setProvisionError(null);
-    setIngestToken(null);
-    setProvisioning(true);
-    try {
-      const result = await provisionProject({
-        orgName: orgName.trim(),
-        projectName: projectName.trim(),
-        repoUrl: repoUrl.trim() || undefined,
-      });
-      setIngestToken(result.ingestToken);
-      setOrgName("");
-      setProjectName("");
-      setRepoUrl("");
-      setShowProvision(false);
-      await loadProjects(isAdmin);
-    } catch (err) {
-      setProvisionError(err instanceof Error ? err.message : "Não consegui criar o projeto. Nada foi salvo — revise os dados e tente de novo.");
-    } finally {
-      setProvisioning(false);
+  useEffect(() => {
+    if (dressScope === "project" && !dressTarget && projects[0]?.id) {
+      setDressTarget(projects[0].id);
     }
-  }
+  }, [dressScope, dressTarget, projects]);
 
   async function handleDressCode(e: FormEvent) {
     e.preventDefault();
@@ -261,20 +221,15 @@ function InstalacaoHome() {
     setDressResult(null);
     setDressBusy(true);
     try {
-      let orgId: string | undefined;
-      let projectId: string | undefined;
-      if (dressScope === "project") {
-        const target = dressTarget || projects[0]?.id;
-        if (!target?.includes("/")) throw new Error("Selecione um repositório.");
-        [orgId, projectId] = target.split("/");
-      }
+      const [orgId, projectId] =
+        dressScope === "project" && dressTarget.includes("/")
+          ? dressTarget.split("/")
+          : [undefined, undefined];
       const res = await submitDressCode({
-        naturalLanguage: dressText.trim(),
+        text: dressText.trim(),
         scope: dressScope,
         orgId,
         projectId,
-        activate: false,
-        requireApproval: true,
       });
       setDressResult({
         summary:
@@ -285,7 +240,11 @@ function InstalacaoHome() {
       });
       setDressText("");
     } catch (err) {
-      setDressError(err instanceof Error ? err.message : "Não consegui interpretar o dress code. As regras ativas não mudaram.");
+      setDressError(
+        err instanceof Error
+          ? err.message
+          : "Não consegui interpretar o dress code. As regras ativas não mudaram.",
+      );
     } finally {
       setDressBusy(false);
     }
@@ -306,11 +265,23 @@ function InstalacaoHome() {
       });
       setPreview(res);
     } catch (err) {
-      setPreviewError(err instanceof Error ? err.message : "Não consegui gerar a prévia. O repositório pode ser privado ou grande demais.");
+      setPreviewError(
+        err instanceof Error
+          ? err.message
+          : "Não consegui gerar a prévia. O repositório pode ser privado ou grande demais.",
+      );
       console.error("previewRepoScan client error", err);
     } finally {
       setPreviewBusy(false);
     }
+  }
+
+  function openFirstOrList() {
+    if (firstWorkspace) {
+      onOpenWorkspace(firstWorkspace.orgId, firstWorkspace.projectId);
+      return;
+    }
+    onNewWorkspace();
   }
 
   return (
@@ -318,23 +289,78 @@ function InstalacaoHome() {
       <PageHeader
         eyebrow="Primeiros passos"
         title="Começar"
-        description="Crie o projeto, conecte o CI ou o plugin e veja o primeiro resultado — em minutos"
+        description="Workspace = projeto. Cada repositório tem token, Action e plugin próprios — configure no workspace."
         actions={
-          <button type="button" className="hero-btn hero-btn-outline" onClick={() => setShowProvision((v) => !v)}>
-            {showProvision ? "Fechar" : "Novo projeto"}
+          <button type="button" className="hero-btn hero-btn-accent" onClick={onNewWorkspace}>
+            Novo workspace
           </button>
         }
       />
 
       <OnboardingChecklist
         steps={onboardingSteps}
-        onCreateProject={() => setShowProvision(true)}
+        onCreateWorkspace={onNewWorkspace}
+        onOpenWorkspace={firstWorkspace ? () => openFirstOrList() : undefined}
       />
 
-      {inviteMsg && <div className="hero-panel" style={{ padding: "0.85rem 1rem", marginBottom: "1rem" }}>{inviteMsg}</div>}
+      {inviteMsg && (
+        <div className="hero-panel" style={{ padding: "0.85rem 1rem", marginBottom: "1rem" }}>
+          {inviteMsg}
+        </div>
+      )}
       {inviteError && <div className="hero-error">{inviteError}</div>}
 
-      <details className="hero-panel" style={{ padding: "1.1rem 1.35rem", marginTop: 0, marginBottom: "1rem" }}>
+      {/* Fluxo principal — ordem alinhada ao modelo de dados */}
+      <section className="hero-panel" style={{ padding: "1.5rem", marginTop: 0 }}>
+        <h2 className="hero-display" style={{ fontSize: "1.5rem", margin: "0 0 0.35rem" }}>
+          Como usar
+        </h2>
+        <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1.25rem" }}>
+          Organização → projeto (workspace) → repositórios → CI/plugin por repo
+        </p>
+
+        <ol className="howto-steps">
+          <li>
+            <strong>1. Crie o workspace</strong>
+            <p>
+              Defina a organização, o projeto e os repositórios GitHub. No fim você recebe o token de
+              cada repo (uma vez) e abre o workspace.
+            </p>
+            <button type="button" className="hero-btn hero-btn-accent" style={{ marginTop: "0.5rem" }} onClick={onNewWorkspace}>
+              Novo workspace
+            </button>
+          </li>
+          <li>
+            <strong>2. Configure no workspace (por repositório)</strong>
+            <p>
+              Action no CI, plugin VS Code e MCP usam o <em>token daquele repo</em> — não um token
+              global. Selecione o repositório no workspace e copie o YAML / settings.
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.5rem" }}>
+              <button type="button" className="hero-btn hero-btn-outline" onClick={openFirstOrList}>
+                {firstWorkspace ? "Abrir workspace" : "Criar primeiro workspace"}
+              </button>
+              <a
+                className="hero-btn hero-btn-outline"
+                href={PLUGIN_HREF}
+                download
+                style={{ textDecoration: "none" }}
+              >
+                Baixar plugin VS Code
+              </a>
+            </div>
+          </li>
+          <li>
+            <strong>3. Opcionais no portal</strong>
+            <p>
+              Dress code (política do <em>projeto</em>) e prévia na nuvem (repo público, sem CI). O
+              quality gate continua no scanner determinístico.
+            </p>
+          </li>
+        </ol>
+      </section>
+
+      <details className="hero-panel" style={{ padding: "1.1rem 1.35rem", marginTop: "1rem", marginBottom: "1rem" }}>
         <summary
           style={{
             cursor: "pointer",
@@ -348,97 +374,153 @@ function InstalacaoHome() {
         </summary>
         <p className="hero-caption" style={{ marginTop: "0.75rem", marginBottom: "0.85rem" }}>
           O portal observa padrões, propõe melhorias offline e só publica regra nova depois de prova
-          objetiva. A IA ajuda a redigir; o quality gate continua determinístico — sem “opinião” no
-          merge.
+          objetiva. A IA ajuda a redigir; o quality gate continua determinístico.
         </p>
         <p style={{ margin: 0, display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
           <Link href="/docs/#aprendizado-continuo" className="hero-btn hero-btn-outline" style={{ textDecoration: "none" }}>
             Ver nas docs
           </Link>
-          <a
-            href="https://github.com/nbsjunior/codehero/blob/main/docs/wiki/Esteira-de-aprendizado-de-regras.md"
-            target="_blank"
-            rel="noreferrer"
-            className="hero-link"
-          >
-            Wiki (markdown)
-          </a>
         </p>
       </details>
 
-      {/* Como usar — fluxo simples */}
-      <section className="hero-panel" style={{ padding: "1.5rem", marginTop: 0 }}>
+      {/* Dress code — escopo = projeto, não repo */}
+      <section className="hero-panel" style={{ padding: "1.5rem", marginTop: "1rem" }}>
         <h2 className="hero-display" style={{ fontSize: "1.5rem", margin: "0 0 0.35rem" }}>
-          Como usar (3 passos)
+          Dress code (opcional)
         </h2>
-        <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1.25rem" }}>
-          Plugin no editor para scan local · portal só para dress code e prévia na nuvem
+        <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1rem" }}>
+          Política em português no <strong>projeto</strong>. Regras propostas aplicam a todos os
+          repositórios daquele workspace (CI e plugin).
         </p>
-
-        <ol className="howto-steps">
-          <li>
-            <strong>Instale o plugin</strong>
-            <p>
-              Baixe o VSIX → no VS Code/Cursor: Extensions → ⋯ → <em>Install from VSIX</em>. Abra a pasta do projeto →
-              ícone CodeHero na barra lateral → <em>Rodar scan</em>.
-            </p>
-            <a className="hero-btn hero-btn-accent" href={PLUGIN_HREF} download style={{ display: "inline-block", textDecoration: "none", marginTop: "0.5rem" }}>
-              Baixar plugin VS Code
-            </a>
-          </li>
-          <li>
-            <strong>Escreva o dress code (opcional)</strong>
-            <p>Em português, abaixo. A IA propõe regras; o scanner determinístico aplica no CI e no plugin.</p>
-          </li>
-          <li>
-            <strong>Prévia na nuvem (opcional)</strong>
-            <p>Cole um GitHub público para ver o relatório sem instalar nada no CI.</p>
-          </li>
-        </ol>
-
-        <div style={{ marginTop: "1.5rem", paddingTop: "1.25rem", borderTop: "2px solid var(--line)" }}>
-          <h3 style={{ margin: "0 0 0.75rem", fontSize: "1rem" }}>Prévia na Cloud</h3>
-          {!cloudPreviewFlag.loading && !cloudPreviewFlag.enabled ? (
-            <p className="hero-caption" style={{ margin: 0 }}>
-              Prévia na nuvem temporariamente indisponível. Use a GitHub Action ou o plugin enquanto isso.
-            </p>
-          ) : (
-            <>
-              <form onSubmit={handlePreview}>
-                <label className="hero-label" htmlFor="previewUrl">
-                  Repo GitHub público
+        <form onSubmit={handleDressCode}>
+          <label className="hero-label" htmlFor="dressText">
+            Política
+          </label>
+          <textarea
+            id="dressText"
+            className="hero-input"
+            required
+            rows={5}
+            value={dressText}
+            onChange={(e) => setDressText(e.target.value)}
+            placeholder={`Ex.: "Proibido console.log em produção. Não usar Math.random para tokens."`}
+            style={{ resize: "vertical", minHeight: 120 }}
+          />
+          <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginTop: "1rem", alignItems: "flex-end" }}>
+            <div>
+              <label className="hero-label" htmlFor="dressScope">
+                Escopo
+              </label>
+              <select
+                id="dressScope"
+                className="hero-input"
+                value={dressScope}
+                onChange={(e) => setDressScope(e.target.value as "global" | "project")}
+                disabled={!isAdmin && dressScope === "global"}
+              >
+                {isAdmin && <option value="global">Plataforma (todos os projetos)</option>}
+                <option value="project">Um projeto (workspace)</option>
+              </select>
+            </div>
+            {dressScope === "project" && (
+              <div style={{ flex: 1, minWidth: 200 }}>
+                <label className="hero-label" htmlFor="dressTarget">
+                  Projeto
                 </label>
-                <input
-                  id="previewUrl"
+                <select
+                  id="dressTarget"
                   className="hero-input"
+                  value={dressTarget}
+                  onChange={(e) => setDressTarget(e.target.value)}
                   required
-                  value={previewUrl}
-                  onChange={(e) => setPreviewUrl(e.target.value)}
-                  placeholder="https://github.com/org/repo"
-                />
-                <button type="submit" className="hero-btn hero-btn-accent" style={{ marginTop: "0.75rem" }} disabled={previewBusy}>
-                  {previewBusy ? "Analisando…" : "Ver prévia"}
-                </button>
-              </form>
-              {previewError && (
-                <div className="hero-error" style={{ marginTop: "0.75rem" }}>
-                  {previewError}
-                </div>
-              )}
-            </>
-          )}
-        </div>
+                >
+                  <option value="">Selecione…</option>
+                  {projects
+                    .filter((p) => p.orgId && p.projectId)
+                    .map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.orgName ? `${p.orgName} / ` : ""}
+                        {p.name}
+                        {p.repoCount ? ` · ${p.repoCount} repo(s)` : ""}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )}
+            <button type="submit" className="hero-btn hero-btn-accent" disabled={dressBusy}>
+              {dressBusy ? "Interpretando…" : "Salvar e ativar"}
+            </button>
+          </div>
+        </form>
+        {dressError && (
+          <div className="hero-error" style={{ marginTop: "1rem" }}>
+            {dressError}
+          </div>
+        )}
+        {dressResult && (
+          <div style={{ marginTop: "1.25rem" }}>
+            <p style={{ margin: "0 0 0.5rem", fontWeight: 700 }}>{dressResult.summary}</p>
+            <p className="hero-caption">{dressResult.rules.length} regra(s) ativas no motor determinístico</p>
+            <ul style={{ margin: "0.5rem 0 0", paddingLeft: "1.2rem" }}>
+              {dressResult.rules.map((r) => (
+                <li key={r.id} style={{ marginBottom: "0.35rem" }}>
+                  <strong>{r.id}</strong> · {r.severity} · {r.message}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </section>
+
+      {/* Prévia — secundária */}
+      <section className="hero-panel" style={{ padding: "1.5rem", marginTop: "1rem" }}>
+        <h2 className="hero-display" style={{ fontSize: "1.5rem", margin: "0 0 0.35rem" }}>
+          Prévia na nuvem (opcional)
+        </h2>
+        <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1rem" }}>
+          Repo GitHub público, sem instalar CI. Para gate de merge, use a Action no workspace do
+          repositório.
+        </p>
+        {!cloudPreviewFlag.loading && !cloudPreviewFlag.enabled ? (
+          <p className="hero-caption" style={{ margin: 0 }}>
+            Prévia temporariamente indisponível. Use a GitHub Action ou o plugin no workspace.
+          </p>
+        ) : (
+          <>
+            <form onSubmit={handlePreview}>
+              <label className="hero-label" htmlFor="previewUrl">
+                Repo GitHub público
+              </label>
+              <input
+                id="previewUrl"
+                className="hero-input"
+                required
+                value={previewUrl}
+                onChange={(e) => setPreviewUrl(e.target.value)}
+                placeholder="https://github.com/org/repo"
+              />
+              <button type="submit" className="hero-btn hero-btn-outline" style={{ marginTop: "0.75rem" }} disabled={previewBusy}>
+                {previewBusy ? "Analisando…" : "Ver prévia"}
+              </button>
+            </form>
+            {previewError && (
+              <div className="hero-error" style={{ marginTop: "0.75rem" }}>
+                {previewError}
+              </div>
+            )}
+          </>
+        )}
 
         {preview && (
           <div style={{ marginTop: "1.25rem" }}>
             <p className="hero-caption" style={{ marginBottom: "0.5rem" }}>
               {preview.repo} · {preview.findingCount} apontamento(s) · overlays: {preview.overlayRuleCount}
-              {typeof preview.filesScanned === "number" ? ` · ${preview.filesScanned} arquivo(s) analisado(s)` : ""}
+              {typeof preview.filesScanned === "number" ? ` · ${preview.filesScanned} arquivo(s)` : ""}
             </p>
             {preview.truncated && (
               <p className="hero-caption" style={{ marginBottom: "0.5rem", color: "var(--rating-c)" }}>
-                ⚠ repositório grande — cobertura parcial (limite de arquivos por prévia atingido). Para cobertura
-                completa, configure a GitHub Action no repositório (roda direto no CI, sem esse limite).
+                Repositório grande — cobertura parcial. Para cobertura completa, configure a Action no
+                workspace desse repositório.
               </p>
             )}
             <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "0.75rem" }}>
@@ -450,7 +532,7 @@ function InstalacaoHome() {
             </div>
             <FindingsBrowser
               title="Apontamentos da prévia"
-              subtitle="Lista enxuta — clique para abrir a ficha com risco, motivo e como corrigir. ← → navega."
+              subtitle="Clique para abrir a ficha. ← → navega."
               findings={previewFindings}
               emptyMessage="Nenhum apontamento nesta prévia."
             />
@@ -481,161 +563,23 @@ function InstalacaoHome() {
         )}
       </section>
 
-      {/* Dress code */}
-      <section className="hero-panel" style={{ padding: "1.5rem", marginTop: "1.5rem" }}>
-        <h2 className="hero-display" style={{ fontSize: "1.5rem", margin: "0 0 0.35rem" }}>
-          Dress code em linguagem natural
-        </h2>
-        <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1rem" }}>
-          Escreva a política · Dress Code Tools interpreta · vira regras determinísticas · por repo ou para todos
-        </p>
-        <form onSubmit={handleDressCode}>
-          <label className="hero-label" htmlFor="dressText">
-            Política
-          </label>
-          <textarea
-            id="dressText"
-            className="hero-input"
-            required
-            rows={5}
-            value={dressText}
-            onChange={(e) => setDressText(e.target.value)}
-            placeholder={`Ex.: "Proibido console.log em produção. Não usar Math.random para tokens. Sem curl | bash em scripts de setup."`}
-            style={{ resize: "vertical", minHeight: 120 }}
-          />
-          <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginTop: "1rem", alignItems: "flex-end" }}>
-            <div>
-              <label className="hero-label" htmlFor="dressScope">
-                Escopo
-              </label>
-              <select
-                id="dressScope"
-                className="hero-input"
-                value={dressScope}
-                onChange={(e) => setDressScope(e.target.value as "global" | "project")}
-                disabled={!isAdmin && dressScope === "global"}
-              >
-                {isAdmin && <option value="global">Todos os repositórios</option>}
-                <option value="project">Um repositório</option>
-              </select>
-            </div>
-            {dressScope === "project" && (
-              <div style={{ flex: 1, minWidth: 200 }}>
-                <label className="hero-label" htmlFor="dressTarget">
-                  Repositório
-                </label>
-                <select
-                  id="dressTarget"
-                  className="hero-input"
-                  value={dressTarget}
-                  onChange={(e) => setDressTarget(e.target.value)}
-                  required
-                >
-                  <option value="">Selecione…</option>
-                  {projects
-                    .filter((p) => p.orgId && p.projectId)
-                    .map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.orgName ? `${p.orgName} / ` : ""}
-                        {p.name}
-                      </option>
-                    ))}
-                </select>
-              </div>
-            )}
-            <button type="submit" className="hero-btn hero-btn-accent" disabled={dressBusy}>
-              {dressBusy ? "Interpretando com Dress Code Tools…" : "Salvar e ativar"}
-            </button>
-          </div>
-        </form>
-        {dressError && (
-          <div className="hero-error" style={{ marginTop: "1rem" }}>
-            {dressError}
-          </div>
-        )}
-        {dressResult && (
-          <div style={{ marginTop: "1.25rem" }}>
-            <p style={{ margin: "0 0 0.5rem", fontWeight: 700 }}>{dressResult.summary}</p>
-            <p className="hero-caption">{dressResult.rules.length} regra(s) ativas no motor determinístico</p>
-            <ul style={{ margin: "0.5rem 0 0", paddingLeft: "1.2rem" }}>
-              {dressResult.rules.map((r) => (
-                <li key={r.id} style={{ marginBottom: "0.35rem" }}>
-                  <strong>{r.id}</strong> · {r.severity} · {r.message}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </section>
-
-      {showProvision && (
-        <form className="hero-panel" style={{ padding: "1.5rem", marginTop: "1.5rem" }} onSubmit={handleProvision}>
-          <h2 className="hero-display" style={{ fontSize: "1.6rem", margin: "0 0 1rem" }}>
-            Provisionar projeto
-          </h2>
-          <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))" }}>
-            <div>
-              <label className="hero-label" htmlFor="orgName">
-                Organização
-              </label>
-              <input id="orgName" className="hero-input" required value={orgName} onChange={(e) => setOrgName(e.target.value)} placeholder="Acme Corp" />
-            </div>
-            <div>
-              <label className="hero-label" htmlFor="projectName">
-                Projeto
-              </label>
-              <input
-                id="projectName"
-                className="hero-input"
-                required
-                value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-                placeholder="api-core"
-              />
-            </div>
-            <div>
-              <label className="hero-label" htmlFor="repoUrl">
-                Repo (opcional)
-              </label>
-              <input
-                id="repoUrl"
-                className="hero-input"
-                value={repoUrl}
-                onChange={(e) => setRepoUrl(e.target.value)}
-                placeholder="https://github.com/org/repo"
-              />
-            </div>
-          </div>
-          {provisionError && (
-            <div className="hero-error" style={{ marginTop: "1rem" }}>
-              {provisionError}
-            </div>
-          )}
-          <button type="submit" className="hero-btn hero-btn-accent" style={{ marginTop: "1.25rem" }} disabled={provisioning}>
-            {provisioning ? "Provisionando…" : "Criar org + projeto"}
-          </button>
-        </form>
-      )}
-
-      {ingestToken && (
-        <div className="hero-panel" style={{ padding: "1.25rem", marginTop: "1.5rem" }}>
-          <p className="hero-caption" style={{ marginTop: 0 }}>
-            ingest token — copie agora; não será mostrado de novo
-          </p>
-          <pre className="hero-code">{ingestToken}</pre>
-          <button type="button" className="hero-btn hero-btn-outline" style={{ marginTop: "0.75rem" }} onClick={() => setIngestToken(null)}>
-            Entendi
-          </button>
-        </div>
-      )}
-
       <hr className="hero-divider" />
 
-      {loading && <p className="hero-caption">Carregando projetos…</p>}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "0.75rem", marginBottom: "0.75rem" }}>
+        <h2 className="hero-display" style={{ fontSize: "1.35rem", margin: 0 }}>
+          Seus workspaces
+        </h2>
+        <button type="button" className="hero-btn hero-btn-outline" onClick={onNewWorkspace}>
+          Novo workspace
+        </button>
+      </div>
+
+      {loading && <p className="hero-caption">Carregando…</p>}
 
       {!loading && projects.length === 0 && (
-        <p style={{ color: "var(--muted)", maxWidth: 480 }}>
-          Nenhum projeto ainda. Clique em <strong>Novo projeto</strong> para começar — um clique cria org + projeto na plataforma.
+        <p style={{ color: "var(--muted)", maxWidth: 520 }}>
+          Nenhum workspace ainda. Crie um para associar repositórios e configurar Action/plugin por
+          repo.
         </p>
       )}
 
@@ -661,7 +605,7 @@ function InstalacaoHome() {
                   <td style={{ fontWeight: 700 }}>{p.name}</td>
                   {isAdmin && <td>{p.orgName}</td>}
                   <td>
-                    <span className="hero-badge" title="qualidade consolidada destes repositórios">
+                    <span className="hero-badge" title="Cada repo tem token e Action próprios">
                       {p.repoCount} repo{p.repoCount === 1 ? "" : "s"}
                     </span>
                   </td>
@@ -690,9 +634,14 @@ function InstalacaoHome() {
                   <td>{p.openIssues ?? 0}</td>
                   <td>
                     {p.orgId && p.projectId ? (
-                      <Link href={`/admin/?org=${encodeURIComponent(p.orgId)}&id=${encodeURIComponent(p.projectId)}#workspace`} className="hero-btn hero-btn-outline" style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem", textDecoration: "none", display: "inline-block" }}>
-                        Configurar
-                      </Link>
+                      <button
+                        type="button"
+                        className="hero-btn hero-btn-outline"
+                        style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem" }}
+                        onClick={() => onOpenWorkspace(p.orgId!, p.projectId!)}
+                      >
+                        Abrir workspace
+                      </button>
                     ) : null}
                   </td>
                 </tr>

@@ -34,10 +34,22 @@ export async function rotateIngestToken(input: {
   orgId: string;
   projectId: string;
   repoId: string;
-}): Promise<string> {
-  const fn = httpsCallable<typeof input, { ingestToken: string }>(functions, "rotateIngestToken");
-  const res = await fn(input);
-  return res.data.ingestToken;
+}): Promise<{ ingestToken: string; ingestTokenHint: string }> {
+  const fn = httpsCallable<typeof input, { ingestToken: string; ingestTokenHint?: string }>(
+    functions,
+    "rotateIngestToken",
+  );
+  try {
+    const res = await fn(input);
+    const token = res.data.ingestToken;
+    if (!token) throw new Error("A função não devolveu o novo token.");
+    return {
+      ingestToken: token,
+      ingestTokenHint: res.data.ingestTokenHint ?? token.slice(-6),
+    };
+  } catch (err) {
+    throw new Error(formatCallableError(err, "Falha ao rotacionar o HERO_TOKEN."));
+  }
 }
 
 export interface RepoAutoScan {

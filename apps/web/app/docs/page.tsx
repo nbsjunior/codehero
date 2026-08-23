@@ -968,24 +968,24 @@ export default function DocsPage() {
                 </p>
               </li>
               <li>
-                <strong>Provisione org + projeto</strong>
+                <strong>Crie o workspace</strong>
                 <p>
-                  <em>Novo projeto</em> → nome da organização, nome do projeto e (recomendado) URL do repositório
-                  GitHub. O portal gera o token de ingestão usado por CI, IDE e MCP.
+                  Em <em>Começar</em> ou <em>Novo workspace</em>: organização → projeto → repositórios. Cada
+                  repo recebe um token próprio (mostrado uma vez).
                 </p>
               </li>
               <li>
-                <strong>Abra Configurar no projeto</strong>
+                <strong>Abra o workspace e selecione o repositório</strong>
                 <p>
-                  Quatro abas: Visão geral · Plugin VS Code · GitHub Action · MCP. Cada uma já vem com os dados do
-                  <em>seu</em> projeto preenchidos.
+                  Action, plugin VS Code e MCP usam o token <em>daquele</em> repo. Abas: Visão geral · Plugin ·
+                  GitHub Action · MCP.
                 </p>
               </li>
               <li>
                 <strong>Escolha o canal (pode usar todos)</strong>
                 <p>
-                  Action na esteira, plugin no editor, prévia no portal, MCP no agente. O workflow recomendado está
-                  mais abaixo.
+                  Action na esteira, plugin no editor, prévia no portal, MCP no agente. Dress code é política
+                  do <em>projeto</em> (vale para todos os repos do workspace).
                 </p>
               </li>
             </ol>

@@ -78,10 +78,10 @@ const SHARED_GROUPS: CockpitNavGroup[] = [
     tier: "portfolio",
     items: [
       { id: "todos-projetos", label: "Todos os projetos" },
+      { id: "novo-workspace", label: "Novo workspace" },
       { id: "workspace", label: "Workspace ativo" },
       { id: "regras", label: "Regras do motor" },
       { id: "mcp-integracao", label: "Integração MCP" },
-      { id: "novo-workspace", label: "Novo workspace" },
     ],
   },
   {
@@ -597,7 +597,12 @@ function AdminPanelInner() {
         onSelectTab={selectTab}
         isPlatformAdmin={isPlatformAdmin}
       >
-        {tab === "instalacao" && <InstalacaoHome />}
+        {tab === "instalacao" && (
+          <InstalacaoHome
+            onNewWorkspace={() => selectTab("novo-workspace")}
+            onOpenWorkspace={navigateWorkspace}
+          />
+        )}
 
         {tab === "visao-geral" && (
           <>
@@ -724,7 +729,7 @@ function AdminPanelInner() {
             />
             {projects.length === 0 ? (
               <Callout tone="neutral" title="Nenhum projeto">
-                Use <strong>Instalação → Novo projeto</strong> ou <strong>Novo workspace</strong> para começar.
+                Use <strong>Novo workspace</strong> (Começar ou Entrega) — organização, projeto e repos num fluxo só.
               </Callout>
             ) : (
               <div className="hero-panel" style={{ overflowX: "auto" }}>
@@ -848,17 +853,25 @@ function AdminPanelInner() {
         {tab === "workspace" && (
           <>
             <PageHeader
-              eyebrow="Projetos"
+              eyebrow="Entrega"
               title="Workspace"
-              description="Configuração do projeto e repositórios (Action, scan, plugin, issues)"
+              description="Selecione o repositório — Action, plugin e token são por repo, não globais do projeto."
             />
             {!wsOrg || !wsProject ? (
               <Callout tone="warn" title="Selecione um projeto">
-                Vá em <strong>Todos os projetos</strong>
-                {isPlatformAdmin ? " ou Novo workspace" : " ou Instalação"}.
-                <button type="button" className="hero-btn" style={{ marginTop: "0.75rem" }} onClick={() => selectTab("todos-projetos")}>
-                  Ver projetos
-                </button>
+                Vá em <strong>Todos os projetos</strong>, <strong>Começar</strong> ou{" "}
+                <strong>Novo workspace</strong>.
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.75rem" }}>
+                  <button type="button" className="hero-btn" onClick={() => selectTab("todos-projetos")}>
+                    Ver projetos
+                  </button>
+                  <button type="button" className="hero-btn hero-btn-outline" onClick={() => selectTab("novo-workspace")}>
+                    Novo workspace
+                  </button>
+                  <button type="button" className="hero-btn hero-btn-outline" onClick={() => selectTab("instalacao")}>
+                    Começar
+                  </button>
+                </div>
               </Callout>
             ) : (
               <Suspense fallback={<p className="hero-caption">Carregando workspace…</p>}>

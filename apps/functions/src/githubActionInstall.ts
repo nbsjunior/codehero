@@ -102,8 +102,11 @@ export const startGithubActionInstall = onCall<StartInput>({ cors: true }, async
       );
     }
 
-    const member = await db.doc(`orgs/${orgId}/members/${uid}`).get();
-    if (!member.exists) throw new HttpsError("permission-denied", "not a member of this org");
+    const platformAdmin = (await db.doc(`platformAdmins/${uid}`).get()).exists;
+    if (!platformAdmin) {
+      const member = await db.doc(`orgs/${orgId}/members/${uid}`).get();
+      if (!member.exists) throw new HttpsError("permission-denied", "not a member of this org");
+    }
 
     const pSnap = await projectRef(orgId, projectId).get();
     if (!pSnap.exists) throw new HttpsError("not-found", "project not found");
@@ -273,11 +276,14 @@ export const githubOAuthCallback = onRequest({ cors: false }, async (req, res) =
         return;
       }
 
-      const member = await db.doc(`orgs/${st.orgId}/members/${st.uid}`).get();
-      if (!member.exists) {
-        await stateRef.delete().catch(() => undefined);
-        failSt("Sem permissão nesta organização.");
-        return;
+      const platformAdmin = (await db.doc(`platformAdmins/${st.uid}`).get()).exists;
+      if (!platformAdmin) {
+        const member = await db.doc(`orgs/${st.orgId}/members/${st.uid}`).get();
+        if (!member.exists) {
+          await stateRef.delete().catch(() => undefined);
+          failSt("Sem permissão nesta organização.");
+          return;
+        }
       }
 
       const pRef = projectRef(st.orgId, st.projectId);

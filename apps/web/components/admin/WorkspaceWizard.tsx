@@ -57,9 +57,9 @@ export default function WorkspaceWizard({
   return (
     <>
       <PageHeader
-        eyebrow="Projetos"
+        eyebrow="Entrega"
         title="Novo workspace"
-        description="Organização, projeto e repositórios em quatro passos. Os tokens aparecem só no final, uma vez."
+        description="Um caminho: organização → projeto → repositórios. Cada repo ganha token próprio; a config (Action/plugin) fica no workspace."
       />
 
       <ol className="hero-wizard-steps" aria-label="Passos">
@@ -67,7 +67,7 @@ export default function WorkspaceWizard({
           { n: 1, label: "Organização" },
           { n: 2, label: "Projeto" },
           { n: 3, label: "Repositórios" },
-          { n: 4, label: "Tokens" },
+          { n: 4, label: "Abrir workspace" },
         ].map((s) => (
           <li key={s.n} className={step === s.n ? "is-active" : step > s.n ? "is-done" : ""}>
             <span>{s.n}</span> {s.label}

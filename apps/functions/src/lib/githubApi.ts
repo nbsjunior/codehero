@@ -69,6 +69,11 @@ export interface InstallGithubActionResult {
 /**
  * Creates/updates the CodeHero workflow file and configures HERO_TOKEN (secret)
  * + HERO_CORE_URL (variable) on the target repository.
+ *
+ * Ordem importa: secrets/vars ANTES do commit do workflow. Gravar o YAML
+ * primeiro dispara o Action no push com HERO_TOKEN ainda ausente — o job
+ * falha em "Validar configuração" e o utilizador acha que a instalação
+ * quebrou (visto em dualbank-fe: variável chegou ~30s depois do run).
  */
 export async function installCodeHeroOnRepo(input: {
   githubToken: string;
@@ -94,34 +99,7 @@ export async function installCodeHeroOnRepo(input: {
   }
   const defaultBranch = repoRes.data.default_branch?.trim() || "main";
 
-  const yaml = buildCodeHeroWorkflowYaml(orgId, projectId, repoId, { defaultBranch });
-  const contentB64 = Buffer.from(yaml, "utf8").toString("base64");
-
-  const existing = await ghJson<{ sha?: string; message?: string }>(
-    githubToken,
-    "GET",
-    `${repoPath}/contents/${WORKFLOW_PATH}?ref=${encodeURIComponent(defaultBranch)}`,
-  );
-
-  const putBody: Record<string, string> = {
-    message: existing.ok
-      ? "chore: update CodeHero GitHub Action workflow"
-      : "chore: add CodeHero GitHub Action workflow",
-    content: contentB64,
-    branch: defaultBranch,
-  };
-  if (existing.ok && existing.data.sha) putBody.sha = existing.data.sha;
-
-  const putRes = await ghJson<{ content?: { path?: string }; message?: string }>(
-    githubToken,
-    "PUT",
-    `${repoPath}/contents/${WORKFLOW_PATH}`,
-    putBody,
-  );
-  if (!putRes.ok) {
-    throw new Error(putRes.message || `Falha ao gravar ${WORKFLOW_PATH} (HTTP ${putRes.status}).`);
-  }
-
+  // --- 1) Secrets + variables (antes de qualquer push que dispare o workflow) ---
   const keyRes = await ghJson<{ key?: string; key_id?: string; message?: string }>(
     githubToken,
     "GET",
@@ -130,7 +108,7 @@ export async function installCodeHeroOnRepo(input: {
   if (!keyRes.ok || !keyRes.data.key || !keyRes.data.key_id) {
     throw new Error(
       keyRes.message ||
-        "Não foi possível obter a public key de Actions secrets. Confirme permissão no repositório.",
+        "Não foi possível obter a public key de Actions secrets. Confirme permissão no repositório (scope `repo` / admin).",
     );
   }
 
@@ -176,6 +154,35 @@ export async function installCodeHeroOnRepo(input: {
     if (!create.ok) {
       throw new Error(create.message || `Falha ao criar variable HERO_CORE_URL (HTTP ${create.status}).`);
     }
+  }
+
+  // --- 2) Workflow file (só depois de HERO_TOKEN + HERO_CORE_URL existirem) ---
+  const yaml = buildCodeHeroWorkflowYaml(orgId, projectId, repoId, { defaultBranch });
+  const contentB64 = Buffer.from(yaml, "utf8").toString("base64");
+
+  const existing = await ghJson<{ sha?: string; message?: string }>(
+    githubToken,
+    "GET",
+    `${repoPath}/contents/${WORKFLOW_PATH}?ref=${encodeURIComponent(defaultBranch)}`,
+  );
+
+  const putBody: Record<string, string> = {
+    message: existing.ok
+      ? "chore: update CodeHero GitHub Action workflow"
+      : "chore: add CodeHero GitHub Action workflow",
+    content: contentB64,
+    branch: defaultBranch,
+  };
+  if (existing.ok && existing.data.sha) putBody.sha = existing.data.sha;
+
+  const putRes = await ghJson<{ content?: { path?: string }; message?: string }>(
+    githubToken,
+    "PUT",
+    `${repoPath}/contents/${WORKFLOW_PATH}`,
+    putBody,
+  );
+  if (!putRes.ok) {
+    throw new Error(putRes.message || `Falha ao gravar ${WORKFLOW_PATH} (HTTP ${putRes.status}).`);
   }
 
   return {

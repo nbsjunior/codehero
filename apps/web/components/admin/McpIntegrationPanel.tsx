@@ -219,7 +219,7 @@ export default function McpIntegrationPanel({
       <DataSection title="1. Projeto e repositório">
         {projects.length === 0 ? (
           <p className="hero-caption" style={{ margin: 0 }}>
-            Nenhum projeto carregado. Abra Instalação ou Todos os projetos primeiro.
+            Nenhum projeto carregado. Abra Começar ou Todos os projetos primeiro.
           </p>
         ) : (
           <div style={{ display: "grid", gap: "0.85rem", maxWidth: 640 }}>

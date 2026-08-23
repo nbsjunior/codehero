@@ -176,7 +176,10 @@ runs:
         [ -n "$REPO_ID" ]    || missing="$missing repo-id"
         if [ -n "$missing" ]; then
           echo "::error::CodeHero: input(s) obrigatório(s) sem valor:$missing"
-          echo "::error::Configure as variables/secrets correspondentes no repositório (Settings > Secrets and variables > Actions)."
+          echo "::error::No repositório: Settings → Secrets and variables → Actions"
+          echo "::error::  • Secret  HERO_TOKEN     = token de ingestão do workspace (portal CodeHero)"
+          echo "::error::  • Variable HERO_CORE_URL = https://codehero.web.app/api"
+          echo "::error::Isto NÃO é HARNESS_TOKEN (esse é do gate RoqueOS / roqueos.yml)."
           exit 1
         fi
 

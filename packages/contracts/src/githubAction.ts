@@ -90,6 +90,20 @@ jobs:
 `;
 }
 
+function shellSingleQuoted(value: string): string {
+  return `'${value.replace(/'/g, `'\\''`)}'`;
+}
+
+/** Shell snippet only for HERO_TOKEN (após rotação). */
+export function buildHeroTokenSecretCommand(input: {
+  owner: string;
+  repo: string;
+  ingestToken: string;
+}): string {
+  const repo = `${input.owner}/${input.repo}`;
+  return `gh secret set HERO_TOKEN --repo ${repo} --body ${shellSingleQuoted(input.ingestToken)}`;
+}
+
 /** Shell snippet to set Actions secret + variable via GitHub CLI. */
 export function buildGithubCliSetupScript(input: {
   owner: string;
@@ -99,7 +113,9 @@ export function buildGithubCliSetupScript(input: {
 }): string {
   const repo = `${input.owner}/${input.repo}`;
   return `# CodeHero — secrets/vars no repositório (requer GitHub CLI: https://cli.github.com)
-gh secret set HERO_TOKEN --repo ${repo} --body '${input.ingestToken.replace(/'/g, `'\\''`)}'
-gh variable set HERO_CORE_URL --repo ${repo} --body '${input.heroCoreUrl.replace(/'/g, `'\\''`)}'
+# Grave HERO_TOKEN ANTES de confiar no workflow (um push sem o secret falha na validação).
+${buildHeroTokenSecretCommand(input)}
+gh variable set HERO_CORE_URL --repo ${repo} --body ${shellSingleQuoted(input.heroCoreUrl)}
+# Não confundir com HARNESS_TOKEN (gate RoqueOS / .github/workflows/roqueos.yml).
 `;
 }

@@ -3,7 +3,11 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { collection, doc, getDoc, getDocs, limit, orderBy, query, where } from "firebase/firestore";
-import { buildCodeHeroWorkflowYaml, buildGithubCliSetupScript } from "@codehero/contracts";
+import {
+  buildCodeHeroWorkflowYaml,
+  buildGithubCliSetupScript,
+  buildHeroTokenSecretCommand,
+} from "@codehero/contracts";
 import CopyButton from "@/components/CopyButton";
 import FindingsBrowser, { type FindingsBrowserItem } from "@/components/FindingsBrowser";
 import {
@@ -647,11 +651,28 @@ export default function ProjectWorkspace({
     setRotating(true);
     setRotateError(null);
     try {
-      const newToken = await rotateIngestToken({ orgId, projectId, repoId: selectedRepo.repoId });
-      setRepos((prev) => prev.map((r) => (r.repoId === selectedRepo.repoId ? { ...r, ingestToken: newToken } : r)));
+      const { ingestToken, ingestTokenHint } = await rotateIngestToken({
+        orgId,
+        projectId,
+        repoId: selectedRepo.repoId,
+      });
+      setRepos((prev) =>
+        prev.map((r) =>
+          r.repoId === selectedRepo.repoId ? { ...r, ingestToken, ingestTokenHint } : r,
+        ),
+      );
       setRotateConfirm(false);
+      setGhaBanner({
+        kind: "ok",
+        text: "HERO_TOKEN rotacionado. Copie o token ou o comando gh abaixo e atualize o secret no GitHub (o valor completo só aparece agora).",
+      });
+      setTab("action");
     } catch (err) {
-      setRotateError(err instanceof Error ? err.message : "Não consegui rotacionar o token. O token atual continua válido.");
+      setRotateError(
+        err instanceof Error
+          ? err.message
+          : "Não consegui rotacionar o token. O token atual continua válido.",
+      );
     } finally {
       setRotating(false);
     }
@@ -679,11 +700,19 @@ export default function ProjectWorkspace({
   const ownerRepo = selectedRepo ? parseOwnerRepo(selectedRepo.repoUrl) : null;
   const workflowYaml = selectedRepo ? buildCodeHeroWorkflowYaml(orgId, projectId, selectedRepo.repoId) : "";
   const ghCliScript =
-    ownerRepo && selectedRepo
+    ownerRepo && selectedRepo?.ingestToken
       ? buildGithubCliSetupScript({
           owner: ownerRepo.owner,
           repo: ownerRepo.repo,
           heroCoreUrl: HERO_CORE_URL,
+          ingestToken: selectedRepo.ingestToken,
+        })
+      : null;
+  const heroTokenGhCmd =
+    ownerRepo && selectedRepo?.ingestToken
+      ? buildHeroTokenSecretCommand({
+          owner: ownerRepo.owner,
+          repo: ownerRepo.repo,
           ingestToken: selectedRepo.ingestToken,
         })
       : null;
@@ -765,13 +794,14 @@ export default function ProjectWorkspace({
       >
         <div>
           <p className="hero-caption" style={{ margin: "0 0 0.35rem" }}>
-            Admin do repositório
+            Workspace do projeto
           </p>
           <h1 className="hero-display" style={{ fontSize: "clamp(1.8rem, 5vw, 2.4rem)", margin: "0 0 0.35rem" }}>
             {project.name}
           </h1>
           <p className="hero-caption" style={{ margin: 0 }}>
-            {orgId} / {projectId} · {project.repoCount} repositório(s)
+            {orgId} / {projectId} · {project.repoCount} repositório(s) — Action, plugin e token são do repo
+            selecionado abaixo
           </p>
         </div>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.5rem" }}>
@@ -1292,6 +1322,74 @@ export default function ProjectWorkspace({
                 </div>
               )}
 
+              <div
+                style={{
+                  marginBottom: "1.5rem",
+                  padding: "1rem 1.1rem",
+                  border: "1px solid var(--border)",
+                  borderRadius: 8,
+                  background: "var(--surface-2, transparent)",
+                }}
+              >
+                <h3 style={{ margin: "0 0 0.35rem", fontSize: "1rem" }}>HERO_TOKEN</h3>
+                <p className="hero-caption" style={{ marginTop: 0, marginBottom: "0.75rem" }}>
+                  Secret do Actions deste repositório. Rotacione para ver o valor completo uma vez, copie e grave no
+                  GitHub. Não confundir com <code>HARNESS_TOKEN</code> (RoqueOS).
+                </p>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
+                  <code className="hero-badge">
+                    ••••••••{selectedRepo.ingestTokenHint || selectedRepo.ingestToken.slice(-6) || "??????"}
+                  </code>
+                  {selectedRepo.ingestToken ? (
+                    <CopyButton text={selectedRepo.ingestToken} label="Copiar token" />
+                  ) : (
+                    <span className="hero-muted" style={{ fontSize: "0.8rem" }}>
+                      Valor completo só após criar ou rotacionar.
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    className="hero-btn hero-btn-outline"
+                    onClick={handleRotate}
+                    disabled={rotating}
+                    style={{
+                      borderColor: rotateConfirm ? "var(--accent)" : undefined,
+                      color: rotateConfirm ? "var(--accent)" : undefined,
+                    }}
+                  >
+                    {rotating ? "Rotacionando…" : rotateConfirm ? "Confirmar rotação" : "Rotacionar token"}
+                  </button>
+                  {rotateConfirm && !rotating && (
+                    <button
+                      type="button"
+                      className="hero-link"
+                      style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.8rem" }}
+                      onClick={() => setRotateConfirm(false)}
+                    >
+                      cancelar
+                    </button>
+                  )}
+                </div>
+                {selectedRepo.ingestToken && heroTokenGhCmd ? (
+                  <div style={{ marginTop: "0.85rem" }}>
+                    <p className="hero-caption" style={{ margin: "0 0 0.4rem" }}>
+                      Atualizar só o secret no GitHub:
+                    </p>
+                    <div className="hero-copyrow">
+                      <pre className="hero-code" style={{ maxHeight: 72 }}>
+                        {heroTokenGhCmd}
+                      </pre>
+                      <CopyButton text={heroTokenGhCmd} label="Copiar comando gh" />
+                    </div>
+                  </div>
+                ) : null}
+                {rotateError && (
+                  <div className="hero-error" style={{ marginTop: "0.75rem" }}>
+                    {rotateError}
+                  </div>
+                )}
+              </div>
+
               {selectedRepo.githubActionRepo && (
                 <p className="hero-caption" style={{ marginTop: 0, marginBottom: "1.25rem" }}>
                   Já instalada em <strong>{selectedRepo.githubActionRepo}</strong>.
@@ -1331,7 +1429,11 @@ export default function ProjectWorkspace({
                       <pre className="hero-code" style={{ maxHeight: 140 }}>{ghCliScript}</pre>
                       <CopyButton text={ghCliScript} label="Copiar script gh" />
                     </div>
-                  ) : null}
+                  ) : (
+                    <p className="hero-muted" style={{ fontSize: "0.85rem", margin: 0 }}>
+                      Rotacione o <code>HERO_TOKEN</code> acima para gerar o script com o token completo.
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -1483,7 +1585,8 @@ Aplique o retorno no contexto e só então gere/edite o código.`}
               <div>
                 <h3 style={{ margin: "0 0 0.5rem", fontSize: "1rem" }}>Token de acesso</h3>
                 <p className="hero-caption" style={{ marginTop: 0 }}>
-                  o mesmo token usado por CI, IDE e MCP para este repositório — rotacionar invalida todos de uma vez
+                  o mesmo token usado por CI, IDE e MCP — rotacione na aba Action para copiar o valor e o comando{" "}
+                  <code>gh secret set</code>
                 </p>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap", marginTop: "0.75rem" }}>
                   <code className="hero-badge">
