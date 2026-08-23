@@ -172,7 +172,7 @@ function InstalacaoHome({ onNewWorkspace, onOpenWorkspace }: InstalacaoHomeProps
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const admin = await checkPlatformAdmin().then((r) => r.isPlatformAdmin).catch(() => false);
+      const admin = await checkPlatformAdmin().catch(() => false);
       if (cancelled) return;
       setIsAdmin(admin);
       if (!admin) setDressScope("project");
