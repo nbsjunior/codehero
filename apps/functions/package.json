@@ -21,7 +21,7 @@
     "@codehero/ruleforge": "*",
     "@firebase/app": "^0.13.2",
     "@genkit-ai/google-genai": "^1.40.1",
-    "adm-zip": "^0.6.0",
+    "adm-zip": "^0.6.1",
     "firebase-admin": "^13.0.2",
     "firebase-functions": "^6.3.0",
     "genkit": "^1.40.1",
