@@ -14,22 +14,22 @@
     "test": "node --experimental-strip-types --test test/**/*.test.mjs"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.115.0",
-    "@anthropic-ai/vertex-sdk": "^0.19.0",
+    "@anthropic-ai/sdk": "^0.133.0",
+    "@anthropic-ai/vertex-sdk": "^0.20.4",
     "@codehero/contracts": "*",
     "@codehero/fp-ranker": "*",
     "@codehero/ruleforge": "*",
-    "@firebase/app": "^0.13.2",
-    "@genkit-ai/google-genai": "^1.40.1",
-    "adm-zip": "^0.6.0",
-    "firebase-admin": "^13.0.2",
-    "firebase-functions": "^6.3.0",
+    "@firebase/app": "^0.16.3",
+    "@genkit-ai/google-genai": "^1.42.0",
+    "adm-zip": "^0.6.1",
+    "firebase-admin": "^14.5.0",
+    "firebase-functions": "^7.4.0",
     "genkit": "^1.40.1",
-    "tweetsodium": "^0.0.5",
-    "zod": "^3.24.1",
+    "tweetsodium": "^0.0.6",
+    "zod": "^4.6.6",
     "zod-to-json-schema": "^3.25.2"
   },
   "devDependencies": {
-    "@types/adm-zip": "^0.5.8"
+    "@types/adm-zip": "^0.6.0"
   }
 }
