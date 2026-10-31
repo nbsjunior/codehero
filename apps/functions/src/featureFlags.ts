@@ -1,6 +1,7 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { FieldValue } from "firebase-admin/firestore";
 import { db } from "./lib/firebase.ts";
+import { portalWarmOpts } from "./lib/httpSecurity.ts";
 
 async function requirePlatformAdmin(uid: string): Promise<void> {
   const snap = await db.doc(`platformAdmins/${uid}`).get();
@@ -22,7 +23,7 @@ export interface FeatureFlag {
  * Admin SDK, not client Firestore rules, so the write path never depends on
  * the client's own permission model.
  */
-export const listFeatureFlags = onCall(async (request) => {
+export const listFeatureFlags = onCall(portalWarmOpts, async (request) => {
   if (!request.auth?.uid) throw new HttpsError("unauthenticated", "sign-in required");
   const snap = await db.collection("platformFeatureFlags").orderBy("key", "asc").get();
   const flags: FeatureFlag[] = snap.docs.map((d) => {

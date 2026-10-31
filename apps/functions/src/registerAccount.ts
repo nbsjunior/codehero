@@ -2,16 +2,14 @@ import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { getAuth } from "firebase-admin/auth";
 import "./lib/firebase.ts"; // ensure Admin app is initialized
 import { consumeRateLimit } from "./lib/authz.ts";
-import { httpCors, enforceAppCheck } from "./lib/httpSecurity.ts";
+import { portalWarmOpts } from "./lib/httpSecurity.ts";
 
 /**
  * Public one-click signup. Creates the Auth user with Admin SDK and returns a
  * custom token so the web client can sign in even when the Email/Password
  * provider is disabled in the Firebase Console (common shared-project footgun).
  */
-export const registerAccount = onCall(
-  { cors: httpCors, enforceAppCheck },
-  async (request) => {
+export const registerAccount = onCall(portalWarmOpts, async (request) => {
   if (request.auth?.uid) {
     throw new HttpsError("already-exists", "Você já está autenticado.");
   }

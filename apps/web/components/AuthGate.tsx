@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import dynamic from "next/dynamic";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -13,7 +14,7 @@ import {
 import type { FunctionsError } from "firebase/functions";
 import { auth } from "@/lib/firebaseCore";
 import { useAuth } from "@/lib/useAuth";
-import LandingComic from "@/components/LandingComic";
+const LandingComic = dynamic(() => import("@/components/LandingComic"), { ssr: false });
 
 type Mode = "login" | "signup" | "forgot";
 
@@ -66,12 +67,12 @@ function translateAuthError(err: unknown): string {
 }
 
 async function registerViaPortal(email: string, password: string): Promise<void> {
-  const [{ httpsCallable }, { functions }] = await Promise.all([
+  const [{ httpsCallable }, { functionsBr }] = await Promise.all([
     import("firebase/functions"),
     import("@/lib/firebaseFunctions"),
   ]);
   const fn = httpsCallable<{ email: string; password: string }, { customToken: string }>(
-    functions,
+    functionsBr,
     "registerAccount",
   );
   const res = await fn({ email, password });

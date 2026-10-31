@@ -1,6 +1,7 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { AggregateField, FieldPath, type DocumentReference } from "firebase-admin/firestore";
 import { db } from "./lib/firebase.ts";
+import { portalWarmOpts } from "./lib/httpSecurity.ts";
 import { getPlatformSummaryBuckets } from "./lib/platformSummary.ts";
 
 async function requirePlatformAdmin(uid: string): Promise<void> {
@@ -77,7 +78,12 @@ export const adminListAllProjects = onCall(
     if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
     await requirePlatformAdmin(uid);
 
-    const { cursor, limit } = (request.data ?? {}) as { cursor?: string; limit?: number };
+    const { cursor, limit, includeRepos } = (request.data ?? {}) as {
+      cursor?: string;
+      limit?: number;
+      includeRepos?: boolean;
+    };
+    const wantRepos = includeRepos !== false;
     const pageSize = Math.min(100, Math.max(1, limit ?? ORGS_PAGE_SIZE));
 
     let orgsQuery = db.collection("orgs").orderBy(FieldPath.documentId()).limit(pageSize);
@@ -92,40 +98,38 @@ export const adminListAllProjects = onCall(
         await Promise.all(
           projectsSnap.docs.map(async (p) => {
             const data = p.data();
-            const reposSnap = await p.ref.collection("repos").get();
-            const repos = reposSnap.docs.map((r) => {
-              const rd = r.data();
-              return {
-                repoId: r.id,
-                name: rd.name ?? r.id,
-                repoUrl: rd.repoUrl ?? null,
-                debtMinutes: rd.debtMinutes ?? 0,
-                maintainabilityRating: rd.maintainabilityRating ?? "A",
-                securityRating: rd.securityRating ?? "A",
-                qualityGateStatus: rd.qualityGateStatus ?? "PASSED",
-                openIssues: rd.openIssues ?? 0,
-                lastAnalyzedAt: rd.lastAnalyzedAt?.toDate?.().toISOString() ?? null,
-                codeGraph: slimCodeGraph(rd.codeGraph),
-                // Já vem compactado do ingest (25 módulos, 10 ciclos), então
-                // atravessa sem nova poda. O que precisava encolher encolheu
-                // onde o dado nasce, não em cada leitura do painel.
-                arquitetura: (rd.arquitetura as Record<string, unknown> | undefined) ?? null,
-                autoScan: rd.autoScan
-                  ? {
-                      enabled: !!rd.autoScan.enabled,
-                      periodicityDays: rd.autoScan.periodicityDays ?? 7,
-                      nextRunAt: rd.autoScan.nextRunAt?.toDate?.().toISOString() ?? null,
-                      lastRunAt: rd.autoScan.lastRunAt?.toDate?.().toISOString() ?? null,
-                    }
-                  : undefined,
-              };
-            });
+            const repos = wantRepos
+              ? (await p.ref.collection("repos").get()).docs.map((r) => {
+                  const rd = r.data();
+                  return {
+                    repoId: r.id,
+                    name: rd.name ?? r.id,
+                    repoUrl: rd.repoUrl ?? null,
+                    debtMinutes: rd.debtMinutes ?? 0,
+                    maintainabilityRating: rd.maintainabilityRating ?? "A",
+                    securityRating: rd.securityRating ?? "A",
+                    qualityGateStatus: rd.qualityGateStatus ?? "PASSED",
+                    openIssues: rd.openIssues ?? 0,
+                    lastAnalyzedAt: rd.lastAnalyzedAt?.toDate?.().toISOString() ?? null,
+                    codeGraph: slimCodeGraph(rd.codeGraph),
+                    arquitetura: (rd.arquitetura as Record<string, unknown> | undefined) ?? null,
+                    autoScan: rd.autoScan
+                      ? {
+                          enabled: !!rd.autoScan.enabled,
+                          periodicityDays: rd.autoScan.periodicityDays ?? 7,
+                          nextRunAt: rd.autoScan.nextRunAt?.toDate?.().toISOString() ?? null,
+                          lastRunAt: rd.autoScan.lastRunAt?.toDate?.().toISOString() ?? null,
+                        }
+                      : undefined,
+                  };
+                })
+              : [];
             projects.push({
               orgId: orgDoc.id,
               orgName: org.name ?? orgDoc.id,
               projectId: p.id,
               name: data.name ?? p.id,
-              repoCount: repos.length,
+              repoCount: wantRepos ? repos.length : (data.repoCount as number | undefined) ?? 0,
               debtMinutes: data.debtMinutes ?? 0,
               maintainabilityRating: data.maintainabilityRating ?? "A",
               securityRating: data.securityRating ?? "A",
@@ -151,7 +155,9 @@ export const adminListAllProjects = onCall(
  * rating/gate buckets (see platformSummary.ts) for the two values that
  * would otherwise need a filtered query to answer.
  */
-export const adminGetPlatformSummary = onCall({ memory: "512MiB", timeoutSeconds: 60 }, async (request) => {
+export const adminGetPlatformSummary = onCall(
+  { memory: "512MiB", timeoutSeconds: 60, minInstances: 1 },
+  async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
   await requirePlatformAdmin(uid);
@@ -262,7 +268,7 @@ async function deriveRatingBucketsFromProjects(): Promise<{
 }
 
 /** Lets the web app show/hide the "Admin" nav entry without a Firestore read. */
-export const checkPlatformAdmin = onCall(async (request) => {
+export const checkPlatformAdmin = onCall(portalWarmOpts, async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
   const snap = await db.doc(`platformAdmins/${uid}`).get();

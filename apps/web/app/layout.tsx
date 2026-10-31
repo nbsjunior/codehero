@@ -3,11 +3,10 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, JetBrains_Mono, Manrope } from "next/font/google";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/site";
 import "./globals.css";
-import "./landing-comic.css";
 
 const display = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: ["600", "700"],
   style: ["normal", "italic"],
   variable: "--font-display",
   display: "swap",
@@ -15,14 +14,14 @@ const display = Cormorant_Garamond({
 
 const sans = Manrope({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-sans",
   display: "swap",
 });
 
 const mono = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["500", "700"],
+  weight: ["500"],
   variable: "--font-mono",
   display: "swap",
 });

@@ -124,6 +124,21 @@ const TAB_IDS = new Set(
   [...SHARED_GROUPS, ...ADMIN_ONLY_GROUPS].flatMap((g) => g.items.filter((i) => !i.href).map((i) => i.id)),
 );
 
+/** Abas que precisam da lista de projetos (sem necessariamente os repos). */
+const PROJECT_TABS = new Set([
+  "visao-geral",
+  "todos-projetos",
+  "mcp-integracao",
+  "novo-workspace",
+  "manutenibilidade",
+  "relatorio",
+  "cotas",
+]);
+/** Abas que precisam do fan-out de repositórios. */
+const REPOS_TABS = new Set(["todos-projetos", "manutenibilidade", "relatorio"]);
+const ISSUES_TABS = new Set(["apontamentos", "relatorio"]);
+const SUMMARY_TABS = new Set(["visao-geral", "relatorio"]);
+
 const ratingColor: Record<string, string> = {
   A: "var(--rating-a)",
   B: "var(--rating-b)",
@@ -147,10 +162,12 @@ function AdminPanelInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [status, setStatus] = useState<"checking" | "denied" | "loading" | "ready" | "error">("checking");
+  const [status, setStatus] = useState<"checking" | "denied" | "ready" | "error">("checking");
   const [isPlatformAdmin, setIsPlatformAdmin] = useState(false);
   const [tab, setTab] = useState("instalacao");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [projectsScope, setProjectsScope] = useState<"none" | "lite" | "full">("none");
+  const [projectsLoading, setProjectsLoading] = useState(false);
 
   const [orgCount, setOrgCount] = useState(0);
   const [projects, setProjects] = useState<AdminProjectRow[]>([]);
@@ -161,8 +178,9 @@ function AdminPanelInner() {
   const [summaryError, setSummaryError] = useState<string | null>(null);
 
   const [issues, setIssues] = useState<AdminIssuesResult | null>(null);
-  const [issuesLoading, setIssuesLoading] = useState(true);
+  const [issuesLoading, setIssuesLoading] = useState(false);
   const [issuesError, setIssuesError] = useState<string | null>(null);
+  const [issuesLoaded, setIssuesLoaded] = useState(false);
 
   const [flags, setFlags] = useState<FeatureFlag[]>([]);
   const [flagKey, setFlagKey] = useState("");
@@ -258,7 +276,7 @@ function AdminPanelInner() {
     router.replace(qs ? `/admin/?${qs}#${id}` : `/admin/#${id}`, { scroll: false });
   }
 
-  async function loadMemberProjects(uid: string): Promise<AdminProjectRow[]> {
+  async function loadMemberProjects(uid: string, includeRepos = true): Promise<AdminProjectRow[]> {
     const membershipSnap = await getDocs(
       query(collectionGroup(dbClient, "members"), where("uid", "==", uid)),
     );
@@ -275,21 +293,22 @@ function AdminPanelInner() {
         return Promise.all(
           projectsSnap.docs.map(async (p) => {
             const data = p.data();
-            // Prefer rolled-up repoCount; only list repos when the UI needs URLs.
-            const reposSnap = await getDocs(collection(dbClient, "orgs", orgId, "projects", p.id, "repos"));
+            const reposSnap = includeRepos
+              ? await getDocs(collection(dbClient, "orgs", orgId, "projects", p.id, "repos"))
+              : null;
             const row: AdminProjectRow = {
               orgId,
               orgName,
               projectId: p.id,
               name: (data.name as string | undefined) ?? p.id,
-              repoCount: (data.repoCount as number | undefined) ?? reposSnap.size,
+              repoCount: (data.repoCount as number | undefined) ?? reposSnap?.size ?? 0,
               debtMinutes: (data.debtMinutes as number | undefined) ?? 0,
               maintainabilityRating: (data.maintainabilityRating as string | undefined) ?? "A",
               securityRating: (data.securityRating as string | undefined) ?? "A",
               qualityGateStatus: (data.qualityGateStatus as string | undefined) ?? "PASSED",
               openIssues: (data.openIssues as number | undefined) ?? 0,
               lastAnalyzedAt: null,
-              repos: reposSnap.docs.map((r) => {
+              repos: (reposSnap?.docs ?? []).map((r) => {
                 const rd = r.data();
                 const lastAt =
                   typeof rd.lastAnalyzedAt?.toDate === "function"
@@ -361,37 +380,6 @@ function AdminPanelInner() {
         }
         if (cancelled) return;
         setIsPlatformAdmin(admin);
-
-        setStatus("loading");
-        if (admin) {
-          const [{ orgCount: oc, projects: rows, nextCursor }, summaryResult] = await Promise.all([
-            adminListAllProjects(),
-            adminGetPlatformSummary()
-              .then((s) => ({ summary: s, error: null as string | null }))
-              .catch((err) => ({
-                summary: null as PlatformSummary | null,
-                error: err instanceof Error ? err.message : "Falha ao carregar o resumo da plataforma.",
-              })),
-          ]);
-          if (cancelled) return;
-          setOrgCount(oc);
-          setProjects(rows);
-          setNextOrgCursor(nextCursor);
-          setPlatformSummary(summaryResult.summary);
-          setSummaryError(summaryResult.error);
-          if (rows[0]) setQuotaOrgId((prev) => prev || rows[0].orgId);
-        } else {
-          if (wsOrg && wsProject) {
-            const member = await getDoc(doc(dbClient, "orgs", wsOrg, "members", user.uid));
-            if (!member.exists()) {
-              // still allow instalacao / own projects; workspace will gate itself
-            }
-          }
-          const rows = await loadMemberProjects(user.uid);
-          if (cancelled) return;
-          setOrgCount(new Set(rows.map((r) => r.orgId)).size);
-          setProjects(rows);
-        }
         setStatus("ready");
       } catch (err) {
         if (cancelled) return;
@@ -402,7 +390,7 @@ function AdminPanelInner() {
     return () => {
       cancelled = true;
     };
-  }, [user, wsOrg, wsProject]);
+  }, [user]);
 
   /**
    * adminListAllProjects is paginated by org (25/page) — a full unbounded
@@ -430,14 +418,16 @@ function AdminPanelInner() {
     try {
       let nextProjects = projects;
       if (user?.uid) {
-        nextProjects = await loadMemberProjects(user.uid);
+        nextProjects = await loadMemberProjects(user.uid, true);
         setProjects(nextProjects);
+        setProjectsScope("full");
         setOrgCount(new Set(nextProjects.map((p) => p.orgId)).size);
       }
       setPlatformSummary(summaryFromProjects(nextProjects));
       setSummaryError(null);
       const res = await loadWorkspaceIssues(nextProjects);
       setIssues(res);
+      setIssuesLoaded(true);
     } catch (err) {
       setIssuesError(err instanceof Error ? err.message : "Falha nos apontamentos do workspace.");
     } finally {
@@ -445,20 +435,95 @@ function AdminPanelInner() {
     }
   }, [projects, user?.uid]);
 
-  // Gestor: gráficos e relatório a partir dos projetos/repos da conta.
+  const needProjects = PROJECT_TABS.has(tab) || (tab === "workspace" && !wsOrg);
+  const needRepos = REPOS_TABS.has(tab);
+  const needIssues = ISSUES_TABS.has(tab);
+  const needSummary = SUMMARY_TABS.has(tab);
+
   useEffect(() => {
-    if (status !== "ready" || isPlatformAdmin) return;
+    if (status !== "ready" || !user || !needProjects) return;
+    if (projectsScope === "full") return;
+    if (projectsScope === "lite" && !needRepos) return;
     let cancelled = false;
-    setIssuesLoading(true);
-    setPlatformSummary(summaryFromProjects(projects));
-    setSummaryError(null);
-    loadWorkspaceIssues(projects)
-      .then((res) => {
-        if (!cancelled) setIssues(res);
+    const includeRepos = needRepos;
+    setProjectsLoading(true);
+    (async () => {
+      try {
+        if (isPlatformAdmin) {
+          const { orgCount: oc, projects: rows, nextCursor } = await adminListAllProjects({
+            includeRepos,
+          });
+          if (cancelled) return;
+          setOrgCount(oc);
+          setProjects(rows);
+          setNextOrgCursor(nextCursor);
+          setProjectsScope(includeRepos ? "full" : "lite");
+          if (rows[0]) setQuotaOrgId((prev) => prev || rows[0].orgId);
+        } else {
+          const rows = await loadMemberProjects(user.uid, includeRepos);
+          if (cancelled) return;
+          setOrgCount(new Set(rows.map((r) => r.orgId)).size);
+          setProjects(rows);
+          setProjectsScope(includeRepos ? "full" : "lite");
+          setPlatformSummary(summaryFromProjects(rows));
+          setSummaryError(null);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setErrorMsg(err instanceof Error ? err.message : "Falha ao carregar projetos.");
+        }
+      } finally {
+        if (!cancelled) setProjectsLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [status, user, isPlatformAdmin, needProjects, needRepos, projectsScope]);
+
+  useEffect(() => {
+    if (status !== "ready" || !needSummary || !isPlatformAdmin || platformSummary) return;
+    let cancelled = false;
+    adminGetPlatformSummary()
+      .then((s) => {
+        if (!cancelled) {
+          setPlatformSummary(s);
+          setSummaryError(null);
+        }
       })
       .catch((err) => {
         if (!cancelled) {
-          setIssuesError(err instanceof Error ? err.message : "Falha nos apontamentos do workspace.");
+          setSummaryError(err instanceof Error ? err.message : "Falha ao carregar o resumo da plataforma.");
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [status, needSummary, isPlatformAdmin, platformSummary]);
+
+  useEffect(() => {
+    if (status !== "ready" || !needIssues || issuesLoaded) return;
+    if (!isPlatformAdmin && projectsScope !== "full") return;
+    let cancelled = false;
+    setIssuesLoading(true);
+    setIssuesError(null);
+    const job = isPlatformAdmin ? adminListAllIssues() : loadWorkspaceIssues(projects);
+    job
+      .then((res) => {
+        if (!cancelled) {
+          setIssues(res);
+          setIssuesLoaded(true);
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setIssuesError(
+            err instanceof Error
+              ? err.message
+              : isPlatformAdmin
+                ? "Falha nos apontamentos."
+                : "Falha nos apontamentos do workspace.",
+          );
         }
       })
       .finally(() => {
@@ -467,48 +532,48 @@ function AdminPanelInner() {
     return () => {
       cancelled = true;
     };
-  }, [status, isPlatformAdmin, projects]);
+  }, [status, needIssues, issuesLoaded, isPlatformAdmin, projectsScope, projects]);
 
-  // Platform admin: callables globais (issues + ops + flags).
   useEffect(() => {
     if (status !== "ready" || !isPlatformAdmin) return;
     let cancelled = false;
-    adminListAllIssues()
-      .then((res) => {
-        if (!cancelled) setIssues(res);
-      })
-      .catch((err) => {
-        if (!cancelled) setIssuesError(err instanceof Error ? err.message : "Falha nos apontamentos.");
-      })
-      .finally(() => {
-        if (!cancelled) setIssuesLoading(false);
-      });
-    listFeatureFlags()
-      .then(({ flags: f }) => {
-        if (!cancelled) setFlags(f);
-      })
-      .catch(() => undefined);
-    getPlatformOpsSettings()
-      .then(({ config, queue: q }) => {
-        if (cancelled) return;
-        setOps(config);
-        setQueue(q);
-        setRetentionDraft(String(config.retentionDays));
-        setIntervalDraft(String(config.purgeIntervalDays));
-        setStuckDraft(String(config.queueStuckMinutes));
-      })
-      .catch((err) => {
-        if (!cancelled) setOpsError(err instanceof Error ? err.message : "Falha nas ops.");
-      });
-    listDressCodes({ scope: "global" })
-      .then(({ items }) => {
-        if (!cancelled) setDressItems(items);
-      })
-      .catch(() => undefined);
+    if (tab === "feature-toggles" && flags.length === 0) {
+      listFeatureFlags()
+        .then(({ flags: f }) => {
+          if (!cancelled) setFlags(f);
+        })
+        .catch(() => undefined);
+    }
+    if (tab === "escala" && !ops) {
+      getPlatformOpsSettings()
+        .then(({ config, queue: q }) => {
+          if (cancelled) return;
+          setOps(config);
+          setQueue(q);
+          setRetentionDraft(String(config.retentionDays));
+          setIntervalDraft(String(config.purgeIntervalDays));
+          setStuckDraft(String(config.queueStuckMinutes));
+        })
+        .catch((err) => {
+          if (!cancelled) setOpsError(err instanceof Error ? err.message : "Falha nas ops.");
+        });
+    }
+    if (tab === "dress-code" && dressItems.length === 0) {
+      listDressCodes({ scope: "global" })
+        .then(({ items }) => {
+          if (!cancelled) setDressItems(items);
+        })
+        .catch(() => undefined);
+    }
     return () => {
       cancelled = true;
     };
-  }, [status, isPlatformAdmin]);
+  }, [status, isPlatformAdmin, tab, flags.length, ops, dressItems.length]);
+
+  useEffect(() => {
+    if (tab !== "workspace" || wsOrg || !projects[0]) return;
+    navigateWorkspace(projects[0].orgId, projects[0].projectId, projects[0].repos[0]?.repoId);
+  }, [tab, wsOrg, projects, navigateWorkspace]);
 
   useEffect(() => {
     if (!quotaOrgId || !isPlatformAdmin || tab !== "cotas") return;
@@ -551,7 +616,7 @@ function AdminPanelInner() {
     }
   }
 
-  if (status === "checking" || status === "loading") {
+  if (status === "checking") {
     return (
       <main className="ex-boot">
         <p className="ex-boot__msg">Carregando painel executivo…</p>
@@ -610,8 +675,10 @@ function AdminPanelInner() {
         onSelectTab={selectTab}
         isPlatformAdmin={isPlatformAdmin}
       >
+        {errorMsg ? <div className="hero-error" style={{ marginBottom: "1rem" }}>{errorMsg}</div> : null}
         {tab === "instalacao" && (
           <InstalacaoHome
+            isPlatformAdmin={isPlatformAdmin}
             onNewWorkspace={() => selectTab("novo-workspace")}
             onOpenWorkspace={navigateWorkspace}
           />
@@ -623,9 +690,11 @@ function AdminPanelInner() {
               eyebrow="Portfólio"
               title="Visão geral"
               description={
-                isPlatformAdmin
-                  ? `Snapshot da plataforma: ${orgCountDisplay} org(s), ${projectCountDisplay} projeto(s), ${repoCountDisplay} repo(s). Use o Relatório para aprofundar.`
-                  : `Seus workspaces: ${projects.length} projeto(s) em ${orgCount} org(s). Próximo passo: Relatório ou primeiro scan.`
+                !platformSummary && projectsLoading
+                  ? "Carregando snapshot…"
+                  : isPlatformAdmin
+                    ? `Snapshot da plataforma: ${orgCountDisplay} org(s), ${projectCountDisplay} projeto(s), ${repoCountDisplay} repo(s). Use o Relatório para aprofundar.`
+                    : `Seus workspaces: ${projects.length} projeto(s) em ${orgCount} org(s). Próximo passo: Relatório ou primeiro scan.`
               }
             />
             <KpiGroup>
@@ -740,7 +809,9 @@ function AdminPanelInner() {
                 </button>
               }
             />
-            {projects.length === 0 ? (
+            {projectsLoading && projects.length === 0 ? (
+              <p className="hero-caption">Carregando projetos…</p>
+            ) : projects.length === 0 ? (
               <Callout tone="neutral" title="Nenhum projeto">
                 Use <strong>Novo workspace</strong> (Começar ou Entrega) — organização, projeto e repos num fluxo só.
               </Callout>

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, type ReactNode } from "react";
 import LandingFlow from "@/components/LandingFlow";
+import "@/app/landing-comic.css";
 
 /**
  * A landing contada em quadros.

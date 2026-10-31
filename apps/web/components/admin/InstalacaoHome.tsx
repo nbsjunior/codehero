@@ -45,6 +45,8 @@ const ratingColor: Record<string, string> = {
 const PLUGIN_HREF = "/downloads/codehero-vscode.vsix";
 
 export interface InstalacaoHomeProps {
+  /** Já resolvido no shell — evita um callable extra no primeiro paint. */
+  isPlatformAdmin?: boolean;
   /** Abre o wizard único de criação (org → projeto → repos → tokens). */
   onNewWorkspace: () => void;
   /** Abre o workspace; `workspaceTab` = action | vscode | mcp | overview. */
@@ -56,7 +58,7 @@ export interface InstalacaoHomeProps {
   ) => void;
 }
 
-function InstalacaoHome({ onNewWorkspace, onOpenWorkspace }: InstalacaoHomeProps) {
+function InstalacaoHome({ isPlatformAdmin, onNewWorkspace, onOpenWorkspace }: InstalacaoHomeProps) {
   const { user } = useAuth();
   const cloudPreviewFlag = useFeatureFlag("cloud-preview-scan");
   const [projects, setProjects] = useState<ProjectRow[]>([]);
@@ -122,7 +124,7 @@ function InstalacaoHome({ onNewWorkspace, onOpenWorkspace }: InstalacaoHomeProps
     setLoading(true);
     try {
       if (admin) {
-        const { projects: rows } = await adminListAllProjects();
+        const { projects: rows } = await adminListAllProjects({ includeRepos: false });
         setProjects(
           rows.map((p: AdminProjectRow) => ({
             id: `${p.orgId}/${p.projectId}`,
@@ -177,7 +179,8 @@ function InstalacaoHome({ onNewWorkspace, onOpenWorkspace }: InstalacaoHomeProps
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const admin = await checkPlatformAdmin().catch(() => false);
+      const admin =
+        typeof isPlatformAdmin === "boolean" ? isPlatformAdmin : await checkPlatformAdmin().catch(() => false);
       if (cancelled) return;
       setIsAdmin(admin);
       if (!admin) setDressScope("project");
@@ -186,7 +189,7 @@ function InstalacaoHome({ onNewWorkspace, onOpenWorkspace }: InstalacaoHomeProps
     return () => {
       cancelled = true;
     };
-  }, [loadProjects]);
+  }, [loadProjects, isPlatformAdmin]);
 
   useEffect(() => {
     if (!user) return;

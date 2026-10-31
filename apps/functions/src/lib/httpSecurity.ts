@@ -23,3 +23,18 @@ export const portalCallableOpts = {
   cors: httpCors,
   enforceAppCheck,
 } as const;
+
+/**
+ * Callables leves do portal (auth, flags, resumo). Região perto do usuário BR;
+ * minInstances evita cold start no primeiro clique. Functions que fazem fan-out
+ * no Firestore ficam em us-central1 (perto dos dados).
+ */
+export const PORTAL_WARM_REGION = "southamerica-east1" as const;
+
+export const portalWarmOpts = {
+  cors: httpCors,
+  enforceAppCheck,
+  region: PORTAL_WARM_REGION,
+  minInstances: 1,
+  memory: "256MiB",
+} as const;

@@ -1,6 +1,6 @@
 "use client";
 import { httpsCallable } from "firebase/functions";
-import { functions } from "./firebaseFunctions";
+import { functions, functionsBr } from "./firebaseFunctions";
 
 export interface ProvisionResult {
   orgId: string;
@@ -21,7 +21,7 @@ export async function provisionProject(input: {
 }
 
 export async function checkPlatformAdmin(): Promise<boolean> {
-  const fn = httpsCallable<undefined, { isAdmin: boolean }>(functions, "checkPlatformAdmin");
+  const fn = httpsCallable<undefined, { isAdmin: boolean }>(functionsBr, "checkPlatformAdmin");
   try {
     const res = await fn();
     return res.data.isAdmin;
@@ -174,6 +174,7 @@ export interface AdminProjectRow {
 export async function adminListAllProjects(input?: {
   cursor?: string;
   limit?: number;
+  includeRepos?: boolean;
 }): Promise<{ orgCount: number; projects: AdminProjectRow[]; nextCursor: string | null }> {
   const fn = httpsCallable<
     typeof input,
@@ -491,7 +492,7 @@ export interface FeatureFlag {
 }
 
 export async function listFeatureFlags(): Promise<{ flags: FeatureFlag[] }> {
-  const fn = httpsCallable<undefined, { flags: FeatureFlag[] }>(functions, "listFeatureFlags");
+  const fn = httpsCallable<undefined, { flags: FeatureFlag[] }>(functionsBr, "listFeatureFlags");
   const res = await fn();
   return res.data;
 }
