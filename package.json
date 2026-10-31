@@ -68,7 +68,7 @@
   },
   "overrides": {
     "hono": "4.13.0",
-    "@hono/node-server": "2.1.0",
+    "@hono/node-server": "2.1.5",
     "fast-uri": "3.1.5",
     "brace-expansion": "2.1.4",
     "postcss": "8.5.23",
