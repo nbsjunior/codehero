@@ -156,7 +156,7 @@ export const adminListAllProjects = onCall(
  * would otherwise need a filtered query to answer.
  */
 export const adminGetPlatformSummary = onCall(
-  { memory: "512MiB", timeoutSeconds: 60, minInstances: 1 },
+  { memory: "512MiB", timeoutSeconds: 60 },
   async (request) => {
   const uid = request.auth?.uid;
   if (!uid) throw new HttpsError("unauthenticated", "sign-in required");
