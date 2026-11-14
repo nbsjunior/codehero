@@ -1,66 +1,12 @@
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
-import { defineSecret } from "firebase-functions/params";
 import { logger } from "firebase-functions";
 import { FieldValue } from "firebase-admin/firestore";
-import { loadCorpus } from "@codehero/ruleforge";
-import { computeLintCoverage, formatLintGapDigest, lintGapWindowSeed } from "@codehero/contracts";
+import { evolveAllRules, loadCorpus, type CorpusCase } from "@codehero/ruleforge";
 import { db } from "./lib/firebase.ts";
-import { loadActiveRules } from "./lib/activeRules.ts";
-import { getCveDigestForPrompt } from "./lib/cveWatchlist.ts";
-import { describeRouting } from "./genkit/models.ts";
-import {
-  enqueueEvolveProposalsFromReport,
-  enqueueNewRuleProposals,
-  loadFirestoreCorpusCases,
-} from "./ruleProposals.ts";
+import { enqueueEvolveProposalsFromReport, loadFirestoreCorpusCases } from "./ruleProposals.ts";
 
 import type { RuleforgeDailyReport } from "./genkit/ruleforgeFlow.ts";
-
-const GEMINI_API_KEY = defineSecret("GEMINI_API_KEY");
-
-function ensureGenkitApiKey(): void {
-  const key = process.env.GEMINI_API_KEY?.trim();
-  if (!key) throw new Error("GEMINI_API_KEY secret is empty");
-  process.env.GOOGLE_GENAI_API_KEY = key;
-  process.env.GOOGLE_API_KEY = key;
-  process.env.GEMINI_MODEL = process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash";
-}
-
-async function loadFeedbackContext(): Promise<string> {
-  try {
-    const snap = await db.collectionGroup("ruleforgeFeedback").limit(40).get();
-    if (snap.empty) return "Sem telemetria ruleforgeFeedback recente.";
-    const lines = snap.docs.map((d) => {
-      const data = d.data();
-      return `- ${data.verdict ?? "?"} rule=${data.ruleId ?? "?"} :: ${String(data.snippet ?? data.note ?? "").slice(0, 120)}`;
-    });
-    return `Telemetria recente (ruleforgeFeedback):\n${lines.join("\n")}`;
-  } catch (err) {
-    logger.warn("ruleforge feedback context unavailable", err);
-    return "Telemetria indisponível neste run.";
-  }
-}
-
-/**
- * Coverage is computed against the ACTIVE catalog (core + approved overlays),
- * so a topic approved yesterday stops being proposed today.
- */
-async function loadLintGapDigest(day: string): Promise<string> {
-  try {
-    const active = await loadActiveRules();
-    const coverage = computeLintCoverage(active.rules);
-    logger.info("lint knowledge base coverage", {
-      covered: coverage.covered.length,
-      uncovered: coverage.uncovered.length,
-      activeRules: active.rules.length,
-    });
-    return formatLintGapDigest(coverage, 18, lintGapWindowSeed(day));
-  } catch (err) {
-    logger.warn("lint gap digest unavailable", err);
-    return "Lacunas de lint/clean-code indisponíveis neste run.";
-  }
-}
 
 async function persistReport(report: RuleforgeDailyReport): Promise<string> {
   const day = report.ranAt.slice(0, 10);
@@ -76,46 +22,46 @@ async function persistReport(report: RuleforgeDailyReport): Promise<string> {
   return ref.path;
 }
 
+async function runEvolveOnly(corpus: CorpusCase[]): Promise<RuleforgeDailyReport> {
+  const report = await evolveAllRules({ corpus });
+  return {
+    ranAt: report.ranAt,
+    seed: report.seed,
+    promotedCount: report.promotedCount,
+    rejectedCount: report.rejectedCount,
+    rules: report.rules.map((r) => ({
+      ruleId: r.outcome.ruleId,
+      decision: r.outcome.decision,
+      reason: r.outcome.reason,
+      baselineF1: r.outcome.baseline.f1,
+      bestF1: r.outcome.best.f1,
+      mutationIds: r.outcome.mutationIds,
+      proposedMutationIds: r.proposedMutationIds,
+      promotedPattern: r.promotedPattern,
+    })),
+  };
+}
+
+/**
+ * Sem LLM: o batch chamava o Gemini uma vez por regra (~300 chamadas/dia) e
+ * custava mais do que entregava. Fica só o evolve determinístico com o pool
+ * escrito à mão; promoção continua passando por aprovação humana.
+ */
 async function runDaily(trigger: "schedule" | "manual"): Promise<
   RuleforgeDailyReport & { proposalsEnqueued: number; newRuleProposals: number }
 > {
-  ensureGenkitApiKey();
-  const [{ ruleforgeDailyFlow }, { draftToEnqueue, proposeNewRulesBatch }] = await Promise.all([
-    import("./genkit/ruleforgeFlow.ts"),
-    import("./genkit/newRulesFlow.ts"),
-  ]);
-  const feedback = await loadFeedbackContext();
   const firestoreCorpus = await loadFirestoreCorpusCases();
   const packaged = loadCorpus();
   const corpus = [...packaged, ...firestoreCorpus];
 
-  const context = `Daily CodeHero ruleforge (${trigger}). ${feedback}`;
-  const report = await ruleforgeDailyFlow({ context, corpus });
+  const report = await runEvolveOnly(corpus);
   const path = await persistReport(report);
 
   const evolveQueued = await enqueueEvolveProposalsFromReport(report);
-
-  let newRuleProposals = 0;
-  try {
-    const day = report.ranAt.slice(0, 10);
-    const cveDigest = await getCveDigestForPrompt();
-    const lintGapDigest = await loadLintGapDigest(day);
-    const batch = await proposeNewRulesBatch(`${context}\n\n${cveDigest}\n\n${lintGapDigest}`);
-    newRuleProposals = await enqueueNewRuleProposals(
-      batch.drafts.map((d) => draftToEnqueue(d, day)),
-      corpus,
-    );
-  } catch (err) {
-    logger.warn("new rules proposal batch failed", err);
-  }
-
-  logger.info("model routing", {
-    routes: describeRouting().map(
-      (r) => `${r.role}=${r.resolved.provider}:${r.resolved.model}${r.isFallback ? " (fallback)" : ""}`,
-    ),
-  });
+  const newRuleProposals = 0;
 
   logger.info("ruleforgeDaily complete", {
+    trigger,
     path,
     promoted: report.promotedCount,
     rejected: report.rejectedCount,
@@ -129,8 +75,8 @@ async function runDaily(trigger: "schedule" | "manual"): Promise<
 }
 
 /**
- * Once per day: Genkit proposes mutations + new rules → deterministic evolve
- * scores evolves → BOTH land as pending ruleProposals for human approval.
+ * Once per day: deterministic evolve scores the hand-authored mutation pool →
+ * winners land as pending ruleProposals for human approval.
  * Approval writes platformDressRules + ruleforgeCorpus (all scan channels).
  */
 export const ruleforgeDaily = onSchedule(
@@ -138,7 +84,6 @@ export const ruleforgeDaily = onSchedule(
     schedule: "5 6 * * *",
     timeZone: "America/Sao_Paulo",
     region: "us-central1",
-    secrets: [GEMINI_API_KEY],
     memory: "1GiB",
     timeoutSeconds: 540,
   },
@@ -161,7 +106,6 @@ export const listRuleforgeRuns = onCall<{ limit?: number }>(async (request) => {
 export const runRuleforgeDaily = onCall(
   {
     region: "us-central1",
-    secrets: [GEMINI_API_KEY],
     memory: "1GiB",
     timeoutSeconds: 540,
   },
